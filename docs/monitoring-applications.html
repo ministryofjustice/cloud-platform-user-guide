@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta charset="utf-8">
+    <meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
+      <meta name="robots" content="noindex">
+
+    <title>Monitoring Applications | Cloud Platform User Guide</title>
+
+    <!--[if gt IE 8]><!--><link href="/stylesheets/screen.css" rel="stylesheet" media="screen" /><!--<![endif]-->
+    <!--[if lte IE 8]><link href="/stylesheets/screen-old-ie.css" rel="stylesheet" media="screen" /><![endif]-->
+
+    <link rel="canonical" href="https://user-guide.cloud-platform.service.justice.gov.uk/monitoring-applications.html">
+
+
+    <link href="/stylesheets/print.css" rel="stylesheet" media="print" />
+    <script src="/javascripts/application.js"></script>
+
+      <meta property="og:image" content="https://user-guide.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="og:site_name" content="Cloud Platform User Guide" />
+      <meta property="og:title" content="Monitoring Applications" />
+      <meta property="og:type" content="object" />
+      <meta property="og:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/monitoring-applications.html" />
+      <meta property="twitter:card" content="summary" />
+      <meta property="twitter:domain" content="user-guide.cloud-platform.service.justice.gov.uk" />
+      <meta property="twitter:image" content="https://user-guide.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="twitter:title" content="Monitoring Applications | Cloud Platform User Guide" />
+      <meta property="twitter:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/monitoring-applications.html" />
+
+    
+  </head>
+
+  <body>
+    <div class="app-pane">
+      <div class="app-pane__header toc-open-disabled">
+        <a href="#content" class="skip-link">Skip to main content</a>
+
+        <header class="header header--full-width">
+  <div class="header__container">
+    <div class="header__brand">
+        <a href="/">
+        <span class="header__title">
+          Cloud Platform User Guide
+            <span class="phase-banner">INTERNAL</span>
+        </span>
+        </a>
+    </div>
+
+      <div data-module="navigation">
+        <button type="button" class="header__navigation-toggle js-nav-toggle" aria-controls="navigation" aria-label="Show or hide top level navigation">Menu</button>
+
+        <nav id="navigation" class="header__navigation js-nav" aria-label="Top Level Navigation" aria-hidden="true">
+          <ul>
+              <li>
+                <a href="/">Documentation</a>
+              </li>
+              <li>
+                <a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub</a>
+              </li>
+          </ul>
+        </nav>
+      </div>
+  </div>
+</header>
+
+      </div>
+
+        <div id="toc-heading" class="toc-show fixedsticky">
+          <a href="#toc" class="toc-show__label js-toc-show" aria-controls="toc">
+            Table of contents <span class="toc-show__icon"></span>
+          </a>
+        </div>
+
+      <div class="app-pane__body" data-module="in-page-navigation">
+          <div class="app-pane__toc">
+            <div class="toc" data-module="table-of-contents">
+              <div class="search" data-module="search">
+  <form action="https://www.google.co.uk/search" method="get" role="search">
+    <input type="hidden" name="as_sitesearch" value="https://user-guide.cloud-platform.service.justice.gov.uk"/>
+    <label for="search"  class="search__label">Search (via Google)</label>
+    <input type="text" id="search" name="q" placeholder="Search" aria-controls="search-results" class="form-control" />
+  </form>
+  <div id="search-results" class="search-results" aria-hidden="true" role="dialog" aria-labelledby="search-results-title">
+    <div class="search-results__inner">
+      <button class="search-results__close">Close<span class="search-results__close-label"> search results</span></button>
+      <h2 id="search-results-title" class="search-results__title" aria-live="polite">Results</h2>
+      <div class="search-results__content"></div>
+    </div>
+  </div>
+</div>
+
+              <a href="#" class="toc__close js-toc-close" aria-controls="toc" aria-label="Hide table of contents"></a>
+              <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading" data-module="collapsible-navigation">
+                      <ul>
+  <li>
+    <a href="/#cloud-platform-user-guide">Cloud platform user guide</a>
+    <ul>
+      <li>
+        <a href="/#cloud-platform-user-guide-overview">Overview</a>
+      </li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <a href="/getting-started.html#getting-started">Getting Started</a>
+    <ul>
+      <li>
+        <a href="/getting-started.html#kubectl-configuration">kubectl configuration</a>
+      </li>
+      <li>
+        <a href="/getting-started.html#creating-a-cloud-platform-environment">Creating a Cloud Platform Environment</a>
+      </li>
+      <li>
+        <a href="/getting-started.html#creating-an-ecr-repository">Creating an ECR repository</a>
+      </li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <a href="/deploying-applications.html#deploying-applications">Deploying Applications</a>
+    <ul>
+      <li>
+        <a href="/deploying-applications.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">Deploying a ‘Hello World’ application to the Cloud Platform</a>
+      </li>
+      <li>
+        <a href="/deploying-applications.html#deploying-a-multi-container-application-to-the-cloud-platform">Deploying a multi-container application to the Cloud Platform</a>
+      </li>
+      <li>
+        <a href="/deploying-applications.html#deploying-an-application-to-the-cloud-platform-with-helm">Deploying an application to the Cloud Platform with Helm</a>
+      </li>
+      <li>
+        <a href="/deploying-applications.html#adding-a-secret-to-an-application">Adding a secret to an application</a>
+      </li>
+      <li>
+        <a href="/deploying-applications.html#continuous-deployment-of-an-application-using-circleci-and-helm">Continuous Deployment of an application using CircleCI and Helm</a>
+      </li>
+      <li>
+        <a href="/deploying-applications.html#adding-aws-resources-to-your-environment">Adding AWS resources to your environment</a>
+      </li>
+      <li>
+        <a href="/deploying-applications.html#cleaning-up">Cleaning up</a>
+      </li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <a href="/monitoring-applications.html#monitoring-applications">Monitoring Applications</a>
+    <ul>
+      <li>
+        <a href="/monitoring-applications.html#using-the-cloud-platform-prometheus-alertmanager-and-grafana">Using the Cloud Platform Prometheus, AlertManager and Grafana</a>
+      </li>
+      <li>
+        <a href="/monitoring-applications.html#creating-your-own-custom-alerts">Creating your own custom alerts</a>
+      </li>
+      <li>
+        <a href="/monitoring-applications.html#getting-application-metrics-into-prometheus">Getting Application Metrics into Prometheus</a>
+      </li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <a href="/other-topics.html#other-topics">Other Topics</a>
+    <ul>
+      <li>
+        <a href="/other-topics.html#git-crypt">Git-Crypt</a>
+      </li>
+      <li>
+        <a href="/other-topics.html#secrets-overview">Secrets overview</a>
+      </li>
+      <li>
+        <a href="/other-topics.html#kubectl-quick-reference">Kubectl quick reference</a>
+      </li>
+      <li>
+        <a href="/other-topics.html#how-to-access-my-log-data-using-kibana">How to access my log data using Kibana</a>
+      </li>
+      <li>
+        <a href="/other-topics.html#kubernetes-basics-links-to-helpful-beginner-resources">Kubernetes Basics - Links to helpful beginner resources</a>
+      </li>
+      <li>
+        <a href="/other-topics.html#cloud-platform-support">Cloud Platform Support</a>
+      </li>
+      <li>
+        <a href="/other-topics.html#zero-downtime-deployments">Zero Downtime Deployments</a>
+      </li>
+      <li>
+        <a href="/other-topics.html#contributing-to-this-document">Contributing to this document</a>
+      </li>
+      <li>
+        <a href="/other-topics.html#using-an-externally-managed-hostname">Using an externally-managed hostname</a>
+      </li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
+    <a href="/deprecation-warning.html#live-0-cluster-deprecation-notice">LIVE-0 CLUSTER DEPRECATION NOTICE</a>
+  </li>
+</ul>
+
+
+              </nav>
+            </div>
+          </div>
+
+        <div class="app-pane__content toc-open-disabled">
+          <main id="content" class="technical-documentation" data-module="anchored-headings">
+              <h1 id="monitoring-applications">Monitoring Applications</h1>
+<p><h2 id="using-the-cloud-platform-prometheus-alertmanager-and-grafana">Using the Cloud Platform Prometheus, AlertManager and Grafana</h2><h3 id="introduction">Introduction</h3><p>Prometheus, AlertManager and Grafana have been installed on Live-0 to ensure the reliability and availability of the Cloud Platform. This document will briefly outline how to access the monitoring tools and where to find further information.</p>
+<h3 id="what-is-prometheus">What is Prometheus</h3><p>Prometheus is an open-source systems monitoring and alerting toolkit originally built at SoundCloud. The Cloud Platform uses <a href="https://github.com/coreos/prometheus-operator">Prometheus Operator from CoreOS</a> which allows a number of Prometheus instances to be installed on a cluster.</p>
+<p>Prometheus scrapes metrics from instrumented jobs, either directly or via an intermediary push gateway for short-lived jobs. It stores all scraped samples locally and runs rules over this data to either aggregate and record new time series from existing data or generate alerts. Grafana or other API consumers can be used to visualize the collected data.</p>
+<h3 id="what-is-alertmanager">What is AlertManager</h3><p>The Alertmanager handles alerts sent by client applications such as the Prometheus server. It takes care of deduplicating, grouping, and routing them to the correct receiver integration such PagerDuty. It also takes care of silencing and inhibition of alerts.</p>
+<h3 id="what-is-grafana">What is Grafana</h3><p>Grafana allows you to query, visualize, alert on and understand your metrics no matter where they are stored. Create, explore, and share dashboards with your team and foster a data driven culture.</p>
+<h4 id="creating-dashboards">Creating dashboards</h4><p>Grafana is set up as a stateless app, managed entirely through code. This also helps achieve better availability. However, it means that dashboards will not persist in its database. To create a dashboard:</p></p>
+
+<ol>
+<li><p>Login to grafana (see the links below) with your GitHub account. All users are able to edit dashboards but cannot save the changes. Find the dashboard titled &lsquo;Blank Dashboard&rsquo; and modify it as you see fit.</p></li>
+<li><p>Once happy with your dashboard, click the share icon on the top right corner, select the <code>Export</code> tab, check the <code>Export for sharing externally</code> box and click on <code>View JSON</code>. Copy the JSON string into a <code>ConfigMap</code> according to the example below.</p></li>
+</ol>
+
+<div class="highlight"><pre class="highlight plaintext"><code>---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: &lt;my-dashboard&gt;
+  namespace: &lt;my-namespace&gt;
+  labels:
+    grafana_dashboard: ""
+data:
+  my-dashboard.json: |
+    {
+      [ ... ]
+    }
+</code></pre></div><p>Make sure you&rsquo;ve included the <code>label</code> and that the JSON string is properly indented. Also, name of the key in the <code>ConfigMap</code> must end in <code>-dashboard.json</code>. Please note that you can have multiple dashboards exported in a single <code>ConfigMap</code> as well.</p>
+
+<ol>
+<li>Use <code>kubectl</code> to apply the <code>ConfigMap</code> above, your dashboard should be visible in Grafana shortly.</li>
+</ol>
+<h3 id="how-to-access-monitoring-tools">How to access monitoring tools</h3><p>All links provided below require you to authenticate with your Github account.</p>
+<p>Prometheus: <a href="https://prometheus.apps.cloud-platform-live-0.k8s.integration.dsd.io">https://prometheus.apps.cloud-platform-live-0.k8s.integration.dsd.io</a></p>
+<p>AlertManager: <a href="https://alertmanager.apps.cloud-platform-live-0.k8s.integration.dsd.io/">https://alertmanager.apps.cloud-platform-live-0.k8s.integration.dsd.io</a></p>
+<p>Grafana: <a href="https://grafana.apps.cloud-platform-live-0.k8s.integration.dsd.io">https://grafana.apps.cloud-platform-live-0.k8s.integration.dsd.io</a></p>
+<h3 id="further-documentation">Further documentation</h3><p><a href="https://prometheus.io/docs/prometheus/latest/querying/basics">Prometheus querying</a></p>
+<p><a href="https://prometheus.io/docs/alerting/alertmanager">AlertManager</a></p>
+<p><a href="https://prometheus.io/docs/introduction/overview/##architecture">Architecture</a></p>
+
+<h2 id="creating-your-own-custom-alerts">Creating your own custom alerts</h2><h3 id="overview">Overview</h3><p>Alertmanager allows you define your own alert conditions based on <a href="https://prometheus.io/docs/prometheus/latest/querying/basics">Prometheus expression language</a> expressions.</p>
+<p>The aim of this document is to provide you with the necessary information to create and send application specific alerts to a Slack channel of your choosing.</p>
+<h3 id="prerequisites">Prerequisites</h3><p>This guide assumes the following:</p>
+
+<ul>
+<li>You have <a href="/getting-started.html#creating-a-cloud-platform-environment">created a namespace for your application</a></li>
+</ul>
+<h3 id="creating-a-slack-webhook-and-amend-alertmanager">Creating a slack webhook and amend Alertmanager</h3><p>This step requires the Cloud Platform team to create a receiver in <a href="https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/templates/prometheus-operator.yaml.tpl##L115">Alertmanager</a> and a <a href="https://api.slack.com/incoming-webhooks">Slack webhook</a>.</p>
+<p>Create a ticket to request a new alert route in Alertmanager. The team will need the following information:</p>
+
+<ul>
+<li>namespace name</li>
+<li>team name</li>
+<li>application name</li>
+<li>slack channel</li>
+</ul>
+<p>The team will provide you with a &ldquo;<code>custom severity level</code>&rdquo; that&rsquo;ll need to be defined in the next step. Please copy it to your clipboard.</p>
+<h3 id="create-a-prometheusrule">Create a PrometheusRule</h3><p>A <code>PrometheusRule</code> is a custom resource that defines your triggered alert. This file will contain the alert name, promql expression and time of check.</p>
+<p>To create your own custom alert you&rsquo;ll need to fill in the template below and deploy it to your namespace (tip: you can check rules in your namespace by running <code>kubectl get prometheusrule -n &lt;namespace&gt;</code>).</p>
+
+<ul>
+<li>Create a file called <code>prometheus-custom-rules-&lt;application_name&gt;.yaml</code></li>
+<li>Copy in the template below and replace the bracket values, specifying the requirements of your alert. The <code>&lt;custom_severity_level&gt;</code> field is the value you were passed earlier.</li>
+</ul>
+<div class="highlight"><pre class="highlight yaml"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">monitoring.coreos.com/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">PrometheusRule</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">&lt;namespace&gt;</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">role</span><span class="pi">:</span> <span class="s">alert-rules</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">prometheus-custom-rules-&lt;application_name&gt;</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">groups</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">application-rules</span>
+    <span class="na">rules</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">alert</span><span class="pi">:</span> <span class="s">&lt;alert_name&gt;</span>
+      <span class="na">expr</span><span class="pi">:</span> <span class="s">&lt;alert_query&gt;</span>
+      <span class="na">for</span><span class="pi">:</span> <span class="s">&lt;check_time_length&gt;</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">severity</span><span class="pi">:</span> <span class="s">&lt;custom_severity_level&gt;</span>
+      <span class="na">annotations</span><span class="pi">:</span>
+        <span class="na">message</span><span class="pi">:</span> <span class="s">&lt;alert_message&gt;</span>
+        <span class="na">runbook_url</span><span class="pi">:</span> <span class="s">&lt;http://my-support-docs&gt;</span>
+</code></pre></div>
+
+<ul>
+<li>Run <code>kubectl apply -f prometheus-custom-rules-&lt;application_name&gt;.yaml -n &lt;namespace&gt;</code></li>
+</ul>
+
+<p>A working example of this would be:</p>
+<p><div class="highlight"><pre class="highlight yaml"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">monitoring.coreos.com/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">PrometheusRule</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">creationTimestamp</span><span class="pi">:</span> <span class="no">null</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">monitoring</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">role</span><span class="pi">:</span> <span class="s">alert-rules</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">prometheus-custom-rules-my-application</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">groups</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">node.rules</span>
+    <span class="na">rules</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">alert</span><span class="pi">:</span> <span class="s">Quota-Exceeded</span>
+      <span class="na">expr</span><span class="pi">:</span> <span class="s">100 * kube_resourcequota{job=&quot;kube-state-metrics&quot;,type=&quot;used&quot;,namespace=&quot;monitoring&quot;} / ignoring(instance, job, type) (kube_resourcequota{job=&quot;kube-state-metrics&quot;,type=&quot;hard&quot;} &gt; 0) &gt; 90</span>
+      <span class="na">for</span><span class="pi">:</span> <span class="s">5m</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">severity</span><span class="pi">:</span> <span class="s">cp-team</span>
+      <span class="na">annotations</span><span class="pi">:</span>
+        <span class="na">message</span><span class="pi">:</span> <span class="s">Namespace {{ $labels.namespace }} is using {{ printf &quot;%0.0f&quot; $value}}% of its {{ $labels.resource }} quota.</span>
+        <span class="na">runbook_url</span><span class="pi">:</span> <span class="s">https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md##alert-name-kubequotaexceeded</span>
+</code></pre></div><p>The <code>alert</code> name, <code>message</code> and <code>runbook_url</code> annotations will be sent to the Slack channel when the rule has been triggered.</p>
+<p>You can view the applied rules with the following command:</p>
+<div class="highlight"><pre class="highlight shell"><code>kubectl <span class="nt">-n</span> &lt;namespace&gt; describe prometheusrules prometheus-custom-rules-&lt;application_name&gt;
+</code></pre></div><h3 id="prometheusrule-examples">PrometheusRule examples</h3><p>If you&rsquo;re struggling for ideas on how and which alerts to setup, please see some examples <a href="https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/resources/prometheusrule-examples/application-alerts.yaml">here</a>.</p>
+<h3 id="further-reading">Further reading</h3>
+<ul>
+<li><a href="https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/getting-started.md">Prometheus Operator - Getting Started</a></li>
+<li><a href="https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/alerting.md">Alerting</a></li>
+</ul></p>
+<p><h2 id="getting-application-metrics-into-prometheus">Getting Application Metrics into Prometheus</h2><p>Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. There are two ways to create a metrics endpoint. The first is when the metrics endpoint is embedded within the application referred to as <code>instrumentation</code>. The second is when the metrics endpoint is part of a deployed process that bridges the gap between Prometheus and systems that do not export metrics in the prometheus format, this is called an <code>exporter</code>.</p>
+<p>The following exporters are installed as part of the Cloud Platform cluster build:</p></p>
+
+<ul>
+<li>kubeEtcd</li>
+<li>kubeApiServer</li>
+<li>kubeDns</li>
+<li>kubeControllerManager</li>
+<li>kubeScheduler</li>
+<li>kube-state-metrics</li>
+<li>nodeExporter</li>
+<li>kubelet</li>
+</ul>
+
+<p>Click <a href="https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exporters.md">here</a> for a list of exporters and client libraries listed on the official Prometheus Github repo.</p>
+<p><h3 id="instrumentation-of-the-cloud-platform-reference-application">Instrumentation of The Cloud-Platform Reference Application</h3><p>The <a href="https://github.com/ministryofjustice/cloud-platform-reference-app">Cloud Platform Reference Application</a> has <code>instrumentation</code> setup using <a href="https://github.com/korfuri/django-prometheus">django-prometheus</a>. The default install steps were followed which created a metrics endpoint.</p>
+<p>See screenshot below of how the metrics endpoint looks on a browser:
+<a href="https://raw.githubusercontent.com/ministryofjustice/cloud-platform-user-docs/master/images/metrics-endpoint.png" target="_blank" rel="noopener noreferrer"><img src="https://raw.githubusercontent.com/ministryofjustice/cloud-platform-user-docs/master/images/metrics-endpoint.png" alt="Image of metrics" /></a></p>
+<h3 id="create-a-service-to-expose-pods">Create a Service to expose Pods</h3><p>Scraping an exporter or separate metrics port requires a service that targets the Pod(s) of the exporter or application.</p>
+<p>Example:</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">my-app-service</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">my-app</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">my-app</span>
+  <span class="na">ports</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">protocol</span><span class="pi">:</span> <span class="s">TCP</span>
+    <span class="na">port</span><span class="pi">:</span> <span class="s">8000</span>
+    <span class="na">targetPort</span><span class="pi">:</span> <span class="s">8000</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">metrics</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">NodePort</span>
+</code></pre></div><h3 id="create-a-service-monitor">Create a Service-Monitor</h3><p>A <code>ServiceMonitor</code> is a resource the Prometheus Operator introduces for Kubernetes that describes the set of targets to be monitored by Prometheus</p>
+<p>Service Monitor Architecture
+<a href="https://raw.githubusercontent.com/ministryofjustice/cloud-platform-user-docs/master/images/service-monitor-arch.png" target="_blank" rel="noopener noreferrer"><img src="https://raw.githubusercontent.com/ministryofjustice/cloud-platform-user-docs/master/images/service-monitor-arch.png" alt="Image of Service-Monitor Architecture" /></a></p>
+<p>Example:</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">monitoring.coreos.com/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">ServiceMonitor</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">my-app</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">matchLabels</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">my-app</span>
+  <span class="na">endpoints</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">port</span><span class="pi">:</span> <span class="s">metrics</span>
+    <span class="na">interval</span><span class="pi">:</span> <span class="s">15s</span>
+</code></pre></div><p>More detailed information about service-monitors can be found <a href="https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/running-exporters.md">here</a></p>
+<h3 id="networkpolicy-for-monitoring-namespace">NetworkPolicy for Monitoring Namespace</h3><p>By default, all connections from outside a namespace are blocked, therefore a network policy is required for the <code>monitoring</code> namespace to be able to connect into an application namespace to scrape the metrics endpoint.</p>
+<p>Example:</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="na">kind</span><span class="pi">:</span> <span class="s">NetworkPolicy</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">networking.k8s.io/v1</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">allow-prometheus-scraping</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">my-app-namespace</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">podSelector</span><span class="pi">:</span>
+    <span class="na">matchLabels</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">my-app</span>
+  <span class="na">policyTypes</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s">Ingress</span>
+  <span class="na">ingress</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">from</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">namespaceSelector</span><span class="pi">:</span>
+        <span class="na">matchLabels</span><span class="pi">:</span>
+          <span class="na">component</span><span class="pi">:</span> <span class="s">monitoring</span>
+</code></pre></div><p>You can view your current NetworkPolices with the following command:</p>
+<div class="highlight"><pre class="highlight shell"><code>kubectl <span class="nt">-n</span> &lt;namespace&gt; get networkpolicies
+</code></pre></div><h3 id="advisory-note-applications-configured-to-use-multiple-processes">Advisory note: Applications configured to use multiple processes</h3><p>If you&rsquo;re using a pre-forking web server (like unicorn or puma for Ruby, or gunicorn for Python) and have it configured to use multiple processes, then you need to use a Prometheus client library which supports exporting metrics from multiple processes. Not all the official clients do that. If you don&rsquo;t use a library which supports this, then requests to <code>/metrics</code> could be served by any of the processes, which would mean Prometheus sees inconsistent data on each scrape</p></p>
+
+
+            
+          </main>
+
+            <ul class="contribution-banner">
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/monitoring-applications.html.md.erb">View source</a></li>
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'Monitoring%20Applications'&amp;body=Problem%20with%20'Monitoring%20Applications'%20(https://user-guide.cloud-platform.service.justice.gov.uk/monitoring-applications.html)">Report problem</a></li>
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub Repo</a></li>
+            </ul>
+
+          <footer class="footer">
+  <div class="footer__licence">
+    <a class="footer__licence-logo" href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" rel="license">Open Government Licence</a>
+    <p class="footer__licence-description">All content is available under the <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" rel="license">Open Government Licence v3.0</a>, except where otherwise stated</p>
+  </div>
+
+  <div class="footer__copyright">
+    <a class="footer__copyright-logo" href="http://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/copyright-and-re-use/crown-copyright/">© Crown copyright</a>
+  </div>
+</footer>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </body>
+</html>

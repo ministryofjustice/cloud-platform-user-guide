@@ -1,0 +1,32 @@
+<h2 id="deploying-a-multi-container-application-to-the-cloud-platform">Deploying a multi-container application to the Cloud Platform</h2><h3 id="overview">Overview</h3><p>This section goes through the process of deploying a <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app">demo application</a> consisting of several components, each running in its own container.</p>
+<p>Please see the <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app##multi-container-demo-application">application README</a> for a description of the different components, and how they connect. You can also run the application locally via docker-compose to confirm that it works as it should.</p>
+<h3 id="running-in-the-kubernetes-cluster">Running in the Kubernetes Cluster</h3><p>In the <a href="https://github.com/ministryofjustice/cloud-platform">Cloud Platform</a> kubernetes cluster, the application will be set up like this:</p>
+<p><a href="../images/multi-container-k8s.png" target="_blank" rel="noopener noreferrer"><img src="/images/../images/multi-container-k8s.png" alt="Multi-container architecture diagram" /></a></p>
+<p>Each container needs a <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/">Deployment</a> which will contain a <a href="https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/">Pod</a>. <a href="https://kubernetes.io/docs/concepts/services-networking/service/">Services</a> make pods available on the cluster&rsquo;s internal network, and an <a href="https://kubernetes.io/docs/concepts/services-networking/ingress/">Ingress</a> exposes one or more services to the outside world.</p>
+<h3 id="create-an-rds-instance">Create an RDS instance</h3><p>The application database will be an Amazon RDS instance. To create this, refer to the <a href="https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance">cloud platform RDS</a> repository, and create a terraform file in your sub-directory of the <a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud platform environments</a> repository (you will need to raise a PR for this, and get the cloud platform team to approve it).</p>
+<p>For more information see <a href="deploying-applications.html#adding-aws-resources-to-your-environment">Adding AWS resources to your environment</a>.</p>
+<h3 id="build-docker-images-and-pushing-to-ecr">Build docker images and pushing to ECR</h3><p>As before, we need to build docker images which we will push to our <a href="https://aws.amazon.com/ecr/">Amazon ECR</a>.</p>
+<p>Please carry out the following steps on your own working copy of the <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app">demo application</a>.</p>
+<p>For <code>team_name</code> and <code>repo_name</code> please use the values from your <code>ecr.tf</code> file, when you <a href="getting-started.html#creating-an-ecr-repository">created your ECR</a>.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>cd rails-app
+docker build -t [team_name]/[repo_name]:rails-app .
+docker tag [team_name]/[repo_name]:rails-app 926803513772.dkr.ecr.eu-west-1.amazonaws.com/[team_name]/[repo_name]:rails-app-1.0
+docker push 926803513772.dkr.ecr.eu-west-1.amazonaws.com/[team_name]/[repo_name]:rails-app-1.0
+</code></pre></div><p>Note that we are overloading the tag value to push multiple different containers to a single Amazon ECR. This is because of a quirk in the way Amazon ECR refers to <code>image repositories</code> and <code>images</code>.</p>
+<p>Repeat the steps above for the <code>content-api</code> and <code>worker</code> sub-directories (changing <code>rails-app</code> as appropriate, in the commands).</p>
+<p>The <code>makefile</code> in the <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app">demo application</a> contains commands to make this process easier. Don&rsquo;t forget to edit the values for <code>TEAM_NAME</code>, <code>REPO_NAME</code> and <code>VERSION</code> appropriately.</p>
+<h3 id="kubernetes-configuration">Kubernetes configuration</h3><p>As per the diagram, we need to configure six objects in kubernetes - 3 deployments, 2 services and 1 ingress.</p>
+<p>You can see these YAML config files in the <code>kubernetes_deploy</code> directory of the <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app">demo application</a>.</p>
+<p>Note: The yaml files in the github repository have the namespace name <code>davids-dummy-dev</code>, team name <code>davids-dummy-team</code> and application name <code>davids-dummy-app</code>. You will need to change these to the corresponding values for your situation, and also the full names of your docker images.</p>
+<p>You may also need to change the <code>host</code> entry in the <code>ingress.yaml</code> file, if someone else has deployed an instance of the demo application using the same hostname.</p>
+<p>In <code>rails-app-deployment.yaml</code> and <code>worker-deployment.yaml</code> you can see the configuration for two environment variables:</p>
+
+<ul>
+<li><code>DATABASE_URL</code> is retrieved from the kubernetes secret which was created when the RDS instance was set up</li>
+<li><code>CONTENT_API_URL</code> uses the name and port defined in <code>content-api-service.yaml</code></li>
+</ul>
+<h3 id="deploying-to-the-cluster">Deploying to the cluster</h3><p>After you have built and pushed your docker images, and made the corresponding changes to the <code>kubernetes_deploy/*.yaml</code> files, you can apply the configuration to your namespace in the kubernetes cluster:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  kubectl apply --filename kubernetes_deploy --namespace [your namespace]
+</code></pre></div><h3 id="interacting-with-the-application">Interacting with the application</h3><p>You should be able to view the application in your browser at:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  https://multi-container-demo.apps.cloud-platform-live-0.k8s.integration.dsd.io/
+</code></pre></div><p>It should behave in the same way as when you were running it locally via docker-compose.</p>

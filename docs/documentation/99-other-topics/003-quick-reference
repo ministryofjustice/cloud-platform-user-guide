@@ -1,0 +1,29 @@
+<h2 id="kubectl-quick-reference">Kubectl quick reference</h2><p>This document acts as a quick reference to <code>kubectl</code>, listing some of the most common operations.</p>
+<p>The examples here only address the most basic approach to these operations. For more options, please refer to the command-line help of <code>kubectl</code> subcommands.</p>
+<p>There is also a more detailed <a href="https://kubernetes.io/docs/reference/kubectl/cheatsheet/">cheatsheet</a> in the official kubernetes documentation.</p>
+<h5 id="inspecting-running-instances-of-the-application">Inspecting running instances of the application</h5><p>To list running <code>Pods</code>:
+<code>
+$ kubectl -n &lt;namespace&gt; get pods
+</code>
+To view details for a <code>Pod</code>:
+<code>
+$ kubectl -n &lt;namespace&gt; describe pod &lt;pod&gt;
+</code></p>
+<h5 id="viewing-logs">Viewing logs</h5><p>To access the logs of a running container:
+<code>
+$ kubectl -n &lt;namespace&gt; logs &lt;pod&gt;
+</code></p>
+<h5 id="viewing-kubernetes-events">Viewing kubernetes events</h5><p>To see kubernetes events, which can help debugging:
+<code>
+$ kubectl -n &lt;namespace&gt; get events
+</code></p>
+<h5 id="container-shell">Container shell</h5><p>You can get a shell inside a running container:
+<code>
+$ kubectl -n &lt;namespace&gt; exec -it &lt;pod&gt; sh
+</code>
+https://kubernetes.io/docs/tasks/debug-application-cluster/get-shell-running-container/</p>
+<h5 id="pod-port-forwarding">Pod port-forwarding</h5><p>To forward port <code>5000</code> on <code>localhost</code> to port <code>5001</code> in the <code>Pod</code>:
+<code>
+$ kubectl -n &lt;namespace&gt; port-forward &lt;pod&gt; 5000:5001
+</code>
+https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/</p>

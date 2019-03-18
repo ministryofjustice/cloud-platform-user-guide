@@ -1,0 +1,38 @@
+<h2 id="adding-aws-resources-to-your-environment">Adding AWS resources to your environment</h2><p>Through the <a href="https://github.com/ministryofjustice/cloud-platform-environments/">cloud-platform-environments</a> repository, you can provision AWS resources for your environments. This is done using terraform and more specifically, terraform modules we provide for use on the Cloud Platform.</p>
+<p>The documentation for the modules lives in each module&rsquo;s repository and you can find a list of the available ones below.</p>
+<h3 id="available-modules">Available modules</h3>
+<ul>
+<li><a href="https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials">ECR Repository</a></li>
+<li><a href="https://github.com/ministryofjustice/cloud-platform-terraform-s3-bucket">S3 Bucket</a></li>
+<li><a href="https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance">RDS instance</a></li>
+<li><a href="https://github.com/ministryofjustice/cloud-platform-terraform-elasticache-cluster">Elasticache Redis Cluster</a></li>
+<li><a href="https://github.com/ministryofjustice/cloud-platform-terraform-dynamodb-cluster">DynamoDB Table</a></li>
+<li><a href="https://github.com/ministryofjustice/cloud-platform-terraform-sns-topic">SNS Topic</a></li>
+<li><a href="https://github.com/ministryofjustice/cloud-platform-terraform-sqs">SQS Queue</a></li>
+</ul>
+<h3 id="usage">Usage</h3><p>In each terraform module repository, you will find a directory named <code>example</code> which includes sample configuration for use in Cloud Platform.</p>
+<p>In your namespace&rsquo;s path in the <a href="https://github.com/ministryofjustice/cloud-platform-environments/">cloud-platform-environments</a> repository, create a directory called <code>resources</code> (if you have not created one already) and refer to the module&rsquo;s example to define your resources.</p>
+<p>Each example will have some global configuration defined, however, this should only be declared once, regardless of the number of modules used:
+&ldquo;`
+terraform {
+  backend &quot;s3&rdquo; {}
+}</p>
+<p>provider &ldquo;aws&rdquo; {
+  region = &ldquo;eu-west-1&rdquo;
+}
+&ldquo;`</p>
+<p>Additionally, some example might define variables; again, these should only be declared once per namespace:
+&rdquo;`
+variable &ldquo;cluster_name&rdquo; {}</p>
+<p>variable &ldquo;cluster_state_bucket&rdquo; {}
+&ldquo;`</p>
+<p>The main README file of each module repository will list all the available configuration options that can be passed to the module.</p>
+<h4 id="outputs">Outputs</h4><p>Each module will have its own outputs. These expose useful information, such as endpoints, credentials etc. The module examples all use a common approach: they employ the <code>kubernetes_secret</code> terraform resource to push the outputs straight into your environment in the form of a <code>Secret</code> which you could then extract information from or directly reference in <code>Pods</code>.</p>
+<p>This is currently the only supported way of accessing terraform outputs.</p>
+<h4 id="versioning">Versioning</h4><p>All modules are versioned. This allows us to implement changes without breaking existing resources. To use a specific version of a module you need to define it in the <code>source</code> attribute by specifying the <code>ref</code> attribute in the query string of the source URL:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>module "my_module" {
+  source = "https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=1.0"
+}
+</code></pre></div><p>Make sure that you have checked the releases page of a module and that you are using the latest of them in your configuration.</p>
+<p>Upgrading to a new major version usually means that the configured resource will have to be re-created by terraform.</p>
+<p>Refer to the <a href="http://terraform.io/docs/modules">terraform documentation on modules</a> for more information on usage.</p>

@@ -1,0 +1,114 @@
+<h2 id="deploying-an-application-to-the-cloud-platform-with-helm">Deploying an application to the Cloud Platform with Helm</h2><h3 id="introduction">Introduction</h3><p>This document will act as a guide to your first application deployment into the Cloud Platform. If you have any issues completing the objective or have any suggestions please feel free to drop use a line in the #ask-cloud-platform slack channel.</p>
+<h4 id="objective">Objective</h4><p>By the end of this guide you&rsquo;ll have deployed a reference <a href="https://github.com/ministryofjustice/cloud-platform-reference-app">Django application</a> to a cluster using the Kubernetes package manager <a href="https://helm.sh/">Helm</a>.</p>
+<p><em>Disclaimer: You&rsquo;ll see fairly quickly that the application is not fit for production. A perfect example of this is the <a href="https://github.com/ministryofjustice/cloud-platform-reference-app/blob/master/helm_deploy/django-app/templates/secret.yaml">plaintext secrets file</a>. For the reference application we&rsquo;ve left this file in plaintext but it *</em>must** be encrypted when writing your own manifests for production/non-production work in the MoJ.*</p>
+<h4 id="requirements">Requirements</h4><p>It is assumed you have the following:</p>
+
+<ul>
+<li>You have a basic understanding of what <a href="https://kubernetes.io/">Kubernetes</a> is.</li>
+<li>You have <a href="getting-started.html#creating-a-cloud-platform-environment">created an environment for your application</a></li>
+<li>You have installed <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/">Kubectl</a> on your local machine.</li>
+<li>You have <a href="getting-started.html#authentication">Authenticated</a> to the cloud-platform-live-0 cluster.</li>
+</ul>
+<h3 id="deploy-the-app">Deploy the app</h3><p>The reference application we&rsquo;re going to use is a very simple Django application with an on-cluster Postgresql database.</p>
+
+<blockquote>
+<p>Note: Even though we are going to install a database within the Kubernetes cluster, it is recommended to use a database as a service offering such as <a href="https://aws.amazon.com/rds/">AWS RDS</a> if running in production.</p>
+</blockquote>
+<p>The Helm deployment manifests have been pre-written for this exercise. But if you wish to know more about these files and what they do have a quick browse of the <a href="https://github.com/ministryofjustice/cloud-platform-reference-app/tree/master/helm_deploy/django-app/README.md">README</a>.</p>
+<h4 id="set-up">Set up</h4><p>First we need to clone our reference application and change directory:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ git clone https://github.com/ministryofjustice/cloud-platform-reference-app.git
+$ cd cloud-platform-reference-app
+</code></pre></div><p>You now have a functioning git repository that contains a simple Django application. Have a browse around and get familiar with the directory structure.</p>
+<h4 id="browse-the-cluster">Browse the cluster</h4><p>Let&rsquo;s make use of the command line tool <code>kubectl</code> to browse around the cluster to see what it looks like before we deploy our application:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl get pods --namespace &lt;env-name&gt;
+</code></pre></div><p><em>The <code>&lt;env-name&gt;</code> here is the environment you created, listed in the requirements section at the beginning of the document.</em></p>
+<p>If you receive the below error message then you&rsquo;ve either not typed in your namespace correctly or you don&rsquo;t have permission to perform a <code>get pods</code> command. Either way, you&rsquo;ll need to go back and review the <a href="getting-started.html#creating-a-cloud-platform-environment">Creating an Environment</a> document previously mentioned.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ Error from server (Forbidden): pods is forbidden: User "test-user" cannot list pods in the namespace "demo"
+</code></pre></div><h4 id="using-helm">Using Helm</h4><p>Helm allows you to manage application deployment to Kubernetes using Charts. You can read about of some of the many features of <a href="https://docs.helm.sh/developing_charts/">Helm Charts</a>. We&rsquo;ve chosen to use Helm as the default way to deploy applications to the Cloud Platform as it provides useful tooling as an interface to the YAML files that Kubernetes uses to run.</p>
+<h5 id="tiller-rbac-configuration">Tiller RBAC Configuration</h5><p>There are two parts to Helm: The client and the Helm server (Tiller).</p>
+<p>We will create a <code>Service Account</code> resource by adding to your <code>01-rbac.yaml</code> file. This gives Helm the permissions it needs to deploy within your namespace.</p>
+<p>Add the following to the bottom of the <code>01-rbac.yaml</code> file you defined when you <a href="getting-started.html#creating-a-cloud-platform-environment">created your environment</a>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tiller
+  namespace: myapp-dev ## Your namespace `&lt;servicename-env&gt;`
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: tiller
+  namespace: myapp-dev ## Your namespace `&lt;servicename-env&gt;`
+subjects:
+- kind: ServiceAccount
+  name: tiller
+  namespace: myapp-dev ## Your namespace `&lt;servicename-env&gt;`
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+</code></pre></div><p>After you have added this to the file, commit it and create a pull request against the <a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud-platform-environments</a> master repo.</p>
+<p>Once it is merged and applied, you will have a service account for Tiller that allows it act on your namespace. Now you have to install Helm and Tiller into your namespace.</p>
+<h5 id="installing-and-configuring-helm-and-tiller">Installing and configuring Helm and Tiller</h5><p>Install the client via Homebrew or by other <a href="https://docs.helm.sh/using_helm/##installing-helm">means</a>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ brew install kubernetes-helm
+</code></pre></div><p>Now configure the installation with Tiller:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ helm init --tiller-namespace &lt;env-name&gt; --service-account tiller
+</code></pre></div><p>When succesful, you&rsquo;ll be greeted with the message:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>Happy Helming
+</code></pre></div><p>This is an indication we&rsquo;re ready to deploy our applicaton.</p>
+<h5 id="application-install">Application install</h5><p>To deploy the application with Helm first change directory so we can focus on the app we need:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ cd helm_deploy/django-app/
+</code></pre></div><p>Values for our application are stored in the <code>values.yaml</code> at the root of our directory. Configurations such as &lsquo;number of pods running&rsquo; and which image repository to use is stored here in this file. Open this file and get familiar with our application layout.</p>
+<p>There is an important value in this file called <code>host</code>, which sets the URL for your application. We have to provide this value as an argument on our installation command.</p>
+<p>Run the following (replacing the <code>YourName</code> with your own name and <code>env-name</code> with your environment name:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>    $ helm install . \
+      --name django-app-&lt;YourName&gt; \
+      --namespace &lt;env-name&gt; \
+      --set deploy.host=django-&lt;YourName&gt;.apps.cloud-platform-live-0.k8s.integration.dsd.io \
+      --tiller-namespace &lt;env-name&gt;
+</code></pre></div>
+<blockquote>
+<p>Note: We&rsquo;re naming it like this as app names and host names have to be unique on the cluster.</p>
+</blockquote>
+<p>The <code>set deploy.host</code> overwrites the value stored in my <code>value.yaml</code> file and you&rsquo;ll see a fairly verbose output showing your pods creating.</p>
+<h4 id="viewing-your-application">Viewing your application</h4><p>Congratulations on getting this far. If all went well your pods are now deployed and is now being served on your specified URL.</p>
+<p>Let&rsquo;s check:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl get pods --namespace &lt;env-name&gt;
+</code></pre></div><p>If the deploy was successful you should be greeted with something similar to the below:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>NAME                                           READY     STATUS    RESTARTS   AGE
+django-app-&lt;Name&gt;-fcc657679-w69cr               1/1       Running   1          39m
+django-app-&lt;Name&gt;-fcc657679-c5wdm               1/1       Running   1          39m
+django-app-&lt;Name&gt;-db-migration-dgnse-qgs7r      0/1       Completed 0          39m
+django-app-&lt;Name&gt;-postgresql-7b4bdff4b8-xdlw2   1/1       Running   0          39m
+</code></pre></div><p>You should have a postgres pod and 2 app pods <strong>ready</strong> with the status <strong>running</strong>.</p>
+<p>(There&rsquo;s also a line for a pod which ran the initial database migrations, but that&rsquo;s completed and no longer running so we&rsquo;ll ignore it.)</p>
+<p>Let&rsquo;s check your host has a URL by running:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl get ingress --namespace &lt;env-name&gt;
+</code></pre></div><p>This will return the URL of your given app. Open it using your favourite browser.</p>
+<p>You should be met with an MoJ reference app with the title, <em>&#39;Cloud Platforms Deployment&rsquo;</em>. As we mentioned before, there is nothing complicated about this application. You can enter your name and job role, calling the on-cluster postgresql database.</p>
+<h4 id="view-the-logs">View the logs</h4><p>Each pod will generate logs that can be viewed via the API. Let&rsquo;s have a browse of our application logs.</p>
+<p>First grab the pod name:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl get pods --namespace &lt;env-name&gt;
+</code></pre></div><p>Then copy the name of a pod that isn&rsquo;t postgresql.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>   NAME                                           READY     STATUS    RESTARTS   AGE
+ * django-app-&lt;name&gt;-fcc657679-w69cr               1/1       Running   1          54m
+   django-app-&lt;name&gt;-fcc657679-c5wdm               1/1       Running   1          39m
+   django-app-&lt;name&gt;-postgresql-7b4bdff4b8-xdlw2   1/1       Running   0          54m
+</code></pre></div><p>We&rsquo;re going to follow the log, so we&rsquo;ll run:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl logs django-app-&lt;name&gt;-fcc657679-w69cr --namespace &lt;env-name&gt; -f
+</code></pre></div><p>As you can see, this tails the log and you should see our health checks giving a HTTP 200.</p>
+<p>Read more about Kubernetes logging <a href="https://kubernetes.io/docs/concepts/cluster-administration/logging/">here</a>.</p>
+<h4 id="scale-the-application">Scale the application</h4><p>You now have our application up and running but you decide two pods aren&rsquo;t enough. Say you want to run three. This is simply a case of changing the replicaCount value in the values.yaml whilst running the <code>helm upgrade</code> command.</p>
+<p>Let&rsquo;s try:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ helm upgrade django-app-&lt;YourName&gt; . --set replicaCount=3 --tiller-namespace &lt;env-name&gt; --set deploy.host=&lt;DeploymentURL&gt;
+</code></pre></div><p>This command spins up another pod to bring the total number to 3.</p>
+<p>If we run the familiar command we&rsquo;ve been using:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl get pods --namespace &lt;env-var&gt;
+</code></pre></div><p>You&rsquo;ll see the pod replication in progress.</p>
+<h4 id="tear-it-all-down">Tear it all down</h4><p>Finally, we have built are app and deployed to the cluster. There is only one thing left to do. Destroy it.</p>
+<p>To delete the deployment you simply run:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ helm del --purge django-app-&lt;YourName&gt; --tiller-namespace &lt;env-name&gt;
+</code></pre></div><p>And then confirm the pods are terminating as expected:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl get pods --namespace &lt;env-var&gt;
+</code></pre></div><h3 id="next-steps">Next steps</h3><p>The next step will be to create your own Helm Chart. You can try this with an application of your own or run through <a href="https://docs.bitnami.com/kubernetes/how-to/create-your-first-helm-chart/">Bitnami&rsquo;s excellent guide</a> on how to build using a simple quickstart.</p>

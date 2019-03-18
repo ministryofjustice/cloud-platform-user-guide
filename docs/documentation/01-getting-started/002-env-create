@@ -1,0 +1,243 @@
+<h2 id="creating-a-cloud-platform-environment">Creating a Cloud Platform Environment</h2><h3 id="introduction">Introduction</h3><p>This is a guide to creating a environment in one of our Kubernetes clusters.</p>
+<p>We define an environment as a Kubernetes <a href="https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/">namespace</a> with some key resources deployed in it. Each Kubernetes namespace creates a logical separation within our cluster that provides isolation from any other namespace.</p>
+<p>Once you have created an environment you will be able to perform actions using the <code>kubectl</code> tool in the namespace you have created.</p>
+<h3 id="objective">Objective</h3><p>By the end of this guide you&rsquo;ll have created a Kubernetes namespace ready for you to <a href="deploying-applications.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">deploy an application</a> into.</p>
+<h3 id="create-an-environment">Create an environment</h3><p>You create an environment by adding the definition of the environment in YAML to the following repository, hosted on GitHub:</p>
+<p><a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud-platform-environments</a></p>
+<p>Adding your environment definition kicks off a pipeline which builds your environment on the appropriate cluster.</p>
+<h4 id="set-up">Set up</h4><p>First we need to clone the repository, change directory and create a new branch:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ git clone git@github.com:ministryofjustice/cloud-platform-environments.git
+$ cd cloud-platform-environments
+$ git checkout -b &lt;yourBranch&gt;
+</code></pre></div><h4 id="the-directory-structure">The directory structure</h4><p>We build new environments by creating a new directory for our environment and putting the YAML files that define the environment into that directory. To understand where to create the directory it is useful to understand the overall structure of the repo:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>cloud-platform-environments
+├── namespace-resources
+└── namespaces
+    └── cloud-platform-live-0.k8s.integration.dsd.io
+        ├── kube-system
+
+        ...
+
+        └── user-roles.yaml
+</code></pre></div><p><strong>cloud-platform-environments</strong></p>
+<p>This is the root of the repo, containing <code>namespaces</code> directory</p>
+<p><strong>/namespaces</strong></p>
+<p>The namespaces directory contains a directory for each of the clusters that you can build environments on. Create your environment in the <code>cloud-platform-live-0.k8s.integration.dsd.io</code> directory.</p>
+<p><strong>/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/</strong></p>
+<p>Within the cluster directory you will generate a directory for your environment in the format <code>&lt;servicename-env&gt;</code>, for example <code>myapp-dev</code>.</p>
+<p><strong>/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/servicename-env/</strong></p>
+<p>The <code>&lt;servicename-env&gt;</code> directory for your environment defines the specific resources we will create in your namespace. We describe these resources in more detail in <a href="##how-we-set-up-an-environment">how we set up an environment</a>.</p>
+<h4 id="how-we-set-up-an-environment">How we set up an environment</h4><p>To set up an environment we create 5 files in the directory for your namespace:</p>
+
+<ul>
+<li><a href="##00-namespaceyaml"><code>00-namespace.yaml</code></a></li>
+<li><a href="##01-rbacyaml"><code>01-rbac.yaml</code></a></li>
+<li><a href="##02-limitrangeyaml"><code>02-limitrange.yaml</code></a></li>
+<li><a href="##03-resourcequotayaml"><code>03-resourcequota.yaml</code></a></li>
+<li><a href="##04-networkpolicyyaml"><code>04-networkpolicy.yaml</code></a></li>
+</ul>
+<p>These files define key elements of the namespace and restrictions we want to place on it so that we have security and resource allocation properties. We will use terraform to create these files from templates. We also describe each of these files <a href="##00-namespaceyaml">in more detail below</a> in case you want to make future changes.</p>
+<h4 id="create-your-namespace-and-namespace-resources">Create your namespace and namespace resources</h4><p>We automate the creation of the namespace resource files using terraform. You will need to install terraform locally:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ brew install terraform
+</code></pre></div><p>In each of the template files you need to replace some example values with information about your namespace, team or app. We do this by running terraform commands and filling in the values.</p>
+<p>These are the inputs for the terraform module, that you will need to fill:</p>
+
+<div style="height:1px;font-size:1px;">&nbsp;</div>
+<div class="table-container">
+        <table>
+          <tr>
+<th>Name</th>
+<th>Description</th>
+<th style="text-align: center">Type</th>
+<th style="text-align: center">Default</th>
+<th style="text-align: center">Required</th>
+</tr>
+<tr>
+<td>application</td>
+<td>The name of your application</td>
+<td style="text-align: center">string</td>
+<td style="text-align: center">-</td>
+<td style="text-align: center">yes</td>
+</tr>
+<tr>
+<td>business-unit</td>
+<td>Area of the MOJ responsible for the service</td>
+<td style="text-align: center">string</td>
+<td style="text-align: center">-</td>
+<td style="text-align: center">yes</td>
+</tr>
+<tr>
+<td>cluster</td>
+<td>What cluster are you deploying your namespace. i.e cloud-platform-test-1</td>
+<td style="text-align: center">string</td>
+<td style="text-align: center"><code>cloud-platform-live-0</code></td>
+<td style="text-align: center">no</td>
+</tr>
+<tr>
+<td>contact_email</td>
+<td>Contact email address for owner of the application</td>
+<td style="text-align: center">string</td>
+<td style="text-align: center">-</td>
+<td style="text-align: center">yes</td>
+</tr>
+<tr>
+<td>environment</td>
+<td>A label for your environment (e.g. dev/staging/&hellip;)</td>
+<td style="text-align: center">string</td>
+<td style="text-align: center">-</td>
+<td style="text-align: center">yes</td>
+</tr>
+<tr>
+<td>github_team</td>
+<td>This is your team name as defined by the GITHUB api. This has to match the team name on the Github API</td>
+<td style="text-align: center">string</td>
+<td style="text-align: center">-</td>
+<td style="text-align: center">yes</td>
+</tr>
+<tr>
+<td>is-production</td>
+<td></td>
+<td style="text-align: center">string</td>
+<td style="text-align: center"><code>false</code></td>
+<td style="text-align: center">no</td>
+</tr>
+<tr>
+<td>namespace</td>
+<td>Namespace you would like to create on cluster <application>-<environment>. i.e myapp-dev</td>
+<td style="text-align: center">string</td>
+<td style="text-align: center">-</td>
+<td style="text-align: center">yes</td>
+</tr>
+<tr>
+<td>owner</td>
+<td>Who is the owner/Who is responsible for this application</td>
+<td style="text-align: center">string</td>
+<td style="text-align: center">-</td>
+<td style="text-align: center">yes</td>
+</tr>
+<tr>
+<td>source_code_url</td>
+<td>Url of the source code for your application</td>
+<td style="text-align: center">string</td>
+<td style="text-align: center">-</td>
+<td style="text-align: center">yes</td>
+</tr>
+
+        </table>
+      </div>
+<div style="height:1px;font-size:1px;">&nbsp;</div>
+<p>Run the following commands to create your namespace and these resources files:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ cd cloud-platform-environments/namespace-resources/
+$ terraform init
+$ terraform apply
+</code></pre></div><p>Our terraform module creates the files for a new namespace on the live-0 cluster by default but if you would like to deploy to another cluster you can use:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ terraform apply -var "cluster=&lt;cluster-name&gt;"
+</code></pre></div><p>Fill in your values in response to the prompts.</p>
+<p>For <code>var.namespace</code>, this is the name of your (team&rsquo;s) &lsquo;private&rsquo; part of the cluster. The name of your namespace must be unique across the whole of the cluster. If you try to create a new namespace using the name of one which already exists, you will get an error when you try to apply the generated kubernetes config files (or when our build pipeline applies them on your behalf).</p>
+<p>For &#39;real&rsquo; services, this is very unlikely to be a problem - most services have distinct names, so namespace name conflicts are unlikely. But, if you are creating a test/dummy namespace in order to learn how the platform works, it&rsquo;s better to avoid generic names like &#39;dummy&rsquo;, &#39;test&rsquo; or &#39;example&rsquo;. Add something unique (e.g. your name) to minimise the risk of trying to re-use a name by mistake.</p>
+<p>For <code>var.source_code_url</code>, this should be the URL of an application which is &#39;cluster-ready&rsquo; to be deployed. If you do not have such an application ready to go, you can use the reference application which the Cloud Platform team have prepared <code>git@github.com:ministryofjustice/cloud-platform-reference-app.git</code></p>
+<p>Note: The <code>source_code_url</code> is a descriptive label, used by the Cloud Platform team in supporting your namespace. It does not set up an explicit link between your namespace and your application&rsquo;s code repository.</p>
+<p>At the final prompt &ldquo;Do you want to perform these actions?&rdquo;, enter &ldquo;yes&rdquo;</p>
+<p>You can then access your namespace files under <code>cloud-platform-environments/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/&lt;your-namespace&gt;</code>, if satisfied you can then push the changes to your branch and create a pull request against the <a href="https://github.com/ministryofjustice/cloud-platform-environments"><code>cloud-platform-environments</code></a> master repo.</p>
+<p>The cloud platform team will review the pull request when it gets opened.  As soon as the pull request has been approved by the cloud platform team you can then merge it into the master branch which will kick off the pipeline that builds the environment. You can check whether the build succeeded or failed in the <a href="https://mojdt.slack.com/messages/CA5MDLM34/"><code>##cp-build-notifications</code></a> slack channel. This can take about 5 minutes.</p>
+<h3 id="accessing-your-environments">Accessing your environments</h3><p>Once the pipeline has completed you will be able to check that your environment is available by running:</p>
+<p><code>$ kubectl get namespaces</code></p>
+<p>This will return a list of the namespaces within the cluster, and you should see yours in the list.</p>
+<p>You can now run commands in your namespace by appending the <code>-n</code> or <code>--namespace</code> flag to <code>kubectl</code>. So for instance, to see the pods running in our <code>myenv-dev</code> namespace, we would run:</p>
+<p><code>$ kubectl get pods -n myenv-dev</code> or</p>
+<p><code>$ kubectl get pods --namespace myenv-dev</code></p>
+<h3 id="next-steps">Next steps</h3><p><a href="getting-started.html#creating-an-ecr-repository">Create an ECR repository</a> to push your application docker image to.</p>
+<p>Then you can try <a href="deploying-applications.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">deploying an app to Kubernetes manually</a> by writing some custom YAML files or <a href="deploying-applications.html#deploying-an-application-to-the-cloud-platform-with-helm">deploying an app with Helm</a>, a Kubernetes <a href="(https://helm.sh/)">package manager</a>.</p>
+<h3 id="more-information-on-environment-definition">More information on environment definition</h3><p>To set up an environment we create 5 files in that directory:</p>
+
+<ul>
+<li><a href="##00-namespaceyaml"><code>00-namespace.yaml</code></a></li>
+<li><a href="##01-rbacyaml"><code>01-rbac.yaml</code></a></li>
+<li><a href="##02-limitrangeyaml"><code>02-limitrange.yaml</code></a></li>
+<li><a href="##03-resourcequotayaml"><code>03-resourcequota.yaml</code></a></li>
+<li><a href="##04-networkpolicyyaml"><code>04-networkpolicy.yaml</code></a></li>
+</ul>
+<p>These files define key elements of the namespace and restrictions we want to place on it so that we have security and resource allocation properties. We will use terraform to create these files from templates. We also describe each of these files in more detail below in case you want to make changes.</p>
+<h4 id="00-namespace-yaml"><code>00-namespace.yaml</code></h4><p>The <code>00-namespace.yaml</code> file defines the namespace so that the cluster Kubernetes knows to create a namespace and what to call it.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: v1
+kind: Namespace
+metadata:
+  name: myapp-dev ## This is where you will define your &lt;servicename-env&gt;
+  labels:
+    name: myapp-dev ## Also your &lt;servicename-env&gt;
+</code></pre></div><h4 id="01-rbac-yaml"><code>01-rbac.yaml</code></h4><p>We will also create a <code>RoleBinding</code> resource by adding the <code>01-rbac.yaml</code> file. This will provide us with <a href="https://kubernetes.io/docs/admin/authorization/rbac/">access policies</a> on the namespace we have created in the cluster.</p>
+<p>A role binding resource grants the permissions defined in a role to a user or set of users. A role can be another resource we can create but in this instance we will reference a Kubernetes default role <code>ClusterRole - admin</code>.</p>
+<p>This <code>RoleBinding</code> resource references the <code>ClusterRole - admin</code> to provide  admin permissions on the namespace to the set of users defined under <code>subjects</code>. In this case, the <code>&lt;yourTeam&gt;</code> GitHub group will have admin access to any resources within the namespace <code>myapp-dev</code>.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: myapp-dev-admins  ## Your namespace with `-admin` e.g. `&lt;servicename-env&gt;-admin`
+  namespace: myapp-dev ## Your namespace `&lt;servicename-env&gt;`
+subjects:
+  - kind: Group
+    name: "github:&lt;yourTeam&gt;" ## Make this the name of the GitHub team you want to give access to
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: admin
+  apiGroup: rbac.authorization.k8s.io
+</code></pre></div><h4 id="02-limitrange-yaml"><code>02-limitrange.yaml</code></h4><p>As we are working on a shared Kubernetes cluster it is useful to put in place limits on the resources that each namespace, pod and container can use. This helps to stop us accidentally entering a situation where one service impacts the performance of another through using more resources than are available.</p>
+<p>The first Kubernetes limit we can use is a <a href="https://kubernetes.io/docs/tasks/administer-cluster/manage-resources/memory-default-namespace/">LimitRange</a> which we define in <code>02-limitrange.yaml</code>.</p>
+<p>The LimitRange object specifies two key resource limits on containers, <code>defaultRequest</code> and <code>default</code>. <code>defaultRequest</code> is the memory and cpu a container will request on startup. This is what the Kubernetes scheduler uses to determine whether there is enough space on the cluster to run your application and what your application will start up with when it is created. <code>default</code> is the limit at which your application will be killed or throttled.</p>
+<p>In <code>02-limitrange.yaml</code> you need to change the value of the <code>namespace</code> key to match the name of your namespace in the form <code>&lt;service-env&gt;</code>. We have set default values for the limits in the templates. As you learn more about the behaviour of your applications on Kubernetes you can change them.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: v1
+kind: LimitRange
+metadata:
+  name: limitrange
+  namespace: myapp-dev ## Your namespace `&lt;servicename-env&gt;`
+spec:
+  limits:
+  - default:
+      cpu: 1000m
+      memory: 2Gi
+    defaultRequest:
+      cpu: 100m
+      memory: 128Mi
+    type: Container
+</code></pre></div><h4 id="03-resourcequota-yaml"><code>03-resourcequota.yaml</code></h4><p>The <a href="https://kubernetes.io/docs/concepts/policy/resource-quotas/">ResourceQuota</a> object allows us to set a total limit on the resources used in a namespace. As with the LimitRange, the <code>requests.cpu</code> and <code>requests.memory</code> limits set how much the namespace will request on creation. The <code>limits.cpu</code> and <code>limits.memory</code> define the overall hard limits for the namespace.</p>
+<p>In <code>03-resourcequota.yaml</code> you need to change the value of the <code>namespace</code> key to match the name of your namespace in the form <code>&lt;service-env&gt;</code>. We have set default values for the limits in the templates. As you learn more about the behaviour of your applications on Kubernetes you can change them.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: namespace-quota
+  namespace: myapp-dev ## Your namespace `&lt;servicename-env&gt;`
+spec:
+  hard:
+    requests.cpu: 4000m
+    requests.memory: 8Gi
+    limits.cpu: 6000m
+    limits.memory: 12Gi
+</code></pre></div><h4 id="04-networkpolicy-yaml"><code>04-networkpolicy.yaml</code></h4><p>The <a href="https://kubernetes.io/docs/concepts/services-networking/network-policies/">NetworkPolicy</a> object defines how groups of pods are allowed to communicate with each other and other network endpoints. By default pods are non-isolated, they accept traffic from any source. We apply a network policy to restrict where traffic can come from, allowing traffic only from the <a href="https://kubernetes.io/docs/concepts/services-networking/ingress/">ingress controller</a> and other pods in your namespace.</p>
+<p>In <code>04-networkpolicy.yaml</code> you need to change the value of the <code>namespace</code> key to match the name of your namespace in the form <code>&lt;service-env&gt;</code>.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default
+  namespace: myapp-dev ## Your namespace `&lt;servicename-env&gt;`
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector: {}
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-ingress-controllers
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          component: ingress-controllers
+</code></pre></div>

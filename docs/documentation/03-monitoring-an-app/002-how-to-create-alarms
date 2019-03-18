@@ -1,0 +1,77 @@
+<h2 id="creating-your-own-custom-alerts">Creating your own custom alerts</h2><h3 id="overview">Overview</h3><p>Alertmanager allows you define your own alert conditions based on <a href="https://prometheus.io/docs/prometheus/latest/querying/basics">Prometheus expression language</a> expressions.</p>
+<p>The aim of this document is to provide you with the necessary information to create and send application specific alerts to a Slack channel of your choosing.</p>
+<h3 id="prerequisites">Prerequisites</h3><p>This guide assumes the following:</p>
+
+<ul>
+<li>You have <a href="getting-started.html#creating-a-cloud-platform-environment">created a namespace for your application</a></li>
+</ul>
+<h3 id="creating-a-slack-webhook-and-amend-alertmanager">Creating a slack webhook and amend Alertmanager</h3><p>This step requires the Cloud Platform team to create a receiver in <a href="https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/templates/prometheus-operator.yaml.tpl##L115">Alertmanager</a> and a <a href="https://api.slack.com/incoming-webhooks">Slack webhook</a>.</p>
+<p>Create a ticket to request a new alert route in Alertmanager. The team will need the following information:</p>
+
+<ul>
+<li>namespace name</li>
+<li>team name</li>
+<li>application name</li>
+<li>slack channel</li>
+</ul>
+<p>The team will provide you with a &ldquo;<code>custom severity level</code>&rdquo; that&rsquo;ll need to be defined in the next step. Please copy it to your clipboard.</p>
+<h3 id="create-a-prometheusrule">Create a PrometheusRule</h3><p>A <code>PrometheusRule</code> is a custom resource that defines your triggered alert. This file will contain the alert name, promql expression and time of check.</p>
+<p>To create your own custom alert you&rsquo;ll need to fill in the template below and deploy it to your namespace (tip: you can check rules in your namespace by running <code>kubectl get prometheusrule -n &lt;namespace&gt;</code>).</p>
+
+<ul>
+<li>Create a file called <code>prometheus-custom-rules-&lt;application_name&gt;.yaml</code></li>
+<li>Copy in the template below and replace the bracket values, specifying the requirements of your alert. The <code>&lt;custom_severity_level&gt;</code> field is the value you were passed earlier.</li>
+</ul>
+<div class="highlight"><pre class="highlight yaml"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">monitoring.coreos.com/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">PrometheusRule</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">&lt;namespace&gt;</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">role</span><span class="pi">:</span> <span class="s">alert-rules</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">prometheus-custom-rules-&lt;application_name&gt;</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">groups</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">application-rules</span>
+    <span class="na">rules</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">alert</span><span class="pi">:</span> <span class="s">&lt;alert_name&gt;</span>
+      <span class="na">expr</span><span class="pi">:</span> <span class="s">&lt;alert_query&gt;</span>
+      <span class="na">for</span><span class="pi">:</span> <span class="s">&lt;check_time_length&gt;</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">severity</span><span class="pi">:</span> <span class="s">&lt;custom_severity_level&gt;</span>
+      <span class="na">annotations</span><span class="pi">:</span>
+        <span class="na">message</span><span class="pi">:</span> <span class="s">&lt;alert_message&gt;</span>
+        <span class="na">runbook_url</span><span class="pi">:</span> <span class="s">&lt;http://my-support-docs&gt;</span>
+</code></pre></div>
+<ul>
+<li>Run <code>kubectl apply -f prometheus-custom-rules-&lt;application_name&gt;.yaml -n &lt;namespace&gt;</code></li>
+</ul>
+<p>A working example of this would be:</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">monitoring.coreos.com/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">PrometheusRule</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">creationTimestamp</span><span class="pi">:</span> <span class="no">null</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">monitoring</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">role</span><span class="pi">:</span> <span class="s">alert-rules</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">prometheus-custom-rules-my-application</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">groups</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">node.rules</span>
+    <span class="na">rules</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">alert</span><span class="pi">:</span> <span class="s">Quota-Exceeded</span>
+      <span class="na">expr</span><span class="pi">:</span> <span class="s">100 * kube_resourcequota{job="kube-state-metrics",type="used",namespace="monitoring"} / ignoring(instance, job, type) (kube_resourcequota{job="kube-state-metrics",type="hard"} &gt; 0) &gt; 90</span>
+      <span class="na">for</span><span class="pi">:</span> <span class="s">5m</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">severity</span><span class="pi">:</span> <span class="s">cp-team</span>
+      <span class="na">annotations</span><span class="pi">:</span>
+        <span class="na">message</span><span class="pi">:</span> <span class="s">Namespace {{ $labels.namespace }} is using {{ printf "%0.0f" $value}}% of its {{ $labels.resource }} quota.</span>
+        <span class="na">runbook_url</span><span class="pi">:</span> <span class="s">https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md##alert-name-kubequotaexceeded</span>
+</code></pre></div><p>The <code>alert</code> name, <code>message</code> and <code>runbook_url</code> annotations will be sent to the Slack channel when the rule has been triggered.</p>
+<p>You can view the applied rules with the following command:</p>
+<div class="highlight"><pre class="highlight shell"><code>kubectl <span class="nt">-n</span> &lt;namespace&gt; describe prometheusrules prometheus-custom-rules-&lt;application_name&gt;
+</code></pre></div><h3 id="prometheusrule-examples">PrometheusRule examples</h3><p>If you&rsquo;re struggling for ideas on how and which alerts to setup, please see some examples <a href="https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/resources/prometheusrule-examples/application-alerts.yaml">here</a>.</p>
+<h3 id="further-reading">Further reading</h3>
+<ul>
+<li><a href="https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/getting-started.md">Prometheus Operator - Getting Started</a></li>
+<li><a href="https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/alerting.md">Alerting</a></li>
+</ul>

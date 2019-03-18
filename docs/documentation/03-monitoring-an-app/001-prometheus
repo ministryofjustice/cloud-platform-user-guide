@@ -1,0 +1,36 @@
+<h2 id="using-the-cloud-platform-prometheus-alertmanager-and-grafana">Using the Cloud Platform Prometheus, AlertManager and Grafana</h2><h3 id="introduction">Introduction</h3><p>Prometheus, AlertManager and Grafana have been installed on Live-0 to ensure the reliability and availability of the Cloud Platform. This document will briefly outline how to access the monitoring tools and where to find further information.</p>
+<h3 id="what-is-prometheus">What is Prometheus</h3><p>Prometheus is an open-source systems monitoring and alerting toolkit originally built at SoundCloud. The Cloud Platform uses <a href="https://github.com/coreos/prometheus-operator">Prometheus Operator from CoreOS</a> which allows a number of Prometheus instances to be installed on a cluster.</p>
+<p>Prometheus scrapes metrics from instrumented jobs, either directly or via an intermediary push gateway for short-lived jobs. It stores all scraped samples locally and runs rules over this data to either aggregate and record new time series from existing data or generate alerts. Grafana or other API consumers can be used to visualize the collected data.</p>
+<h3 id="what-is-alertmanager">What is AlertManager</h3><p>The Alertmanager handles alerts sent by client applications such as the Prometheus server. It takes care of deduplicating, grouping, and routing them to the correct receiver integration such PagerDuty. It also takes care of silencing and inhibition of alerts.</p>
+<h3 id="what-is-grafana">What is Grafana</h3><p>Grafana allows you to query, visualize, alert on and understand your metrics no matter where they are stored. Create, explore, and share dashboards with your team and foster a data driven culture.</p>
+<h4 id="creating-dashboards">Creating dashboards</h4><p>Grafana is set up as a stateless app, managed entirely through code. This also helps achieve better availability. However, it means that dashboards will not persist in its database. To create a dashboard:</p>
+
+<ol>
+<li><p>Login to grafana (see the links below) with your GitHub account. All users are able to edit dashboards but cannot save the changes. Find the dashboard titled &lsquo;Blank Dashboard&rsquo; and modify it as you see fit.</p></li>
+<li><p>Once happy with your dashboard, click the share icon on the top right corner, select the <code>Export</code> tab, check the <code>Export for sharing externally</code> box and click on <code>View JSON</code>. Copy the JSON string into a <code>ConfigMap</code> according to the example below.</p></li>
+</ol>
+<div class="highlight"><pre class="highlight plaintext"><code>---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: &lt;my-dashboard&gt;
+  namespace: &lt;my-namespace&gt;
+  labels:
+    grafana_dashboard: ""
+data:
+  my-dashboard.json: |
+    {
+      [ ... ]
+    }
+</code></pre></div><p>Make sure you&rsquo;ve included the <code>label</code> and that the JSON string is properly indented. Also, name of the key in the <code>ConfigMap</code> must end in <code>-dashboard.json</code>. Please note that you can have multiple dashboards exported in a single <code>ConfigMap</code> as well.</p>
+
+<ol>
+<li>Use <code>kubectl</code> to apply the <code>ConfigMap</code> above, your dashboard should be visible in Grafana shortly.</li>
+</ol>
+<h3 id="how-to-access-monitoring-tools">How to access monitoring tools</h3><p>All links provided below require you to authenticate with your Github account.</p>
+<p>Prometheus: <a href="https://prometheus.apps.cloud-platform-live-0.k8s.integration.dsd.io">https://prometheus.apps.cloud-platform-live-0.k8s.integration.dsd.io</a></p>
+<p>AlertManager: <a href="https://alertmanager.apps.cloud-platform-live-0.k8s.integration.dsd.io/">https://alertmanager.apps.cloud-platform-live-0.k8s.integration.dsd.io</a></p>
+<p>Grafana: <a href="https://grafana.apps.cloud-platform-live-0.k8s.integration.dsd.io">https://grafana.apps.cloud-platform-live-0.k8s.integration.dsd.io</a></p>
+<h3 id="further-documentation">Further documentation</h3><p><a href="https://prometheus.io/docs/prometheus/latest/querying/basics">Prometheus querying</a></p>
+<p><a href="https://prometheus.io/docs/alerting/alertmanager">AlertManager</a></p>
+<p><a href="https://prometheus.io/docs/introduction/overview/##architecture">Architecture</a></p>
