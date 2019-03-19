@@ -2,7 +2,7 @@
 
 ### Background
 Every application running on Cloud Platform is able to use a hostname for their
-HTTP endpoints, under a pre-defined DNS zone. For exaxmple, on the `live-0`
+HTTP endpoints, under a pre-defined DNS zone. For example, on the `live-0`
 cluster, this would be `*.apps.cloud-platform-live-0.k8s.integration.dsd.io`. As
 long as it is defined on the `Ingress` resource, it works automatically with a
 wildcard TLS certificate.
@@ -49,7 +49,13 @@ spec:
         provider: <provider>
 ```
 
-3. You will need to update your `Ingress` spec to include the new hostname:
+3. Make sure the certificate has been issued correctly, by checking its `Status`:
+
+```
+$ kubectl describe certificate <my-cert>
+```
+
+4. You will need to update your `Ingress` spec to include the new hostname. **Once your host is defined here, the cluster will take control of the DNS record and automatically adjust to point to the cluster.**
 
 ```
   apiVersion: extensions/v1beta1
@@ -81,18 +87,7 @@ spec:
 +           servicePort: 80
 ```
 
-4. Make sure the certificate has been issued correctly, by checking its `Status`:
-
-```
-$ kubectl describe certificate <my-cert>
-```
-
-5. Create a CNAME record in your DNS zone, pointing the desired hostname to the
-cloud-platform. You can use either your existing hostname
-(`my-app.apps.cloud-platform-live-0.k8s.integration.dsd.io` in the example above)
-or you can target the top-level domain, `apps.cloud-platform-live-0.k8s.integration.dsd.io`.
-
 ##### > It's a DNS zone hosted with another provider
 For the time being, we only support Route53 natively. Depending on the provider
-we might be able to accommodate you or we might need to handle this manually.
+we might be able to accommodate you or we might need to handle this manually, if possible.
 Please [create a support ticket](http://goo.gl/msfGiS).
