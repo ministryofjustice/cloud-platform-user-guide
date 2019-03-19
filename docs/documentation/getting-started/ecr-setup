@@ -21,6 +21,8 @@
   <span class="nv">$ </span>vi ecr.tf  <span class="c">##create a terraform file.</span>
 
 </code></pre></div><p>4. Adapt the definition from the example described in the <a href="https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials/tree/master/examples">cloud-platform-terraform-ecr-credentials module</a>; make sure you adjust the values of <code>team_name</code>, <code>repo_name</code> <code>name</code> and <code>namespace</code> to what is appropriate for your environment.</p>
+<p>Note: A default ECR lifecycle policy is a set that will expire images over count 40</p>
+
 <p>5. git add, commit and push to your branch.</p>
 <div class="highlight"><pre class="highlight shell"><code>
   <span class="nv">$ </span>git add ecr.tf
