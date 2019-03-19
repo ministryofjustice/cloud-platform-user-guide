@@ -1,5 +1,5 @@
 <h2 id="using-an-externally-managed-hostname">Using an externally-managed hostname</h2><h3 id="background">Background</h3><p>Every application running on Cloud Platform is able to use a hostname for their
-HTTP endpoints, under a pre-defined DNS zone. For exaxmple, on the <code>live-0</code>
+HTTP endpoints, under a pre-defined DNS zone. For example, on the <code>live-0</code>
 cluster, this would be <code>*.apps.cloud-platform-live-0.k8s.integration.dsd.io</code>. As
 long as it is defined on the <code>Ingress</code> resource, it works automatically with a
 wildcard TLS certificate.</p>
@@ -37,7 +37,12 @@ spec:
         provider: &lt;provider&gt;
 </code></pre></div>
 <ol>
-<li>You will need to update your <code>Ingress</code> spec to include the new hostname:</li>
+<li>Make sure the certificate has been issued correctly, by checking its <code>Status</code>:</li>
+</ol>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl describe certificate &lt;my-cert&gt;
+</code></pre></div>
+<ol>
+<li>You will need to update your <code>Ingress</code> spec to include the new hostname. <strong>Once your host is defined here, the cluster will take control of the DNS record and automatically adjust to point to the cluster.</strong></li>
 </ol>
 <div class="highlight"><pre class="highlight plaintext"><code>  apiVersion: extensions/v1beta1
   kind: Ingress
@@ -66,18 +71,6 @@ spec:
 +         backend:
 +           serviceName: &lt;my-svc&gt;
 +           servicePort: 80
-</code></pre></div>
-<ol>
-<li>Make sure the certificate has been issued correctly, by checking its <code>Status</code>:</li>
-</ol>
-<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl describe certificate &lt;my-cert&gt;
-</code></pre></div>
-<ol>
-<li>Create a CNAME record in your DNS zone, pointing the desired hostname to the
-cloud-platform. You can use either your existing hostname
-(<code>my-app.apps.cloud-platform-live-0.k8s.integration.dsd.io</code> in the example above)
-or you can target the top-level domain, <code>apps.cloud-platform-live-0.k8s.integration.dsd.io</code>.</li>
-</ol>
-<h5 id="gt-it-39-s-a-dns-zone-hosted-with-another-provider">&gt; It&rsquo;s a DNS zone hosted with another provider</h5><p>For the time being, we only support Route53 natively. Depending on the provider
-we might be able to accommodate you or we might need to handle this manually.
+</code></pre></div><h5 id="gt-it-39-s-a-dns-zone-hosted-with-another-provider">&gt; It&rsquo;s a DNS zone hosted with another provider</h5><p>For the time being, we only support Route53 natively. Depending on the provider
+we might be able to accommodate you or we might need to handle this manually, if possible.
 Please <a href="http://goo.gl/msfGiS">create a support ticket</a>.</p>
