@@ -15,7 +15,7 @@ By the end of the tutorial, you will have done the following:
 #### Requirements
 It is assumed you have the following:
 
- - You have [created an environment for your application](/01-getting-started/002-env-create)
+ - You have [created an environment for your application](/getting-started/002-env-create)
  - You have [deployed an application][deploy-helm] to the 'cloud-platform-live-0' cluster using Helm.
  - You have created an [ECR repository][ecr-setup]
 
