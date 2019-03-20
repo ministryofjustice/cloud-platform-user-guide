@@ -9,22 +9,29 @@ using [GitHub Pages][gh-pages].
 [tech-docs]: https://tdt-documentation.london.cloudapps.digital/
 [gh-pages]: https://pages.github.com/
 
-## Getting started
+## Pre-requisites
 
-To preview the site locally, we need to use the terminal.
+You will need [Docker][] on your development machine.
 
-Install Ruby and [Bundler][bundler], preferably with a [Ruby version
-manager][rvm].
+[Docker]: https://www.docker.com/
 
-[rvm]: https://www.ruby-lang.org/en/documentation/installation/#managers
-[bundler]: http://bundler.io/
+## Previewing
 
-Once you have Ruby and Bundler set up, you can install this project's
-dependencies by running the following in this directory:
+Preview changes locally by running this command:
 
 ```bash
-bundle install
+make server
 ```
+
+This will build the docker image, if required, so the first time you
+run it, it will take some time. Subsequent invocations should be much
+faster.
+
+This will run a preview web server on http://127.0.0.1:4567
+
+This is only accessible on your computer, and won't be accessible
+to anyone else. It's also set up to automatically update when we
+make changes to the source files.
 
 ## Making changes
 
@@ -36,7 +43,7 @@ Markdown processing.
 
 [kramdown]: https://kramdown.gettalong.org/syntax.html
 
-Note: Do not edit the files in the `docs` directory. This is the
+**Note: Do not edit the files in the `docs` directory.** This is the
 'compiled' version of the site, and any changes made in this
 directory will be overwritten during the build step.
 
@@ -48,19 +55,6 @@ file.
 This file lists the partials which comprise the page, in the
 order in which they should appear. By convention, all such
 partials are in the `source/documentation` directory.
-
-## Previewing
-
-We can preview our changes locally by running this command:
-
-```bash
-make server
-```
-
-This will create a local web server, probably at http://127.0.0.1:4567
-This is only accessible on our own computer, and won't be accessible
-to anyone else. It's also set up to automatically update when we
-make changes to the source files.
 
 ## Publishing changes
 
