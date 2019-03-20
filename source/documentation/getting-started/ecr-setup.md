@@ -42,6 +42,8 @@ AWS resources are provisioned through the [cloud-platform-environments](https://
 
 4\. Adapt the definition from the example described in the [cloud-platform-terraform-ecr-credentials module](https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials/tree/master/examples); make sure you adjust the values of `team_name`, `repo_name` `name` and `namespace` to what is appropriate for your environment.
 
+Note: A default ECR lifecycle policy is a set that will expire images over count 40.
+
 5\. git add, commit and push to your branch.
 
 ```bash
