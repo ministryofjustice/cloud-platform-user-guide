@@ -13,6 +13,7 @@ The documentation for the modules lives in each module's repository and you can 
 - [DynamoDB Table](https://github.com/ministryofjustice/cloud-platform-terraform-dynamodb-cluster)
 - [SNS Topic](https://github.com/ministryofjustice/cloud-platform-terraform-sns-topic)
 - [SQS Queue](https://github.com/ministryofjustice/cloud-platform-terraform-sqs)
+- [MQ Broker](https://github.com/ministryofjustice/cloud-platform-terraform-amq-broker)
 
 ### Usage
 
