@@ -49,6 +49,13 @@ This file lists the partials which comprise the page, in the
 order in which they should appear. By convention, all such
 partials are in the `source/documentation` directory.
 
+These `source/[page name].html.md.erb` files have a 'weight' attribute
+which determines the order in which they will appear. Higher weights
+are further down in the list.
+
+For more information, see the [Tech Docs Template documentation][tech-docs-multipage]
+for a basic multipage site.
+
 ## Previewing
 
 We can preview our changes locally by running this command:
@@ -90,4 +97,5 @@ in a pull request, no matter how minor, and we've enabled [branch
 protection][] to enforce this.
 
 [branch protection]: https://help.github.com/articles/about-protected-branches/
+[tech-docs-multipage]: https://tdt-documentation.london.cloudapps.digital/multipage.html#repo-folder-structure
 
