@@ -74,8 +74,15 @@ make build
 Then add, commit and push your changes (including the `docs`
 directory).
 
-Make sure to make changes in a branch, and issue a pull request
+Make your changes in a branch, and issue a pull request
 when you want them to be reviewed and published.
+
+We recommend making two separate commits for your changes - the first
+for your changes to the `source` directory, and then a separate commit
+adding the `docs` directory, after you run `make build`. This makes it
+easier for whoever is reviewing your commit, because they can focus on
+your 'source' commit (on the assumption that your 'docs' changes are
+simply a result of running the build process).
 
 Because we're using GitHub Pages, any changes merged into the `master`
 branch will be published automatically. Every change should be reviewed
