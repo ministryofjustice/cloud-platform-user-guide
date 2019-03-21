@@ -193,6 +193,9 @@
       <li>
         <a href="/other-topics.html#using-an-externally-managed-hostname">Using an externally-managed hostname</a>
       </li>
+      <li>
+        <a href="/other-topics.html#ip-whitelisting">IP Whitelisting</a>
+      </li>
     </ul>
   </li>
 </ul>
@@ -417,6 +420,16 @@ spec:
 </code></pre></div><h5 id="gt-it-39-s-a-dns-zone-hosted-with-another-provider">&gt; It&rsquo;s a DNS zone hosted with another provider</h5><p>For the time being, we only support Route53 natively. Depending on the provider
 we might be able to accommodate you or we might need to handle this manually, if possible.
 Please <a href="http://goo.gl/msfGiS">create a support ticket</a>.</p></p>
+<p><h2 id="ip-whitelisting">IP Whitelisting</h2><h3 id="nat-gateways">NAT Gateways</h3><p>Many applications use third-party tools for a variety of reasons, and many of these tools require IP Whitelisting.</p>
+<p>The Cloud Platform uses NAT Gateways as its external IP Endpoints.</p>
+<p>The IP addresses for the clusters are as follows:</p>
+<h4 id="live-0-cluster">Live-0 Cluster</h4><div class="highlight"><pre class="highlight plaintext"><code>52.17.133.167
+34.251.93.81
+34.247.134.240
+</code></pre></div><h4 id="live-1-cluster">Live-1 Cluster</h4><div class="highlight"><pre class="highlight plaintext"><code>35.178.209.113
+3.8.51.207
+35.177.252.54
+</code></pre></div></p>
 
 
             

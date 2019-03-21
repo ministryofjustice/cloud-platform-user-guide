@@ -49,6 +49,13 @@ This file lists the partials which comprise the page, in the
 order in which they should appear. By convention, all such
 partials are in the `source/documentation` directory.
 
+These `source/[page name].html.md.erb` files have a 'weight' attribute
+which determines the order in which they will appear. Higher weights
+are further down in the list.
+
+For more information, see the [Tech Docs Template documentation][tech-docs-multipage]
+for a basic multipage site.
+
 ## Previewing
 
 We can preview our changes locally by running this command:
@@ -74,8 +81,15 @@ make build
 Then add, commit and push your changes (including the `docs`
 directory).
 
-Make sure to make changes in a branch, and issue a pull request
+Make your changes in a branch, and issue a pull request
 when you want them to be reviewed and published.
+
+We recommend making two separate commits for your changes - the first
+for your changes to the `source` directory, and then a separate commit
+adding the `docs` directory, after you run `make build`. This makes it
+easier for whoever is reviewing your commit, because they can focus on
+your 'source' commit (on the assumption that your 'docs' changes are
+simply a result of running the build process).
 
 Because we're using GitHub Pages, any changes merged into the `master`
 branch will be published automatically. Every change should be reviewed
@@ -83,4 +97,5 @@ in a pull request, no matter how minor, and we've enabled [branch
 protection][] to enforce this.
 
 [branch protection]: https://help.github.com/articles/about-protected-branches/
+[tech-docs-multipage]: https://tdt-documentation.london.cloudapps.digital/multipage.html#repo-folder-structure
 
