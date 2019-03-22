@@ -21,6 +21,7 @@ In each terraform module repository, you will find a directory named `example` w
 In your namespace's path in the [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments/) repository, create a directory called `resources` (if you have not created one already) and refer to the module's example to define your resources.
 
 Each example will have some global configuration defined, however, this should only be declared once, regardless of the number of modules used:
+
 ```
 terraform {
   backend "s3" {}
@@ -32,6 +33,7 @@ provider "aws" {
 ```
 
 Additionally, some example might define variables; again, these should only be declared once per namespace:
+
 ```
 variable "cluster_name" {}
 
