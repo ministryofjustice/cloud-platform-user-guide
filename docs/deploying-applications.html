@@ -691,21 +691,17 @@ metadata:
 </ul>
 <p><h3 id="usage">Usage</h3><p>In each terraform module repository, you will find a directory named <code>example</code> which includes sample configuration for use in Cloud Platform.</p>
 <p>In your namespace&rsquo;s path in the <a href="https://github.com/ministryofjustice/cloud-platform-environments/">cloud-platform-environments</a> repository, create a directory called <code>resources</code> (if you have not created one already) and refer to the module&rsquo;s example to define your resources.</p>
-<p>Each example will have some global configuration defined, however, this should only be declared once, regardless of the number of modules used:
-&ldquo;<code>
-terraform {
-  backend &amp;quot;s3&amp;rdquo; {}
-}&lt;/p&gt;
-&lt;p&gt;provider &amp;ldquo;aws&amp;rdquo; {
-  region = &amp;ldquo;eu-west-1&amp;rdquo;
+<p>Each example will have some global configuration defined, however, this should only be declared once, regardless of the number of modules used:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>terraform {
+  backend &quot;s3&quot; {}
+}</p>
+<p>provider &quot;aws&quot; {
+  region = &quot;eu-west-1&quot;
 }
-&amp;ldquo;</code></p>
-<p>Additionally, some example might define variables; again, these should only be declared once per namespace:
-&rdquo;<code>
-variable &amp;ldquo;cluster_name&amp;rdquo; {}&lt;/p&gt;
-&lt;p&gt;variable &amp;ldquo;cluster_state_bucket&amp;rdquo; {}
-&amp;ldquo;</code></p>
-<p>The main README file of each module repository will list all the available configuration options that can be passed to the module.</p>
+</code></pre></div><p>Additionally, some example might define variables; again, these should only be declared once per namespace:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>variable &quot;cluster_name&quot; {}</p>
+<p>variable &quot;cluster_state_bucket&quot; {}
+</code></pre></div><p>The main README file of each module repository will list all the available configuration options that can be passed to the module.</p>
 <h4 id="outputs">Outputs</h4><p>Each module will have its own outputs. These expose useful information, such as endpoints, credentials etc. The module examples all use a common approach: they employ the <code>kubernetes_secret</code> terraform resource to push the outputs straight into your environment in the form of a <code>Secret</code> which you could then extract information from or directly reference in <code>Pods</code>.</p>
 <p>This is currently the only supported way of accessing terraform outputs.</p>
 <h4 id="versioning">Versioning</h4><p>All modules are versioned. This allows us to implement changes without breaking existing resources. To use a specific version of a module you need to define it in the <code>source</code> attribute by specifying the <code>ref</code> attribute in the query string of the source URL:</p>
