@@ -1,6 +1,9 @@
 version: 2
 jobs:
   build:
+    branches:
+      only:
+        - build-pipeline
     docker:
       - image: ministryofjustice/cloud-platform-user-guide:1.0
         environment:
