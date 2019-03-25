@@ -97,7 +97,7 @@
     <a href="/#cloud-platform-user-guide">Cloud platform user guide</a>
     <ul>
       <li>
-        <a href="/#overview">Overview</a>
+        <a href="/#cloud-platform-user-guide-overview">Overview</a>
       </li>
     </ul>
   </li>
@@ -195,6 +195,9 @@
       </li>
       <li>
         <a href="/other-topics.html#ip-whitelisting">IP Whitelisting</a>
+      </li>
+      <li>
+        <a href="/other-topics.html#ecr-lifecycle-policy">ECR Lifecycle Policy</a>
       </li>
     </ul>
   </li>
@@ -429,7 +432,11 @@ Please <a href="http://goo.gl/msfGiS">create a support ticket</a>.</p></p>
 </code></pre></div><h4 id="live-1-cluster">Live-1 Cluster</h4><div class="highlight"><pre class="highlight plaintext"><code>35.178.209.113
 3.8.51.207
 35.177.252.54
-</code></pre></div></p>
+</code></pre></div>
+<h2 id="ecr-lifecycle-policy">ECR Lifecycle Policy</h2><h3 id="overview">Overview</h3><p>ECR repositories created for use in the Cloud Platform will have a default lifecycle policy applied.</p>
+<p>Due to some applications having a constant rate of images being pushed to their ECR repo, we found that the AWS limit of 1000 images was being hit by some teams.</p>
+<p>After consulting with application teams, we decided to implement a lifecycle policy of <em>40 images</em> per ECR repo.</p>
+<p>If you feel that you have a need to archive more than the last 40 images, please contact the Cloud Platform team, who can adjust or remove the lifecycle policy.</p></p>
 
 
             
