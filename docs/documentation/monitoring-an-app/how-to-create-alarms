@@ -70,6 +70,9 @@
 <p>You can view the applied rules with the following command:</p>
 <div class="highlight"><pre class="highlight shell"><code>kubectl <span class="nt">-n</span> &lt;namespace&gt; describe prometheusrules prometheus-custom-rules-&lt;application_name&gt;
 </code></pre></div><h3 id="prometheusrule-examples">PrometheusRule examples</h3><p>If you&rsquo;re struggling for ideas on how and which alerts to setup, please see some examples <a href="https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/resources/prometheusrule-examples/application-alerts.yaml">here</a>.</p>
+<h3 id="advisory-note-prometheusrules-status-incase-of-dr-requirement-for-a-new-prometheus-install">Advisory Note: PrometheusRules status incase of DR/requirement for a new Prometheus Install</h3><p>The  <code>PrometheusRule</code> is a <a href="https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#customresourcedefinitions">CRD</a> that declaratively defines a desired Prometheus rule to be consumed by Prometheus and applied using a YAML file. However, if for any reason Prometheus has to be uninstalled, <code>all PrometheusRules are removed with the CRD.</code></p>
+<p>We recommend all PrometheusRules to be added to the <a href="https://github.com/ministryofjustice/cloud-platform-environments">Environments Repo</a> within the namespace folder the rules refer to. This will ensure all rules are applied/present, as it will part of the namespace pipeline.</p>
+<p>PrometheusRules can still be tested/amended/applied manually, then a PR can be created to add to the Environments Repo when ready.</p>
 <h3 id="further-reading">Further reading</h3>
 <ul>
 <li><a href="https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/getting-started.md">Prometheus Operator - Getting Started</a></li>
