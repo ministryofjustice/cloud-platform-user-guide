@@ -1,8 +1,11 @@
 IMAGE := cloud-platform-user-guide
 DOMAIN := user-guide.cloud-platform.service.justice.gov.uk
+VERSION := 1.0
 
 .built-docker-image: Dockerfile Gemfile
 	docker build -t $(IMAGE) .
+	docker tag $(IMAGE) ministryofjustice/$(IMAGE):$(VERSION)
+	docker push ministryofjustice/$(IMAGE):$(VERSION)
 	touch .built-docker-image
 
 server: .built-docker-image
