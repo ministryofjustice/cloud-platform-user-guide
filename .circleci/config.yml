@@ -1,0 +1,15 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: ministryofjustice/cloud-platform-user-guide:1.0
+        environment:
+          DOMAIN: user-guide-compiled.cloud-platform.service.justice.gov.uk
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - run: bundle exec middleman build --build-dir docs
+      - run: touch docs/.nojekyll
+      - run: echo $(DOMAIN) > docs/CNAME
