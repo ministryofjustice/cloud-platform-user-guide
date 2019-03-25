@@ -15,4 +15,4 @@ jobs:
       - checkout
       - run: bundle exec middleman build --build-dir docs
       - run: touch docs/.nojekyll
-      - run: echo $(DOMAIN) > docs/CNAME
+      - run: echo ${DOMAIN} > docs/CNAME
