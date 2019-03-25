@@ -89,6 +89,16 @@ kubectl -n <namespace> describe prometheusrules prometheus-custom-rules-<applica
 ### PrometheusRule examples
 If you're struggling for ideas on how and which alerts to setup, please see some examples [here](https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/resources/prometheusrule-examples/application-alerts.yaml).
 
+### Advisory Note: PrometheusRules status incase of DR/requirement for a new Prometheus Install
+
+The  `PrometheusRule` is a [CRD](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#customresourcedefinitions) that declaratively defines a desired Prometheus rule to be consumed by Prometheus and applied using a YAML file. However, if for any reason Prometheus has to be uninstalled, `all PrometheusRules are removed with the CRD.`
+
+We recommend all PrometheusRules to be added to the [Environments Repo](https://github.com/ministryofjustice/cloud-platform-environments) within the namespace folder the rules refer to. This will ensure all rules are applied/present, as it will part of the namespace pipeline. 
+
+PrometheusRules can still be tested/amended/applied manually, then a PR can be created to add to the Environments Repo when ready. 
+
+
+
 ### Further reading
 - [Prometheus Operator - Getting Started](https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/getting-started.md)
 - [Alerting](https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/alerting.md)
