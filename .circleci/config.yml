@@ -3,7 +3,7 @@ jobs:
   build:
     branches:
       only:
-        - build-pipeline
+        - master
     docker:
       # This docker image is created from the Dockerfile in
       # this repository.
