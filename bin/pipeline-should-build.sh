@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Our build pipeline should NOT build the project
 # if the only changes are to files in the 'docs'
