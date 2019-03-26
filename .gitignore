@@ -1,3 +1,4 @@
 .bundle
 .DS_Store
 .built-docker-image
+docs
