@@ -15,6 +15,16 @@ jobs:
     working_directory: ~/repo
 
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            # this SSH key must be configured in the account of the github user
+            # who will be pushing changes. The corresponding private key must
+            # be added to the project on circleci.com
+            # Currently, this is the 'cloud-platform-moj' github user account.
+            # The GitHub user must be added to the cloud-platform-user-guide
+            # repository as an admin.
+            - "b4:43:a7:ce:06:8d:ef:4e:11:71:de:75:65:6c:fa:a2"
+
       - checkout
       - run: bundle exec middleman build --build-dir docs
       - run: touch docs/.nojekyll
