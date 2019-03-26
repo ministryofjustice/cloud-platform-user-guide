@@ -9,7 +9,8 @@ jobs:
       # this repository.
       - image: ministryofjustice/cloud-platform-user-guide
         environment:
-          DOMAIN: user-guide-compiled.cloud-platform.service.justice.gov.uk
+          # This is the domain on which the user guide is served
+          DOMAIN: user-guide.cloud-platform.service.justice.gov.uk
 
     working_directory: ~/repo
 
