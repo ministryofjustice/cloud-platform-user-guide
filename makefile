@@ -15,6 +15,10 @@ server: .built-docker-image
 		-it \
 		$(IMAGE) bundle exec middleman server
 
+# The CircleCI build pipeline does this, so it should never
+# be necessary to run this task. I'm leaving it here for
+# reference, and in case we ever need to push changes
+# manually.
 build: .built-docker-image
 	docker run \
 		-v $$(pwd)/source:/app/source \
