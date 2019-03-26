@@ -35,8 +35,11 @@ make changes to the source files.
 
 ## Making changes
 
-To make changes, edit the appropriate Markdown and ERB files in the
-`source` directory.
+To make changes, create a branch and edit the appropriate Markdown
+and ERB files in the `source` directory.
+
+Every change should be reviewed in a pull request, no matter how
+minor, and we've enabled [branch protection][] to enforce this.
 
 GDS Tech Docs (and therefore this site) uses [kramdown][] for its
 Markdown processing.
@@ -65,8 +68,14 @@ for a basic multipage site.
 
 ## Publishing changes
 
-When you have made your changes, prepare them for publishing by
-running:
+There is a [CircleCI][] build pipeline which will publish your
+changes automatically, when your branch is merged into `master`
+
+So, you should not need to do anything else in order to update
+the user guide website.
+
+In the event that there is a problem with [CircleCI][], you can
+run the build stage manually:
 
 ```bash
 make build
@@ -75,21 +84,7 @@ make build
 Then add, commit and push your changes (including the `docs`
 directory).
 
-Make your changes in a branch, and issue a pull request
-when you want them to be reviewed and published.
-
-We recommend making two separate commits for your changes - the first
-for your changes to the `source` directory, and then a separate commit
-adding the `docs` directory, after you run `make build`. This makes it
-easier for whoever is reviewing your commit, because they can focus on
-your 'source' commit (on the assumption that your 'docs' changes are
-simply a result of running the build process).
-
-Because we're using GitHub Pages, any changes merged into the `master`
-branch will be published automatically. Every change should be reviewed
-in a pull request, no matter how minor, and we've enabled [branch
-protection][] to enforce this.
-
 [branch protection]: https://help.github.com/articles/about-protected-branches/
 [tech-docs-multipage]: https://tdt-documentation.london.cloudapps.digital/multipage.html#repo-folder-structure
+[CircleCI]: https://circleci.com
 
