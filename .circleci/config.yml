@@ -32,6 +32,14 @@ jobs:
         # then starts a new build because it sees changes to the repo. This script tests for that, and
         # exits with an error if the build should not proceed.
       - run: bin/pipeline-should-build.sh
+
+        # Build the user guide
       - run: bundle exec middleman build --build-dir docs
+
+        # Replace docs/.nojekyll (which gets deleted during the build process) so github knows we're
+        # not using jekyll. Without this, github will try to process our files, and error.
       - run: touch docs/.nojekyll
+
+        # Replace the docs/CNAME file (which gets deleted during the build process)
       - run: echo ${DOMAIN} > docs/CNAME
+
