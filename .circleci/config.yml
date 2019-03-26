@@ -5,7 +5,9 @@ jobs:
       only:
         - build-pipeline
     docker:
-      - image: ministryofjustice/cloud-platform-user-guide:1.0
+      # This docker image is created from the Dockerfile in
+      # this repository.
+      - image: ministryofjustice/cloud-platform-user-guide
         environment:
           DOMAIN: user-guide-compiled.cloud-platform.service.justice.gov.uk
 
