@@ -1,8 +1,29 @@
-<h2 id="applying-a-maintenance-page">Applying a Maintenance Page</h2><h3 id="overview">Overview</h3><p>This document will serve as a guide on how to apply a default maintenance page to your application on the Cloud Platform.</p>
-<h3 id="deploying-the-page">Deploying the page</h3><p>A repository has been created to store all the files related to the maintenance page: <a href="https://github.com/ministryofjustice/cloud-platform-maintenance-page">cloud-platform-maintenance-page</a></p>
-<p>The repository contains the manifest files needed to deploy a standard maintenance page into your namespace. This directory also contains the maintenance page HTML file, along with a DockerFile to compile an image.</p>
-<p>Within the <code>Kubectl_deploy</code> directory, there are 3 simple manifest files that make up the deployment, <code>deploy.yaml</code>, <code>ingress.yaml</code> and <code>service.yaml</code>.</p>
-<p>You must remove your applications current ingress file from the namespace before applying this page.</p>
-<h4 id="maintenance-deploy-yaml">maintenance-deploy.yaml</h4><p>A notable part of this file is the <code>image</code> line, which points to the ECR URI.</p>
-<p>If you wish to customize the maintenance page, you must edit and build the image and update the <code>image</code> value.</p>
-<h4 id="maintenance-ingress-yaml">maintenance-ingress.yaml</h4><p>In this file, change the example <code>host</code> field to your applications URL.</p>
+<h2 id="applying-a-maintenance-page">Applying a Maintenance Page</h2><h3 id="overview">Overview</h3><p>This document will serve as a guide on how to apply a default
+maintenance page to your application on the Cloud Platform.</p>
+<h3 id="deploying-the-page">Deploying the page</h3><p>A repository has been created to store all the files related to the
+maintenance page:</p>
+<p><a href="https://github.com/ministryofjustice/cloud-platform-maintenance-page">cloud-platform-maintenance-page</a></p>
+<p>The repository contains the manifest files needed to deploy a
+standard maintenance page into your namespace. This directory also
+contains the maintenance page HTML file, along with a DockerFile
+to build an image to serve the maintenance page.</p>
+<p>Within the <code>Kubectl_deploy</code> directory, there are 3 simple manifest
+files that make up the deployment, <code>deploy.yaml</code>, <code>ingress.yaml</code>
+and <code>service.yaml</code>.</p>
+<p>To use this example, copy the files into your namespace and make
+any changes you require, to tailor the maintenance page to your
+service.</p>
+<p>Once you have done this, the maintenance page will be deployed
+into your namespace, ready for you to use as and when you need
+it.</p>
+<h4 id="maintenance-deploy-yaml">maintenance-deploy.yaml</h4><p>A notable part of this file is the <code>image</code> line, which points to
+the ECR URI.</p>
+<p>If you wish to customize the maintenance page, you must edit and
+build the image and update the <code>image</code> value.</p>
+<h4 id="maintenance-ingress-yaml">maintenance-ingress.yaml</h4><p>In this file, change the example <code>host</code> field to your applications
+URL.</p>
+<p>Rather than using this file, you may prefer to change your existing
+<code>Ingress</code> so that the <code>backend</code> points to your maintenance page,
+whenever you need to replace your service with the maintenance page.</p>
+<p>This will ensure that you do not incur any downtime (by deleting
+the previous ingress and creating a new one).</p>
