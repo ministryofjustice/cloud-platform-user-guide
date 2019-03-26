@@ -43,3 +43,12 @@ jobs:
         # Replace the docs/CNAME file (which gets deleted during the build process)
       - run: echo ${DOMAIN} > docs/CNAME
 
+        # Set git user credentials (otherwise the git push will fail)
+      - run: git config credential.helper cache
+      - run: git config user.email "platforms+githubuser@digital.justice.gov.uk"
+      - run: git config user.name "MoJ Cloud Platform Team Machine User"
+
+        # Add and push the compiled static files
+      - run: git add docs -f
+      - run: git commit -m 'Publish changes via CircleCI'
+      - run: git push origin master
