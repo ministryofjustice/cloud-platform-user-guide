@@ -15,18 +15,19 @@ maintenance page:
 The repository contains the manifest files needed to deploy a
 standard maintenance page into your namespace. This directory also
 contains the maintenance page HTML file, along with a DockerFile
-to compile an image.
+to build an image to serve the maintenance page.
 
 Within the `Kubectl_deploy` directory, there are 3 simple manifest
 files that make up the deployment, `deploy.yaml`, `ingress.yaml`
 and `service.yaml`.
 
-You must remove your applications current ingress file from the
-namespace before applying this page.
-
 To use this example, copy the files into your namespace and make
 any changes you require, to tailor the maintenance page to your
 service.
+
+Once you have done this, the maintenance page will be deployed
+into your namespace, ready for you to use as and when you need
+it.
 
 #### maintenance-deploy.yaml
 
@@ -41,9 +42,10 @@ build the image and update the `image` value.
 In this file, change the example `host` field to your applications
 URL.
 
-You may prefer to change your existing `Ingress` so that the `backend`
-points to your maintenance page, rather than copying the example
-`Ingress` file. This will ensure that the hostname is correct, and
-that you do not incur any downtime (by deleting the previous ingress
-and creating a new one).
+Rather than using this file, you may prefer to change your existing
+`Ingress` so that the `backend` points to your maintenance page,
+whenever you need to replace your service with the maintenance page.
+
+This will ensure that you do not incur any downtime (by deleting
+the previous ingress and creating a new one).
 
