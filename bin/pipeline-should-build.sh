@@ -14,7 +14,7 @@ main() {
   local readonly files=$(files_in ${commit})
 
   if [ -z "${files// }" ]; then
-    # The commit changes no files, so exit with success and continue the build
+    echo "Commit changed no files (merge commit?). Proceeding with build."
     return
   else
     # Some files changed by commit. We want to fail out if only docs files were changed
@@ -22,13 +22,12 @@ main() {
       if [[ $f =~ ^docs ]]; then
         true
       else
-        # Commit changed a file which is not in the docs directory, so exit with success
-        # and continue the build
+        echo "Commit changed a file which is not in the docs directory. Proceeding with build."
         return
       fi
     done
 
-    # Only docs files were changed. Exit with a failure code so we do not continue the build
+    echo "Commit only changed files in the docs directory. Build should not proceed."
     exit 1
   fi
 }
