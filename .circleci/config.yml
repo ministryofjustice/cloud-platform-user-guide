@@ -26,6 +26,12 @@ jobs:
             - "b4:43:a7:ce:06:8d:ef:4e:11:71:de:75:65:6c:fa:a2"
 
       - checkout
+
+        # Don't build and push if the latest commit only includes changes to the compiled static files.
+        # This prevents circleci from going into an endless loop, where it pushes changes to docs/ and
+        # then starts a new build because it sees changes to the repo. This script tests for that, and
+        # exits with an error if the build should not proceed.
+      - run: bin/pipeline-should-build.sh
       - run: bundle exec middleman build --build-dir docs
       - run: touch docs/.nojekyll
       - run: echo ${DOMAIN} > docs/CNAME
