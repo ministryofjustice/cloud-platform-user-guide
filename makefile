@@ -4,9 +4,11 @@ VERSION := 1.0
 
 .built-docker-image: Dockerfile Gemfile
 	docker build -t $(IMAGE) .
+	touch .built-docker-image
+
+docker-push: .built-docker-image
 	docker tag $(IMAGE) ministryofjustice/$(IMAGE)
 	docker push ministryofjustice/$(IMAGE)
-	touch .built-docker-image
 
 server: .built-docker-image
 	docker run \

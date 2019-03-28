@@ -84,7 +84,15 @@ make build
 Then add, commit and push your changes (including the `docs`
 directory).
 
+## Updating the docker image
+
+If you need to make any changes to the docker image (i.e. if you make any
+changes to the Dockerfile or Gemfile), please run `make docker-push` to update
+the image on [Docker Hub][] (You will need to [login to
+dockerhub][docker-login] first).
+
 [branch protection]: https://help.github.com/articles/about-protected-branches/
 [tech-docs-multipage]: https://tdt-documentation.london.cloudapps.digital/multipage.html#repo-folder-structure
 [CircleCI]: https://circleci.com
-
+[Docker Hub]: https://hub.docker.com/
+[docker-login]: https://docs.docker.com/engine/reference/commandline/login/
