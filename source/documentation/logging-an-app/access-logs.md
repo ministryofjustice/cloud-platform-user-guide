@@ -8,7 +8,7 @@ This document is intended to assist engineers in accessing application and syste
 
 The Cloud Platform collects, indexes and presents your application and system log data enabling you to query using Kibana’s standard query language (based on Lucene query syntax).
 
-To access Kibana, follow the appropriate link below:
+To access Kibana, follow the appropriate link below and authenticate with your GitHub credentials:
 
 #### Live-1 Cluster
 https://kibana.apps.live-1.cloud-platform.service.justice.gov.uk/_plugin/kibana/
