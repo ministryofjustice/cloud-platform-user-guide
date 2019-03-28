@@ -11,10 +11,10 @@ The Cloud Platform collects, indexes and presents your application and system lo
 To access Kibana, follow the appropriate link below and authenticate with your GitHub credentials:
 
 #### Live-1 Cluster
-https://kibana.apps.live-1.cloud-platform.service.justice.gov.uk/_plugin/kibana/
+[https://kibana.apps.live-1.cloud-platform.service.justice.gov.uk/plugin/kibana/](https://kibana.apps.live-1.cloud-platform.service.justice.gov.uk/_plugin/kibana/)
 
 #### Live-0 Cluster 
-https://kibana.apps.cloud-platform-live-0.k8s.integration.dsd.io/_plugin/kibana/
+[https://kibana.apps.cloud-platform-live-0.k8s.integration.dsd.io/plugin/kibana/](https://kibana.apps.cloud-platform-live-0.k8s.integration.dsd.io/_plugin/kibana/)
 
 ### Using Kibana
 
