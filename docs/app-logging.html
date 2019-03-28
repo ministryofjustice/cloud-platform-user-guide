@@ -6,12 +6,12 @@
     <meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
       <meta name="robots" content="noindex">
 
-    <title>Cloud Platform User Guide</title>
+    <title>Application Logging | Cloud Platform User Guide</title>
 
     <!--[if gt IE 8]><!--><link href="/stylesheets/screen.css" rel="stylesheet" media="screen" /><!--<![endif]-->
     <!--[if lte IE 8]><link href="/stylesheets/screen-old-ie.css" rel="stylesheet" media="screen" /><![endif]-->
 
-    <link rel="canonical" href="https://user-guide.cloud-platform.service.justice.gov.uk/">
+    <link rel="canonical" href="https://user-guide.cloud-platform.service.justice.gov.uk/app-logging.html">
 
 
     <link href="/stylesheets/print.css" rel="stylesheet" media="print" />
@@ -19,14 +19,14 @@
 
       <meta property="og:image" content="https://user-guide.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
       <meta property="og:site_name" content="Cloud Platform User Guide" />
-      <meta property="og:title" content="Cloud Platform User Guide" />
+      <meta property="og:title" content="Application Logging" />
       <meta property="og:type" content="object" />
-      <meta property="og:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/" />
+      <meta property="og:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/app-logging.html" />
       <meta property="twitter:card" content="summary" />
       <meta property="twitter:domain" content="user-guide.cloud-platform.service.justice.gov.uk" />
       <meta property="twitter:image" content="https://user-guide.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
-      <meta property="twitter:title" content="Cloud Platform User Guide" />
-      <meta property="twitter:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/" />
+      <meta property="twitter:title" content="Application Logging | Cloud Platform User Guide" />
+      <meta property="twitter:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/app-logging.html" />
 
     
   </head>
@@ -52,7 +52,7 @@
 
         <nav id="navigation" class="header__navigation js-nav" aria-label="Top Level Navigation" aria-hidden="true">
           <ul>
-              <li class="active">
+              <li>
                 <a href="/">Documentation</a>
               </li>
               <li>
@@ -97,7 +97,7 @@
     <a href="/#cloud-platform-user-guide">Cloud platform user guide</a>
     <ul>
       <li>
-        <a href="/#overview">Overview</a>
+        <a href="/#cloud-platform-user-guide-overview">Overview</a>
       </li>
     </ul>
   </li>
@@ -241,18 +241,33 @@
 
         <div class="app-pane__content toc-open-disabled">
           <main id="content" class="technical-documentation" data-module="anchored-headings">
-              <p><h1 id="cloud-platform-user-guide">Cloud platform user guide</h1><h2 id="overview">Overview</h2><p>The Ministry of Justice cloud platform is a platform for hosting services developed for the Ministry of Justice. The platform manages the infrastructure that your application runs on and provides tooling for teams to deploy and manage their applications on that infrastructure.</p>
-<h3 id="who-is-the-platform-for">Who is the platform for</h3><p>The platform is for teams working anywhere in the Ministry of Justice that need to run software applications. To get started you need to be part of a team in the Ministry of Justice GitHub organisation. Once you are, you can start to deploy applications using the guides below.</p>
-<h3 id="what-do-we-currently-support">What do we currently support</h3><p>Users can create non-production and production environments and get access to the Kubernetes API for those environments.</p>
-<h3 id="help-and-support">Help and support</h3><p>For help or support, drop into the MoJ Digital slack channel <code>#ask-cloud-platform</code>, raise an issue on the <a href="https://github.com/ministryofjustice/cloud-platform">Ministry of Justice cloud-platform</a> repo, or email the cloud platform team <code>platforms@digital.justice.gov.uk</code>.</p></p>
+              <h1 id="application-logging">Application Logging</h1>
+<p><h2 id="application-log-collection-and-storage">Application Log Collection and Storage</h2><h3 id="overview">Overview</h3><p>The Cloud Platform supports the ability for application logs to be collected, stored, and accessed.</p>
+<p>Logs are collected automatically, via Fluentd, stored in an AWS-Hosted ElasticSearch Cluster, and accessed via AWS-Hosted Kibana dashboard.</p>
+<h3 id="log-collection">Log Collection</h3><p>Fluentd is a cluster-wide log collection service that runs in it&rsquo;s own dedicated environment.</p>
+<p>The Fluentd application is configured with cluster-wide read permissions. The only requirement for Fluentd to start automatically collecting your application&rsquo;s logs is to have your application output logs to <code>stdout</code>.</p>
+<h3 id="log-storage">Log Storage</h3><p>As an application engineer, you won&rsquo;t really need to pay much attention to how the logs are stored, as this is handled by the Cloud Platform team.</p>
+<p>The logs are shipped from Fluentd and stored in an AWS-Hosted ElasticSearch cluster. All application logs are retained for 30 days, before being curated for deletion.</p></p>
+<p><h2 id="accessing-application-log-data">Accessing Application Log Data</h2><h3 id="accessing-application-log-data-overview">Overview</h3><p>This document is intended to assist engineers in accessing application and system logs stored in a centralized Elasticsearch cluster.</p>
+<h3 id="access-kibana">Access Kibana</h3><p>The Cloud Platform collects, indexes and presents your application and system log data enabling you to query using Kibana’s standard query language (based on Lucene query syntax).</p>
+<p>To access Kibana, follow the appropriate link below and authenticate with your GitHub credentials:</p>
+<h4 id="live-1-cluster">Live-1 Cluster</h4><p><a href="https://kibana.apps.live-1.cloud-platform.service.justice.gov.uk/_plugin/kibana/">https://kibana.apps.live-1.cloud-platform.service.justice.gov.uk/plugin/kibana/</a></p>
+<h4 id="live-0-cluster">Live-0 Cluster</h4><p><a href="https://kibana.apps.cloud-platform-live-0.k8s.integration.dsd.io/_plugin/kibana/">https://kibana.apps.cloud-platform-live-0.k8s.integration.dsd.io/plugin/kibana/</a></p>
+<h3 id="using-kibana">Using Kibana</h3><p>As a quick example, we will filter down to the logs of a particular environment.</p>
+<p>1) On the Kibana dashboard, select the &lsquo;Discover&rsquo; tab.</p>
+<p>2) Select &lsquo;Add a filter +&rsquo;</p>
+<p>3) Filter <code>kubernetes.namespace_name</code>, with operator <code>is</code> and the value equal to your environment name.</p>
+<p>More in-depth guides on using Kibana can be found below:</p>
+<p><a href="https://www.elastic.co/guide/en/kibana/6.3/search.html">https://www.elastic.co/guide/en/kibana/6.3/search.html</a></p>
+<p><a href="https://www.elastic.co/guide/en/beats/packetbeat/current/kibana-queries-filters.html">https://www.elastic.co/guide/en/beats/packetbeat/current/kibana-queries-filters.html</a></p></p>
 
 
             
           </main>
 
             <ul class="contribution-banner">
-              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/index.html.md.erb">View source</a></li>
-              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'Cloud%20Platform%20User%20Guide'&amp;body=Problem%20with%20'Cloud%20Platform%20User%20Guide'%20(https://user-guide.cloud-platform.service.justice.gov.uk/)">Report problem</a></li>
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/app-logging.html.md.erb">View source</a></li>
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'Application%20Logging'&amp;body=Problem%20with%20'Application%20Logging'%20(https://user-guide.cloud-platform.service.justice.gov.uk/app-logging.html)">Report problem</a></li>
               <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub Repo</a></li>
             </ul>
 

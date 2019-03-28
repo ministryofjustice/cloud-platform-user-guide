@@ -164,6 +164,19 @@
 </ul>
 <ul>
   <li>
+    <a href="/app-logging.html#application-logging">Application Logging</a>
+    <ul>
+      <li>
+        <a href="/app-logging.html#application-log-collection-and-storage">Application Log Collection and Storage</a>
+      </li>
+      <li>
+        <a href="/app-logging.html#accessing-application-log-data">Accessing Application Log Data</a>
+      </li>
+    </ul>
+  </li>
+</ul>
+<ul>
+  <li>
     <a href="/other-topics.html#other-topics">Other Topics</a>
     <ul>
       <li>
@@ -174,9 +187,6 @@
       </li>
       <li>
         <a href="/other-topics.html#kubectl-quick-reference">Kubectl quick reference</a>
-      </li>
-      <li>
-        <a href="/other-topics.html#how-to-access-my-log-data-using-kibana">How to access my log data using Kibana</a>
       </li>
       <li>
         <a href="/other-topics.html#kubernetes-basics-links-to-helpful-beginner-resources">Kubernetes Basics - Links to helpful beginner resources</a>
@@ -298,12 +308,6 @@ https://kubernetes.io/docs/tasks/debug-application-cluster/get-shell-running-con
 $ kubectl -n &lt;namespace&gt; port-forward &lt;pod&gt; 5000:5001
 </code>
 https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/</p></p>
-<p><h2 id="how-to-access-my-log-data-using-kibana">How to access my log data using Kibana</h2><h3 id="introduction">Introduction</h3><p>This document is intended to assist engineers in accessing application and system logs stored in a centralised Elasticsearch cluster. Using a combination of Fluentd, AWS&rsquo;s Elasticsearch cluster and Kibana the Cloud Platform collects, indexes and presents your application and system log data enabling you to query using Kibana’s standard query language (based on Lucene query syntax). All that&rsquo;s required is that your application writes to stdout.</p>
-<h3 id="quick-start">Quick start</h3><p>Live-0 cluster:
-<a href="https://kibana.apps.cloud-platform-live-0.k8s.integration.dsd.io/_plugin/kibana">https://kibana.apps.cloud-platform-live-0.k8s.integration.dsd.io/_plugin/kibana</a></p>
-<h3 id="how-to-get-my-data-into-elasticsearch">How to get my data into Elasticsearch</h3><p>As long as your application is writing to stdout, it&rsquo;ll be collected by fluentd and passed to the Elasticsearch cluster. Use one of the links above and authenticate with your GitHub username and password.</p>
-<h3 id="how-do-i-use-kibana">How do I use Kibana?</h3><p><a href="https://www.elastic.co/guide/en/kibana/6.3/search.html">https://www.elastic.co/guide/en/kibana/6.3/search.html</a></p>
-<p><a href="https://www.elastic.co/guide/en/beats/packetbeat/current/kibana-queries-filters.html">https://www.elastic.co/guide/en/beats/packetbeat/current/kibana-queries-filters.html</a></p></p>
 <p><h2 id="kubernetes-basics-links-to-helpful-beginner-resources">Kubernetes Basics - Links to helpful beginner resources</h2><p>The purpose of this page is to serve as a small catalogue of links to basic Kubernetes concepts and learning resources.</p>
 <h3 id="the-concept">The Concept</h3><p>Kubernetes is very often referred to as <strong>&ldquo;K8s&rdquo;</strong>, purely for the reason, that typing Kubernetes over and over gets quite taxing.</p>
 <p>If Kubernetes is a totally new concept to you, then firstly you should probably check out a few of the resources linked below:</p>
@@ -326,7 +330,7 @@ Here&rsquo;s a link that expalins that concept: <a href="https://kubernetes.io/d
 <h4 id="pluralsight">Pluralsight</h4><p><a href="https://www.pluralsight.com/courses/getting-started-kubernetes">https://www.pluralsight.com/courses/getting-started-kubernetes</a></p>
 <h4 id="udacity">Udacity</h4><p><a href="https://eu.udacity.com/course/scalable-microservices-with-kubernetes--ud615">https://eu.udacity.com/course/scalable-microservices-with-kubernetes&ndash;ud615</a></p></p>
 <p><h2 id="cloud-platform-support">Cloud Platform Support</h2><p><a href="https://docs.google.com/document/d/1M89TXQJIQAqu8yb2wzatlI8PgsXrgOi-GxLtB76XgjU/edit?usp=sharing">https://docs.google.com/document/d/1M89TXQJIQAqu8yb2wzatlI8PgsXrgOi-GxLtB76XgjU/edit?usp=sharing</a></p></p>
-<p><h2 id="zero-downtime-deployments">Zero Downtime Deployments</h2><h3 id="zero-downtime-deployments-introduction">Introduction</h3><p>Zero Downtime Deployments are a significant feature of the Cloud Platform, that bring a host of advantages.</p>
+<p><h2 id="zero-downtime-deployments">Zero Downtime Deployments</h2><h3 id="introduction">Introduction</h3><p>Zero Downtime Deployments are a significant feature of the Cloud Platform, that bring a host of advantages.</p>
 <h3 id="rolling-updates">Rolling Updates</h3><p>Rolling updates introduce the ability to update an application without any downtime.</p>
 <p>A rolling update works by ensuring there is always one extra Pod than the maximum number stated in the deployment.</p>
 <p>The new deployment is applied incrementally, usually one to two Pods at a time until all Pods are running the latest version. How the deployment is rolled out, can be configured by the user. More information about configuring a rolling update can be found <a href="https://kubernetes.io/docs/tasks/run-application/rolling-update-replication-controller/">here</a>.</p>
