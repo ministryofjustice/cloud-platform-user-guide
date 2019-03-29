@@ -6,14 +6,15 @@ The documentation for the modules lives in each module's repository and you can 
 
 ### Available modules
 
-- [ECR Repository](https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials)
-- [S3 Bucket](https://github.com/ministryofjustice/cloud-platform-terraform-s3-bucket)
-- [RDS instance](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance)
-- [Elasticache Redis Cluster](https://github.com/ministryofjustice/cloud-platform-terraform-elasticache-cluster)
-- [DynamoDB Table](https://github.com/ministryofjustice/cloud-platform-terraform-dynamodb-cluster)
-- [SNS Topic](https://github.com/ministryofjustice/cloud-platform-terraform-sns-topic)
-- [SQS Queue](https://github.com/ministryofjustice/cloud-platform-terraform-sqs)
-- [MQ Broker](https://github.com/ministryofjustice/cloud-platform-terraform-amq-broker)
+The updated list of terraform modules provided by the MoJ are available here : [Terraform Module](https://github.com/ministryofjustice/cloud-platform#terraform-modules)
+
+``` 
+ !!!  WARNING  !!!
+
+Be aware that the latest version of these modules will only be compatible with Live-1. 
+If you are planing on deploying them against Live-0, please read their respective README carefully for instruction.
+
+``` 
 
 ### Usage
 
