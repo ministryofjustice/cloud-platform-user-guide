@@ -29,13 +29,13 @@ Most of the time, your application's Dockerfile can be easily adapted by:
 Example: 
 
 ```yaml
-FROM busybox  
+FROM busybox
 
-RUN mkdir /opt/myFolder \  
-    adduser --disabled-password myNewUser -u 100 \   
-    chown -R myNewUser:myNewUser /opt/myFolder \  
+RUN mkdir -p /opt/myFolder &&\
+    adduser --disabled-password myNewUser -u 1001 &&\
+    chown -R myNewUser:myNewUser /opt/myFolder
 
-USER myNewUser  
+USER myNewUser
 
 CMD myApplication  
 ```
