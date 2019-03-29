@@ -1,7 +1,5 @@
 # Cloud platform user guide
 
-## Overview
-
 The Ministry of Justice cloud platform is a platform for hosting services
 developed for the Ministry of Justice. The platform manages the infrastructure
 that your application runs on and provides tooling for teams to deploy and
