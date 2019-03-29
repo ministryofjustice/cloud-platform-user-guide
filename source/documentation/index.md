@@ -11,8 +11,3 @@ The platform is for teams working anywhere in the Ministry of Justice that need 
 ### What do we currently support
 
 Users can create non-production and production environments and get access to the Kubernetes API for those environments.
-
-### Help and support
-
-For help or support, drop into the MoJ Digital slack channel `#ask-cloud-platform`, raise an issue on the [Ministry of Justice cloud-platform](https://github.com/ministryofjustice/cloud-platform) repo, or email the cloud platform team `platforms@digital.justice.gov.uk`.
-
