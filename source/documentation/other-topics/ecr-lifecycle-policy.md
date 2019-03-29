@@ -1,6 +1,6 @@
-## ECR Lifecycle Policy
+### ECR Lifecycle Policy
 
-### Overview
+#### Overview
 ECR repositories created for use in the Cloud Platform will have a default lifecycle policy applied.
 
 Due to some applications having a constant rate of images being pushed to their ECR repo, we found that the AWS limit of 1000 images was being hit by some teams.

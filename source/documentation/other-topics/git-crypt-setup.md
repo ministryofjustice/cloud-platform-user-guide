@@ -1,8 +1,8 @@
-## Git-Crypt
+### Git-Crypt
 
 We use `git-crypt` to ensure that application secrets are encrypted at rest in git.
 
-### Prerequisites
+#### Prerequisites
 
 1. Install [GPG](https://gnupg.org/)
 2. Install [git-crypt](https://www.agwa.name/projects/git-crypt/)
@@ -10,15 +10,15 @@ We use `git-crypt` to ensure that application secrets are encrypted at rest in g
 4. Push your public key to a key server: `gpg --send-keys PUBKEYID`
 6. Add the pubkey to your GitHub account, again, following [the documentation](https://help.github.com/articles/adding-a-new-gpg-key-to-your-github-account/)
 
-### Setup
+#### Setup
 
-- If the repository has not been setup before, please follow the [git-crypt documentation](https://github.com/AGWA/git-crypt#using-git-crypt) to do so.
+- If the repository has not been setup before, please follow the [git-crypt documentation](https://github.com/AGWA/git-crypt##using-git-crypt) to do so.
 
 otherwise,
 
 - Share your `PUBKEYID` with an existing member of the CloudPlatforms team. They will need to trust your key and add you to the repository (see git-crypt documentation above).
 
-### Usage
+#### Usage
 
 Once the above has been setup, update your local repository clone and unlock the secrets:
 

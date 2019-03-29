@@ -1,4 +1,4 @@
-## Kubectl quick reference
+### Kubectl quick reference
 
 This document acts as a quick reference to `kubectl`, listing some of the most common operations.
 
@@ -6,7 +6,7 @@ The examples here only address the most basic approach to these operations. For 
 
 There is also a more detailed [cheatsheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/) in the official kubernetes documentation.
 
-##### Inspecting running instances of the application
+###### Inspecting running instances of the application
 To list running `Pods`:
 ```
 $ kubectl -n <namespace> get pods
@@ -15,19 +15,19 @@ To view details for a `Pod`:
 ```
 $ kubectl -n <namespace> describe pod <pod>
 ```
-##### Viewing logs
+###### Viewing logs
 To access the logs of a running container:
 ```
 $ kubectl -n <namespace> logs <pod>
 ```
 
-##### Viewing kubernetes events
+###### Viewing kubernetes events
 To see kubernetes events, which can help debugging:
 ```
 $ kubectl -n <namespace> get events
 ```
 
-##### Container shell
+###### Container shell
 You can get a shell inside a running container:
 ```
 $ kubectl -n <namespace> exec -it <pod> sh
@@ -35,7 +35,7 @@ $ kubectl -n <namespace> exec -it <pod> sh
 https://kubernetes.io/docs/tasks/debug-application-cluster/get-shell-running-container/
 
 
-##### Pod port-forwarding
+###### Pod port-forwarding
 To forward port `5000` on `localhost` to port `5001` in the `Pod`:
 ```
 $ kubectl -n <namespace> port-forward <pod> 5000:5001
