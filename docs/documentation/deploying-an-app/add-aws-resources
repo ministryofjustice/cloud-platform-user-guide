@@ -1,17 +1,12 @@
 <h2 id="adding-aws-resources-to-your-environment">Adding AWS resources to your environment</h2><p>Through the <a href="https://github.com/ministryofjustice/cloud-platform-environments/">cloud-platform-environments</a> repository, you can provision AWS resources for your environments. This is done using terraform and more specifically, terraform modules we provide for use on the Cloud Platform.</p>
 <p>The documentation for the modules lives in each module&rsquo;s repository and you can find a list of the available ones below.</p>
-<h3 id="available-modules">Available modules</h3>
-<ul>
-<li><a href="https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials">ECR Repository</a></li>
-<li><a href="https://github.com/ministryofjustice/cloud-platform-terraform-s3-bucket">S3 Bucket</a></li>
-<li><a href="https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance">RDS instance</a></li>
-<li><a href="https://github.com/ministryofjustice/cloud-platform-terraform-elasticache-cluster">Elasticache Redis Cluster</a></li>
-<li><a href="https://github.com/ministryofjustice/cloud-platform-terraform-dynamodb-cluster">DynamoDB Table</a></li>
-<li><a href="https://github.com/ministryofjustice/cloud-platform-terraform-sns-topic">SNS Topic</a></li>
-<li><a href="https://github.com/ministryofjustice/cloud-platform-terraform-sqs">SQS Queue</a></li>
-<li><a href="https://github.com/ministryofjustice/cloud-platform-terraform-amq-broker">MQ Broker</a></li>
-</ul>
-<h3 id="usage">Usage</h3><p>In each terraform module repository, you will find a directory named <code>example</code> which includes sample configuration for use in Cloud Platform.</p>
+<h3 id="available-modules">Available modules</h3><p>The updated list of terraform modules provided by the MoJ are available here : <a href="https://github.com/ministryofjustice/cloud-platform#terraform-modules">Terraform Module</a></p>
+<div class="highlight"><pre class="highlight plaintext"><code> !!!  WARNING  !!!
+
+Be aware that the latest version of these modules will only be compatible with Live-1. 
+If you are planing on deploying them against Live-0, please read their respective README carefully for instruction.
+
+</code></pre></div><h3 id="usage">Usage</h3><p>In each terraform module repository, you will find a directory named <code>example</code> which includes sample configuration for use in Cloud Platform.</p>
 <p>In your namespace&rsquo;s path in the <a href="https://github.com/ministryofjustice/cloud-platform-environments/">cloud-platform-environments</a> repository, create a directory called <code>resources</code> (if you have not created one already) and refer to the module&rsquo;s example to define your resources.</p>
 <p>Each example will have some global configuration defined, however, this should only be declared once, regardless of the number of modules used:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>terraform {
