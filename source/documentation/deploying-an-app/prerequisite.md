@@ -17,18 +17,27 @@ It is important to understand that not being able to use root also implies that 
 
 ### How to adapt to the pod security policies
 
-Most of the time, your application's Dockerfile can be easily adapted by adding a `USER` clause in it.  
-First a user needs to be created, then we can tell the container to run as this user. 
+Most of the time, your application's Dockerfile can be easily adapted by:  
+
+ - Adding a `USER` clause in it.  
+
+ - Defining a UID for this user (>1)  
+
+ - Giving this user permission to access the files/directories the application requires.
+
 
 Example: 
 
-```
-FROM busybox
+```yaml
+FROM busybox  
 
-RUN adduser --disabled-password myNewUser
-USER myNewUser
+RUN mkdir /opt/myFolder \  
+    adduser --disabled-password myNewUser -u 100 \   
+    chown -R myNewUser:myNewUser /opt/myFolder \  
 
-CMD myApplication
+USER myNewUser  
+
+CMD myApplication  
 ```
 
 Note: The policies are only in effect after the container has started. Anything in the Dockerfile can be run as root (e.g. to install required software)
