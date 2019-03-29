@@ -250,25 +250,38 @@
 Two policies have been applied to the cluster, <em>restricted</em> and <em>privileged</em>.</p>
 <p>By default, any new environment/namespace on Live-1 will be assigned the <em>restricted</em> policy</p>
 <h3 id="impact">Impact</h3><p>The main impact of this <em>restricted</em> policy is that it prevents pods/containers from running as the root user.<br>
-The pod will be registered aginst Kubernetes, but will never be scheduled.<br>
+The pod will be registered against Kubernetes, but will never be scheduled.<br>
 A container&rsquo;s user is usually defined in its Dockerfile. If no user is explicitely specified in the Dockerfile, chances are that it will use root.</p>
 <p>It is important to understand that not being able to use root also implies that it is impossible to bind to a privileged port (e.g. 80, 443).</p>
-<h3 id="how-to-adapt-to-the-pod-security-policies">How to adapt to the pod security policies</h3><p>Most of the time, your application&rsquo;s Dockerfile can be easily adapted by adding a <code>USER</code> clause in it.<br>
-First a user needs to be created, then we can tell the container to run as this user.</p>
+<h3 id="how-to-adapt-to-the-pod-security-policies">How to adapt to the pod security policies</h3><p>Most of the time, your application&rsquo;s Dockerfile can be easily adapted by:</p></p>
+
+<ul>
+<li><p>Adding a <code>USER</code> clause in it.</p></li>
+<li><p>Defining a UID for this user (&gt;1)</p></li>
+<li><p>Giving this user permission to access the files/directories the application requires.</p></li>
+</ul>
+
 <p>Example:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>FROM busybox</p>
-<p>RUN adduser --disabled-password myNewUser
-USER myNewUser</p>
-<p>CMD myApplication
+
+<div class="highlight"><pre class="highlight yaml"><code><span class="s">FROM busybox</span>
+
+<span class="s">RUN mkdir -p /opt/myFolder &amp;&amp;\</span>
+    <span class="s">adduser --disabled-password myNewUser -u 1001 &amp;&amp;\</span>
+    <span class="s">chown -R myNewUser:myNewUser /opt/myFolder</span>
+
+<span class="s">USER myNewUser</span>
+
+<span class="s">CMD myApplication</span>
 </code></pre></div><p>Note: The policies are only in effect after the container has started. Anything in the Dockerfile can be run as root (e.g. to install required software)</p>
 <p>A more complete example can be found here :  <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/rails-app/Dockerfile">Dockerfile</a></p>
 <h4 id="adapting-the-nginx-image">Adapting the NGINX image</h4><p>Since NGINX binds itself to a privileged port by default, it will not be able to run as-is with the <em>restricted</em> policy.</p>
 <p>The cloud-platform team will update this page with relevant documentation regarding nginx, as soon as it is ready.<br>
-In the meantime, feel free to reach out to the cloud-platform team for help : <a href="/getting-help.html">Getting Help</a></p></p>
-<p><h2 id="deploying-a-39-hello-world-39-application-to-the-cloud-platform">Deploying a &lsquo;Hello World&rsquo; application to the Cloud Platform</h2><p><a href="../images/k8s-cluster-application-deployment-process.png" target="_blank" rel="noopener noreferrer"><img src="/images/k8s-cluster-application-deployment-process.png" alt="Deployment Process Diagram" /></a></p>
+In the meantime, feel free to reach out to the cloud-platform team for help : <a href="/getting-help.html">Getting Help</a></p>
+
+<h2 id="deploying-a-39-hello-world-39-application-to-the-cloud-platform">Deploying a &lsquo;Hello World&rsquo; application to the Cloud Platform</h2><p><a href="../images/k8s-cluster-application-deployment-process.png" target="_blank" rel="noopener noreferrer"><img src="/images/k8s-cluster-application-deployment-process.png" alt="Deployment Process Diagram" /></a></p>
 <h3 id="overview">Overview</h3><p>The aim of this guide is to walkthrough the process of deploying an application into the Cloud Platform.</p>
 <p>This guide uses a pre-configured <a href="https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app">&ldquo;Hello World&rdquo; application</a> as an example of how to deploy your own. This application merely returns a static HTML response, and has no dependencies. Later examples will use more representative applications.</p>
-<p>The process we will follow consists of the following stages:</p></p>
+<p>The process we will follow consists of the following stages:</p>
 
 <ul>
 <li>Build a docker image from the demo application</li>
@@ -276,9 +289,7 @@ In the meantime, feel free to reach out to the cloud-platform team for help : <a
 <li>Edit kubernetes config files</li>
 <li>Apply the config files to make the cluster run our application</li>
 </ul>
-
 <p>The process of building an image and pushing it to an ECR will normally be carried out by a build pipeline. For this initial walkthrough, we will go through these steps manually. Later we will go through an example of setting up a <a href="https://circleci.com">CircleCI</a> job to do this automatically. The steps are similar if you&rsquo;re using other CI/CD tools such as <a href="https://travis-ci.org">TravisCI</a>.</p>
-
 <h3 id="prerequisites">Prerequisites</h3><p>This guide assumes the following:</p>
 
 <ul>
@@ -289,7 +300,6 @@ In the meantime, feel free to reach out to the cloud-platform team for help : <a
 <li>You have <a href="/getting-started.html#creating-an-ecr-repository">created an Amazon ECR</a> to host your docker image</li>
 </ul>
 <h3 id="step-1-build-your-docker-image">Step 1 - Build your docker image</h3>
-
 <ul>
 <li><p>Clone the <a href="https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app">demo application</a></p>
 <p>git clone https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app
@@ -297,18 +307,16 @@ In the meantime, feel free to reach out to the cloud-platform team for help : <a
 <li><p>Build the docker image</p>
 <p>docker build -t [ECR Team Name]/[ECR Repository Name] .</p></li>
 </ul>
-
 <p>The <code>ECR Team Name</code> and <code>ECR Repository Name</code> must match the <code>team_name</code> and <code>repo_name</code> values you entered when you created the ECR via <a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud-platform-environments</a> Github repository.</p>
-
 <p>You can find them in the file <code>namespaces/cloud-platform-live-0.k8s.integration.dsd.io/[YOUR ENVIRONMENT]/resources/ecr.tf</code>.</p>
-<p><h4 id="amazon-ecr-terminology">Amazon ECR Terminology</h4><p>Amazon ECR uses the terms <code>repository</code> and <code>image</code> in a rather confusing way. Normally, you would think of a docker image repository as holding mutiple images, each with a different name, where each image can have multiple tags. Amazon ECR conflates the repository and image - i.e. you can only push images with the same name to a given ECR.</p>
+<h4 id="amazon-ecr-terminology">Amazon ECR Terminology</h4><p>Amazon ECR uses the terms <code>repository</code> and <code>image</code> in a rather confusing way. Normally, you would think of a docker image repository as holding mutiple images, each with a different name, where each image can have multiple tags. Amazon ECR conflates the repository and image - i.e. you can only push images with the same name to a given ECR.</p>
 <p>So, if you created your ECR using the team_name <code>davids-dummy-team</code> and repo_name <code>davids-dummy-app</code>, then you can only push images to the ECR if they are named <code>davids-dummy-team/davids-dummy-app:[something]</code>. You are free to change the tag of the image (shown as [something], here), and some teams overload the tag value as a way to store multiple completely different docker images in a single ECR.</p>
 <h3 id="step-2-push-the-image-to-your-ecr">Step 2 - Push the image to your ECR</h3><h4 id="authenticating-to-your-docker-image-repository">Authenticating to your docker image repository</h4><p>You must authenticate to the docker image repository before you can push an image to it.</p>
 <p>To authenticate to your ECR, you will need the <code>access_key_id</code> and <code>secret_access_key</code> which were created for you when you created your ECR. To retrieve these, see the <a href="/getting-started.html#accessing-the-credentials">this section</a> of this guide.</p>
 <p><em>tl;dr</em> use this command:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>  kubectl -n [namespace_name] get secret [name of your secret] -o yaml
 </code></pre></div><p>Don&rsquo;t forget to base64 decode the <code>access_key_id</code> and <code>secret_access_key</code> values before using them.</p>
-<div class="highlight"><pre class="highlight plaintext"><code>  echo &#39;your_access_key_id_value&#39; | base64 --decode
+<div class="highlight"><pre class="highlight plaintext"><code>  echo 'your_access_key_id_value' | base64 --decode
 </code></pre></div><p>Once you have your <code>access_key_id</code> and <code>secret_access_key</code>, set up an AWS profile using the AWS cli tool.</p>
 <div class="highlight"><pre class="highlight plaintext"><code>  aws configure
 </code></pre></div><p>Supply your credentials when prompted.</p>
@@ -394,7 +402,7 @@ spec:
 </code></pre></div><p>You have to specify the namespace you want to deploy to, this should be the namespace of the environment you created.</p>
 <p>Confirm the deployment with:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>  kubectl get pods --namespace davids-dummy-dev
-</code></pre></div><h3 id="interacting-with-the-application">Interacting with the application</h3><p>With the application deployed into the Cloud Platform, there are a few ways of managing it:</p></p>
+</code></pre></div><h3 id="interacting-with-the-application">Interacting with the application</h3><p>With the application deployed into the Cloud Platform, there are a few ways of managing it:</p>
 
 <ul>
 <li><strong>View pods</strong> - <code>kubectl get pods --namespace davids-dummy-dev</code></li>
@@ -402,13 +410,9 @@ spec:
 <li><strong>Delete application</strong> - <code>kubectl delete --filename kubectl_deploy --namespace davids-dummy-dev</code></li>
 <li><strong>Shell into container</strong> - <code>kubectl exec --stdin --tty --namespace davids-dummy-dev [POD-NAME] -- /bin/sh</code></li>
 </ul>
-
 <p>For <code>[POD-NAME]</code> use the value returned by the <code>kubectl get pods...</code> command</p>
-
 <p><em>Tip:</em> You can find more about the <code>kubectl</code> command <a href="https://kubernetes.io/docs/reference/kubectl/overview/">here</a></p>
-
 <p>You should be able to view the app. at the following URL:</p>
-
 <div class="highlight"><pre class="highlight plaintext"><code>  curl -L http://helloworld-rubyapp.apps.cloud-platform-live-0.k8s.integration.dsd.io
 </code></pre></div><p>Don&rsquo;t forget to change <code>helloworld-rubyapp</code> to whatever hostname you chose earlier.</p>
 <p>Note: You need the <code>-L</code> flag to make curl follow the 308 redirect response that it will receive from the ingress controller. If you view the URL in a web browser, it should just work.</p>
