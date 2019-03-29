@@ -11,10 +11,11 @@ The updated list of terraform modules provided by the MoJ are available here : [
 ``` 
  !!!  WARNING  !!!
 
-Be aware that the latest version of these module will only be compatible with Live-1. 
+Be aware that the latest version of these modules will only be compatible with Live-1. 
 If you are planing on deploying them against Live-0, please read their respective README carefully for instruction.
 
 ``` 
+
 ### Usage
 
 In each terraform module repository, you will find a directory named `example` which includes sample configuration for use in Cloud Platform.
