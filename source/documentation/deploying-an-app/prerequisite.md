@@ -10,22 +10,31 @@ By default, any new environment/namespace on Live-1 will be assigned the _restri
 ### Impact 
 
 The main impact of this _restricted_ policy is that it prevents pods/containers from running as the root user.   
-The pod will be registered aginst Kubernetes, but will never be scheduled.  
+The pod will be registered against Kubernetes, but will never be scheduled.  
 A container's user is usually defined in its Dockerfile. If no user is explicitely specified in the Dockerfile, chances are that it will use root.  
 
 It is important to understand that not being able to use root also implies that it is impossible to bind to a privileged port (e.g. 80, 443).
 
 ### How to adapt to the pod security policies
 
-Most of the time, your application's Dockerfile can be easily adapted by adding a `USER` clause in it.  
-First a user needs to be created, then we can tell the container to run as this user. 
+Most of the time, your application's Dockerfile can be easily adapted by:  
+
+ - Adding a `USER` clause in it.  
+
+ - Defining a UID for this user (>1)  
+
+ - Giving this user permission to access the files/directories the application requires.
+
 
 Example: 
 
-```
+```yaml
 FROM busybox
 
-RUN adduser --disabled-password myNewUser
+RUN mkdir -p /opt/myFolder &&\
+    adduser --disabled-password myNewUser -u 1001 &&\
+    chown -R myNewUser:myNewUser /opt/myFolder
+
 USER myNewUser
 
 CMD myApplication
