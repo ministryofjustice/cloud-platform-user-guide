@@ -1,22 +1,22 @@
-## Adding AWS resources to your environment
+### Adding AWS resources to your environment
 
 Through the [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments/) repository, you can provision AWS resources for your environments. This is done using terraform and more specifically, terraform modules we provide for use on the Cloud Platform.
 
 The documentation for the modules lives in each module's repository and you can find a list of the available ones below.
 
-### Available modules
+#### Available modules
 
-The updated list of terraform modules provided by the MoJ are available here : [Terraform Module](https://github.com/ministryofjustice/cloud-platform#terraform-modules)
+The updated list of terraform modules provided by the MoJ are available here : [Terraform Module](https://github.com/ministryofjustice/cloud-platform##terraform-modules)
 
-``` 
+```
  !!!  WARNING  !!!
 
-Be aware that the latest version of these modules will only be compatible with Live-1. 
+Be aware that the latest version of these modules will only be compatible with Live-1.
 If you are planing on deploying them against Live-0, please read their respective README carefully for instruction.
 
-``` 
+```
 
-### Usage
+#### Usage
 
 In each terraform module repository, you will find a directory named `example` which includes sample configuration for use in Cloud Platform.
 
@@ -44,12 +44,12 @@ variable "cluster_state_bucket" {}
 
 The main README file of each module repository will list all the available configuration options that can be passed to the module.
 
-#### Outputs
+##### Outputs
 Each module will have its own outputs. These expose useful information, such as endpoints, credentials etc. The module examples all use a common approach: they employ the `kubernetes_secret` terraform resource to push the outputs straight into your environment in the form of a `Secret` which you could then extract information from or directly reference in `Pods`.
 
 This is currently the only supported way of accessing terraform outputs.
 
-#### Versioning
+##### Versioning
 
 All modules are versioned. This allows us to implement changes without breaking existing resources. To use a specific version of a module you need to define it in the `source` attribute by specifying the `ref` attribute in the query string of the source URL:
 
