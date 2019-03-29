@@ -15,6 +15,7 @@ server: .built-docker-image
 		-p 4567:4567 \
 		-v $$(pwd)/source:/app/source \
 		-v $$(pwd)/docs:/app/docs \
+		-v $$(pwd)/config:/app/config \
 		-it \
 		$(IMAGE) bundle exec middleman server
 
@@ -26,6 +27,7 @@ build: .built-docker-image
 	docker run \
 		-v $$(pwd)/source:/app/source \
 		-v $$(pwd)/docs:/app/docs \
+		-v $$(pwd)/config:/app/config \
 		-it \
 		$(IMAGE) bundle exec middleman build --build-dir docs
 	touch docs/.nojekyll
