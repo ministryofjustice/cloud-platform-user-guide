@@ -1,17 +1,17 @@
-## Creating your own custom alerts
+### Creating your own custom alerts
 
-### Overview
+#### Overview
 Alertmanager allows you define your own alert conditions based on [Prometheus expression language](https://prometheus.io/docs/prometheus/latest/querying/basics) expressions.
 
 The aim of this document is to provide you with the necessary information to create and send application specific alerts to a Slack channel of your choosing.
 
-### Prerequisites
+#### Prerequisites
 This guide assumes the following:
 
 * You have [created a namespace for your application][env-create]
 
-### Creating a slack webhook and amend Alertmanager
-This step requires the Cloud Platform team to create a receiver in [Alertmanager](https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/templates/prometheus-operator.yaml.tpl##L115) and a [Slack webhook](https://api.slack.com/incoming-webhooks).
+#### Creating a slack webhook and amend Alertmanager
+This step requires the Cloud Platform team to create a receiver in [Alertmanager](https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/templates/prometheus-operator.yaml.tpl###L115) and a [Slack webhook](https://api.slack.com/incoming-webhooks).
 
 Create a ticket to request a new alert route in Alertmanager. The team will need the following information:
 
@@ -22,7 +22,7 @@ Create a ticket to request a new alert route in Alertmanager. The team will need
 
 The team will provide you with a "`custom severity level`" that'll need to be defined in the next step. Please copy it to your clipboard.
 
-### Create a PrometheusRule
+#### Create a PrometheusRule
 A `PrometheusRule` is a custom resource that defines your triggered alert. This file will contain the alert name, promql expression and time of check.
 
 To create your own custom alert you'll need to fill in the template below and deploy it to your namespace (tip: you can check rules in your namespace by running `kubectl get prometheusrule -n <namespace>`).
@@ -75,7 +75,7 @@ spec:
         severity: cp-team
       annotations:
         message: Namespace {{ $labels.namespace }} is using {{ printf "%0.0f" $value}}% of its {{ $labels.resource }} quota.
-        runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md##alert-name-kubequotaexceeded
+        runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md###alert-name-kubequotaexceeded
 ```
 
 The `alert` name, `message` and `runbook_url` annotations will be sent to the Slack channel when the rule has been triggered.
@@ -86,21 +86,21 @@ You can view the applied rules with the following command:
 kubectl -n <namespace> describe prometheusrules prometheus-custom-rules-<application_name>
 ```
 
-### PrometheusRule examples
+#### PrometheusRule examples
 If you're struggling for ideas on how and which alerts to setup, please see some examples [here](https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/resources/prometheusrule-examples/application-alerts.yaml).
 
-### Advisory Note: PrometheusRules status incase of DR/requirement for a new Prometheus Install
+#### Advisory Note: PrometheusRules status incase of DR/requirement for a new Prometheus Install
 
-The  `PrometheusRule` is a [CRD](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#customresourcedefinitions) that declaratively defines a desired Prometheus rule to be consumed by Prometheus and applied using a YAML file. However, if for any reason Prometheus has to be uninstalled, `all PrometheusRules are removed with the CRD.`
+The  `PrometheusRule` is a [CRD](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/##customresourcedefinitions) that declaratively defines a desired Prometheus rule to be consumed by Prometheus and applied using a YAML file. However, if for any reason Prometheus has to be uninstalled, `all PrometheusRules are removed with the CRD.`
 
-We recommend all PrometheusRules to be added to the [Environments Repo](https://github.com/ministryofjustice/cloud-platform-environments) within the namespace folder the rules refer to. This will ensure all rules are applied/present at all times.  
+We recommend all PrometheusRules to be added to the [Environments Repo](https://github.com/ministryofjustice/cloud-platform-environments) within the namespace folder the rules refer to. This will ensure all rules are applied/present at all times.
 
-PrometheusRules can still be tested/amended/applied manually, then a PR can be created to add to the Environments Repo when ready. 
+PrometheusRules can still be tested/amended/applied manually, then a PR can be created to add to the Environments Repo when ready.
 
 
 
-### Further reading
+#### Further reading
 - [Prometheus Operator - Getting Started](https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/getting-started.md)
 - [Alerting](https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/alerting.md)
 
-[env-create]: getting-started.html#creating-a-cloud-platform-environment
+[env-create]: getting-started.html##creating-a-cloud-platform-environment
