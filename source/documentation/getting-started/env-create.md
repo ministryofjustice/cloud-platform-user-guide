@@ -1,6 +1,6 @@
-### Creating a Cloud Platform Environment
+## Creating a Cloud Platform Environment
 
-#### Introduction
+### Introduction
 
 This is a guide to creating a environment in one of our Kubernetes clusters.
 
@@ -8,11 +8,11 @@ We define an environment as a Kubernetes [namespace](https://kubernetes.io/docs/
 
 Once you have created an environment you will be able to perform actions using the `kubectl` tool in the namespace you have created.
 
-#### Objective
+### Objective
 
 By the end of this guide you'll have created a Kubernetes namespace ready for you to [deploy an application][deploy-hello-world] into.
 
-#### Create an environment
+### Create an environment
 
 You create an environment by adding the definition of the environment in YAML to the following repository, hosted on GitHub:
 
@@ -20,7 +20,7 @@ You create an environment by adding the definition of the environment in YAML to
 
 Adding your environment definition kicks off a pipeline which builds your environment on the appropriate cluster.
 
-##### Set up
+#### Set up
 
 First we need to clone the repository, change directory and create a new branch:
 
@@ -30,7 +30,7 @@ $ cd cloud-platform-environments
 $ git checkout -b <yourBranch>
 ```
 
-##### The directory structure
+#### The directory structure
 
 We build new environments by creating a new directory for our environment and putting the YAML files that define the environment into that directory. To understand where to create the directory it is useful to understand the overall structure of the repo:
 
@@ -62,7 +62,7 @@ Within the cluster directory you will generate a directory for your environment 
 
 The `<servicename-env>` directory for your environment defines the specific resources we will create in your namespace. We describe these resources in more detail in [how we set up an environment](###how-we-set-up-an-environment).
 
-##### How we set up an environment
+#### How we set up an environment
 
 To set up an environment we create 5 files in the directory for your namespace:
 
@@ -74,7 +74,7 @@ To set up an environment we create 5 files in the directory for your namespace:
 
 These files define key elements of the namespace and restrictions we want to place on it so that we have security and resource allocation properties. We will use terraform to create these files from templates. We also describe each of these files [in more detail below](###00-namespaceyaml) in case you want to make future changes.
 
-##### Create your namespace and namespace resources
+#### Create your namespace and namespace resources
 
 We automate the creation of the namespace resource files using terraform. You will need to install terraform locally:
 
@@ -133,7 +133,7 @@ You can then access your namespace files under `cloud-platform-environments/name
 
 The cloud platform team will review the pull request when it gets opened.  As soon as the pull request has been approved by the cloud platform team you can then merge it into the master branch which will kick off the pipeline that builds the environment. You can check whether the build succeeded or failed in the [`##cp-build-notification`](https://mojdt.slack.com/messages/CA5MDLM34/) slack channel. This can take about 5 minutes.
 
-#### Accessing your environments
+### Accessing your environments
 
 Once the pipeline has completed you will be able to check that your environment is available by running:
 
@@ -147,13 +147,13 @@ You can now run commands in your namespace by appending the `-n` or `--namespace
 
 `$ kubectl get pods --namespace myenv-dev`
 
-#### Next steps
+### Next steps
 
 [Create an ECR repository][ecr-setup] to push your application docker image to.
 
 Then you can try [deploying an app to Kubernetes manually][deploy-hello-world] by writing some custom YAML files or [deploying an app with Helm][deploy-helm], a Kubernetes [package manager]((https://helm.sh/)).
 
-#### More information on environment definition
+### More information on environment definition
 
 To set up an environment we create 5 files in that directory:
 
@@ -165,7 +165,7 @@ To set up an environment we create 5 files in that directory:
 
 These files define key elements of the namespace and restrictions we want to place on it so that we have security and resource allocation properties. We will use terraform to create these files from templates. We also describe each of these files in more detail below in case you want to make changes.
 
-##### `00-namespace.yaml`
+#### `00-namespace.yaml`
 
 The `00-namespace.yaml` file defines the namespace so that the cluster Kubernetes knows to create a namespace and what to call it.
 
@@ -178,7 +178,7 @@ metadata:
     name: myapp-dev ### Also your <servicename-env>
 ```
 
-##### `01-rbac.yaml`
+#### `01-rbac.yaml`
 
 We will also create a `RoleBinding` resource by adding the `01-rbac.yaml` file. This will provide us with [access policies](https://kubernetes.io/docs/admin/authorization/rbac/) on the namespace we have created in the cluster.
 
@@ -202,7 +202,7 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 ```
 
-##### `02-limitrange.yaml`
+#### `02-limitrange.yaml`
 
 As we are working on a shared Kubernetes cluster it is useful to put in place limits on the resources that each namespace, pod and container can use. This helps to stop us accidentally entering a situation where one service impacts the performance of another through using more resources than are available.
 
@@ -229,7 +229,7 @@ spec:
     type: Container
 ```
 
-##### `03-resourcequota.yaml`
+#### `03-resourcequota.yaml`
 
 The [ResourceQuota](https://kubernetes.io/docs/concepts/policy/resource-quotas/) object allows us to set a total limit on the resources used in a namespace. As with the LimitRange, the `requests.cpu` and `requests.memory` limits set how much the namespace will request on creation. The `limits.cpu` and `limits.memory` define the overall hard limits for the namespace.
 
@@ -249,7 +249,7 @@ spec:
     limits.memory: 12Gi
 ```
 
-##### `04-networkpolicy.yaml`
+#### `04-networkpolicy.yaml`
 
 The [NetworkPolicy](https://kubernetes.io/docs/concepts/services-networking/network-policies/) object defines how groups of pods are allowed to communicate with each other and other network endpoints. By default pods are non-isolated, they accept traffic from any source. We apply a network policy to restrict where traffic can come from, allowing traffic only from the [ingress controller](https://kubernetes.io/docs/concepts/services-networking/ingress/) and other pods in your namespace.
 
