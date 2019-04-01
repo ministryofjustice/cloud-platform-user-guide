@@ -243,6 +243,6 @@ Note: You need the `-L` flag to make curl follow the 308 redirect response that 
 [docker]: https://www.docker.com
 [circleci]: https://circleci.com
 [travisci]: https://travis-ci.org
-[ecr-setup]: getting-started.html##creating-an-ecr-repository
-[access-ecr-credentials]: getting-started.html##accessing-the-credentials
-[env-create]: getting-started.html##creating-a-cloud-platform-environment
+[ecr-setup]: tasks.html#creating-an-ecr-repository
+[access-ecr-credentials]: tasks.html#accessing-the-credentials
+[env-create]: tasks.html#creating-a-cloud-platform-environment

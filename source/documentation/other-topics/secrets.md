@@ -25,4 +25,4 @@ This kind of secrets falls under the shared responsibility model:
 
 - the Cloud Platform team, on the other hand, is responsible for ensuring the secrets remain secure inside the environment.
 
-[git-crypt]: other-topics.html##git-crypt
+[git-crypt]: archive.html#git-crypt
