@@ -53,6 +53,9 @@
         <nav id="navigation" class="header__navigation js-nav" aria-label="Top Level Navigation" aria-hidden="true">
           <ul>
               <li>
+                <a href="mailto:platforms+user-guide@digital.justice.gov.uk?subject=User+guide+feedback">Feedback / Report a problem</a>
+              </li>
+              <li>
                 <a href="/">Documentation</a>
               </li>
               <li>
@@ -349,3 +352,22 @@
     
   </body>
 </html>
+
+<script>
+  // Add the current window.location to the body of the
+  // feedback email message.
+  function sendFeedback(mailto, event) {
+    event.preventDefault();
+
+    var body = "Feedback/Problem on page: " + window.location + "\n";
+    var href = mailto + '&body=' + encodeURIComponent(body);
+
+    window.location = href;
+  }
+
+  $(document).ready(function() {
+    var feedbackLink = $('a[href^="mailto:"]:contains("Feedback")')[0];
+    var mailto = feedbackLink.href;
+    $(feedbackLink).on('click', function(event) { sendFeedback(mailto, event); });
+  });
+</script>
