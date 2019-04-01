@@ -108,6 +108,6 @@ Add the AWS_ACCESS_KEY_ID referencing 'aws_access_key_id' and AWS_SECRET_ACCESS_
                   key: aws_secret_access_key
 ```
 
-[env-create]: getting-started.html#creating-a-cloud-platform-environment
-[deploy-hello-world]: deploying-applications.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform
-[interact-with-app]: deploying-applications.html#interacting-with-the-application
+[env-create]: tasks.html#creating-a-cloud-platform-environment
+[deploy-hello-world]: tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform
+[interact-with-app]: tasks.html#interacting-with-the-application

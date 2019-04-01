@@ -71,7 +71,7 @@ You should be able to view the application in your browser at:
 It should behave in the same way as when you were running it locally via docker-compose.
 
 [multi-demo]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app
-[multi-demo-readme]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app###multi-container-demo-application
+[multi-demo-readme]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app#multi-container-demo-application
 [cloudplatform]: https://github.com/ministryofjustice/cloud-platform
 [k8s-deployment]: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
 [k8s-pod]: https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/
@@ -80,5 +80,5 @@ It should behave in the same way as when you were running it locally via docker-
 [ecr]: https://aws.amazon.com/ecr/
 [rds-module]: https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance
 [cp-env]: https://github.com/ministryofjustice/cloud-platform-environments
-[ecr-setup]: getting-started.html##creating-an-ecr-repository
-[add-aws-resources]: deploying-applications.html##adding-aws-resources-to-your-environment
+[ecr-setup]: tasks.html#creating-an-ecr-repository
+[add-aws-resources]: archive.html#adding-aws-resources-to-your-environment
