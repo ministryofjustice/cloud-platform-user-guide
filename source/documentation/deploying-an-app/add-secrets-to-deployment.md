@@ -15,7 +15,7 @@ This guide assumes the following:
 #### Configuring secrets
 
 The following is an example of encoding (configuring) aws access-key credentials in your deployment.
-See [kuberenetes using secrets as environment variables](https://kubernetes.io/docs/concepts/configuration/secret/###using-secrets-as-environment-variables)
+See [kuberenetes using secrets as environment variables](https://kubernetes.io/docs/concepts/configuration/secret/#using-secrets-as-environment-variables)
 
 for detailed information regarding providing base64 values in secret objects to Kuberenetes pods)
 
@@ -108,6 +108,6 @@ Add the AWS_ACCESS_KEY_ID referencing 'aws_access_key_id' and AWS_SECRET_ACCESS_
                   key: aws_secret_access_key
 ```
 
-[env-create]: getting-started.html##creating-a-cloud-platform-environment
-[deploy-hello-world]: deploying-applications.html##deploying-a-39-hello-world-39-application-to-the-cloud-platform
-[interact-with-app]: deploying-applications.html##interacting-with-the-application
+[env-create]: getting-started.html#creating-a-cloud-platform-environment
+[deploy-hello-world]: deploying-applications.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform
+[interact-with-app]: deploying-applications.html#interacting-with-the-application
