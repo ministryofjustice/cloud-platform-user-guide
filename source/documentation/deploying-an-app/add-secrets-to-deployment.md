@@ -1,10 +1,10 @@
-### Adding a secret to an application
+## Adding a secret to an application
 
-#### Overview
+### Overview
 
 The aim of this guide is to walkthrough the process of adding a secret (in this example for aws access-key credentials) to a previously deployed application in the Cloud Platform.
 
-#### Prerequisites
+### Prerequisites
 
 This guide assumes the following:
 
@@ -12,7 +12,7 @@ This guide assumes the following:
 * You have previously deployed your application. See [Deploying an application to the Cloud-Platform][deploy-hello-world]
 * Check your deployment is running. See [Interacting with the application][interact-with-app]
 
-#### Configuring secrets
+### Configuring secrets
 
 The following is an example of encoding (configuring) aws access-key credentials in your deployment.
 See [kuberenetes using secrets as environment variables](https://kubernetes.io/docs/concepts/configuration/secret/#using-secrets-as-environment-variables)
@@ -21,7 +21,7 @@ for detailed information regarding providing base64 values in secret objects to 
 
 Create your AWS Credentials access key (making a note of the aws_access_key_id and aws_secret_access_key)
 
-##### base64-encode your secret as follows:
+#### base64-encode your secret as follows:
 
 In this example  aws_access_key_id is 'AKIAFTKSAW15HJLOGD'. Issue the following command to base64-encode:
 
@@ -39,7 +39,7 @@ echo -n 'QUtJQUZUS1NBVzE1SEpMT0dE' | base64 -b0
 
 This will return the encoded secret 'UVV0SlFVWlVTMU5CVnpFMVNFcE1UMGRF'
 
-#### Creating the secret
+### Creating the secret
 
 Create a secrets.yaml file similar to:
 
