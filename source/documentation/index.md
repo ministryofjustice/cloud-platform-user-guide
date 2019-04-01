@@ -9,11 +9,11 @@ manage their applications on that infrastructure.
 
 This guide is in the process of being reorganised into three main sections:
 
-  - Concepts - Background and overview of the Cloud Platform, and some of the import concepts underlying it.
+  - Concepts - Background and overview of the Cloud Platform, and some of the important concepts underlying it.
   - Tasks - Tutorials and information to help you achieve specific outcomes.
   - Reference - Details and links to external resources providing more thorough information about particular topics.
 
-While content is being moved, all the existing content has been move to a
+While content is being moved, all the existing content has been moved to a
 temporary "Archive" section. We will be migrating content from there into the
 new structure over the next few weeks.
 
