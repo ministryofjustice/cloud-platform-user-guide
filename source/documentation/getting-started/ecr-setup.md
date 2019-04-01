@@ -85,5 +85,5 @@ In your CircleCI project, go to the settings (the cog icon) and select 'AWS Perm
 
 Try [deploying an app][deploy-helm] with [Helm](https://helm.sh/), a Kubernetes package manager, or [deploying manually][deploy-hello-world] by writing some custom YAML files.
 
-[deploy-hello-world]: deploying-applications.html##deploying-a-39-hello-world-39-application-to-the-cloud-platform
-[deploy-helm]: deploying-applications.html##deploying-an-application-to-the-cloud-platform-with-helm
+[deploy-hello-world]: tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform
+[deploy-helm]: archive.html#deploying-an-application-to-the-cloud-platform-with-helm
