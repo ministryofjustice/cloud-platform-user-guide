@@ -1,6 +1,6 @@
-<h3 id="creating-an-ecr-repository">Creating an ECR repository</h3><h4 id="introduction">Introduction</h4><p>This guide will guide you through the creation of an ECR (Elastic Container Registry) repository for your application&rsquo;s docker image.</p>
+<h2 id="creating-an-ecr-repository">Creating an ECR repository</h2><h3 id="introduction">Introduction</h3><p>This guide will guide you through the creation of an ECR (Elastic Container Registry) repository for your application&rsquo;s docker image.</p>
 <p>AWS resources are provisioned through the <a href="https://github.com/ministryofjustice/cloud-platform-environments/">cloud-platform-environments</a> repository, per environment. Your application might be using multiple namespaces, however you typically only need one image repository and once created in any of them you can copy credentials for it to the others via <code>kubectl get/create secret</code>.</p>
-<h5 id="creating-the-registry">Creating the registry</h5><p>1. In order to create the ECR Docker registry, git clone the repo and create a new branch.</p>
+<h4 id="creating-the-registry">Creating the registry</h4><p>1. In order to create the ECR Docker registry, git clone the repo and create a new branch.</p>
 <div class="highlight"><pre class="highlight shell"><code>
   <span class="nv">$ </span>git clone git@github.com:ministryofjustice/cloud-platform-environments.git <span class="c">###git clone repo</span>
 
@@ -21,7 +21,7 @@
   <span class="nv">$ </span>vi ecr.tf  <span class="c">###create a terraform file.</span>
 
 </code></pre></div><p>4. Adapt the definition from the example described in the <a href="https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials/tree/master/examples">cloud-platform-terraform-ecr-credentials module</a>; make sure you adjust the values of <code>team_name</code>, <code>repo_name</code> <code>name</code> and <code>namespace</code> to what is appropriate for your environment.</p>
-<p>Note: A default ECR lifecycle policy is set, that will only keep the 40 most recent versions of an image. More infomation on the ECR lifecycle policy avalible <a href="other-topics.html##ecr-lifecycle-policy">here.</a></p>
+<p>Note: A default ECR lifecycle policy is set, that will only keep the 40 most recent versions of an image. More infomation on the ECR lifecycle policy avalible <a href="archive.html#ecr-lifecycle-policy">here.</a></p>
 <p>5. git add, commit and push to your branch.</p>
 <div class="highlight"><pre class="highlight shell"><code>
   <span class="nv">$ </span>git add ecr.tf
@@ -32,7 +32,7 @@
 
 </code></pre></div><p>6. Once your request has been approved and the branches are merged, it will trigger our build pipeline which will apply the Terraform module and create the resources.</p>
 <p>For more information about the terraform module being used, please read the documentation <a href="https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials">here</a>.</p>
-<h4 id="accessing-the-credentials">Accessing the credentials</h4><p>The end result will be a kubernetes <code>Secret</code> inside your environment, called <code>example-team-ecr-credentials-output</code> (or whatever you changed that to); the secret holds IAM access keys to authenticate with the registry and the actual repository URL.</p>
+<h3 id="accessing-the-credentials">Accessing the credentials</h3><p>The end result will be a kubernetes <code>Secret</code> inside your environment, called <code>example-team-ecr-credentials-output</code> (or whatever you changed that to); the secret holds IAM access keys to authenticate with the registry and the actual repository URL.</p>
 <p>Note: For <code>example-team-ecr-credentials-output</code> you should put whatever you used as the value of the <code>name</code> property of the <code>kubernetes_secret</code> resource in the <code>ecr.tf</code> file you created previously.</p>
 <p>To retrieve the credentials:
 <code>
@@ -43,5 +43,5 @@ kubectl -n &lt;namespace_name&gt; get secret example-team-ecr-credentials-output
 <code>
 echo QWxhZGRpbjpvcGVuIHNlc2FtZQ== | base64 --decode; echo
 </code></p>
-<h5 id="setting-up-circleci">Setting up CircleCI</h5><p>In your CircleCI project, go to the settings (the cog icon) and select &lsquo;AWS Permissions&rsquo; from the left hand menu. Fill in the IAM credentials and CircleCI will be able to use ECR images. For more information please see <a href="https://circleci.com/docs/2.0/private-images/">the official docs</a>.</p>
-<h4 id="next-steps">Next steps</h4><p>Try <a href="deploying-applications.html##deploying-an-application-to-the-cloud-platform-with-helm">deploying an app</a> with <a href="https://helm.sh/">Helm</a>, a Kubernetes package manager, or <a href="deploying-applications.html##deploying-a-39-hello-world-39-application-to-the-cloud-platform">deploying manually</a> by writing some custom YAML files.</p>
+<h4 id="setting-up-circleci">Setting up CircleCI</h4><p>In your CircleCI project, go to the settings (the cog icon) and select &lsquo;AWS Permissions&rsquo; from the left hand menu. Fill in the IAM credentials and CircleCI will be able to use ECR images. For more information please see <a href="https://circleci.com/docs/2.0/private-images/">the official docs</a>.</p>
+<h3 id="next-steps">Next steps</h3><p>Try <a href="archive.html#deploying-an-application-to-the-cloud-platform-with-helm">deploying an app</a> with <a href="https://helm.sh/">Helm</a>, a Kubernetes package manager, or <a href="tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">deploying manually</a> by writing some custom YAML files.</p>

@@ -120,6 +120,73 @@
 <ul>
   <li>
     <a href="/tasks.html#tasks">Tasks</a>
+    <ul>
+      <li>
+        <a href="/tasks.html#creating-a-cloud-platform-environment">Creating a Cloud Platform Environment</a>
+        <ul>
+          <li>
+            <a href="/tasks.html#introduction">Introduction</a>
+          </li>
+          <li>
+            <a href="/tasks.html#objective">Objective</a>
+          </li>
+          <li>
+            <a href="/tasks.html#create-an-environment">Create an environment</a>
+          </li>
+          <li>
+            <a href="/tasks.html#accessing-your-environments">Accessing your environments</a>
+          </li>
+          <li>
+            <a href="/tasks.html#next-steps">Next steps</a>
+          </li>
+          <li>
+            <a href="/tasks.html#more-information-on-environment-definition">More information on environment definition</a>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="/tasks.html#creating-an-ecr-repository">Creating an ECR repository</a>
+        <ul>
+          <li>
+            <a href="/tasks.html#creating-an-ecr-repository-introduction">Introduction</a>
+          </li>
+          <li>
+            <a href="/tasks.html#accessing-the-credentials">Accessing the credentials</a>
+          </li>
+          <li>
+            <a href="/tasks.html#creating-an-ecr-repository-next-steps">Next steps</a>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="/tasks.html#deploying-applications">Deploying Applications</a>
+        <ul>
+          <li>
+            <a href="/tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">Deploying a ‘Hello World’ application to the Cloud Platform</a>
+          </li>
+          <li>
+            <a href="/tasks.html#deploying-a-multi-container-application-to-the-cloud-platform">Deploying a multi-container application to the Cloud Platform</a>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="/tasks.html#adding-a-secret-to-an-application">Adding a secret to an application</a>
+        <ul>
+          <li>
+            <a href="/tasks.html#adding-a-secret-to-an-application-overview">Overview</a>
+          </li>
+          <li>
+            <a href="/tasks.html#adding-a-secret-to-an-application-prerequisites">Prerequisites</a>
+          </li>
+          <li>
+            <a href="/tasks.html#configuring-secrets">Configuring secrets</a>
+          </li>
+          <li>
+            <a href="/tasks.html#creating-the-secret">Creating the secret</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
   </li>
 </ul>
 <ul>
@@ -150,31 +217,16 @@
           <li>
             <a href="/archive.html#kubectl-configuration">kubectl configuration</a>
           </li>
-          <li>
-            <a href="/archive.html#creating-a-cloud-platform-environment">Creating a Cloud Platform Environment</a>
-          </li>
-          <li>
-            <a href="/archive.html#creating-an-ecr-repository">Creating an ECR repository</a>
-          </li>
         </ul>
       </li>
       <li>
-        <a href="/archive.html#deploying-applications">Deploying Applications</a>
+        <a href="/archive.html#getting-help-deploying-applications">Deploying Applications</a>
         <ul>
           <li>
             <a href="/archive.html#prerequisite-for-live-1-deployment">Prerequisite for Live-1 deployment</a>
           </li>
           <li>
-            <a href="/archive.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">Deploying a ‘Hello World’ application to the Cloud Platform</a>
-          </li>
-          <li>
-            <a href="/archive.html#deploying-a-multi-container-application-to-the-cloud-platform">Deploying a multi-container application to the Cloud Platform</a>
-          </li>
-          <li>
             <a href="/archive.html#deploying-an-application-to-the-cloud-platform-with-helm">Deploying an application to the Cloud Platform with Helm</a>
-          </li>
-          <li>
-            <a href="/archive.html#adding-a-secret-to-an-application">Adding a secret to an application</a>
           </li>
           <li>
             <a href="/archive.html#continuous-deployment-of-an-application-using-circleci-and-helm">Continuous Deployment of an application using CircleCI and Helm</a>
@@ -267,7 +319,551 @@
         <div class="app-pane__content toc-open-disabled">
           <main id="content" class="technical-documentation" data-module="anchored-headings">
               <h1 id="tasks">Tasks</h1><p>This is a placeholder page, into which content will be migrated.</p>
-<p>Please look in the <a href="/archive.html">archive section</a> to find existing content.</p>
+<p>Please look in the <a href="/archive.html">archive section</a> to find existing content
+which is yet to be moved.</p>
+
+<h2 id="creating-a-cloud-platform-environment">Creating a Cloud Platform Environment</h2><h3 id="introduction">Introduction</h3><p>This is a guide to creating a environment in one of our Kubernetes clusters.</p>
+<p>We define an environment as a Kubernetes <a href="https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/">namespace</a> with some key resources deployed in it. Each Kubernetes namespace creates a logical separation within our cluster that provides isolation from any other namespace.</p>
+<p>Once you have created an environment you will be able to perform actions using the <code>kubectl</code> tool in the namespace you have created.</p>
+<h3 id="objective">Objective</h3><p>By the end of this guide you&rsquo;ll have created a Kubernetes namespace ready for you to <a href="/tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">deploy an application</a> into.</p>
+<h3 id="create-an-environment">Create an environment</h3><p>You create an environment by adding the definition of the environment in YAML to the following repository, hosted on GitHub:</p>
+<p><a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud-platform-environments</a></p>
+<p>Adding your environment definition kicks off a pipeline which builds your environment on the appropriate cluster.</p>
+<h4 id="set-up">Set up</h4><p>First we need to clone the repository, change directory and create a new branch:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ git clone git@github.com:ministryofjustice/cloud-platform-environments.git
+$ cd cloud-platform-environments
+$ git checkout -b &lt;yourBranch&gt;
+</code></pre></div><h4 id="the-directory-structure">The directory structure</h4><p>We build new environments by creating a new directory for our environment and putting the YAML files that define the environment into that directory. To understand where to create the directory it is useful to understand the overall structure of the repo:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>cloud-platform-environments
+├── namespace-resources
+└── namespaces
+    └── cloud-platform-live-0.k8s.integration.dsd.io
+        ├── kube-system
+
+        ...
+
+        └── user-roles.yaml
+</code></pre></div><p><strong>cloud-platform-environments</strong></p>
+<p>This is the root of the repo, containing <code>namespaces</code> directory</p>
+<p><strong>/namespaces</strong></p>
+<p>The namespaces directory contains a directory for each of the clusters that you can build environments on. Create your environment in the <code>cloud-platform-live-0.k8s.integration.dsd.io</code> directory.</p>
+<p><strong>/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/</strong></p>
+<p>Within the cluster directory you will generate a directory for your environment in the format <code>&lt;servicename-env&gt;</code>, for example <code>myapp-dev</code>.</p>
+<p><strong>/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/servicename-env/</strong></p>
+<p>The <code>&lt;servicename-env&gt;</code> directory for your environment defines the specific resources we will create in your namespace. We describe these resources in more detail in <a href="#how-we-set-up-an-environment">how we set up an environment</a>.</p>
+<h4 id="how-we-set-up-an-environment">How we set up an environment</h4><p>To set up an environment we create 5 files in the directory for your namespace:</p>
+
+<ul>
+<li><a href="#00-namespace-yaml"><code>00-namespace.yaml</code></a></li>
+<li><a href="#01-rbac-yaml"><code>01-rbac.yaml</code></a></li>
+<li><a href="#02-limitrange-yaml"><code>02-limitrange.yaml</code></a></li>
+<li><a href="#03-resourcequota-yaml"><code>03-resourcequota.yaml</code></a></li>
+<li><a href="#04-networkpolicy-yaml"><code>04-networkpolicy.yaml</code></a></li>
+</ul>
+<p>These files define key elements of the namespace and restrictions we want to place on it so that we have security and resource allocation properties. We will use terraform to create these files from templates. We also describe each of these files <a href="#00-namespace-yaml">in more detail below</a> in case you want to make future changes.</p>
+<h4 id="create-your-namespace-and-namespace-resources">Create your namespace and namespace resources</h4><p>We automate the creation of the namespace resource files using terraform. You will need to install terraform locally:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ brew install terraform
+</code></pre></div><p>In each of the template files you need to replace some example values with information about your namespace, team or app. We do this by running terraform commands and filling in the values.</p>
+<p>These are the inputs for the terraform module, that you will need to fill:</p>
+
+<div style="height:1px;font-size:1px;">&nbsp;</div>
+<div class="table-container">
+        <table>
+          <tr>
+<th>Name</th>
+<th>Description</th>
+<th style="text-align: center">Type</th>
+<th style="text-align: center">Default</th>
+<th style="text-align: center">Required</th>
+</tr>
+<tr>
+<td>application</td>
+<td>The name of your application</td>
+<td style="text-align: center">string</td>
+<td style="text-align: center">-</td>
+<td style="text-align: center">yes</td>
+</tr>
+<tr>
+<td>business-unit</td>
+<td>Area of the MOJ responsible for the service</td>
+<td style="text-align: center">string</td>
+<td style="text-align: center">-</td>
+<td style="text-align: center">yes</td>
+</tr>
+<tr>
+<td>cluster</td>
+<td>What cluster are you deploying your namespace. i.e cloud-platform-test-1</td>
+<td style="text-align: center">string</td>
+<td style="text-align: center"><code>cloud-platform-live-0</code></td>
+<td style="text-align: center">no</td>
+</tr>
+<tr>
+<td>contact_email</td>
+<td>Contact email address for owner of the application</td>
+<td style="text-align: center">string</td>
+<td style="text-align: center">-</td>
+<td style="text-align: center">yes</td>
+</tr>
+<tr>
+<td>environment</td>
+<td>A label for your environment (e.g. dev/staging/&hellip;)</td>
+<td style="text-align: center">string</td>
+<td style="text-align: center">-</td>
+<td style="text-align: center">yes</td>
+</tr>
+<tr>
+<td>github_team</td>
+<td>This is your team name as defined by the GITHUB api. This has to match the team name on the Github API</td>
+<td style="text-align: center">string</td>
+<td style="text-align: center">-</td>
+<td style="text-align: center">yes</td>
+</tr>
+<tr>
+<td>is-production</td>
+<td></td>
+<td style="text-align: center">string</td>
+<td style="text-align: center"><code>false</code></td>
+<td style="text-align: center">no</td>
+</tr>
+<tr>
+<td>namespace</td>
+<td>Namespace you would like to create on cluster <application>-<environment>. i.e myapp-dev</td>
+<td style="text-align: center">string</td>
+<td style="text-align: center">-</td>
+<td style="text-align: center">yes</td>
+</tr>
+<tr>
+<td>owner</td>
+<td>Who is the owner/Who is responsible for this application</td>
+<td style="text-align: center">string</td>
+<td style="text-align: center">-</td>
+<td style="text-align: center">yes</td>
+</tr>
+<tr>
+<td>source_code_url</td>
+<td>Url of the source code for your application</td>
+<td style="text-align: center">string</td>
+<td style="text-align: center">-</td>
+<td style="text-align: center">yes</td>
+</tr>
+
+        </table>
+      </div>
+<div style="height:1px;font-size:1px;">&nbsp;</div>
+<p>Run the following commands to create your namespace and these resources files:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ cd cloud-platform-environments/namespace-resources/
+$ terraform init
+$ terraform apply
+</code></pre></div><p>Our terraform module creates the files for a new namespace on the live-0 cluster by default but if you would like to deploy to another cluster you can use:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ terraform apply -var "cluster=&lt;cluster-name&gt;"
+</code></pre></div><p>Fill in your values in response to the prompts.</p>
+<p>For <code>var.namespace</code>, this is the name of your (team&rsquo;s) &lsquo;private&rsquo; part of the cluster. The name of your namespace must be unique across the whole of the cluster. If you try to create a new namespace using the name of one which already exists, you will get an error when you try to apply the generated kubernetes config files (or when our build pipeline applies them on your behalf).</p>
+<p>For &lsquo;real&rsquo; services, this is very unlikely to be a problem - most services have distinct names, so namespace name conflicts are unlikely. But, if you are creating a test/dummy namespace in order to learn how the platform works, it&rsquo;s better to avoid generic names like &#39;dummy&rsquo;, &#39;test&rsquo; or &#39;example&rsquo;. Add something unique (e.g. your name) to minimise the risk of trying to re-use a name by mistake.</p>
+<p>For <code>var.source_code_url</code>, this should be the URL of an application which is &#39;cluster-ready&rsquo; to be deployed. If you do not have such an application ready to go, you can use the reference application which the Cloud Platform team have prepared <code>git@github.com:ministryofjustice/cloud-platform-reference-app.git</code></p>
+<p>Note: The <code>source_code_url</code> is a descriptive label, used by the Cloud Platform team in supporting your namespace. It does not set up an explicit link between your namespace and your application&rsquo;s code repository.</p>
+<p>At the final prompt &ldquo;Do you want to perform these actions?&rdquo;, enter &ldquo;yes&rdquo;</p>
+<p>You can then access your namespace files under <code>cloud-platform-environments/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/&lt;your-namespace&gt;</code>, if satisfied you can then push the changes to your branch and create a pull request against the <a href="https://github.com/ministryofjustice/cloud-platform-environments"><code>cloud-platform-environments</code></a> master repo.</p>
+<p>The cloud platform team will review the pull request when it gets opened.  As soon as the pull request has been approved by the cloud platform team you can then merge it into the master branch which will kick off the pipeline that builds the environment. You can check whether the build succeeded or failed in the <a href="https://mojdt.slack.com/messages/CA5MDLM34/"><code>#cp-build-notification</code></a> slack channel. This can take about 5 minutes.</p>
+<h3 id="accessing-your-environments">Accessing your environments</h3><p>Once the pipeline has completed you will be able to check that your environment is available by running:</p>
+<p><code>$ kubectl get namespaces</code></p>
+<p>This will return a list of the namespaces within the cluster, and you should see yours in the list.</p>
+<p>You can now run commands in your namespace by appending the <code>-n</code> or <code>--namespace</code> flag to <code>kubectl</code>. So for instance, to see the pods running in our <code>myenv-dev</code> namespace, we would run:</p>
+<p><code>$ kubectl get pods -n myenv-dev</code> or</p>
+<p><code>$ kubectl get pods --namespace myenv-dev</code></p>
+<h3 id="next-steps">Next steps</h3><p><a href="/tasks.html#creating-an-ecr-repository">Create an ECR repository</a> to push your application docker image to.</p>
+<p>Then you can try <a href="/tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">deploying an app to Kubernetes manually</a> by writing some custom YAML files or <a href="/archive.html#deploying-an-application-to-the-cloud-platform-with-helm">deploying an app with Helm</a>, a Kubernetes <a href="(https://helm.sh/)">package manager</a>.</p>
+<h3 id="more-information-on-environment-definition">More information on environment definition</h3><p>To set up an environment we create 5 files in that directory:</p>
+
+<ul>
+<li><a href="#00-namespace-yaml"><code>00-namespace.yaml</code></a></li>
+<li><a href="#01-rbac-yaml"><code>01-rbac.yaml</code></a></li>
+<li><a href="#02-limitrange-yaml"><code>02-limitrange.yaml</code></a></li>
+<li><a href="#03-resourcequota-yaml"><code>03-resourcequota.yaml</code></a></li>
+<li><a href="#04-networkpolicy-yaml"><code>04-networkpolicy.yaml</code></a></li>
+</ul>
+<p>These files define key elements of the namespace and restrictions we want to place on it so that we have security and resource allocation properties. We will use terraform to create these files from templates. We also describe each of these files in more detail below in case you want to make changes.</p>
+<h4 id="00-namespace-yaml"><code>00-namespace.yaml</code></h4><p>The <code>00-namespace.yaml</code> file defines the namespace so that the cluster Kubernetes knows to create a namespace and what to call it.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: v1
+kind: Namespace
+metadata:
+  name: myapp-dev ### This is where you will define your &lt;servicename-env&gt;
+  labels:
+    name: myapp-dev ### Also your &lt;servicename-env&gt;
+</code></pre></div><h4 id="01-rbac-yaml"><code>01-rbac.yaml</code></h4><p>We will also create a <code>RoleBinding</code> resource by adding the <code>01-rbac.yaml</code> file. This will provide us with <a href="https://kubernetes.io/docs/admin/authorization/rbac/">access policies</a> on the namespace we have created in the cluster.</p>
+<p>A role binding resource grants the permissions defined in a role to a user or set of users. A role can be another resource we can create but in this instance we will reference a Kubernetes default role <code>ClusterRole - admin</code>.</p>
+<p>This <code>RoleBinding</code> resource references the <code>ClusterRole - admin</code> to provide  admin permissions on the namespace to the set of users defined under <code>subjects</code>. In this case, the <code>&lt;yourTeam&gt;</code> GitHub group will have admin access to any resources within the namespace <code>myapp-dev</code>.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: myapp-dev-admins  ### Your namespace with `-admin` e.g. `&lt;servicename-env&gt;-admin`
+  namespace: myapp-dev ### Your namespace `&lt;servicename-env&gt;`
+subjects:
+  - kind: Group
+    name: "github:&lt;yourTeam&gt;" ### Make this the name of the GitHub team you want to give access to
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: admin
+  apiGroup: rbac.authorization.k8s.io
+</code></pre></div><h4 id="02-limitrange-yaml"><code>02-limitrange.yaml</code></h4><p>As we are working on a shared Kubernetes cluster it is useful to put in place limits on the resources that each namespace, pod and container can use. This helps to stop us accidentally entering a situation where one service impacts the performance of another through using more resources than are available.</p>
+<p>The first Kubernetes limit we can use is a <a href="https://kubernetes.io/docs/tasks/administer-cluster/manage-resources/memory-default-namespace/">LimitRange</a> which we define in <code>02-limitrange.yaml</code>.</p>
+<p>The LimitRange object specifies two key resource limits on containers, <code>defaultRequest</code> and <code>default</code>. <code>defaultRequest</code> is the memory and cpu a container will request on startup. This is what the Kubernetes scheduler uses to determine whether there is enough space on the cluster to run your application and what your application will start up with when it is created. <code>default</code> is the limit at which your application will be killed or throttled.</p>
+<p>In <code>02-limitrange.yaml</code> you need to change the value of the <code>namespace</code> key to match the name of your namespace in the form <code>&lt;service-env&gt;</code>. We have set default values for the limits in the templates. As you learn more about the behaviour of your applications on Kubernetes you can change them.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: v1
+kind: LimitRange
+metadata:
+  name: limitrange
+  namespace: myapp-dev ### Your namespace `&lt;servicename-env&gt;`
+spec:
+  limits:
+  - default:
+      cpu: 1000m
+      memory: 2Gi
+    defaultRequest:
+      cpu: 100m
+      memory: 128Mi
+    type: Container
+</code></pre></div><h4 id="03-resourcequota-yaml"><code>03-resourcequota.yaml</code></h4><p>The <a href="https://kubernetes.io/docs/concepts/policy/resource-quotas/">ResourceQuota</a> object allows us to set a total limit on the resources used in a namespace. As with the LimitRange, the <code>requests.cpu</code> and <code>requests.memory</code> limits set how much the namespace will request on creation. The <code>limits.cpu</code> and <code>limits.memory</code> define the overall hard limits for the namespace.</p>
+<p>In <code>03-resourcequota.yaml</code> you need to change the value of the <code>namespace</code> key to match the name of your namespace in the form <code>&lt;service-env&gt;</code>. We have set default values for the limits in the templates. As you learn more about the behaviour of your applications on Kubernetes you can change them.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: namespace-quota
+  namespace: myapp-dev ### Your namespace `&lt;servicename-env&gt;`
+spec:
+  hard:
+    requests.cpu: 4000m
+    requests.memory: 8Gi
+    limits.cpu: 6000m
+    limits.memory: 12Gi
+</code></pre></div><h4 id="04-networkpolicy-yaml"><code>04-networkpolicy.yaml</code></h4><p>The <a href="https://kubernetes.io/docs/concepts/services-networking/network-policies/">NetworkPolicy</a> object defines how groups of pods are allowed to communicate with each other and other network endpoints. By default pods are non-isolated, they accept traffic from any source. We apply a network policy to restrict where traffic can come from, allowing traffic only from the <a href="https://kubernetes.io/docs/concepts/services-networking/ingress/">ingress controller</a> and other pods in your namespace.</p>
+<p>In <code>04-networkpolicy.yaml</code> you need to change the value of the <code>namespace</code> key to match the name of your namespace in the form <code>&lt;service-env&gt;</code>.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default
+  namespace: myapp-dev ### Your namespace `&lt;servicename-env&gt;`
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector: {}
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-ingress-controllers
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          component: ingress-controllers
+</code></pre></div>
+<h2 id="creating-an-ecr-repository">Creating an ECR repository</h2><h3 id="creating-an-ecr-repository-introduction">Introduction</h3><p>This guide will guide you through the creation of an ECR (Elastic Container Registry) repository for your application&rsquo;s docker image.</p>
+<p>AWS resources are provisioned through the <a href="https://github.com/ministryofjustice/cloud-platform-environments/">cloud-platform-environments</a> repository, per environment. Your application might be using multiple namespaces, however you typically only need one image repository and once created in any of them you can copy credentials for it to the others via <code>kubectl get/create secret</code>.</p>
+<h4 id="creating-the-registry">Creating the registry</h4><p>1. In order to create the ECR Docker registry, git clone the repo and create a new branch.</p>
+<div class="highlight"><pre class="highlight shell"><code>
+  <span class="nv">$ </span>git clone git@github.com:ministryofjustice/cloud-platform-environments.git <span class="c">###git clone repo</span>
+
+  <span class="nv">$ </span><span class="nb">cd </span>cloud-platform-environments <span class="c">### navigate into cloud-platform-environments directory.</span>
+
+  <span class="nv">$ </span>git checkout <span class="nt">-b</span> add_ecr   <span class="c">### create and checkout new branch.</span>
+
+</code></pre></div><p>2. You will need to navigate to your service&rsquo;s directory which is located in the namespaces directory. Create a directory named &ldquo;resources&rdquo;.</p>
+<div class="highlight"><pre class="highlight shell"><code>
+  <span class="nv">$ </span><span class="nb">cd </span>namespaces/cloud-platform-live-0.k8s.integration.dsd.io/<span class="nv">$your_service</span>  <span class="c">###navigate to your service's directory.</span>
+
+  <span class="nv">$ </span>mkdir resources <span class="c">### make directory called resources</span>
+
+  <span class="nv">$ </span><span class="nb">cd </span>namespaces/cloud-platform-live-0.k8s.integration.dsd.io/<span class="nv">$your_service</span>/resources
+
+</code></pre></div><p>3. Create a terraform file within the resources directory.</p>
+<div class="highlight"><pre class="highlight shell"><code>
+  <span class="nv">$ </span>vi ecr.tf  <span class="c">###create a terraform file.</span>
+
+</code></pre></div><p>4. Adapt the definition from the example described in the <a href="https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials/tree/master/examples">cloud-platform-terraform-ecr-credentials module</a>; make sure you adjust the values of <code>team_name</code>, <code>repo_name</code> <code>name</code> and <code>namespace</code> to what is appropriate for your environment.</p>
+<p>Note: A default ECR lifecycle policy is set, that will only keep the 40 most recent versions of an image. More infomation on the ECR lifecycle policy avalible <a href="/archive.html#ecr-lifecycle-policy">here.</a></p>
+<p>5. git add, commit and push to your branch.</p>
+<div class="highlight"><pre class="highlight shell"><code>
+  <span class="nv">$ </span>git add ecr.tf
+
+  <span class="nv">$ </span>git commit
+
+  <span class="nv">$ </span>git push
+
+</code></pre></div><p>6. Once your request has been approved and the branches are merged, it will trigger our build pipeline which will apply the Terraform module and create the resources.</p>
+<p>For more information about the terraform module being used, please read the documentation <a href="https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials">here</a>.</p>
+<h3 id="accessing-the-credentials">Accessing the credentials</h3><p>The end result will be a kubernetes <code>Secret</code> inside your environment, called <code>example-team-ecr-credentials-output</code> (or whatever you changed that to); the secret holds IAM access keys to authenticate with the registry and the actual repository URL.</p>
+<p>Note: For <code>example-team-ecr-credentials-output</code> you should put whatever you used as the value of the <code>name</code> property of the <code>kubernetes_secret</code> resource in the <code>ecr.tf</code> file you created previously.</p>
+<p>To retrieve the credentials:
+<code>
+kubectl -n &lt;namespace_name&gt; get secret example-team-ecr-credentials-output -o yaml
+</code></p>
+<p>The values in kubernetes <code>Secrets</code> are always <code>base64</code> encoded so you will have to decode them before you can use them outside kubernetes. Inside the cluster, the nodes already have access to the ECR so you don&rsquo;t need to make any changes.</p>
+<p>This can be done at the command line using the following:
+<code>
+echo QWxhZGRpbjpvcGVuIHNlc2FtZQ== | base64 --decode; echo
+</code></p>
+<h4 id="setting-up-circleci">Setting up CircleCI</h4><p>In your CircleCI project, go to the settings (the cog icon) and select &lsquo;AWS Permissions&rsquo; from the left hand menu. Fill in the IAM credentials and CircleCI will be able to use ECR images. For more information please see <a href="https://circleci.com/docs/2.0/private-images/">the official docs</a>.</p>
+<h3 id="creating-an-ecr-repository-next-steps">Next steps</h3><p>Try <a href="/archive.html#deploying-an-application-to-the-cloud-platform-with-helm">deploying an app</a> with <a href="https://helm.sh/">Helm</a>, a Kubernetes package manager, or <a href="/tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">deploying manually</a> by writing some custom YAML files.</p>
+
+
+<h2 id="deploying-applications">Deploying Applications</h2>
+<p><h3 id="deploying-a-39-hello-world-39-application-to-the-cloud-platform">Deploying a &lsquo;Hello World&rsquo; application to the Cloud Platform</h3><p><a href="../images/k8s-cluster-application-deployment-process.png" target="_blank" rel="noopener noreferrer"><img src="/images/k8s-cluster-application-deployment-process.png" alt="Deployment Process Diagram" /></a></p>
+<h4 id="overview">Overview</h4><p>The aim of this guide is to walkthrough the process of deploying an application into the Cloud Platform.</p>
+<p>This guide uses a pre-configured <a href="https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app">&ldquo;Hello World&rdquo; application</a> as an example of how to deploy your own. This application merely returns a static HTML response, and has no dependencies. Later examples will use more representative applications.</p>
+<p>The process we will follow consists of the following stages:</p></p>
+
+<ul>
+<li>Build a docker image from the demo application</li>
+<li>Tag the image and push it to your ECR</li>
+<li>Edit kubernetes config files</li>
+<li>Apply the config files to make the cluster run our application</li>
+</ul>
+
+<p>The process of building an image and pushing it to an ECR will normally be carried out by a build pipeline. For this initial walkthrough, we will go through these steps manually. Later we will go through an example of setting up a <a href="https://circleci.com">CircleCI</a> job to do this automatically. The steps are similar if you&rsquo;re using other CI/CD tools such as <a href="https://travis-ci.org">TravisCI</a>.</p>
+
+<h4 id="prerequisites">Prerequisites</h4><p>This guide assumes the following:</p>
+
+<ul>
+<li><a href="https://www.docker.com">Docker</a> is installed and configured.</li>
+<li>Kubectl is installed and configured (<code>brew install kubectl</code> on a Mac with <a href="https://brew.sh">Homebrew</a> installed)</li>
+<li>AWS CLI is installed (<code>brew install awscli</code> on a Mac with <a href="https://brew.sh">Homebrew</a> installed)</li>
+<li>You have <a href="/tasks.html#creating-a-cloud-platform-environment">created an environment for your application</a></li>
+<li>You have <a href="/tasks.html#creating-an-ecr-repository">created an Amazon ECR</a> to host your docker image</li>
+</ul>
+<h4 id="step-1-build-your-docker-image">Step 1 - Build your docker image</h4>
+
+<ul>
+<li><p>Clone the <a href="https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app">demo application</a></p>
+<p>git clone https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app
+  cd cloud-platform-helloworld-ruby-app</p></li>
+<li><p>Build the docker image</p>
+<p>docker build -t [ECR Team Name]/[ECR Repository Name] .</p></li>
+</ul>
+
+<p>The <code>ECR Team Name</code> and <code>ECR Repository Name</code> must match the <code>team_name</code> and <code>repo_name</code> values you entered when you created the ECR via <a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud-platform-environments</a> Github repository.</p>
+
+<p>You can find them in the file <code>namespaces/cloud-platform-live-0.k8s.integration.dsd.io/[YOUR ENVIRONMENT]/resources/ecr.tf</code>.</p>
+<p><h5 id="amazon-ecr-terminology">Amazon ECR Terminology</h5><p>Amazon ECR uses the terms <code>repository</code> and <code>image</code> in a rather confusing way. Normally, you would think of a docker image repository as holding mutiple images, each with a different name, where each image can have multiple tags. Amazon ECR conflates the repository and image - i.e. you can only push images with the same name to a given ECR.</p>
+<p>So, if you created your ECR using the team_name <code>davids-dummy-team</code> and repo_name <code>davids-dummy-app</code>, then you can only push images to the ECR if they are named <code>davids-dummy-team/davids-dummy-app:[something]</code>. You are free to change the tag of the image (shown as [something], here), and some teams overload the tag value as a way to store multiple completely different docker images in a single ECR.</p>
+<h4 id="step-2-push-the-image-to-your-ecr">Step 2 - Push the image to your ECR</h4><h5 id="authenticating-to-your-docker-image-repository">Authenticating to your docker image repository</h5><p>You must authenticate to the docker image repository before you can push an image to it.</p>
+<p>To authenticate to your ECR, you will need the <code>access_key_id</code> and <code>secret_access_key</code> which were created for you when you created your ECR. To retrieve these, see the <a href="/tasks.html#accessing-the-credentials">this section</a> of this guide.</p>
+<p><em>tl;dr</em> use this command:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  kubectl -n [namespace_name] get secret [name of your secret] -o yaml
+</code></pre></div><p>Don&rsquo;t forget to base64 decode the <code>access_key_id</code> and <code>secret_access_key</code> values before using them.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  echo &#39;your_access_key_id_value&#39; | base64 --decode
+</code></pre></div><p>Once you have your <code>access_key_id</code> and <code>secret_access_key</code>, set up an AWS profile using the AWS cli tool.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  aws configure
+</code></pre></div><p>Supply your credentials when prompted.</p>
+<p>This guide assumes you are using these credentials in your <code>default</code> AWS profile. If you have used a different name for this AWS profile, please add <code>--profile [YOUR PROFILE]</code> to all of the following AWS commands.</p>
+<h5 id="authenticating-with-the-repository">Authenticating with the repository</h5><p>Use the following command to login to Amazon ECR</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  $(aws ecr get-login --no-include-email --region eu-west-1)
+</code></pre></div><p>Note: The output of the <code>aws ecr...</code> command is a long <code>docker login...</code> command. Including the <code>$(...)</code> around the command executes this output in the context of the current shell</p>
+<p>The output of the above should include <code>Login Succeeded</code> to confirm you have authenticated to the docker image repository.</p>
+<p>These credential are valid for 12 hours. So, if you are working through this example over a longer period, you will have to login again, e.g. the following day.</p>
+<h5 id="pushing-your-docker-image-to-the-ecr">Pushing your docker image to the ECR</h5><p>All of the MoJ Digital docker images are stored within the same Cloud Platform AWS account (mojds-platforms-integration).</p>
+<p>Your specific ECR will be:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  926803513772.dkr.ecr.eu-west-1.amazonaws.com/[team_name]/[repo_name]
+</code></pre></div><p>Where <code>team_name</code> and <code>repo_name</code> are the values from your <code>ecr.tf</code> file.</p>
+<p>Ensure the Docker image for your application has been built and is stored locally on your machine.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  docker build -t [team_name]/[repo_name] .
+</code></pre></div><p>Now we need to tag the image so it can be pushed into the correct repository.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  docker tag [team_name]/[repo_name]:latest 926803513772.dkr.ecr.eu-west-1.amazonaws.com/[team_name]/[repo_name]:latest
+</code></pre></div><p>Finish by running the last command to push the image to your repository.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>docker push 926803513772.dkr.ecr.eu-west-1.amazonaws.com/[team_name]/[repo_name]:latest
+</code></pre></div><h4 id="step-3-configure-your-namespace-in-the-kubernetes-cluster">Step 3 - Configure your namespace in the Kubernetes Cluster</h4><p>To deploy an application to the Cloud Platform, a number of deployment files must first be configured. You can find examples of these in the <code>kubectl_deploy</code> directory of the <a href="https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app">demo application</a>, but you will need to edit your copy to replace some of the values to use your kubernetes cluster environment and docker image.</p>
+<p><em>Tip:</em> You can find more deployment config info <a href="https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/">in the kubernetes developer documentation</a>.</p>
+<h5 id="deployment-yaml">deployment.yaml</h5><div class="highlight"><pre class="highlight plaintext"><code>apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: helloworld-rubyapp
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: helloworld-rubyapp
+    spec:
+      containers:
+      - name: rubyapp
+        image: 926803513772.dkr.ecr.eu-west-1.amazonaws.com/davids-dummy-team/davids-dummy-app:latest
+        ports:
+        - containerPort: 4567
+</code></pre></div><p>This file tells Kubernetes to run a single pod (<code>replicas: 1</code>) containing a single container based on a specific docker image from your ECR.</p>
+<p>Change the image value to refer to the image you pushed to your ECR in the earlier step.</p>
+<p>The <code>service.yaml</code> and <code>ingress.yaml</code> files make it possible to access your application from the outside world.</p>
+<h5 id="service-yaml">service.yaml</h5><p>Service files are used to specify port and protocol information for your application and are also used to bundle together the set of pods created by the deployment.</p>
+<p>This exposes port 4567 internally to your namespace. i.e. it enables pods and other objects within your namespace to connect to port 4567 of your container.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: v1
+kind: Service
+metadata:
+  name: rubyapp-service
+  labels:
+    app: rubyapp-service
+spec:
+  ports:
+  - port: 4567
+    name: http
+    targetPort: 4567
+  selector:
+    app: helloworld-rubyapp
+</code></pre></div><p>The value of <code>spec/selector/app</code> must be the same as <code>spec/template/metadata/labels/app</code> in the <code>deployment.yml</code> file.</p>
+<p><em>Tip:</em> You can find more info on service definition in the <a href="https://kubernetes.io/docs/tasks/access-application-cluster/service-access-application-cluster/">kubernetes docs</a>.</p>
+<h5 id="ingress-yaml">ingress.yaml</h5><p>Ingress files are to use to define external access to the application.</p>
+<p>This creates an <a href="https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/">ingress controller</a> to enable network connections from outside of the cluster.</p>
+<p>Note: Because we are specifying <code>http</code>, this ingress controller will expose port 80, and will redirect connections to port 4567 of the named service.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: helloworld-rubyapp-ingress
+spec:
+  rules:
+  - host: helloworld-rubyapp.apps.cloud-platform-live-0.k8s.integration.dsd.io
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: rubyapp-service
+          servicePort: 4567
+</code></pre></div><p>The value of <code>serviceName</code> and <code>servicePort</code> must be the same as those specified in the <code>service.yml</code> file.</p>
+<p>Change the <code>helloworld-rubyapp</code> prefix of the <code>host</code> string to the value you want to use as the hostname part of the URL on which your application will be available to the world (do not change the <code>.apps.cloud-platform...</code> part).</p>
+<p><em>Tip:</em> You can find more info on ingress in the <a href="https://kubernetes.io/docs/concepts/services-networking/ingress/">kubernetes docs</a></p>
+<h4 id="step-4-deploy-the-application">Step 4 - Deploy the application</h4><p>With all of the deployment files configured, you can now deploy your application to the Cloud Platform.</p>
+<p>Start by listing the namespaces on the cluster you are connected to:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  kubectl get namespaces
+</code></pre></div><p>The list that gets returned should include the one you <a href="/tasks.html#creating-a-cloud-platform-environment">created earlier</a>, here we assume it is called <code>davids-dummy-dev</code>. Please change that to whatever your namespace (environment) is called, in all of the following commands.</p>
+<p>To deploy your application run the following command. This command assumes that the current directory is the root directory of your working copy of the <a href="https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app">demo application</a>. i.e. <code>kubectl_deploy</code> points to the directory where the deployment files are stored.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  kubectl create --filename kubectl_deploy --namespace davids-dummy-dev
+</code></pre></div><p>You have to specify the namespace you want to deploy to, this should be the namespace of the environment you created.</p>
+<p>Confirm the deployment with:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  kubectl get pods --namespace davids-dummy-dev
+</code></pre></div><h4 id="interacting-with-the-application">Interacting with the application</h4><p>With the application deployed into the Cloud Platform, there are a few ways of managing it:</p></p>
+
+<ul>
+<li><strong>View pods</strong> - <code>kubectl get pods --namespace davids-dummy-dev</code></li>
+<li><strong>Check host</strong> - <code>kubectl get ingress --namespace davids-dummy-dev</code></li>
+<li><strong>Delete application</strong> - <code>kubectl delete --filename kubectl_deploy --namespace davids-dummy-dev</code></li>
+<li><strong>Shell into container</strong> - <code>kubectl exec --stdin --tty --namespace davids-dummy-dev [POD-NAME] -- /bin/sh</code></li>
+</ul>
+
+<p>For <code>[POD-NAME]</code> use the value returned by the <code>kubectl get pods...</code> command</p>
+
+<p><em>Tip:</em> You can find more about the <code>kubectl</code> command <a href="https://kubernetes.io/docs/reference/kubectl/overview/">here</a></p>
+
+<p>You should be able to view the app. at the following URL:</p>
+
+<div class="highlight"><pre class="highlight plaintext"><code>  curl -L http://helloworld-rubyapp.apps.cloud-platform-live-0.k8s.integration.dsd.io
+</code></pre></div><p>Don&rsquo;t forget to change <code>helloworld-rubyapp</code> to whatever hostname you chose earlier.</p>
+<p>Note: You need the <code>-L</code> flag to make curl follow the 308 redirect response that it will receive from the ingress controller. If you view the URL in a web browser, it should just work.</p>
+
+<h3 id="deploying-a-multi-container-application-to-the-cloud-platform">Deploying a multi-container application to the Cloud Platform</h3><h4 id="deploying-a-multi-container-application-to-the-cloud-platform-overview">Overview</h4><p>This section goes through the process of deploying a <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app">demo application</a> consisting of several components, each running in its own container.</p>
+<p>Please see the <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app#multi-container-demo-application">application README</a> for a description of the different components, and how they connect. You can also run the application locally via docker-compose to confirm that it works as it should.</p>
+<h4 id="running-in-the-kubernetes-cluster">Running in the Kubernetes Cluster</h4><p>In the <a href="https://github.com/ministryofjustice/cloud-platform">Cloud Platform</a> kubernetes cluster, the application will be set up like this:</p>
+<p><a href="../images/multi-container-k8s.png" target="_blank" rel="noopener noreferrer"><img src="/images/multi-container-k8s.png" alt="Multi-container architecture diagram" /></a></p>
+<p>Each container needs a <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/">Deployment</a> which will contain a <a href="https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/">Pod</a>. <a href="https://kubernetes.io/docs/concepts/services-networking/service/">Services</a> make pods available on the cluster&rsquo;s internal network, and an <a href="https://kubernetes.io/docs/concepts/services-networking/ingress/">Ingress</a> exposes one or more services to the outside world.</p>
+<h4 id="create-an-rds-instance">Create an RDS instance</h4><p>The application database will be an Amazon RDS instance. To create this, refer to the <a href="https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance">cloud platform RDS</a> repository, and create a terraform file in your sub-directory of the <a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud platform environments</a> repository (you will need to raise a PR for this, and get the cloud platform team to approve it).</p>
+<p>For more information see <a href="/archive.html#adding-aws-resources-to-your-environment">Adding AWS resources to your environment</a>.</p>
+<h4 id="build-docker-images-and-pushing-to-ecr">Build docker images and pushing to ECR</h4><p>As before, we need to build docker images which we will push to our <a href="https://aws.amazon.com/ecr/">Amazon ECR</a>.</p>
+<p>Please carry out the following steps on your own working copy of the <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app">demo application</a>.</p>
+<p>For <code>team_name</code> and <code>repo_name</code> please use the values from your <code>ecr.tf</code> file, when you <a href="/tasks.html#creating-an-ecr-repository">created your ECR</a>.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>cd rails-app
+docker build -t [team_name]/[repo_name]:rails-app .
+docker tag [team_name]/[repo_name]:rails-app 926803513772.dkr.ecr.eu-west-1.amazonaws.com/[team_name]/[repo_name]:rails-app-1.0
+docker push 926803513772.dkr.ecr.eu-west-1.amazonaws.com/[team_name]/[repo_name]:rails-app-1.0
+</code></pre></div><p>Note that we are overloading the tag value to push multiple different containers to a single Amazon ECR. This is because of a quirk in the way Amazon ECR refers to <code>image repositories</code> and <code>images</code>.</p>
+<p>Repeat the steps above for the <code>content-api</code> and <code>worker</code> sub-directories (changing <code>rails-app</code> as appropriate, in the commands).</p>
+<p>The <code>makefile</code> in the <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app">demo application</a> contains commands to make this process easier. Don&rsquo;t forget to edit the values for <code>TEAM_NAME</code>, <code>REPO_NAME</code> and <code>VERSION</code> appropriately.</p>
+<h4 id="kubernetes-configuration">Kubernetes configuration</h4><p>As per the diagram, we need to configure six objects in kubernetes - 3 deployments, 2 services and 1 ingress.</p>
+<p>You can see these YAML config files in the <code>kubernetes_deploy</code> directory of the <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app">demo application</a>.</p>
+<p>Note: The yaml files in the github repository have the namespace name <code>davids-dummy-dev</code>, team name <code>davids-dummy-team</code> and application name <code>davids-dummy-app</code>. You will need to change these to the corresponding values for your situation, and also the full names of your docker images.</p>
+<p>You may also need to change the <code>host</code> entry in the <code>ingress.yaml</code> file, if someone else has deployed an instance of the demo application using the same hostname.</p>
+<p>In <code>rails-app-deployment.yaml</code> and <code>worker-deployment.yaml</code> you can see the configuration for two environment variables:</p>
+
+<ul>
+<li><code>DATABASE_URL</code> is retrieved from the kubernetes secret which was created when the RDS instance was set up</li>
+<li><code>CONTENT_API_URL</code> uses the name and port defined in <code>content-api-service.yaml</code></li>
+</ul>
+<h4 id="deploying-to-the-cluster">Deploying to the cluster</h4><p>After you have built and pushed your docker images, and made the corresponding changes to the <code>kubernetes_deploy/*.yaml</code> files, you can apply the configuration to your namespace in the kubernetes cluster:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  kubectl apply --filename kubernetes_deploy --namespace [your namespace]
+</code></pre></div><h4 id="deploying-a-multi-container-application-to-the-cloud-platform-interacting-with-the-application">Interacting with the application</h4><p>You should be able to view the application in your browser at:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  https://multi-container-demo.apps.cloud-platform-live-0.k8s.integration.dsd.io/
+</code></pre></div><p>It should behave in the same way as when you were running it locally via docker-compose.</p>
+
+
+<h2 id="adding-a-secret-to-an-application">Adding a secret to an application</h2><h3 id="adding-a-secret-to-an-application-overview">Overview</h3><p>The aim of this guide is to walkthrough the process of adding a secret (in this example for aws access-key credentials) to a previously deployed application in the Cloud Platform.</p>
+<h3 id="adding-a-secret-to-an-application-prerequisites">Prerequisites</h3><p>This guide assumes the following:</p>
+
+<ul>
+<li>You have previously set up an env. See <a href="/tasks.html#creating-a-cloud-platform-environment">Creating a Cloud Platform Environment</a></li>
+<li>You have previously deployed your application. See <a href="/tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">Deploying an application to the Cloud-Platform</a></li>
+<li>Check your deployment is running. See <a href="/tasks.html#interacting-with-the-application">Interacting with the application</a></li>
+</ul>
+<h3 id="configuring-secrets">Configuring secrets</h3><p>The following is an example of encoding (configuring) aws access-key credentials in your deployment.
+See <a href="https://kubernetes.io/docs/concepts/configuration/secret/#using-secrets-as-environment-variables">kuberenetes using secrets as environment variables</a></p>
+<p>for detailed information regarding providing base64 values in secret objects to Kuberenetes pods)</p>
+<p>Create your AWS Credentials access key (making a note of the aws_access_key_id and aws_secret_access_key)</p>
+<h4 id="base64-encode-your-secret-as-follows">base64-encode your secret as follows:</h4><p>In this example  aws_access_key_id is &lsquo;AKIAFTKSAW15HJLOGD&rsquo;. Issue the following command to base64-encode:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>echo -n 'AKIAFTKSAW15HJLOGD' | base64 -b0
+</code></pre></div><p>This will return the encoded id &#39;QUtJQUZUS1NBVzE1SEpMT0dE&rsquo;</p>
+<p>In this example the is aws_secret_access_key &#39;g8hjpmhvgfhk4547gfdshhjj&rsquo;. Issue the following command to base64-encode:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>echo -n 'QUtJQUZUS1NBVzE1SEpMT0dE' | base64 -b0
+</code></pre></div><p>This will return the encoded secret &#39;UVV0SlFVWlVTMU5CVnpFMVNFcE1UMGRF&rsquo;</p>
+<h3 id="creating-the-secret">Creating the secret</h3><p>Create a secrets.yaml file similar to:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: v1
+kind: Secret
+metadata:
+  name: demosecret
+type: Opaque
+data:
+  aws_access_key_id: QUtJQUZUS1NBVzE1SEpMT0dE
+  aws_secret_access_key: UVV0SlFVWlVTMU5CVnpFMVNFcE1UMGRF
+</code></pre></div><p>issue the following command:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl apply -f secrets.yaml
+secret "demosecret" created
+</code></pre></div><p>To see the secrets:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl get secrets
+NAME                                          TYPE                                  DATA      AGE
+calico-zebu-external-dns-token-pldjb          kubernetes.io/service-account-token   3         16d
+dandy-bumblebee-nginx-ingress-token-bspl6     kubernetes.io/service-account-token   3         14d
+default-token-hz7z7                           kubernetes.io/service-account-token   3         26d
+demosecret                                    Opaque                                2         5d
+</code></pre></div><p>Decoding the Secret
+Secrets can be retrieved via the kubectl get secret command. For example, to retrieve the secret you created:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl get secret demosecret  -o yaml
+apiVersion: v1
+data:
+  aws_access_key_id: dGVzdCBrZXk=
+  aws_secret_access_key: dGVzdCBrZXk=
+kind: Secret
+metadata:
+  creationTimestamp: 2018-05-15T12:24:33Z
+  name: demosecret
+</code></pre></div><p>Add the AWS_ACCESS_KEY_ID referencing &#39;aws_access_key_id&rsquo; and AWS_SECRET_ACCESS_KEY referencing &#39;aws_secret_access_key&rsquo; (as previously set) to the containers env in <code>deployment-files/deployment.yaml</code></p>
+<div class="highlight"><pre class="highlight plaintext"><code>    spec:
+      containers:
+        - name: django-demo-container
+          image: 926803513772.dkr.ecr.eu-west-1.amazonaws.com/cloud-platform-reference-app:django
+          ports:
+            - containerPort: 8000
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: demosecret
+                  key: aws_access_key_id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: demosecret
+                  key: aws_secret_access_key
+</code></pre></div>
 
 
             

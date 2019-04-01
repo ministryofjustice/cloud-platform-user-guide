@@ -3,7 +3,7 @@
 <h4 id="prerequisites">Prerequisites</h4><p>This guide assumes the following:</p>
 
 <ul>
-<li>You have <a href="getting-started.html##creating-a-cloud-platform-environment">created a namespace for your application</a></li>
+<li>You have <a href="tasks.html#creating-a-cloud-platform-environment">created a namespace for your application</a></li>
 </ul>
 <h4 id="creating-a-slack-webhook-and-amend-alertmanager">Creating a slack webhook and amend Alertmanager</h4><p>This step requires the Cloud Platform team to create a receiver in <a href="https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/templates/prometheus-operator.yaml.tpl###L115">Alertmanager</a> and a <a href="https://api.slack.com/incoming-webhooks">Slack webhook</a>.</p>
 <p>Create a ticket to request a new alert route in Alertmanager. The team will need the following information:</p>
