@@ -60,19 +60,19 @@ Within the cluster directory you will generate a directory for your environment 
 
 **/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/servicename-env/**
 
-The `<servicename-env>` directory for your environment defines the specific resources we will create in your namespace. We describe these resources in more detail in [how we set up an environment](###how-we-set-up-an-environment).
+The `<servicename-env>` directory for your environment defines the specific resources we will create in your namespace. We describe these resources in more detail in [how we set up an environment](#how-we-set-up-an-environment).
 
 #### How we set up an environment
 
 To set up an environment we create 5 files in the directory for your namespace:
 
-* [`00-namespace.yaml`](###00-namespaceyaml)
-* [`01-rbac.yaml`](###01-rbacyaml)
-* [`02-limitrange.yaml`](###02-limitrangeyaml)
-* [`03-resourcequota.yaml`](###03-resourcequotayaml)
-* [`04-networkpolicy.yaml`](###04-networkpolicyyaml)
+* [`00-namespace.yaml`](#00-namespace-yaml)
+* [`01-rbac.yaml`](#01-rbac-yaml)
+* [`02-limitrange.yaml`](#02-limitrange-yaml)
+* [`03-resourcequota.yaml`](#03-resourcequota-yaml)
+* [`04-networkpolicy.yaml`](#04-networkpolicy-yaml)
 
-These files define key elements of the namespace and restrictions we want to place on it so that we have security and resource allocation properties. We will use terraform to create these files from templates. We also describe each of these files [in more detail below](###00-namespaceyaml) in case you want to make future changes.
+These files define key elements of the namespace and restrictions we want to place on it so that we have security and resource allocation properties. We will use terraform to create these files from templates. We also describe each of these files [in more detail below](#00-namespace-yaml) in case you want to make future changes.
 
 #### Create your namespace and namespace resources
 
@@ -157,11 +157,11 @@ Then you can try [deploying an app to Kubernetes manually][deploy-hello-world] b
 
 To set up an environment we create 5 files in that directory:
 
-* [`00-namespace.yaml`](###00-namespaceyaml)
-* [`01-rbac.yaml`](###01-rbacyaml)
-* [`02-limitrange.yaml`](###02-limitrangeyaml)
-* [`03-resourcequota.yaml`](###03-resourcequotayaml)
-* [`04-networkpolicy.yaml`](###04-networkpolicyyaml)
+* [`00-namespace.yaml`](#00-namespace-yaml)
+* [`01-rbac.yaml`](#01-rbac-yaml)
+* [`02-limitrange.yaml`](#02-limitrange-yaml)
+* [`03-resourcequota.yaml`](#03-resourcequota-yaml)
+* [`04-networkpolicy.yaml`](#04-networkpolicy-yaml)
 
 These files define key elements of the namespace and restrictions we want to place on it so that we have security and resource allocation properties. We will use terraform to create these files from templates. We also describe each of these files in more detail below in case you want to make changes.
 
@@ -284,6 +284,6 @@ spec:
           component: ingress-controllers
 ```
 
-[deploy-hello-world]: deploying-applications.html##deploying-a-39-hello-world-39-application-to-the-cloud-platform
-[deploy-helm]: deploying-applications.html##deploying-an-application-to-the-cloud-platform-with-helm
-[ecr-setup]: getting-started.html##creating-an-ecr-repository
+[deploy-hello-world]: tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform
+[deploy-helm]: archive.html#deploying-an-application-to-the-cloud-platform-with-helm
+[ecr-setup]: tasks.html#creating-an-ecr-repository
