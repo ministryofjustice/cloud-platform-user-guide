@@ -1,22 +1,22 @@
-## Accessing Application Log Data
+### Accessing Application Log Data
 
-### Overview
+#### Overview
 
-This document is intended to assist engineers in accessing application and system logs stored in a centralized Elasticsearch cluster. 
+This document is intended to assist engineers in accessing application and system logs stored in a centralized Elasticsearch cluster.
 
-### Access Kibana
+#### Access Kibana
 
 The Cloud Platform collects, indexes and presents your application and system log data enabling you to query using Kibana’s standard query language (based on Lucene query syntax).
 
 To access Kibana, follow the appropriate link below and authenticate with your GitHub credentials:
 
-#### Live-1 Cluster
+##### Live-1 Cluster
 [https://kibana.apps.live-1.cloud-platform.service.justice.gov.uk/plugin/kibana/](https://kibana.apps.live-1.cloud-platform.service.justice.gov.uk/_plugin/kibana/)
 
-#### Live-0 Cluster 
+##### Live-0 Cluster
 [https://kibana.apps.cloud-platform-live-0.k8s.integration.dsd.io/plugin/kibana/](https://kibana.apps.cloud-platform-live-0.k8s.integration.dsd.io/_plugin/kibana/)
 
-### Using Kibana
+#### Using Kibana
 
 As a quick example, we will filter down to the logs of a particular environment.
 

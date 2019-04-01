@@ -1,11 +1,11 @@
-## Applying a Maintenance Page
+### Applying a Maintenance Page
 
-### Overview
+#### Overview
 
 This document will serve as a guide on how to apply a default
 maintenance page to your application on the Cloud Platform.
 
-### Deploying the page
+#### Deploying the page
 
 A repository has been created to store all the files related to the
 maintenance page:
@@ -29,7 +29,7 @@ Once you have done this, the maintenance page will be deployed
 into your namespace, ready for you to use as and when you need
 it.
 
-#### maintenance-deploy.yaml
+##### maintenance-deploy.yaml
 
 A notable part of this file is the `image` line, which points to
 the ECR URI.
@@ -37,7 +37,7 @@ the ECR URI.
 If you wish to customize the maintenance page, you must edit and
 build the image and update the `image` value.
 
-#### maintenance-ingress.yaml
+##### maintenance-ingress.yaml
 
 In this file, change the example `host` field to your applications
 URL.

@@ -1,4 +1,4 @@
-## Contributing to this document
+### Contributing to this document
 
 This guide is built using [GitHub Pages][gh-pages].
 

@@ -1,8 +1,8 @@
-## Deploying a 'Hello World' application to the Cloud Platform
+### Deploying a 'Hello World' application to the Cloud Platform
 
 ![Deployment Process Diagram](../images/k8s-cluster-application-deployment-process.png)
 
-### Overview
+#### Overview
 
 The aim of this guide is to walkthrough the process of deploying an application into the Cloud Platform.
 
@@ -17,7 +17,7 @@ The process we will follow consists of the following stages:
 
 The process of building an image and pushing it to an ECR will normally be carried out by a build pipeline. For this initial walkthrough, we will go through these steps manually. Later we will go through an example of setting up a [CircleCI][circleci] job to do this automatically. The steps are similar if you're using other CI/CD tools such as [TravisCI][travisci].
 
-### Prerequisites
+#### Prerequisites
 
 This guide assumes the following:
 
@@ -27,7 +27,7 @@ This guide assumes the following:
 * You have [created an environment for your application][env-create]
 * You have [created an Amazon ECR][ecr-setup] to host your docker image
 
-### Step 1 - Build your docker image
+#### Step 1 - Build your docker image
 
 * Clone the [demo application](https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app)
 
@@ -42,15 +42,15 @@ The `ECR Team Name` and `ECR Repository Name` must match the `team_name` and `re
 
 You can find them in the file `namespaces/cloud-platform-live-0.k8s.integration.dsd.io/[YOUR ENVIRONMENT]/resources/ecr.tf`.
 
-#### Amazon ECR Terminology
+##### Amazon ECR Terminology
 
 Amazon ECR uses the terms `repository` and `image` in a rather confusing way. Normally, you would think of a docker image repository as holding mutiple images, each with a different name, where each image can have multiple tags. Amazon ECR conflates the repository and image - i.e. you can only push images with the same name to a given ECR.
 
 So, if you created your ECR using the team_name `davids-dummy-team` and repo_name `davids-dummy-app`, then you can only push images to the ECR if they are named `davids-dummy-team/davids-dummy-app:[something]`. You are free to change the tag of the image (shown as [something], here), and some teams overload the tag value as a way to store multiple completely different docker images in a single ECR.
 
-### Step 2 - Push the image to your ECR
+#### Step 2 - Push the image to your ECR
 
-#### Authenticating to your docker image repository
+##### Authenticating to your docker image repository
 
 You must authenticate to the docker image repository before you can push an image to it.
 
@@ -72,7 +72,7 @@ Supply your credentials when prompted.
 
 This guide assumes you are using these credentials in your `default` AWS profile. If you have used a different name for this AWS profile, please add `--profile [YOUR PROFILE]` to all of the following AWS commands.
 
-#### Authenticating with the repository
+##### Authenticating with the repository
 
 Use the following command to login to Amazon ECR
 
@@ -84,7 +84,7 @@ The output of the above should include `Login Succeeded` to confirm you have aut
 
 These credential are valid for 12 hours. So, if you are working through this example over a longer period, you will have to login again, e.g. the following day.
 
-#### Pushing your docker image to the ECR
+##### Pushing your docker image to the ECR
 
 All of the MoJ Digital docker images are stored within the same Cloud Platform AWS account (mojds-platforms-integration).
 
@@ -106,13 +106,13 @@ Finish by running the last command to push the image to your repository.
 
     docker push 926803513772.dkr.ecr.eu-west-1.amazonaws.com/[team_name]/[repo_name]:latest
 
-### Step 3 - Configure your namespace in the Kubernetes Cluster
+#### Step 3 - Configure your namespace in the Kubernetes Cluster
 
 To deploy an application to the Cloud Platform, a number of deployment files must first be configured. You can find examples of these in the `kubectl_deploy` directory of the [demo application][rubyapp-github], but you will need to edit your copy to replace some of the values to use your kubernetes cluster environment and docker image.
 
 *Tip:* You can find more deployment config info [in the kubernetes developer documentation](https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/).
 
-#### deployment.yaml
+##### deployment.yaml
 
 ```Yaml
 apiVersion: extensions/v1beta1
@@ -139,7 +139,7 @@ Change the image value to refer to the image you pushed to your ECR in the earli
 
 The `service.yaml` and `ingress.yaml` files make it possible to access your application from the outside world.
 
-#### service.yaml
+##### service.yaml
 
 Service files are used to specify port and protocol information for your application and are also used to bundle together the set of pods created by the deployment.
 
@@ -165,7 +165,7 @@ The value of `spec/selector/app` must be the same as `spec/template/metadata/lab
 
 *Tip:* You can find more info on service definition in the [kubernetes docs](https://kubernetes.io/docs/tasks/access-application-cluster/service-access-application-cluster/).
 
-#### ingress.yaml
+##### ingress.yaml
 
 Ingress files are to use to define external access to the application.
 
@@ -196,7 +196,7 @@ Change the `helloworld-rubyapp` prefix of the `host` string to the value you wan
 
 *Tip:* You can find more info on ingress in the [kubernetes docs](https://kubernetes.io/docs/concepts/services-networking/ingress/)
 
-### Step 4 - Deploy the application
+#### Step 4 - Deploy the application
 
 With all of the deployment files configured, you can now deploy your application to the Cloud Platform.
 
@@ -216,7 +216,7 @@ Confirm the deployment with:
 
       kubectl get pods --namespace davids-dummy-dev
 
-### Interacting with the application
+#### Interacting with the application
 
 With the application deployed into the Cloud Platform, there are a few ways of managing it:
 
@@ -243,6 +243,6 @@ Note: You need the `-L` flag to make curl follow the 308 redirect response that 
 [docker]: https://www.docker.com
 [circleci]: https://circleci.com
 [travisci]: https://travis-ci.org
-[ecr-setup]: getting-started.html#creating-an-ecr-repository
-[access-ecr-credentials]: getting-started.html#accessing-the-credentials
-[env-create]: getting-started.html#creating-a-cloud-platform-environment
+[ecr-setup]: getting-started.html##creating-an-ecr-repository
+[access-ecr-credentials]: getting-started.html##accessing-the-credentials
+[env-create]: getting-started.html##creating-a-cloud-platform-environment

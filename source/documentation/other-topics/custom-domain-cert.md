@@ -1,6 +1,6 @@
-## Using an externally-managed hostname
+### Using an externally-managed hostname
 
-### Background
+#### Background
 Every application running on Cloud Platform is able to use a hostname for their
 HTTP endpoints, under a pre-defined DNS zone. For example, on the `live-0`
 cluster, this would be `*.apps.cloud-platform-live-0.k8s.integration.dsd.io`. As
@@ -12,15 +12,15 @@ hostname. These hostnames (or usually, DNS zones) are managed externally,
 relative to the cluster, and there is a number of actions in order to set them
 up for usage.
 
-### Setup
+#### Setup
 
-#### You do not have a DNS zone for the desired hostname
+##### You do not have a DNS zone for the desired hostname
 Please [create a support ticket](http://goo.gl/msfGiS) providing as much
 information as possible.
 
-#### You already have a DNS zone for the desired hostname
+##### You already have a DNS zone for the desired hostname
 
-##### > It's a Route53 zone
+###### > It's a Route53 zone
 1. [Create a support ticket](http://goo.gl/msfGiS) requesting the `provider`
 name for your `Certificate` (see the next step).
 
@@ -87,7 +87,7 @@ $ kubectl describe certificate <my-cert>
 +           servicePort: 80
 ```
 
-##### > It's a DNS zone hosted with another provider
+###### > It's a DNS zone hosted with another provider
 For the time being, we only support Route53 natively. Depending on the provider
 we might be able to accommodate you or we might need to handle this manually, if possible.
 Please [create a support ticket](http://goo.gl/msfGiS).
