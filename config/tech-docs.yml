@@ -9,6 +9,7 @@ phase: INTERNAL
 
 # Links to show on right-hand-side of header
 header_links:
+  'Feedback / Report a problem': 'mailto:platforms+user-guide@digital.justice.gov.uk?subject=User+guide+feedback'
   Documentation: /
   GitHub: https://github.com/ministryofjustice/cloud-platform-user-guide
 
