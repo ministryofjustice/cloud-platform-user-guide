@@ -116,6 +116,6 @@ deploy_development:
           fi
 ```
 
-[deploy-helm]: deploying-applications.html##deploying-an-application-to-the-cloud-platform-with-helm
-[ecr-setup]: getting-started.html##creating-an-ecr-repository
-[env-create]: getting-started.html##creating-a-cloud-platform-environment
+[deploy-helm]: archive.html#deploying-an-application-to-the-cloud-platform-with-helm
+[ecr-setup]: tasks.html#creating-an-ecr-repository
+[env-create]: tasks.html#creating-a-cloud-platform-environment

@@ -103,4 +103,4 @@ PrometheusRules can still be tested/amended/applied manually, then a PR can be c
 - [Prometheus Operator - Getting Started](https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/getting-started.md)
 - [Alerting](https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/alerting.md)
 
-[env-create]: getting-started.html##creating-a-cloud-platform-environment
+[env-create]: tasks.html#creating-a-cloud-platform-environment

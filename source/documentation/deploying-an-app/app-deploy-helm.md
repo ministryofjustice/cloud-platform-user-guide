@@ -198,5 +198,5 @@ And then confirm the pods are terminating as expected:
 #### Next steps
 The next step will be to create your own Helm Chart. You can try this with an application of your own or run through [Bitnami's excellent guide](https://docs.bitnami.com/kubernetes/how-to/create-your-first-helm-chart/) on how to build using a simple quickstart.
 
-[env-create]: getting-started.html##creating-a-cloud-platform-environment
-[auth-to-cluster]: getting-started.html##authentication
+[env-create]: tasks.html#creating-a-cloud-platform-environment
+[auth-to-cluster]: tasks.html#authentication
