@@ -1,5 +1,5 @@
-<h2 id="kubernetes-basics-links-to-helpful-beginner-resources">Kubernetes Basics - Links to helpful beginner resources</h2><p>The purpose of this page is to serve as a small catalogue of links to basic Kubernetes concepts and learning resources.</p>
-<h3 id="the-concept">The Concept</h3><p>Kubernetes is very often referred to as <strong>&ldquo;K8s&rdquo;</strong>, purely for the reason, that typing Kubernetes over and over gets quite taxing.</p>
+<h3 id="kubernetes-basics-links-to-helpful-beginner-resources">Kubernetes Basics - Links to helpful beginner resources</h3><p>The purpose of this page is to serve as a small catalogue of links to basic Kubernetes concepts and learning resources.</p>
+<h4 id="the-concept">The Concept</h4><p>Kubernetes is very often referred to as <strong>&ldquo;K8s&rdquo;</strong>, purely for the reason, that typing Kubernetes over and over gets quite taxing.</p>
 <p>If Kubernetes is a totally new concept to you, then firstly you should probably check out a few of the resources linked below:</p>
 <p>Official Website:
 <a href="https://kubernetes.io">https://kubernetes.io</a></p>
@@ -9,13 +9,13 @@
 <a href="https://www.youtube.com/watch?v=IMOZCDhH7do">https://www.youtube.com/watch?v=IMOZCDhH7do</a></p>
 <p>A part of the concept that is missing from the main offical document is Ingress.
 Here&rsquo;s a link that expalins that concept: <a href="https://kubernetes.io/docs/concepts/services-networking/ingress">https://kubernetes.io/docs/concepts/services-networking/ingress</a></p>
-<h3 id="experiment-with-local-hosting">Experiment with Local Hosting</h3><p>To keep costs low and for learning the basics, it is possible to host a Kubernetes Cluster locally on your machine. Docker and Minikube both provide tools for this:</p>
+<h4 id="experiment-with-local-hosting">Experiment with Local Hosting</h4><p>To keep costs low and for learning the basics, it is possible to host a Kubernetes Cluster locally on your machine. Docker and Minikube both provide tools for this:</p>
 <p>Docker: <a href="https://docs.docker.com/docker-for-mac/kubernetes">https://docs.docker.com/docker-for-mac/kubernetes</a></p>
 <p>Minikube: <a href="https://docs.docker.com/docker-for-mac/kubernetes">https://kubernetes.io/docs/setup/minikube</a></p>
 <p>Kubernetes is normally used with one of the big 3 cloud providers. Amazon Web Services, Google Cloud Engine, and Microsoft Azure.</p>
-<h3 id="command-line-kubernetes-interaction">Command Line Kubernetes Interaction</h3><p>Kubernetes has it&rsquo;s own official CLI tool for interacting with a Cluster called <code>kubectl</code>. It is certainly worth learning the basics of <code>kubectl</code>, As the vast majority of time interacting with Kubernetes will be through this tool.</p>
-<p>We have our own page on <a href="/other-topics.html#kubectl-quick-reference">Kubectl Basics</a>.</p>
-<h3 id="online-courses">Online Courses</h3><p>You will find a multitude of courses online that offer to teach the basics of Kubernetes (and beyond). Some are better than others, some are free, and some require a subscription or one-off payment for access.</p>
+<h4 id="command-line-kubernetes-interaction">Command Line Kubernetes Interaction</h4><p>Kubernetes has it&rsquo;s own official CLI tool for interacting with a Cluster called <code>kubectl</code>. It is certainly worth learning the basics of <code>kubectl</code>, As the vast majority of time interacting with Kubernetes will be through this tool.</p>
+<p>We have our own page on <a href="/other-topics.html##kubectl-quick-reference">Kubectl Basics</a>.</p>
+<h4 id="online-courses">Online Courses</h4><p>You will find a multitude of courses online that offer to teach the basics of Kubernetes (and beyond). Some are better than others, some are free, and some require a subscription or one-off payment for access.</p>
 <p>Two popular course sites, for example are:</p>
-<h4 id="pluralsight">Pluralsight</h4><p><a href="https://www.pluralsight.com/courses/getting-started-kubernetes">https://www.pluralsight.com/courses/getting-started-kubernetes</a></p>
-<h4 id="udacity">Udacity</h4><p><a href="https://eu.udacity.com/course/scalable-microservices-with-kubernetes--ud615">https://eu.udacity.com/course/scalable-microservices-with-kubernetes&ndash;ud615</a></p>
+<h5 id="pluralsight">Pluralsight</h5><p><a href="https://www.pluralsight.com/courses/getting-started-kubernetes">https://www.pluralsight.com/courses/getting-started-kubernetes</a></p>
+<h5 id="udacity">Udacity</h5><p><a href="https://eu.udacity.com/course/scalable-microservices-with-kubernetes--ud615">https://eu.udacity.com/course/scalable-microservices-with-kubernetes&ndash;ud615</a></p>

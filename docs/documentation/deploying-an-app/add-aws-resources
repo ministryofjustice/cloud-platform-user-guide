@@ -1,12 +1,12 @@
-<h2 id="adding-aws-resources-to-your-environment">Adding AWS resources to your environment</h2><p>Through the <a href="https://github.com/ministryofjustice/cloud-platform-environments/">cloud-platform-environments</a> repository, you can provision AWS resources for your environments. This is done using terraform and more specifically, terraform modules we provide for use on the Cloud Platform.</p>
+<h3 id="adding-aws-resources-to-your-environment">Adding AWS resources to your environment</h3><p>Through the <a href="https://github.com/ministryofjustice/cloud-platform-environments/">cloud-platform-environments</a> repository, you can provision AWS resources for your environments. This is done using terraform and more specifically, terraform modules we provide for use on the Cloud Platform.</p>
 <p>The documentation for the modules lives in each module&rsquo;s repository and you can find a list of the available ones below.</p>
-<h3 id="available-modules">Available modules</h3><p>The updated list of terraform modules provided by the MoJ are available here : <a href="https://github.com/ministryofjustice/cloud-platform#terraform-modules">Terraform Module</a></p>
+<h4 id="available-modules">Available modules</h4><p>The updated list of terraform modules provided by the MoJ are available here : <a href="https://github.com/ministryofjustice/cloud-platform##terraform-modules">Terraform Module</a></p>
 <div class="highlight"><pre class="highlight plaintext"><code> !!!  WARNING  !!!
 
-Be aware that the latest version of these modules will only be compatible with Live-1. 
+Be aware that the latest version of these modules will only be compatible with Live-1.
 If you are planing on deploying them against Live-0, please read their respective README carefully for instruction.
 
-</code></pre></div><h3 id="usage">Usage</h3><p>In each terraform module repository, you will find a directory named <code>example</code> which includes sample configuration for use in Cloud Platform.</p>
+</code></pre></div><h4 id="usage">Usage</h4><p>In each terraform module repository, you will find a directory named <code>example</code> which includes sample configuration for use in Cloud Platform.</p>
 <p>In your namespace&rsquo;s path in the <a href="https://github.com/ministryofjustice/cloud-platform-environments/">cloud-platform-environments</a> repository, create a directory called <code>resources</code> (if you have not created one already) and refer to the module&rsquo;s example to define your resources.</p>
 <p>Each example will have some global configuration defined, however, this should only be declared once, regardless of the number of modules used:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>terraform {
@@ -21,9 +21,9 @@ provider "aws" {
 
 variable "cluster_state_bucket" {}
 </code></pre></div><p>The main README file of each module repository will list all the available configuration options that can be passed to the module.</p>
-<h4 id="outputs">Outputs</h4><p>Each module will have its own outputs. These expose useful information, such as endpoints, credentials etc. The module examples all use a common approach: they employ the <code>kubernetes_secret</code> terraform resource to push the outputs straight into your environment in the form of a <code>Secret</code> which you could then extract information from or directly reference in <code>Pods</code>.</p>
+<h5 id="outputs">Outputs</h5><p>Each module will have its own outputs. These expose useful information, such as endpoints, credentials etc. The module examples all use a common approach: they employ the <code>kubernetes_secret</code> terraform resource to push the outputs straight into your environment in the form of a <code>Secret</code> which you could then extract information from or directly reference in <code>Pods</code>.</p>
 <p>This is currently the only supported way of accessing terraform outputs.</p>
-<h4 id="versioning">Versioning</h4><p>All modules are versioned. This allows us to implement changes without breaking existing resources. To use a specific version of a module you need to define it in the <code>source</code> attribute by specifying the <code>ref</code> attribute in the query string of the source URL:</p>
+<h5 id="versioning">Versioning</h5><p>All modules are versioned. This allows us to implement changes without breaking existing resources. To use a specific version of a module you need to define it in the <code>source</code> attribute by specifying the <code>ref</code> attribute in the query string of the source URL:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>module "my_module" {
   source = "https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=1.0"
 }

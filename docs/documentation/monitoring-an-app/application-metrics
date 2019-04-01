@@ -1,4 +1,4 @@
-<h2 id="getting-application-metrics-into-prometheus">Getting Application Metrics into Prometheus</h2><p>Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. There are two ways to create a metrics endpoint. The first is when the metrics endpoint is embedded within the application referred to as <code>instrumentation</code>. The second is when the metrics endpoint is part of a deployed process that bridges the gap between Prometheus and systems that do not export metrics in the prometheus format, this is called an <code>exporter</code>.</p>
+<h3 id="getting-application-metrics-into-prometheus">Getting Application Metrics into Prometheus</h3><p>Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. There are two ways to create a metrics endpoint. The first is when the metrics endpoint is embedded within the application referred to as <code>instrumentation</code>. The second is when the metrics endpoint is part of a deployed process that bridges the gap between Prometheus and systems that do not export metrics in the prometheus format, this is called an <code>exporter</code>.</p>
 <p>The following exporters are installed as part of the Cloud Platform cluster build:</p>
 
 <ul>
@@ -12,10 +12,10 @@
 <li>kubelet</li>
 </ul>
 <p>Click <a href="https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exporters.md">here</a> for a list of exporters and client libraries listed on the official Prometheus Github repo.</p>
-<h3 id="instrumentation-of-the-cloud-platform-reference-application">Instrumentation of The Cloud-Platform Reference Application</h3><p>The <a href="https://github.com/ministryofjustice/cloud-platform-reference-app">Cloud Platform Reference Application</a> has <code>instrumentation</code> setup using <a href="https://github.com/korfuri/django-prometheus">django-prometheus</a>. The default install steps were followed which created a metrics endpoint.</p>
+<h4 id="instrumentation-of-the-cloud-platform-reference-application">Instrumentation of The Cloud-Platform Reference Application</h4><p>The <a href="https://github.com/ministryofjustice/cloud-platform-reference-app">Cloud Platform Reference Application</a> has <code>instrumentation</code> setup using <a href="https://github.com/korfuri/django-prometheus">django-prometheus</a>. The default install steps were followed which created a metrics endpoint.</p>
 <p>See screenshot below of how the metrics endpoint looks on a browser:
 <a href="https://raw.githubusercontent.com/ministryofjustice/cloud-platform-user-docs/master/images/metrics-endpoint.png" target="_blank" rel="noopener noreferrer"><img src="https://raw.githubusercontent.com/ministryofjustice/cloud-platform-user-docs/master/images/metrics-endpoint.png" alt="Image of metrics" /></a></p>
-<h3 id="create-a-service-to-expose-pods">Create a Service to expose Pods</h3><p>Scraping an exporter or separate metrics port requires a service that targets the Pod(s) of the exporter or application.</p>
+<h4 id="create-a-service-to-expose-pods">Create a Service to expose Pods</h4><p>Scraping an exporter or separate metrics port requires a service that targets the Pod(s) of the exporter or application.</p>
 <p>Example:</p>
 <div class="highlight"><pre class="highlight yaml"><code><span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
 <span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
@@ -32,7 +32,7 @@
     <span class="na">targetPort</span><span class="pi">:</span> <span class="s">8000</span>
     <span class="na">name</span><span class="pi">:</span> <span class="s">metrics</span>
   <span class="na">type</span><span class="pi">:</span> <span class="s">NodePort</span>
-</code></pre></div><h3 id="create-a-service-monitor">Create a Service-Monitor</h3><p>A <code>ServiceMonitor</code> is a resource the Prometheus Operator introduces for Kubernetes that describes the set of targets to be monitored by Prometheus</p>
+</code></pre></div><h4 id="create-a-service-monitor">Create a Service-Monitor</h4><p>A <code>ServiceMonitor</code> is a resource the Prometheus Operator introduces for Kubernetes that describes the set of targets to be monitored by Prometheus</p>
 <p>Service Monitor Architecture
 <a href="https://raw.githubusercontent.com/ministryofjustice/cloud-platform-user-docs/master/images/service-monitor-arch.png" target="_blank" rel="noopener noreferrer"><img src="https://raw.githubusercontent.com/ministryofjustice/cloud-platform-user-docs/master/images/service-monitor-arch.png" alt="Image of Service-Monitor Architecture" /></a></p>
 <p>Example:</p>
@@ -48,7 +48,7 @@
   <span class="pi">-</span> <span class="na">port</span><span class="pi">:</span> <span class="s">metrics</span>
     <span class="na">interval</span><span class="pi">:</span> <span class="s">15s</span>
 </code></pre></div><p>More detailed information about service-monitors can be found <a href="https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/running-exporters.md">here</a></p>
-<h3 id="networkpolicy-for-monitoring-namespace">NetworkPolicy for Monitoring Namespace</h3><p>By default, all connections from outside a namespace are blocked, therefore a network policy is required for the <code>monitoring</code> namespace to be able to connect into an application namespace to scrape the metrics endpoint.</p>
+<h4 id="networkpolicy-for-monitoring-namespace">NetworkPolicy for Monitoring Namespace</h4><p>By default, all connections from outside a namespace are blocked, therefore a network policy is required for the <code>monitoring</code> namespace to be able to connect into an application namespace to scrape the metrics endpoint.</p>
 <p>Example:</p>
 <div class="highlight"><pre class="highlight yaml"><code><span class="na">kind</span><span class="pi">:</span> <span class="s">NetworkPolicy</span>
 <span class="na">apiVersion</span><span class="pi">:</span> <span class="s">networking.k8s.io/v1</span>
@@ -68,4 +68,4 @@
           <span class="na">component</span><span class="pi">:</span> <span class="s">monitoring</span>
 </code></pre></div><p>You can view your current NetworkPolices with the following command:</p>
 <div class="highlight"><pre class="highlight shell"><code>kubectl <span class="nt">-n</span> &lt;namespace&gt; get networkpolicies
-</code></pre></div><h3 id="advisory-note-applications-configured-to-use-multiple-processes">Advisory note: Applications configured to use multiple processes</h3><p>If you&rsquo;re using a pre-forking web server (like unicorn or puma for Ruby, or gunicorn for Python) and have it configured to use multiple processes, then you need to use a Prometheus client library which supports exporting metrics from multiple processes. Not all the official clients do that. If you don&rsquo;t use a library which supports this, then requests to <code>/metrics</code> could be served by any of the processes, which would mean Prometheus sees inconsistent data on each scrape</p>
+</code></pre></div><h4 id="advisory-note-applications-configured-to-use-multiple-processes">Advisory note: Applications configured to use multiple processes</h4><p>If you&rsquo;re using a pre-forking web server (like unicorn or puma for Ruby, or gunicorn for Python) and have it configured to use multiple processes, then you need to use a Prometheus client library which supports exporting metrics from multiple processes. Not all the official clients do that. If you don&rsquo;t use a library which supports this, then requests to <code>/metrics</code> could be served by any of the processes, which would mean Prometheus sees inconsistent data on each scrape</p>

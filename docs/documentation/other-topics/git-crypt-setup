@@ -1,5 +1,5 @@
-<h2 id="git-crypt">Git-Crypt</h2><p>We use <code>git-crypt</code> to ensure that application secrets are encrypted at rest in git.</p>
-<h3 id="prerequisites">Prerequisites</h3>
+<h3 id="git-crypt">Git-Crypt</h3><p>We use <code>git-crypt</code> to ensure that application secrets are encrypted at rest in git.</p>
+<h4 id="prerequisites">Prerequisites</h4>
 <ol>
 <li>Install <a href="https://gnupg.org/">GPG</a></li>
 <li>Install <a href="https://www.agwa.name/projects/git-crypt/">git-crypt</a></li>
@@ -7,16 +7,16 @@
 <li>Push your public key to a key server: <code>gpg --send-keys PUBKEYID</code></li>
 <li>Add the pubkey to your GitHub account, again, following <a href="https://help.github.com/articles/adding-a-new-gpg-key-to-your-github-account/">the documentation</a></li>
 </ol>
-<h3 id="setup">Setup</h3>
+<h4 id="setup">Setup</h4>
 <ul>
-<li>If the repository has not been setup before, please follow the <a href="https://github.com/AGWA/git-crypt#using-git-crypt">git-crypt documentation</a> to do so.</li>
+<li>If the repository has not been setup before, please follow the <a href="https://github.com/AGWA/git-crypt##using-git-crypt">git-crypt documentation</a> to do so.</li>
 </ul>
 <p>otherwise,</p>
 
 <ul>
 <li>Share your <code>PUBKEYID</code> with an existing member of the CloudPlatforms team. They will need to trust your key and add you to the repository (see git-crypt documentation above).</li>
 </ul>
-<h3 id="usage">Usage</h3><p>Once the above has been setup, update your local repository clone and unlock the secrets:</p>
+<h4 id="usage">Usage</h4><p>Once the above has been setup, update your local repository clone and unlock the secrets:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>$ git pull
 $ git-crypt unlock
 </code></pre></div><p>From this point on, <code>git-crypt</code> operates transparently.</p>

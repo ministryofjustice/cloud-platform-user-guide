@@ -1,12 +1,14 @@
-<h2 id="prerequisite-for-live-1-deployment">Prerequisite for Live-1 deployment</h2><p><strong>This section only applies to applications aiming to be deployed to Live-1.</strong></p>
-<p>In Live-1, the Cloud Platform team introduced <em>Pod Security Policies</em>, to tighten the security on this production cluster.<br>
+<h3 id="prerequisite-for-live-1-deployment">Prerequisite for Live-1 deployment</h3><p><strong>This section only applies to applications aiming to be deployed to Live-1.</strong></p>
+<p>In Live-1, the Cloud Platform team introduced <em>Pod Security Policies</em>, to tighten the security on this production cluster.
 Two policies have been applied to the cluster, <em>restricted</em> and <em>privileged</em>.</p>
 <p>By default, any new environment/namespace on Live-1 will be assigned the <em>restricted</em> policy</p>
-<h3 id="impact">Impact</h3><p>The main impact of this <em>restricted</em> policy is that it prevents pods/containers from running as the root user.<br>
-The pod will be registered against Kubernetes, but will never be scheduled.<br>
-A container&rsquo;s user is usually defined in its Dockerfile. If no user is explicitely specified in the Dockerfile, chances are that it will use root.</p>
+<h4 id="impact">Impact</h4><p>The main impact of this <em>restricted</em> policy is that it prevents pods/containers
+from running as the root user.  The pod will be registered against Kubernetes,
+but will never be scheduled.  A container&rsquo;s user is usually defined in its
+Dockerfile. If no user is explicitely specified in the Dockerfile, chances are
+that it will use root.</p>
 <p>It is important to understand that not being able to use root also implies that it is impossible to bind to a privileged port (e.g. 80, 443).</p>
-<h3 id="how-to-adapt-to-the-pod-security-policies">How to adapt to the pod security policies</h3><p>Most of the time, your application&rsquo;s Dockerfile can be easily adapted by:</p>
+<h4 id="how-to-adapt-to-the-pod-security-policies">How to adapt to the pod security policies</h4><p>Most of the time, your application&rsquo;s Dockerfile can be easily adapted by:</p>
 
 <ul>
 <li><p>Adding a <code>USER</code> clause in it.</p></li>
@@ -25,6 +27,6 @@ A container&rsquo;s user is usually defined in its Dockerfile. If no user is exp
 <span class="s">CMD myApplication</span>
 </code></pre></div><p>Note: The policies are only in effect after the container has started. Anything in the Dockerfile can be run as root (e.g. to install required software)</p>
 <p>A more complete example can be found here :  <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/rails-app/Dockerfile">Dockerfile</a></p>
-<h4 id="adapting-the-nginx-image">Adapting the NGINX image</h4><p>Since NGINX binds itself to a privileged port by default, it will not be able to run as-is with the <em>restricted</em> policy.</p>
-<p>The cloud-platform team will update this page with relevant documentation regarding nginx, as soon as it is ready.<br>
+<h5 id="adapting-the-nginx-image">Adapting the NGINX image</h5><p>Since NGINX binds itself to a privileged port by default, it will not be able to run as-is with the <em>restricted</em> policy.</p>
+<p>The cloud-platform team will update this page with relevant documentation regarding nginx, as soon as it is ready.
 In the meantime, feel free to reach out to the cloud-platform team for help : <a href="getting-help.html">Getting Help</a></p>

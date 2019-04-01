@@ -1,12 +1,12 @@
-<h2 id="cleaning-up">Cleaning up</h2><p>When you have finished working with your initial deployment, please clean up the resources you have created. This helps to keep the cloud platform repositories well-organised, and speeds up deployments and changes to the cluster (because the build process doesn&rsquo;t have to spend time managing unnecessary resources). It also helps to keep our hosting costs down.</p>
+<h3 id="cleaning-up">Cleaning up</h3><p>When you have finished working with your initial deployment, please clean up the resources you have created. This helps to keep the cloud platform repositories well-organised, and speeds up deployments and changes to the cluster (because the build process doesn&rsquo;t have to spend time managing unnecessary resources). It also helps to keep our hosting costs down.</p>
 <p>The resources to be removed are:</p>
 
 <ul>
 <li>The ECR which stores your docker images</li>
 <li>Your namespace in the cluster. This contains all of the pods, containers and other cluster resources for your application. Removing the cluster namespace will automatically clean up all of its contents.</li>
 </ul>
-<h3 id="removing-resources-from-your-namespace">Removing resources from your namespace</h3><p>Do this if you want to empty your namespace, e.g. to reuse it for another section of the user guide, or to experiment for yourself. You do not need to do this if you are removing the whole namespace - any contents will be deleted automatically, in that case.</p>
-<h4 id="the-safe-way">The safe way</h4><p>Use <code>kubectl get ...</code> commands to identify the different resources in your namespace, e.g.</p>
+<h4 id="removing-resources-from-your-namespace">Removing resources from your namespace</h4><p>Do this if you want to empty your namespace, e.g. to reuse it for another section of the user guide, or to experiment for yourself. You do not need to do this if you are removing the whole namespace - any contents will be deleted automatically, in that case.</p>
+<h5 id="the-safe-way">The safe way</h5><p>Use <code>kubectl get ...</code> commands to identify the different resources in your namespace, e.g.</p>
 <div class="highlight"><pre class="highlight plaintext"><code>  kubectl get deployment helloworld-rubyapp --namespace [your namespace]
   kubectl get service rubyapp-service --namespace [your namespace]
   kubectl get ingress helloworld-rubyapp-ingress --namespace [your namespace]
@@ -15,22 +15,22 @@
   kubectl delete service rubyapp-service --namespace [your namespace]
   kubectl delete ingress helloworld-rubyapp-ingress --namespace [your namespace]
 </code></pre></div><p>You can find more information about <code>kubectl</code> <a href="https://kubernetes.io/docs/reference/kubectl/overview/">here</a>.</p>
-<h4 id="the-quicker-less-safe-way">The quicker, less safe way</h4><p>If you are confident that your kubernetes deployment files accurately map to the resources running in your cluster, you can delete everything at once like this:</p>
+<h5 id="the-quicker-less-safe-way">The quicker, less safe way</h5><p>If you are confident that your kubernetes deployment files accurately map to the resources running in your cluster, you can delete everything at once like this:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>  kubectl delete --filename kubernetes_deploy --namespace [your namespace]
 </code></pre></div><p>This is analogous to using <code>kubectl apply</code> to create the resources from your YAML files, but it will delete all the named resources.</p>
-<h3 id="removing-your-ecr">Removing your ECR</h3><p>Your <a href="https://aws.amazon.com/ecr/">ECR</a> was created by adding an <code>ecr.tf</code> file to the Cloud Platform <a href="https://github.com/ministryofjustice/cloud-platform-environments">environments repository</a>.</p>
+<h4 id="removing-your-ecr">Removing your ECR</h4><p>Your <a href="https://aws.amazon.com/ecr/">ECR</a> was created by adding an <code>ecr.tf</code> file to the Cloud Platform <a href="https://github.com/ministryofjustice/cloud-platform-environments">environments repository</a>.</p>
 <p>To delete your ECR, once you no longer need it, requires two steps:</p>
 
 <ol>
 <li>Remove the <code>ecr.tf</code> file from the <a href="https://github.com/ministryofjustice/cloud-platform-environments">environments repository</a>. This prevents the ECR from being automatically recreated the next time the cluster configuration is applied.</li>
 <li>A cluster administrator needs to manually delete the ECR (either via the Amazon AWS web console, or using the <a href="https://aws.amazon.com/cli/">AWS CLI</a>.</li>
 </ol>
-<h3 id="removing-your-namespace">Removing your namespace</h3><p>Namespaces are created by adding YAML config files to the Cloud Platform <a href="https://github.com/ministryofjustice/cloud-platform-environments">environments repository</a>.</p>
+<h4 id="removing-your-namespace">Removing your namespace</h4><p>Namespaces are created by adding YAML config files to the Cloud Platform <a href="https://github.com/ministryofjustice/cloud-platform-environments">environments repository</a>.</p>
 <p>To delete a namespace requires two steps:</p>
 
 <ol>
 <li>Remove the YAML config files from the <a href="https://github.com/ministryofjustice/cloud-platform-environments">environments repository</a>. This prevents the namespace from being automatically recreated the next time the cluster configuration is applied.</li>
 <li>A cluster administrator needs to run a <code>kubectl delete namespace [name of the namespace]</code> command to delete the namespace and its contents.</li>
 </ol>
-<h3 id="raising-a-pull-request">Raising a pull request</h3><p>When you have finished with your sandbox namespace, and its associated ECR, please create a branch of the <a href="https://github.com/ministryofjustice/cloud-platform-environments">environments repository</a> with your environment&rsquo;s sub-directory of the <code>namespaces/cloud-platform-live-0.k8s.integration.dsd.io</code> directory removed, and raise a <a href="https://help.github.com/en/articles/about-pull-requests">pull request</a> to merge your branch into master. Once merged, this will remove the YAML files which define your namespace, and also the <code>ecr.tf</code> file which defines your ECR.</p>
+<h4 id="raising-a-pull-request">Raising a pull request</h4><p>When you have finished with your sandbox namespace, and its associated ECR, please create a branch of the <a href="https://github.com/ministryofjustice/cloud-platform-environments">environments repository</a> with your environment&rsquo;s sub-directory of the <code>namespaces/cloud-platform-live-0.k8s.integration.dsd.io</code> directory removed, and raise a <a href="https://help.github.com/en/articles/about-pull-requests">pull request</a> to merge your branch into master. Once merged, this will remove the YAML files which define your namespace, and also the <code>ecr.tf</code> file which defines your ECR.</p>
 <p>In the body of your PR, please add a note to ask the cloud platform team to manually delete both your namespace and your ECR.</p>
