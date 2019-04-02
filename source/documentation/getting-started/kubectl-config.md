@@ -35,6 +35,7 @@ Live clusters are those available to users:
 | Cluster Name | Login page |
 | ------------ | ---------- |
 | `cloud-platform-live-0` | [https://login.apps.cloud-platform-live-0.k8s.integration.dsd.io/](https://login.apps.cloud-platform-live-0.k8s.integration.dsd.io/) |
+| `live-1.cloud-platform` | [https://login.apps.live-1.cloud-platform.service.justice.gov.uk/](https://login.apps.live-1.cloud-platform.service.justice.gov.uk/) |
 
 <div style="height:1px;font-size:1px;">&nbsp;</div>
 
