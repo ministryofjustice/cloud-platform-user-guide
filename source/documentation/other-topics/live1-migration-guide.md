@@ -1,0 +1,76 @@
+---
+category: cloud-platform
+expires: 2018-06-30
+---
+## Live 1 Migration Guide
+
+### Overview
+
+After some long consideration of possible options, the decision has been made to migrate from the `live-0` cluster to the new `live-1` cluster.
+
+The reason behind this decision is based on the need to move to a dedicated AWS account, which will be much easier to support, and the need to move away from the Ireland (EU) region to the London (UK) region.
+
+The purpose of this document is to aid development teams in migrating their existing applications from `live-0` to `live-1`.
+
+The migration steps that need to be taken may differ for individual applications. 
+
+The following steps are for an application that is considered to be fairly normal and deployed through CircleCI.
+
+Appending these steps are a few extra consideration points, that are not covered in the example, but may apply to your application.
+
+### Accessing the Live-1 cluster
+
+To access the `live-1` cluster, navigate to the [Kuberos configuration page](https://login.apps.live-1.cloud-platform.service.justice.gov.uk), and download your Kube config file.
+
+Kubernetes provides a [brief guide](https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/#set-the-kubeconfig-environment-variable) on how to set up `kubectl` to use multiple config files simultaneously.
+
+You should now be able to switch contexts between the `live-0` and `live-1` clusters.
+
+### Generating a new environment
+
+Start by following the guide to generate a new environment, this follows the same process as was followed for `live-0`, and you should use the same details as you did for your environment then.
+
+[Enviroment generation guide.](env-create)
+
+Run a `kubectl get namespaces` to check your environment has been successfully created.
+
+### Generating a new ECR repository
+
+Once you've generated a new environment in the `live-1` cluster, you will need to generate a new ECR repository for your application to be pushed to. 
+
+The reason why the previous ECR repo can't be used is due to the new `live-1` cluster being hosted in a separate AWS account. 
+
+If you need reminding of the ECR creation process, please see the [user documentation](ecr-setup).
+
+### Changing the CircleCI environment variables
+
+Now that you have a new empty environment and ECR repository set-up, the next step is to point your existing CircleCI pipeline away from the `live-0` environment, to your new `live-1` environment.
+
+This is done by replacing the CircleCI environment variables with the ones generated for your `live-1` environment and then rerunning the pipeline.
+
+The environment variables you will need to replace are as follows:
+
+| Variable   |            |
+|----------|:-------------:|
+| `AWS_DEFAULT_REGION` |  The default region will now be `eu-west-2`. |
+| `AWS_ACCESS_KEY_ID` | The access key can be found in the secret created by the ECR generation. This requires base64 decoding.   |
+| `AWS_SECRET_ACCESS_KEY` |  The secret key can be found in the secret created by the ECR generation. This requires base64 decoding. |
+| `ECR_ENDPOINT` |    The ECR endpoint for all repos in `live-1` is `754256621582.dkr.ecr.eu-west-2.amazonaws.com`   |
+| `K8S_CLUSTER_CERT` |  The cert is found in the `circleci-token` secret and does not need base64 decoding. |
+| `K8S_CLUSTER_NAME` |    The cluster name is `live-1.cloud-platform.service.justice.gov.uk`  |
+| `K8S_NAMESPACE` |  This variable should be equal to the name of your namespace. |
+| `K8S_TOKEN` |    The token is found in the `circleci-token` secret and needs base64 decoding.   |
+
+After triggering the CircleCI pipeline, your application should now deploy into your new environment. 
+
+### Deleting your Live-0 deployment
+
+The last thing you will need to do is to delete your application from the `live-0` cluster. Please action the 3 steps below:
+
+1. Run `helm delete --purge` or `kubectl delete` reversing the deployment commands.
+
+2. Delete all Terraform files in `resources/` except for main.tf - this will make Terraform delete all AWS resources on the next pipeline run
+
+3. Delete the `namespace` folder, which will remove any leftovers.
+
+### Other considerations 
