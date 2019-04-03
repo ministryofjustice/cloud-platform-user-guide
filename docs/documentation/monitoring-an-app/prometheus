@@ -6,7 +6,7 @@
 <h5 id="creating-dashboards">Creating dashboards</h5><p>Grafana is set up as a stateless app, managed entirely through code. This also helps achieve better availability. However, it means that dashboards will not persist in its database. To create a dashboard:</p>
 
 <ol>
-<li><p>Login to grafana (see the links below) with your GitHub account. All users are able to edit dashboards but cannot save the changes. Find the dashboard titled &lsquo;Blank Dashboard&rsquo; and modify it as you see fit.</p></li>
+<li><p>Login to Grafana (see the links below) with your GitHub account. All users are able to edit dashboards but cannot save the changes. Find the dashboard titled &lsquo;Blank Dashboard&rsquo; and modify it as you see fit.</p></li>
 <li><p>Once happy with your dashboard, click the share icon on the top right corner, select the <code>Export</code> tab, check the <code>Export for sharing externally</code> box and click on <code>View JSON</code>. Copy the JSON string into a <code>ConfigMap</code> according to the example below.</p></li>
 </ol>
 <div class="highlight"><pre class="highlight plaintext"><code>---
@@ -28,9 +28,9 @@ data:
 <li>Use <code>kubectl</code> to apply the <code>ConfigMap</code> above, your dashboard should be visible in Grafana shortly.</li>
 </ol>
 <h4 id="how-to-access-monitoring-tools">How to access monitoring tools</h4><p>All links provided below require you to authenticate with your Github account.</p>
-<p>Prometheus: <a href="https://prometheus.apps.cloud-platform-live-0.k8s.integration.dsd.io">https://prometheus.apps.cloud-platform-live-0.k8s.integration.dsd.io</a></p>
-<p>AlertManager: <a href="https://alertmanager.apps.cloud-platform-live-0.k8s.integration.dsd.io/">https://alertmanager.apps.cloud-platform-live-0.k8s.integration.dsd.io</a></p>
-<p>Grafana: <a href="https://grafana.apps.cloud-platform-live-0.k8s.integration.dsd.io">https://grafana.apps.cloud-platform-live-0.k8s.integration.dsd.io</a></p>
+<p>Prometheus: <a href="https://prometheus.apps.live-1.cloud-platform.service.justice.gov.uk">https://prometheus.apps.live-1.cloud-platform.service.justice.gov.uk</a></p>
+<p>AlertManager: <a href="https://alertmanager.apps.live-1.cloud-platform.service.justice.gov.uk/">https://alertmanager.apps.live-1.cloud-platform.service.justice.gov.uk</a></p>
+<p>Grafana: <a href="https://grafana.apps.live-1.cloud-platform.service.justice.gov.uk">https://grafana.apps.live-1.cloud-platform.service.justice.gov.uk</a></p>
 <h4 id="further-documentation">Further documentation</h4><p><a href="https://prometheus.io/docs/prometheus/latest/querying/basics">Prometheus querying</a></p>
 <p><a href="https://prometheus.io/docs/alerting/alertmanager">AlertManager</a></p>
 <p><a href="https://prometheus.io/docs/introduction/overview/###architecture">Architecture</a></p>

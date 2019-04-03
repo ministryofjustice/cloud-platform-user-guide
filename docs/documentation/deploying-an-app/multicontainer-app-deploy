@@ -10,8 +10,8 @@
 <p>For <code>team_name</code> and <code>repo_name</code> please use the values from your <code>ecr.tf</code> file, when you <a href="tasks.html#creating-an-ecr-repository">created your ECR</a>.</p>
 <div class="highlight"><pre class="highlight plaintext"><code>cd rails-app
 docker build -t [team_name]/[repo_name]:rails-app .
-docker tag [team_name]/[repo_name]:rails-app 926803513772.dkr.ecr.eu-west-1.amazonaws.com/[team_name]/[repo_name]:rails-app-1.0
-docker push 926803513772.dkr.ecr.eu-west-1.amazonaws.com/[team_name]/[repo_name]:rails-app-1.0
+docker tag [team_name]/[repo_name]:rails-app 754256621582.dkr.ecr.eu-west-2.amazonaws.com/[team_name]/[repo_name]:rails-app-1.0
+docker push 754256621582.dkr.ecr.eu-west-2.amazonaws.com/[team_name]/[repo_name]:rails-app-1.0
 </code></pre></div><p>Note that we are overloading the tag value to push multiple different containers to a single Amazon ECR. This is because of a quirk in the way Amazon ECR refers to <code>image repositories</code> and <code>images</code>.</p>
 <p>Repeat the steps above for the <code>content-api</code> and <code>worker</code> sub-directories (changing <code>rails-app</code> as appropriate, in the commands).</p>
 <p>The <code>makefile</code> in the <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app">demo application</a> contains commands to make this process easier. Don&rsquo;t forget to edit the values for <code>TEAM_NAME</code>, <code>REPO_NAME</code> and <code>VERSION</code> appropriately.</p>
@@ -28,5 +28,5 @@ docker push 926803513772.dkr.ecr.eu-west-1.amazonaws.com/[team_name]/[repo_name]
 <h4 id="deploying-to-the-cluster">Deploying to the cluster</h4><p>After you have built and pushed your docker images, and made the corresponding changes to the <code>kubernetes_deploy/*.yaml</code> files, you can apply the configuration to your namespace in the kubernetes cluster:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>  kubectl apply --filename kubernetes_deploy --namespace [your namespace]
 </code></pre></div><h4 id="interacting-with-the-application">Interacting with the application</h4><p>You should be able to view the application in your browser at:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>  https://multi-container-demo.apps.cloud-platform-live-0.k8s.integration.dsd.io/
+<div class="highlight"><pre class="highlight plaintext"><code>  https://multi-container-demo.apps.live-1.cloud-platform.service.justice.gov.uk/
 </code></pre></div><p>It should behave in the same way as when you were running it locally via docker-compose.</p>

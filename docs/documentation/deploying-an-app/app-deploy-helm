@@ -7,7 +7,7 @@
 <li>You have a basic understanding of what <a href="https://kubernetes.io/">Kubernetes</a> is.</li>
 <li>You have <a href="tasks.html#creating-a-cloud-platform-environment">created an environment for your application</a></li>
 <li>You have installed <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/">Kubectl</a> on your local machine.</li>
-<li>You have <a href="tasks.html#authentication">Authenticated</a> to the cloud-platform-live-0 cluster.</li>
+<li>You have <a href="tasks.html#authentication">Authenticated</a> to the cloud-platform-live-1 cluster.</li>
 </ul>
 <h4 id="deploy-the-app">Deploy the app</h4><p>The reference application we&rsquo;re going to use is a very simple Django application with an on-cluster Postgresql database.</p>
 
@@ -65,7 +65,7 @@ roleRef:
 <div class="highlight"><pre class="highlight plaintext"><code>    $ helm install . \
       --name django-app-&lt;YourName&gt; \
       --namespace &lt;env-name&gt; \
-      --set deploy.host=django-&lt;YourName&gt;.apps.cloud-platform-live-0.k8s.integration.dsd.io \
+      --set deploy.host=django-&lt;YourName&gt;.apps.live-1.cloud-platform.service.justice.gov.uk \
       --tiller-namespace &lt;env-name&gt;
 </code></pre></div>
 <blockquote>

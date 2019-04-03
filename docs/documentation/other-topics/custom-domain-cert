@@ -1,6 +1,6 @@
 <h3 id="using-an-externally-managed-hostname">Using an externally-managed hostname</h3><h4 id="background">Background</h4><p>Every application running on Cloud Platform is able to use a hostname for their
-HTTP endpoints, under a pre-defined DNS zone. For example, on the <code>live-0</code>
-cluster, this would be <code>*.apps.cloud-platform-live-0.k8s.integration.dsd.io</code>. As
+HTTP endpoints, under a pre-defined DNS zone. For example, on the <code>live-1</code>
+cluster, this would be <code>*.apps.live-1.cloud-platform.service.justice.gov.uk</code>. As
 long as it is defined on the <code>Ingress</code> resource, it works automatically with a
 wildcard TLS certificate.</p>
 <p>However, most applications will typically need to be served on a <code>gov.uk</code>
@@ -52,12 +52,12 @@ spec:
   spec:
     tls:
     - hosts:
-      - my-app.apps.cloud-platform-live-0.k8s.integration.dsd.io
+      - my-app.apps.live-1.cloud-platform.service.justice.gov.uk
 +   - hosts:
 +     - &lt;hostname&gt;
 +     secretName: &lt;my-cert-secret&gt;
     rules:
-    - host: my-app.apps.cloud-platform-live-0.k8s.integration.dsd.io
+    - host: my-app.apps.live-1.cloud-platform.service.justice.gov.uk
       http:
         paths:
         - path: /
