@@ -546,7 +546,7 @@ django-app-&lt;Name&gt;-postgresql-7b4bdff4b8-xdlw2   1/1       Running   0     
 
 <ul>
 <li>You have <a href="/getting-started/env-create">created an environment for your application</a></li>
-<li>You have <a href="/archive.html#deploying-an-application-to-the-cloud-platform-with-helm">deployed an application</a> to the &lsquo;cloud-platform-live-0&rsquo; cluster using Helm.</li>
+<li>You have <a href="/archive.html#deploying-an-application-to-the-cloud-platform-with-helm">deployed an application</a> to the &lsquo;cloud-platform-live-1&rsquo; cluster using Helm.</li>
 <li>You have created an <a href="/tasks.html#creating-an-ecr-repository">ECR repository</a></li>
 </ul>
 <h5 id="creating-a-service-account-for-circleci">Creating a Service Account for CircleCI</h5><p>As part of the CircleCI deployment pipeline, CircleCI will need to authenticate with the Kubernetes cluster. In order to do so, Kubernetes uses <a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/">Service Accounts</a>. Service Accounts provide an identity for processes that run in a cluster allowing the process to access the API server.</p>
@@ -572,13 +572,13 @@ django-app-&lt;Name&gt;-postgresql-7b4bdff4b8-xdlw2   1/1       Running   0     
 <h5 id="linking-repository-to-circleci">Linking Repository to CircleCI</h5><p>MoJ has as an account with CircleCI, please login to <a href="https://circleci.com/dashboard">CircleCI</a> using GitHub credentials. Select project, and if config.yml is in the repo CircleCI will build and run tests.</p>
 <h5 id="add-variables-to-circleci">Add variables to CircleCI</h5><p>There is a number of environment variables that you will need to set on your CircleCI project in order to build a docker image, push it to the ECR and trigger a deployment in your environment. On the project page, click the cog icon in the top right corner and select <code>Enviroment Variables</code> under <code>Build Settings</code>. The variables you will need to set are listed below.</p>
 <h6 id="aws-credentials">AWS credentials</h6><p>To authenticate with ECR, you will need to set:
-- <code>AWS_DEFAULT_REGION</code> - would be <code>eu-west-1</code> for Cloud Platform clusters unless specified otherwise
+- <code>AWS_DEFAULT_REGION</code> - would be <code>eu-west-2</code> for Cloud Platform clusters unless specified otherwise
 - <code>AWS_ACCESS_KEY_ID</code>
 - <code>AWS_SECRET_ACCESS_KEY</code>
 - <code>ECR_ENDPOINT</code> is optional but useful if you want to avoid having to hardcode the full hostname of the registry</p>
 <h6 id="kubernetes-serviceaccount-credentials">Kubernetes <code>ServiceAccount</code> credentials</h6><p>Since a single CircleCI project will need to access multiple namespaces in kubernetes (the environments), it will also need to handle multiple credentials. To simplify authentication, we provide a helper script in our supported <a href="https://github.com/ministryofjustice/cloud-platform-tools-image">build image</a>. For a usage example, see <a href="###upload-to-ecr">Deploy To Kubernetes</a> below.</p>
 <p>There are four different variables that CircleCI will need to access <em>per environment</em>. Our helper script expects environment variables to be named according to the list below where <code>&lt;ENVIRONMENT&gt;</code> should be replaced by some identifier of your choosing (eg.: <code>STAGING</code>, <code>PRODUCTION</code>).
-- <code>KUBE_ENV_&lt;ENVIRONMENT&gt;_NAME</code> - the full name of the cluster (eg.: <code>cloud-platform-live-0.k8s.integration.dsd.io</code>)
+- <code>KUBE_ENV_&lt;ENVIRONMENT&gt;_NAME</code> - the full name of the cluster (eg.: <code>live-1.cloud-platform.service.justice.gov.uk</code>)
 - <code>KUBE_ENV_&lt;ENVIRONMENT&gt;_NAMESPACE</code> - the name of the <code>Namespace</code> (see <a href="/tasks.html#creating-a-cloud-platform-environment">Create a namespace</a>)
 - <code>KUBE_ENV_&lt;ENVIRONMENT&gt;_CACERT</code> - the CA Certificate for the cluster, can be acquired from the <code>Secret</code> that is generated for the <code>ServiceAccount</code>
 - <code>KUBE_ENV_&lt;ENVIRONMENT&gt;_TOKEN</code> - the access token generated for the <code>ServiceAccount</code>. Please note, you should first base64 decode the token value you retrieve from the secret <a href="###creating-a-service-account-for-circleci">in the previous section</a>, e.g. <code>echo &lt;thereallylongstringthatyougetback&gt; | base64 --decode</code>.</p>
