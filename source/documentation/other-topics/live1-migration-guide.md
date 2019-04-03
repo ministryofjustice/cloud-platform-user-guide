@@ -48,6 +48,8 @@ Now that you have a new empty environment and ECR repository set-up, the next st
 
 This is done by replacing the CircleCI environment variables with the ones generated for your `live-1` environment and then rerunning the pipeline.
 
+Our helper script expects environment variables to be named according to the list below where `<ENVIRONMENT>` should be replaced by some identifier of your choosing (eg.: `STAGING`, `PRODUCTION`).
+
 The environment variables you will need to replace are as follows:
 
 | Variable   |            |
@@ -56,10 +58,10 @@ The environment variables you will need to replace are as follows:
 | `AWS_ACCESS_KEY_ID` | The access key can be found in the secret created by the ECR generation. This requires base64 decoding.   |
 | `AWS_SECRET_ACCESS_KEY` |  The secret key can be found in the secret created by the ECR generation. This requires base64 decoding. |
 | `ECR_ENDPOINT` |    The ECR endpoint for all repos in `live-1` is `754256621582.dkr.ecr.eu-west-2.amazonaws.com`   |
-| `K8S_CLUSTER_CERT` |  The cert is an attribute found in the `default-token` secret and does not need base64 decoding. |
-| `K8S_CLUSTER_NAME` |    The cluster name is `live-1.cloud-platform.service.justice.gov.uk`  |
-| `K8S_NAMESPACE` |  This variable should be equal to the name of your namespace. |
-| `K8S_TOKEN` |    The token is another attribute found in the `default-token` secret and needs base64 decoding.   |
+| `K8S_<ENVIRONMENT>_CLUSTER_CERT` |  The cert is an attribute found in the `default-token` secret and does not need base64 decoding. |
+| `K8S_<ENVIRONMENT>_CLUSTER_NAME` |    The cluster name is `live-1.cloud-platform.service.justice.gov.uk`  |
+| `K8S_<ENVIRONMENT>_NAMESPACE` |  This variable should be equal to the name of your namespace. |
+| `K8S_<ENVIRONMENT>_TOKEN` |    The token is another attribute found in the `default-token` secret and needs base64 decoding.   |
 
 After triggering the CircleCI pipeline, your application should now deploy into your new environment. 
 
