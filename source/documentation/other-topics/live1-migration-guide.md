@@ -30,7 +30,7 @@ You should now be able to switch contexts between the `live-0` and `live-1` clus
 
 Start by following the guide to generate a new environment, this follows the same process as was followed for `live-0`, and you should use the same details as you did for your environment then.
 
-[Enviroment generation guide.](env-create)
+[Enviroment generation guide.](tasks.html#create-an-environment)
 
 Run a `kubectl get namespaces` to check your environment has been successfully created.
 
@@ -40,7 +40,7 @@ Once you've generated a new environment in the `live-1` cluster, you will need t
 
 The reason why the previous ECR repo can't be used is due to the new `live-1` cluster being hosted in a separate AWS account. 
 
-If you need reminding of the ECR creation process, please see the [user documentation](ecr-setup).
+If you need reminding of the ECR creation process, please see the [user documentation](tasks.html#creating-an-ecr-repository).
 
 ### Changing the CircleCI environment variables
 
@@ -65,12 +65,8 @@ After triggering the CircleCI pipeline, your application should now deploy into 
 
 ### Deleting your Live-0 deployment
 
-The last thing you will need to do is to delete your application from the `live-0` cluster. Please action the 3 steps below:
+The last thing you will need to do is to delete your application from the `live-0` cluster.
 
-1. Run `helm delete --purge` or `kubectl delete` reversing the deployment commands.
-
-2. Delete all Terraform files in `resources/` except for main.tf - this will make Terraform delete all AWS resources on the next pipeline run
-
-3. Delete the `namespace` folder, which will remove any leftovers.
+Please see the documentation on [cleaning up within the Cloud Platform](archive.html#cleaning-up).
 
 ### Other considerations 
