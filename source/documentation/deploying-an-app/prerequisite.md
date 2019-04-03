@@ -12,24 +12,28 @@ _restricted_ policy
 #### Impact
 
 The main impact of this _restricted_ policy is that it prevents pods/containers
-from running as the root user.  The pod will be registered against Kubernetes,
-but will never be scheduled.  A container's user is usually defined in its
-Dockerfile. If no user is explicitely specified in the Dockerfile, chances are
-that it will use root.
+from running as the root user. A container's user is usually defined in its
+Dockerfile. If no user is explicitly specified in the Dockerfile, the chances
+are that it will run as root.
 
 It is important to understand that not being able to use root also implies that
 it is impossible to bind to a privileged port (e.g. 80, 443).
+
+The policies only take effect after the container has started. Anything in the
+Dockerfile can be run as root at image build time e.g. to install required
+software.
 
 #### How to adapt to the pod security policies
 
 Most of the time, your application's Dockerfile can be easily adapted by:
 
- - Adding a `USER` clause in it.
+ - Creating a user with a UID which is greater than 1 (which is the UID
+   reserved for root)
 
- - Defining a UID for this user (>1)
+ - Giving this user any required permissions to access the files/directories
+   the application requires.
 
- - Giving this user permission to access the files/directories the application
-   requires.
+ - Adding a `USER` clause in your Dockerfile to switch to your non-root user
 
 
 Example:
@@ -37,17 +41,23 @@ Example:
 ```yaml
 FROM busybox
 
-RUN mkdir -p /opt/myFolder &&\
-    adduser --disabled-password myNewUser -u 1001 &&\
+RUN mkdir -p /opt/myFolder && \
+    adduser --disabled-password myNewUser -u 1001 && \
     chown -R myNewUser:myNewUser /opt/myFolder
 
-USER myNewUser
+USER 1001
 
 CMD myApplication
 ```
 
-Note: The policies are only in effect after the container has started. Anything
-in the Dockerfile can be run as root (e.g. to install required software)
+Depending on the base image, you might also need to explicitly create a group
+for the user. In the busybox example above, a 'myNewUser' group is implicitly
+created by the adduser command.
+
+**You must specify the user by its numeric UID**, as above, not by its
+username.  If you use the username (`USER myNewUser`) then the pod security
+policy will not be able to tell that that is a non-root user, and your
+container will not be scheduled.
 
 A more complete example can be found here :
 [Dockerfile](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/rails-app/Dockerfile)
