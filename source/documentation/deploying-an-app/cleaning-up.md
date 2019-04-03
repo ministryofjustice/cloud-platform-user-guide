@@ -70,10 +70,14 @@ and that your kubernetes deployment yaml files are in a directory called
 `kubernetes_deploy`, immediately below your current working directory, you
 would run the following command to delete everything within your namespace.
 
-      kubectl delete --filename kubernetes_deploy --namespace [your namespace]
+    kubectl delete --filename kubernetes_deploy --namespace [your namespace]
 
 This is analogous to using `kubectl apply` to create the resources from your
 YAML files, but it will delete all the named resources.
+
+If you are using [Helm][], the equivalent command is:
+
+    helm delete --purge
 
 #### 5. Delete your namespace from the cluster.
 
@@ -94,3 +98,4 @@ Removing your namespace and associated resources is a multi-stage process:
 
 [envrepo]: https://github.com/ministryofjustice/cloud-platform-environments
 [PR]: https://help.github.com/en/articles/about-pull-requests
+[Helm]: https://helm.sh
