@@ -16,7 +16,7 @@ By the end of the tutorial, you will have done the following:
 It is assumed you have the following:
 
  - You have [created an environment for your application](/getting-started/env-create)
- - You have [deployed an application][deploy-helm] to the 'cloud-platform-live-0' cluster using Helm.
+ - You have [deployed an application][deploy-helm] to the 'cloud-platform-live-1' cluster using Helm.
  - You have created an [ECR repository][ecr-setup]
 
 ##### Creating a Service Account for CircleCI
@@ -53,7 +53,7 @@ There is a number of environment variables that you will need to set on your Cir
 
 ###### AWS credentials
 To authenticate with ECR, you will need to set:
-- `AWS_DEFAULT_REGION` - would be `eu-west-1` for Cloud Platform clusters unless specified otherwise
+- `AWS_DEFAULT_REGION` - would be `eu-west-2` for Cloud Platform clusters unless specified otherwise
 - `AWS_ACCESS_KEY_ID`
 - `AWS_SECRET_ACCESS_KEY`
 - `ECR_ENDPOINT` is optional but useful if you want to avoid having to hardcode the full hostname of the registry
@@ -62,7 +62,7 @@ To authenticate with ECR, you will need to set:
 Since a single CircleCI project will need to access multiple namespaces in kubernetes (the environments), it will also need to handle multiple credentials. To simplify authentication, we provide a helper script in our supported [build image](https://github.com/ministryofjustice/cloud-platform-tools-image). For a usage example, see [Deploy To Kubernetes](###upload-to-ecr) below.
 
 There are four different variables that CircleCI will need to access *per environment*. Our helper script expects environment variables to be named according to the list below where `<ENVIRONMENT>` should be replaced by some identifier of your choosing (eg.: `STAGING`, `PRODUCTION`).
-- `KUBE_ENV_<ENVIRONMENT>_NAME` - the full name of the cluster (eg.: `cloud-platform-live-0.k8s.integration.dsd.io`)
+- `KUBE_ENV_<ENVIRONMENT>_NAME` - the full name of the cluster (eg.: `live-1.cloud-platform.service.justice.gov.uk`)
 - `KUBE_ENV_<ENVIRONMENT>_NAMESPACE` - the name of the `Namespace` (see [Create a namespace][env-create])
 - `KUBE_ENV_<ENVIRONMENT>_CACERT` - the CA Certificate for the cluster, can be acquired from the `Secret` that is generated for the `ServiceAccount`
 - `KUBE_ENV_<ENVIRONMENT>_TOKEN` - the access token generated for the `ServiceAccount`. Please note, you should first base64 decode the token value you retrieve from the secret [in the previous section](###creating-a-service-account-for-circleci), e.g. `echo <thereallylongstringthatyougetback> | base64 --decode`.
