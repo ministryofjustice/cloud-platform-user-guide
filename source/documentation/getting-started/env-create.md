@@ -38,7 +38,7 @@ We build new environments by creating a new directory for our environment and pu
 cloud-platform-environments
 ├── namespace-resources
 └── namespaces
-    └── cloud-platform-live-0.k8s.integration.dsd.io
+    └── live-1.cloud-platform.service.justice.gov.uk
         ├── kube-system
 
         ...
@@ -52,9 +52,9 @@ This is the root of the repo, containing `namespaces` directory
 
 **/namespaces**
 
-The namespaces directory contains a directory for each of the clusters that you can build environments on. Create your environment in the `cloud-platform-live-0.k8s.integration.dsd.io` directory.
+The namespaces directory contains a directory for each of the clusters that you can build environments on. Create your environment in the `live-1.cloud-platform.service.justice.gov.uk` directory.
 
-**/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/**
+**/namespaces/live-1.cloud-platform.service.justice.gov.uk/**
 
 Within the cluster directory you will generate a directory for your environment in the format `<servicename-env>`, for example `myapp-dev`.
 
@@ -92,7 +92,7 @@ These are the inputs for the terraform module, that you will need to fill:
 |------|-------------|:----:|:-----:|:-----:|
 | application | The name of your application | string | - | yes |
 | business-unit | Area of the MOJ responsible for the service | string | - | yes |
-| cluster | What cluster are you deploying your namespace. i.e cloud-platform-test-1 | string | `cloud-platform-live-0` | no |
+| cluster | What cluster are you deploying your namespace. i.e cloud-platform-test-1 | string | `cloud-platform-live-1` | no |
 | contact_email | Contact email address for owner of the application | string | - | yes |
 | environment | A label for your environment (e.g. dev/staging/...) | string | - | yes |
 | github_team | This is your team name as defined by the GITHUB api. This has to match the team name on the Github API | string | - | yes |
@@ -111,7 +111,7 @@ $ terraform init
 $ terraform apply
 ```
 
-Our terraform module creates the files for a new namespace on the live-0 cluster by default but if you would like to deploy to another cluster you can use:
+Our terraform module creates the files for a new namespace on the live-1 cluster by default but if you would like to deploy to another cluster you can use:
 
 ```Shell
 $ terraform apply -var "cluster=<cluster-name>"
@@ -129,7 +129,7 @@ Note: The `source_code_url` is a descriptive label, used by the Cloud Platform t
 
 At the final prompt "Do you want to perform these actions?", enter "yes"
 
-You can then access your namespace files under `cloud-platform-environments/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/<your-namespace>`, if satisfied you can then push the changes to your branch and create a pull request against the [`cloud-platform-environments`](https://github.com/ministryofjustice/cloud-platform-environments) master repo.
+You can then access your namespace files under `cloud-platform-environments/namespaces/live-1.cloud-platform.service.justice.gov.uk/<your-namespace>`, if satisfied you can then push the changes to your branch and create a pull request against the [`cloud-platform-environments`](https://github.com/ministryofjustice/cloud-platform-environments) master repo.
 
 The cloud platform team will review the pull request when it gets opened.  As soon as the pull request has been approved by the cloud platform team you can then merge it into the master branch which will kick off the pipeline that builds the environment. You can check whether the build succeeded or failed in the [`#cp-build-notification`](https://mojdt.slack.com/messages/CA5MDLM34/) slack channel. This can take about 5 minutes.
 
