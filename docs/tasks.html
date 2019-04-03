@@ -340,7 +340,7 @@ $ git checkout -b &lt;yourBranch&gt;
 <div class="highlight"><pre class="highlight plaintext"><code>cloud-platform-environments
 ├── namespace-resources
 └── namespaces
-    └── cloud-platform-live-0.k8s.integration.dsd.io
+    └── live-1.cloud-platform.service.justice.gov.uk
         ├── kube-system
 
         ...
@@ -349,8 +349,8 @@ $ git checkout -b &lt;yourBranch&gt;
 </code></pre></div><p><strong>cloud-platform-environments</strong></p>
 <p>This is the root of the repo, containing <code>namespaces</code> directory</p>
 <p><strong>/namespaces</strong></p>
-<p>The namespaces directory contains a directory for each of the clusters that you can build environments on. Create your environment in the <code>cloud-platform-live-0.k8s.integration.dsd.io</code> directory.</p>
-<p><strong>/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/</strong></p>
+<p>The namespaces directory contains a directory for each of the clusters that you can build environments on. Create your environment in the <code>live-1.cloud-platform.service.justice.gov.uk</code> directory.</p>
+<p><strong>/namespaces/live-1.cloud-platform.service.justice.gov.uk/</strong></p>
 <p>Within the cluster directory you will generate a directory for your environment in the format <code>&lt;servicename-env&gt;</code>, for example <code>myapp-dev</code>.</p>
 <p><strong>/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/servicename-env/</strong></p>
 <p>The <code>&lt;servicename-env&gt;</code> directory for your environment defines the specific resources we will create in your namespace. We describe these resources in more detail in <a href="#how-we-set-up-an-environment">how we set up an environment</a>.</p>
@@ -397,7 +397,7 @@ $ git checkout -b &lt;yourBranch&gt;
 <td>cluster</td>
 <td>What cluster are you deploying your namespace. i.e cloud-platform-test-1</td>
 <td style="text-align: center">string</td>
-<td style="text-align: center"><code>cloud-platform-live-0</code></td>
+<td style="text-align: center"><code>cloud-platform-live-1</code></td>
 <td style="text-align: center">no</td>
 </tr>
 <tr>
@@ -457,7 +457,7 @@ $ git checkout -b &lt;yourBranch&gt;
 <div class="highlight"><pre class="highlight plaintext"><code>$ cd cloud-platform-environments/namespace-resources/
 $ terraform init
 $ terraform apply
-</code></pre></div><p>Our terraform module creates the files for a new namespace on the live-0 cluster by default but if you would like to deploy to another cluster you can use:</p>
+</code></pre></div><p>Our terraform module creates the files for a new namespace on the live-1 cluster by default but if you would like to deploy to another cluster you can use:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>$ terraform apply -var "cluster=&lt;cluster-name&gt;"
 </code></pre></div><p>Fill in your values in response to the prompts.</p>
 <p>For <code>var.namespace</code>, this is the name of your (team&rsquo;s) &lsquo;private&rsquo; part of the cluster. The name of your namespace must be unique across the whole of the cluster. If you try to create a new namespace using the name of one which already exists, you will get an error when you try to apply the generated kubernetes config files (or when our build pipeline applies them on your behalf).</p>
@@ -465,7 +465,7 @@ $ terraform apply
 <p>For <code>var.source_code_url</code>, this should be the URL of an application which is &#39;cluster-ready&rsquo; to be deployed. If you do not have such an application ready to go, you can use the reference application which the Cloud Platform team have prepared <code>git@github.com:ministryofjustice/cloud-platform-reference-app.git</code></p>
 <p>Note: The <code>source_code_url</code> is a descriptive label, used by the Cloud Platform team in supporting your namespace. It does not set up an explicit link between your namespace and your application&rsquo;s code repository.</p>
 <p>At the final prompt &ldquo;Do you want to perform these actions?&rdquo;, enter &ldquo;yes&rdquo;</p>
-<p>You can then access your namespace files under <code>cloud-platform-environments/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/&lt;your-namespace&gt;</code>, if satisfied you can then push the changes to your branch and create a pull request against the <a href="https://github.com/ministryofjustice/cloud-platform-environments"><code>cloud-platform-environments</code></a> master repo.</p>
+<p>You can then access your namespace files under <code>cloud-platform-environments/namespaces/live-1.cloud-platform.service.justice.gov.uk/&lt;your-namespace&gt;</code>, if satisfied you can then push the changes to your branch and create a pull request against the <a href="https://github.com/ministryofjustice/cloud-platform-environments"><code>cloud-platform-environments</code></a> master repo.</p>
 <p>The cloud platform team will review the pull request when it gets opened.  As soon as the pull request has been approved by the cloud platform team you can then merge it into the master branch which will kick off the pipeline that builds the environment. You can check whether the build succeeded or failed in the <a href="https://mojdt.slack.com/messages/CA5MDLM34/"><code>#cp-build-notification</code></a> slack channel. This can take about 5 minutes.</p>
 <h3 id="accessing-your-environments">Accessing your environments</h3><p>Once the pipeline has completed you will be able to check that your environment is available by running:</p>
 <p><code>$ kubectl get namespaces</code></p>
