@@ -2,8 +2,8 @@
 
 #### Background
 Every application running on Cloud Platform is able to use a hostname for their
-HTTP endpoints, under a pre-defined DNS zone. For example, on the `live-0`
-cluster, this would be `*.apps.cloud-platform-live-0.k8s.integration.dsd.io`. As
+HTTP endpoints, under a pre-defined DNS zone. For example, on the `live-1`
+cluster, this would be `*.apps.live-1.cloud-platform.service.justice.gov.uk`. As
 long as it is defined on the `Ingress` resource, it works automatically with a
 wildcard TLS certificate.
 
@@ -66,12 +66,12 @@ $ kubectl describe certificate <my-cert>
   spec:
     tls:
     - hosts:
-      - my-app.apps.cloud-platform-live-0.k8s.integration.dsd.io
+      - my-app.apps.live-1.cloud-platform.service.justice.gov.uk
 +   - hosts:
 +     - <hostname>
 +     secretName: <my-cert-secret>
     rules:
-    - host: my-app.apps.cloud-platform-live-0.k8s.integration.dsd.io
+    - host: my-app.apps.live-1.cloud-platform.service.justice.gov.uk
       http:
         paths:
         - path: /

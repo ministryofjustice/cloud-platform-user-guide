@@ -14,7 +14,7 @@ It is assumed you have the following:
  - You have a basic understanding of what [Kubernetes](https://kubernetes.io/) is.
  - You have [created an environment for your application][env-create]
  - You have installed [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) on your local machine.
- - You have [Authenticated][auth-to-cluster] to the cloud-platform-live-0 cluster.
+ - You have [Authenticated][auth-to-cluster] to the cloud-platform-live-1 cluster.
 
 #### Deploy the app
 The reference application we're going to use is a very simple Django application with an on-cluster Postgresql database.
@@ -110,7 +110,7 @@ Run the following (replacing the `YourName` with your own name and `env-name` wi
         $ helm install . \
           --name django-app-<YourName> \
           --namespace <env-name> \
-          --set deploy.host=django-<YourName>.apps.cloud-platform-live-0.k8s.integration.dsd.io \
+          --set deploy.host=django-<YourName>.apps.live-1.cloud-platform.service.justice.gov.uk \
           --tiller-namespace <env-name>
 
 > Note: We're naming it like this as app names and host names have to be unique on the cluster.

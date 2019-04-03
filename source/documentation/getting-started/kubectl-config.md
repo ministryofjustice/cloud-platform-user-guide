@@ -58,17 +58,17 @@ check that your "current" context is set.
 Run `kubectl config get-contexts`:
 ```
 CURRENT   NAME                                           CLUSTER                                        AUTHINFO                 NAMESPACE
-          cloud-platform-live-0.k8s.integration.dsd.io   cloud-platform-live-0.k8s.integration.dsd.io   <your github e-mail>
+          live-1.cloud-platform.service.justice.gov.uk   live-1.cloud-platform.service.justice.gov.uk   <your github e-mail>
 ```
 
 Set the context you want to use as "current" with: `kubectl config use-context <NAME>`.
 
-E.g. `kubectl config use-context cloud-platform-live-0.k8s.integration.dsd.io`
+E.g. `kubectl config use-context live-1.cloud-platform.service.justice.gov.uk`
 
 ##### Multiple clusters
-To setup additional clusters, follow the process above and save the generated `kubeconfig` with a different filename (eg.: `~/.kube/config_live0`).
+To setup additional clusters, follow the process above and save the generated `kubeconfig` with a different filename (eg.: `~/.kube/config_live1`).
 
-You can then use the `KUBECONFIG` environment variable to have `kubectl` parse the additional configuration files, eg.: `KUBECONFIG=~/.kube/config:~/.kube/config_live0`
+You can then use the `KUBECONFIG` environment variable to have `kubectl` parse the additional configuration files, eg.: `KUBECONFIG=~/.kube/config:~/.kube/config_live1`
 
 For more information please read the [official documentation](https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/)
 

@@ -19,7 +19,7 @@ Grafana allows you to query, visualize, alert on and understand your metrics no 
 ##### Creating dashboards
 Grafana is set up as a stateless app, managed entirely through code. This also helps achieve better availability. However, it means that dashboards will not persist in its database. To create a dashboard:
 
-1. Login to grafana (see the links below) with your GitHub account. All users are able to edit dashboards but cannot save the changes. Find the dashboard titled 'Blank Dashboard' and modify it as you see fit.
+1. Login to Grafana (see the links below) with your GitHub account. All users are able to edit dashboards but cannot save the changes. Find the dashboard titled 'Blank Dashboard' and modify it as you see fit.
 
 2. Once happy with your dashboard, click the share icon on the top right corner, select the `Export` tab, check the `Export for sharing externally` box and click on `View JSON`. Copy the JSON string into a `ConfigMap` according to the example below.
 
@@ -47,11 +47,11 @@ Make sure you've included the `label` and that the JSON string is properly inden
 
 All links provided below require you to authenticate with your Github account.
 
-Prometheus: [https://prometheus.apps.cloud-platform-live-0.k8s.integration.dsd.io](https://prometheus.apps.cloud-platform-live-0.k8s.integration.dsd.io)
+Prometheus: [https://prometheus.apps.live-1.cloud-platform.service.justice.gov.uk](https://prometheus.apps.live-1.cloud-platform.service.justice.gov.uk)
 
-AlertManager: [https://alertmanager.apps.cloud-platform-live-0.k8s.integration.dsd.io](https://alertmanager.apps.cloud-platform-live-0.k8s.integration.dsd.io/)
+AlertManager: [https://alertmanager.apps.live-1.cloud-platform.service.justice.gov.uk](https://alertmanager.apps.live-1.cloud-platform.service.justice.gov.uk/)
 
-Grafana: [https://grafana.apps.cloud-platform-live-0.k8s.integration.dsd.io](https://grafana.apps.cloud-platform-live-0.k8s.integration.dsd.io)
+Grafana: [https://grafana.apps.live-1.cloud-platform.service.justice.gov.uk](https://grafana.apps.live-1.cloud-platform.service.justice.gov.uk)
 
 #### Further documentation
 
