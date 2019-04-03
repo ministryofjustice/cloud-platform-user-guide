@@ -10,11 +10,11 @@
 
 </code></pre></div><p>2. You will need to navigate to your service&rsquo;s directory which is located in the namespaces directory. Create a directory named &ldquo;resources&rdquo;.</p>
 <div class="highlight"><pre class="highlight shell"><code>
-  <span class="nv">$ </span><span class="nb">cd </span>namespaces/cloud-platform-live-0.k8s.integration.dsd.io/<span class="nv">$your_service</span>  <span class="c">###navigate to your service's directory.</span>
+  <span class="nv">$ </span><span class="nb">cd </span>namespaces/live-1.cloud-platform.service.justice.gov.uk/<span class="nv">$your_service</span>  <span class="c">###navigate to your service's directory.</span>
 
   <span class="nv">$ </span>mkdir resources <span class="c">### make directory called resources</span>
 
-  <span class="nv">$ </span><span class="nb">cd </span>namespaces/cloud-platform-live-0.k8s.integration.dsd.io/<span class="nv">$your_service</span>/resources
+  <span class="nv">$ </span><span class="nb">cd </span>namespaces/live-1.cloud-platform.service.justice.gov.uk/<span class="nv">$your_service</span>/resources
 
 </code></pre></div><p>3. Create a terraform file within the resources directory.</p>
 <div class="highlight"><pre class="highlight shell"><code>
