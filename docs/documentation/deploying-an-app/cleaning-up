@@ -1,36 +1,70 @@
-<h3 id="cleaning-up">Cleaning up</h3><p>When you have finished working with your initial deployment, please clean up the resources you have created. This helps to keep the cloud platform repositories well-organised, and speeds up deployments and changes to the cluster (because the build process doesn&rsquo;t have to spend time managing unnecessary resources). It also helps to keep our hosting costs down.</p>
+<h3 id="cleaning-up">Cleaning up</h3><p>When you have finished with a namespace, please clean it up, along with any
+additional AWS resources you created. This helps to keep the cloud platform
+repositories well-organised, and speeds up deployments and changes to the
+cluster (because the build process doesn&rsquo;t have to spend time managing
+unnecessary resources). It also helps to keep our hosting costs down.</p>
 <p>The resources to be removed are:</p>
 
 <ul>
-<li>The ECR which stores your docker images</li>
-<li>Your namespace in the cluster. This contains all of the pods, containers and other cluster resources for your application. Removing the cluster namespace will automatically clean up all of its contents.</li>
+<li>The AWS ECR which stores your docker images</li>
+<li>Your namespace in the cluster. This contains all of the pods, containers and
+other cluster resources for your application.</li>
+<li>Any other AWS resources (e.g. RDS/Elasticache instances, S3 buckets, etc.)</li>
 </ul>
-<h4 id="removing-resources-from-your-namespace">Removing resources from your namespace</h4><p>Do this if you want to empty your namespace, e.g. to reuse it for another section of the user guide, or to experiment for yourself. You do not need to do this if you are removing the whole namespace - any contents will be deleted automatically, in that case.</p>
-<h5 id="the-safe-way">The safe way</h5><p>Use <code>kubectl get ...</code> commands to identify the different resources in your namespace, e.g.</p>
-<div class="highlight"><pre class="highlight plaintext"><code>  kubectl get deployment helloworld-rubyapp --namespace [your namespace]
-  kubectl get service rubyapp-service --namespace [your namespace]
-  kubectl get ingress helloworld-rubyapp-ingress --namespace [your namespace]
-</code></pre></div><p>Then, once you have identified the resources running in your namespace, use <code>kubectl delete</code> to delete them:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>  kubectl delete deployment helloworld-rubyapp --namespace [your namespace]
-  kubectl delete service rubyapp-service --namespace [your namespace]
-  kubectl delete ingress helloworld-rubyapp-ingress --namespace [your namespace]
-</code></pre></div><p>You can find more information about <code>kubectl</code> <a href="https://kubernetes.io/docs/reference/kubectl/overview/">here</a>.</p>
-<h5 id="the-quicker-less-safe-way">The quicker, less safe way</h5><p>If you are confident that your kubernetes deployment files accurately map to the resources running in your cluster, you can delete everything at once like this:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>  kubectl delete --filename kubernetes_deploy --namespace [your namespace]
-</code></pre></div><p>This is analogous to using <code>kubectl apply</code> to create the resources from your YAML files, but it will delete all the named resources.</p>
-<h4 id="removing-your-ecr">Removing your ECR</h4><p>Your <a href="https://aws.amazon.com/ecr/">ECR</a> was created by adding an <code>ecr.tf</code> file to the Cloud Platform <a href="https://github.com/ministryofjustice/cloud-platform-environments">environments repository</a>.</p>
-<p>To delete your ECR, once you no longer need it, requires two steps:</p>
+<p>Cleaning up a namespace is a multi-stage process, as follows:</p>
 
 <ol>
-<li>Remove the <code>ecr.tf</code> file from the <a href="https://github.com/ministryofjustice/cloud-platform-environments">environments repository</a>. This prevents the ECR from being automatically recreated the next time the cluster configuration is applied.</li>
-<li>A cluster administrator needs to manually delete the ECR (either via the Amazon AWS web console, or using the <a href="https://aws.amazon.com/cli/">AWS CLI</a>.</li>
+<li>Delete any CI/CD pipeline you have created, which deploys into your
+namespace. This should be done first, so that anything you delete is not
+immediately recreated by your build pipeline.</li>
+<li>Tell terraform to delete the AWS resources it created for you.</li>
+<li>Remove your namespace code from the <a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud-platform-environments</a> repository.</li>
+<li>Delete all of the kubernetes resources inside your namespace.</li>
+<li>Delete your namespace from the cluster.</li>
 </ol>
-<h4 id="removing-your-namespace">Removing your namespace</h4><p>Namespaces are created by adding YAML config files to the Cloud Platform <a href="https://github.com/ministryofjustice/cloud-platform-environments">environments repository</a>.</p>
-<p>To delete a namespace requires two steps:</p>
+<p>The first step depends on how you have set up your CI/CD pipeline, and is not
+covered here.</p>
+<h4 id="2-tell-terraform-to-delete-your-aws-resources">2. Tell terraform to delete your AWS resources</h4><p>AWS resources are created by adding terraform code to the <code>resources</code> directory
+in your namespace&rsquo;s folder in the <a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud-platform-environments</a> repository:</p>
+<div class="highlight"><pre class="highlight plaintext"><code> cloud-platform-environments/namespaces/[live0 or live1 cluster]/[your namespace]/resources/
+</code></pre></div><p>To get terraform to delete the resources it created, you need to delete all the
+<code>*.tf</code> files in this directory <strong>except <code>main.tf</code></strong></p>
+<p>If you delete <code>main.tf</code> at this point, terraform has no way of knowing it is
+responsible for managing any resources in the namespace, so it will not delete
+anything. By leaving <code>main.tf</code> but nothing else, you are telling terraform that
+it should manage resources for this namespace, but that there should be no
+resources, so terraform will delete any resources that do exist.</p>
+<p>Once you have deleted the other <code>*.tf</code> files from your namespace&rsquo;s resources
+folder, raise a <a href="https://help.github.com/en/articles/about-pull-requests">PR</a> to get your changes merged. As soon as this happens, the
+cloud platform build pipeline will run, and your AWS resources will be deleted.</p>
+<h4 id="3-remove-your-namespace-code-from-the-cloud-platform-environments-repository">3. Remove your namespace code from the cloud-platform-environments repository</h4><p>After your change to delete all the <code>*.tf</code> files except <code>main.tf</code> has been
+merged, please raise an additional <a href="https://help.github.com/en/articles/about-pull-requests">PR</a> removing the whole of your namespace code
+from the <a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud-platform-environments</a> repository.</p>
+<p>i.e. deleting the whole of the directory:</p>
+<div class="highlight"><pre class="highlight plaintext"><code> cloud-platform-environments/namespaces/[live0 or live1 cluster]/[your namespace]
+</code></pre></div><p>Merging this <a href="https://help.github.com/en/articles/about-pull-requests">PR</a> will prevent the cloud platform build pipeline from recreating
+your namespace, after it is deleted.</p>
+<h4 id="4-delete-all-of-the-kubernetes-resources-inside-your-namespace">4. Delete all of the kubernetes resources inside your namespace.</h4><p>In your working copy of your application code, you can use the kubernetes
+deployment yaml files to delete your namespace and all the kubernetes resources
+within it.</p>
+<p>Assuming your current working directory is a working copy of your application,
+and that your kubernetes deployment yaml files are in a directory called
+<code>kubernetes_deploy</code>, immediately below your current working directory, you
+would run the following command to delete everything within your namespace.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>kubectl delete --filename kubernetes_deploy --namespace [your namespace]
+</code></pre></div><p>This is analogous to using <code>kubectl apply</code> to create the resources from your
+YAML files, but it will delete all the named resources.</p>
+<p>If you are using <a href="https://helm.sh">Helm</a>, the equivalent command is:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>helm delete --purge
+</code></pre></div><h4 id="5-delete-your-namespace-from-the-cluster">5. Delete your namespace from the cluster.</h4><p>Deleting a namespace requires admin access to the cluster.</p>
+<p>Please raise a <a href="https://help.github.com/en/articles/about-pull-requests">PR</a> against the <a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud-platform-environments</a> repository,
+specifying the namespace you would like the team to delete.</p>
+<h4 id="summary">Summary</h4><p>Removing your namespace and associated resources is a multi-stage process:</p>
 
 <ol>
-<li>Remove the YAML config files from the <a href="https://github.com/ministryofjustice/cloud-platform-environments">environments repository</a>. This prevents the namespace from being automatically recreated the next time the cluster configuration is applied.</li>
-<li>A cluster administrator needs to run a <code>kubectl delete namespace [name of the namespace]</code> command to delete the namespace and its contents.</li>
+<li>Stop any CI/CD process from recreating everything</li>
+<li>Get terraform to delete AWS resources</li>
+<li>Remove the code that defines your namespace</li>
+<li>Remove everything inside the namespace</li>
+<li>Tell the cloud platform team to delete the namespace</li>
 </ol>
-<h4 id="raising-a-pull-request">Raising a pull request</h4><p>When you have finished with your sandbox namespace, and its associated ECR, please create a branch of the <a href="https://github.com/ministryofjustice/cloud-platform-environments">environments repository</a> with your environment&rsquo;s sub-directory of the <code>namespaces/cloud-platform-live-0.k8s.integration.dsd.io</code> directory removed, and raise a <a href="https://help.github.com/en/articles/about-pull-requests">pull request</a> to merge your branch into master. Once merged, this will remove the YAML files which define your namespace, and also the <code>ecr.tf</code> file which defines your ECR.</p>
-<p>In the body of your PR, please add a note to ask the cloud platform team to manually delete both your namespace and your ECR.</p>
