@@ -30,7 +30,7 @@ You should now be able to switch contexts between the `live-0` and `live-1` clus
 
 Start by following the guide to generate a new environment, this follows the same process as was followed for `live-0`, and you should use the same details as you did for your environment then.
 
-[Enviroment generation guide.](tasks.html#create-an-environment)
+[Environment generation guide.](tasks.html#create-an-environment)
 
 Run a `kubectl get namespaces` to check your environment has been successfully created.
 
