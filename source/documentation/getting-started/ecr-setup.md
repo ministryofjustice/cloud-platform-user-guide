@@ -24,11 +24,11 @@ AWS resources are provisioned through the [cloud-platform-environments](https://
 
 ```bash
 
-  $ cd namespaces/cloud-platform-live-0.k8s.integration.dsd.io/$your_service  ###navigate to your service's directory.
+  $ cd namespaces/live-1.cloud-platform.service.justice.gov.uk/$your_service  ###navigate to your service's directory.
 
   $ mkdir resources ### make directory called resources
 
-  $ cd namespaces/cloud-platform-live-0.k8s.integration.dsd.io/$your_service/resources
+  $ cd namespaces/live-1.cloud-platform.service.justice.gov.uk/$your_service/resources
 
 ```
 
