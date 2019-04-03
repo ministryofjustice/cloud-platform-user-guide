@@ -31,8 +31,8 @@ For `team_name` and `repo_name` please use the values from your `ecr.tf` file, w
 ```
 cd rails-app
 docker build -t [team_name]/[repo_name]:rails-app .
-docker tag [team_name]/[repo_name]:rails-app 926803513772.dkr.ecr.eu-west-1.amazonaws.com/[team_name]/[repo_name]:rails-app-1.0
-docker push 926803513772.dkr.ecr.eu-west-1.amazonaws.com/[team_name]/[repo_name]:rails-app-1.0
+docker tag [team_name]/[repo_name]:rails-app 754256621582.dkr.ecr.eu-west-2.amazonaws.com/[team_name]/[repo_name]:rails-app-1.0
+docker push 754256621582.dkr.ecr.eu-west-2.amazonaws.com/[team_name]/[repo_name]:rails-app-1.0
 ```
 
 Note that we are overloading the tag value to push multiple different containers to a single Amazon ECR. This is because of a quirk in the way Amazon ECR refers to `image repositories` and `images`.
@@ -66,7 +66,7 @@ After you have built and pushed your docker images, and made the corresponding c
 
 You should be able to view the application in your browser at:
 
-      https://multi-container-demo.apps.cloud-platform-live-0.k8s.integration.dsd.io/
+      https://multi-container-demo.apps.live-1.cloud-platform.service.justice.gov.uk/
 
 It should behave in the same way as when you were running it locally via docker-compose.
 
