@@ -2,7 +2,7 @@
 
 **This section only applies to applications aiming to be deployed to Live-1.**
 
-In Live-1, the Cloud Platform team introduced _Pod Security Policies_, to
+In Live-1, the Cloud Platform team introduced [Pod Security Policies][psp], to
 tighten the security on this production cluster.  Two policies have been
 applied to the cluster, _restricted_ and _privileged_.
 
@@ -60,3 +60,5 @@ to run as-is with the _restricted_ policy.
 The cloud-platform team will update this page with relevant documentation
 regarding nginx, as soon as it is ready.  In the meantime, feel free to reach
 out to the cloud-platform team for help : [Getting Help](getting-help.html)
+
+[psp]: https://kubernetes.io/docs/concepts/policy/pod-security-policy/
