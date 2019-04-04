@@ -9,10 +9,13 @@ The documentation for the modules lives in each module's repository and you can 
 The updated list of terraform modules provided by the MoJ are available here: [Terraform Modules][tf-modules-list]
 
 ```
- !!!  WARNING  !!!
+!!!  WARNING  !!!
 
-Be aware that the latest version of these modules will only be compatible with Live-1.
-If you are planing on deploying them against Live-0, please read their respective README carefully for instruction.
+Be aware that the latest versions of these modules will only be compatible
+with Live-1.
+
+If you are planing on deploying them against Live-0, please read their
+respective READMEs carefully for instruction.
 
 ```
 
