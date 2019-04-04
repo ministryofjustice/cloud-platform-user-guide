@@ -72,7 +72,7 @@ can build environments on. Create your environment in the
 Within the cluster directory you will generate a directory for your environment
 in the format `<servicename-env>`, for example `myapp-dev`.
 
-**/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/servicename-env/**
+**/namespaces/live-1.cloud-platform.service.justice.gov.uk/servicename-env/**
 
 The `<servicename-env>` directory for your environment defines the specific
 resources we will create in your namespace. We describe these resources in more
