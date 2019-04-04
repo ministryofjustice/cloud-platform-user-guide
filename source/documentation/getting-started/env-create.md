@@ -182,7 +182,11 @@ builds the environment. You can check whether the build succeeded or failed in
 the [`#cp-build-notification`](https://mojdt.slack.com/messages/CA5MDLM34/)
 slack channel. This can take about 5 minutes.
 
+Please create **one PR per namespace**
 
+i.e. if you need namespaces 'myapp-dev', 'myapp-staging' and 'myapp-prod',
+please raise a separate PR for each one. This makes it a lot easier for the
+cloud platform team to review your PRs.
 
 ### Accessing your environments
 
