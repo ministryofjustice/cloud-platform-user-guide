@@ -31,7 +31,7 @@ covered here.
 AWS resources are created by adding terraform code to the `resources` directory
 in your namespace's folder in the [cloud-platform-environments][envrepo] repository:
 
-     cloud-platform-environments/namespaces/[live0 or live1 cluster]/[your namespace]/resources/
+     cloud-platform-environments/namespaces/live-1.cloud-platform.service.justice.gov.uk/[your namespace]/resources/
 
 To get terraform to delete the resources it created, you need to delete all the
 `\*.tf` files in this directory **except `main.tf`**
@@ -54,7 +54,7 @@ from the [cloud-platform-environments][envrepo] repository.
 
 i.e. deleting the whole of the directory:
 
-     cloud-platform-environments/namespaces/[live0 or live1 cluster]/[your namespace]
+     cloud-platform-environments/namespaces/live-1.cloud-platform.service.justice.gov.uk/[your namespace]
 
 Merging this [PR][] will prevent the cloud platform build pipeline from recreating
 your namespace, after it is deleted.
