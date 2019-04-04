@@ -6,7 +6,7 @@ The documentation for the modules lives in each module's repository and you can 
 
 ### Available modules
 
-The updated list of terraform modules provided by the MoJ are available here : [Terraform Modules][tf-modules-list]
+The updated list of terraform modules provided by the MoJ are available here: [Terraform Modules][tf-modules-list]
 
 ```
  !!!  WARNING  !!!
