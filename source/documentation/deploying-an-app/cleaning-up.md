@@ -34,7 +34,7 @@ in your namespace's folder in the [cloud-platform-environments][envrepo] reposit
      cloud-platform-environments/namespaces/[live0 or live1 cluster]/[your namespace]/resources/
 
 To get terraform to delete the resources it created, you need to delete all the
-`*.tf` files in this directory **except `main.tf`**
+`\*.tf` files in this directory **except `main.tf`**
 
 If you delete `main.tf` at this point, terraform has no way of knowing it is
 responsible for managing any resources in the namespace, so it will not delete
@@ -48,7 +48,7 @@ cloud platform build pipeline will run, and your AWS resources will be deleted.
 
 ### 3. Remove your namespace code from the cloud-platform-environments repository
 
-After your change to delete all the `*.tf` files except `main.tf` has been
+After your change to delete all the `\*.tf` files except `main.tf` has been
 merged, please raise an additional [PR][] removing the whole of your namespace code
 from the [cloud-platform-environments][envrepo] repository.
 
