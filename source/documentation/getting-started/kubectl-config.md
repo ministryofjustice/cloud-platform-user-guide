@@ -12,7 +12,7 @@ When complete you should have access to perform API calls via a tool called `kub
 
 ### Installation
 
-Please read the [official documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl/) on how to install `kubectl`.
+Please read the [official documentation][kubectl-install] on how to install `kubectl`.
 
 ### Authentication
 
@@ -20,9 +20,9 @@ You must have a GitHub account and be a member of the Ministry of Justice Organi
 
 For our use case, we want authentication and identity to be handled by Github, and to derive all cluster access control from Github teams - projects will be deployed into namespaces (e.g. `pvb-production`, `cla-staging`), and access to resources in those namespaces should be available to the appropriate teams only (e.g. `PVB` and `CLA` teams).
 
-Kubernetes supports authentication from external identity providers, including group definition, via [OIDC](https://kubernetes.io/docs/admin/authentication/##openid-connect-tokens). Github however only support OAuth2 as an authentication method, so an identity broker is required to translate from OAuth2 to OIDC.
+Kubernetes supports authentication from external identity providers, including group definition, via [OIDC][]. Github however only support OAuth2 as an authentication method, so an identity broker is required to translate from OAuth2 to OIDC.
 
-As work on MOJ's identity service is ongoing, a development [Auth0](https://www.auth0.com) account has been created to act as a standin in the meantime.
+As work on MOJ's identity service is ongoing, a development [Auth0][] account has been created to act as a standin in the meantime.
 
 #### Live clusters
 
@@ -32,20 +32,20 @@ Live clusters are those available to users:
 
 | Cluster Name | Login page |
 | ------------ | ---------- |
-| `cloud-platform-live-0` | [https://login.apps.cloud-platform-live-0.k8s.integration.dsd.io/](https://login.apps.cloud-platform-live-0.k8s.integration.dsd.io/) |
-| `live-1.cloud-platform` | [https://login.apps.live-1.cloud-platform.service.justice.gov.uk/](https://login.apps.live-1.cloud-platform.service.justice.gov.uk/) |
+| `cloud-platform-live-0` | [https://login.apps.cloud-platform-live-0.k8s.integration.dsd.io/][live-0-login] |
+| `live-1.cloud-platform` | [https://login.apps.live-1.cloud-platform.service.justice.gov.uk/][live-1-login] |
 
 <div style="height:1px;font-size:1px;">&nbsp;</div>
 
 #### How do I connect to a cluster?
 
-We employ [Kuberos](https://github.com/negz/kuberos) to help with the setup, a service that can generate the client configuration for users.
+We employ [Kuberos][] to help with the setup, a service that can generate the client configuration for users.
 
 To authenticate with a cluster, please follow the steps below;
 
  - Navigate to a login page from the table above
  - Click the login with GitHub option and authorise kuberos
- - Follow the instructions on the page presented, once finished you should have a [`kubeconfig`](https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/) file in `~/.kube/config`.
+ - Follow the instructions on the page presented, once finished you should have a [`kubeconfig`][kubeconfig] file in `~/.kube/config`.
  - You should now be able to run `kubectl` commands; try running such `kubectl get namespaces`
 
 ##### Troubleshooting: "current" context
@@ -68,7 +68,7 @@ To setup additional clusters, follow the process above and save the generated `k
 
 You can then use the `KUBECONFIG` environment variable to have `kubectl` parse the additional configuration files, eg.: `KUBECONFIG=~/.kube/config:~/.kube/config_live1`
 
-For more information please read the [official documentation](https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/)
+For more information please read the [official documentation][multiple-clusters]
 
 ##### Usernames
 By default, Kuberos will use your email address as the username in the generated `kubeconfig`.
@@ -77,6 +77,16 @@ When setting up multiple clusters, this will generate conflicts so you should re
 
 ### Where to go from here?
 
-Now that you've setup `kubectl`, you might want to look at this handy [cheatsheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/).
+Now that you've setup `kubectl`, you might want to look at this handy [cheatsheet][kubectl-cheatsheet].
 
 Once you are ready to deploy applications you will need to create an environment first.
+
+[kubectl-install]: https://kubernetes.io/docs/tasks/tools/install-kubectl
+[OIDC]: https://kubernetes.io/docs/reference/access-authn-authz/authentication/#openid-connect-tokens
+[Auth0]: https://www.auth0.com
+[Kuberos]: https://github.com/negz/kuberos
+[kubeconfig]: https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/
+[multiple-clusters]: https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/
+[live-0-login]: https://login.apps.cloud-platform-live-0.k8s.integration.dsd.io/
+[live-1-login]: https://login.apps.live-1.cloud-platform.service.justice.gov.uk/
+[kubectl-cheatsheet]: https://kubernetes.io/docs/reference/kubectl/cheatsheet/
