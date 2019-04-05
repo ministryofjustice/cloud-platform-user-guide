@@ -383,12 +383,10 @@
 
 <h6 id="troubleshooting-quot-current-quot-context">Troubleshooting: &ldquo;current&rdquo; context</h6><p>If you receive <code>The connection to the server localhost:8080 was refused</code> errors while executing <code>kubectl</code> commands,
 check that your &ldquo;current&rdquo; context is set.</p>
-<p>Run <code>kubectl config get-contexts</code>:
-<code>
-CURRENT   NAME                                           CLUSTER                                        AUTHINFO                 NAMESPACE
+<p>Run <code>kubectl config get-contexts</code>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>CURRENT   NAME                                           CLUSTER                                        AUTHINFO                 NAMESPACE
           live-1.cloud-platform.service.justice.gov.uk   live-1.cloud-platform.service.justice.gov.uk   &lt;your github e-mail&gt;
-</code></p>
-<p>Set the context you want to use as &ldquo;current&rdquo; with: <code>kubectl config use-context &lt;NAME&gt;</code>.</p>
+</code></pre></div><p>Set the context you want to use as &ldquo;current&rdquo; with: <code>kubectl config use-context &lt;NAME&gt;</code>.</p>
 <p>E.g. <code>kubectl config use-context live-1.cloud-platform.service.justice.gov.uk</code></p>
 <h5 id="multiple-clusters">Multiple clusters</h5><p>To setup additional clusters, follow the process above and save the generated <code>kubeconfig</code> with a different filename (eg.: <code>~/.kube/config_live1</code>).</p>
 <p>You can then use the <code>KUBECONFIG</code> environment variable to have <code>kubectl</code> parse the additional configuration files, eg.: <code>KUBECONFIG=~/.kube/config:~/.kube/config_live1</code></p>
