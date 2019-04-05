@@ -56,6 +56,7 @@ If you receive `The connection to the server localhost:8080 was refused` errors 
 check that your "current" context is set.
 
 Run `kubectl config get-contexts`:
+
 ```
 CURRENT   NAME                                           CLUSTER                                        AUTHINFO                 NAMESPACE
           live-1.cloud-platform.service.justice.gov.uk   live-1.cloud-platform.service.justice.gov.uk   <your github e-mail>
