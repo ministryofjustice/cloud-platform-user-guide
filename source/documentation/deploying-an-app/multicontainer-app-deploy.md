@@ -81,4 +81,4 @@ It should behave in the same way as when you were running it locally via docker-
 [rds-module]: https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance
 [cp-env]: https://github.com/ministryofjustice/cloud-platform-environments
 [ecr-setup]: tasks.html#creating-an-ecr-repository
-[add-aws-resources]: archive.html#adding-aws-resources-to-your-environment
+[add-aws-resources]: tasks.html#adding-aws-resources-to-your-environment
