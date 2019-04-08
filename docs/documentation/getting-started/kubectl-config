@@ -1,12 +1,12 @@
-<h3 id="kubectl-configuration"><code>kubectl</code> configuration</h3><h4 id="overview">Overview</h4><p>The aim of this guide is to provide a walkthrough of the installation of the <code>kubectl</code> command-line tool, the official command-line tool for Kubernetes, as well as setting it up by authenticating with the Cloud Platform cluster.</p>
+<h2 id="how-to-use-kubectl-to-connect-to-the-cluster">How to use <code>kubectl</code> to connect to the cluster</h2><p>The aim of this guide is to provide a walkthrough of the installation of the <code>kubectl</code> command-line tool, the official command-line tool for Kubernetes, as well as setting it up by authenticating with the Cloud Platform cluster.</p>
 <p><code>kubectl</code> is used to deploy and manage applications on Kubernetes and is fundamental for anyone who wants to interact with the cluster.</p>
 <p>When complete you should have access to perform API calls via a tool called <code>kubectl</code>.</p>
-<h4 id="installation">Installation</h4><p>Please read the <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/">official documentation</a> on how to install <code>kubectl</code>.</p>
-<h4 id="authentication">Authentication</h4><p>You must have a GitHub account and be a member of the Ministry of Justice Organisation.</p>
+<h3 id="installation">Installation</h3><p>Please read the <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl">official documentation</a> on how to install <code>kubectl</code>.</p>
+<h3 id="authentication">Authentication</h3><p>You must have a GitHub account and be a member of the Ministry of Justice Organisation.</p>
 <p>For our use case, we want authentication and identity to be handled by Github, and to derive all cluster access control from Github teams - projects will be deployed into namespaces (e.g. <code>pvb-production</code>, <code>cla-staging</code>), and access to resources in those namespaces should be available to the appropriate teams only (e.g. <code>PVB</code> and <code>CLA</code> teams).</p>
-<p>Kubernetes supports authentication from external identity providers, including group definition, via <a href="https://kubernetes.io/docs/admin/authentication/##openid-connect-tokens">OIDC</a>. Github however only support OAuth2 as an authentication method, so an identity broker is required to translate from OAuth2 to OIDC.</p>
+<p>Kubernetes supports authentication from external identity providers, including group definition, via <a href="https://kubernetes.io/docs/reference/access-authn-authz/authentication/#openid-connect-tokens">OIDC</a>. Github however only support OAuth2 as an authentication method, so an identity broker is required to translate from OAuth2 to OIDC.</p>
 <p>As work on MOJ&rsquo;s identity service is ongoing, a development <a href="https://www.auth0.com">Auth0</a> account has been created to act as a standin in the meantime.</p>
-<h5 id="live-clusters">Live clusters</h5><p>Live clusters are those available to users:</p>
+<h4 id="live-clusters">Live clusters</h4><p>Live clusters are those available to users:</p>
 
 <div style="height:1px;font-size:1px;">&nbsp;</div>
 <div class="table-container">
@@ -27,7 +27,7 @@
         </table>
       </div>
 <div style="height:1px;font-size:1px;">&nbsp;</div>
-<h5 id="how-do-i-connect-to-a-cluster">How do I connect to a cluster?</h5><p>We employ <a href="https://github.com/negz/kuberos">Kuberos</a> to help with the setup, a service that can generate the client configuration for users.</p>
+<h4 id="how-do-i-connect-to-a-cluster">How do I connect to a cluster?</h4><p>We employ <a href="https://github.com/negz/kuberos">Kuberos</a> to help with the setup, a service that can generate the client configuration for users.</p>
 <p>To authenticate with a cluster, please follow the steps below;</p>
 
 <ul>
@@ -36,17 +36,17 @@
 <li>Follow the instructions on the page presented, once finished you should have a <a href="https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/"><code>kubeconfig</code></a> file in <code>~/.kube/config</code>.</li>
 <li>You should now be able to run <code>kubectl</code> commands; try running such <code>kubectl get namespaces</code></li>
 </ul>
-<h6 id="troubleshooting-quot-current-quot-context">Troubleshooting: &ldquo;current&rdquo; context</h6><p>If you receive <code>The connection to the server localhost:8080 was refused</code> errors while executing <code>kubectl</code> commands,
+<h5 id="troubleshooting-quot-current-quot-context">Troubleshooting: &ldquo;current&rdquo; context</h5><p>If you receive <code>The connection to the server localhost:8080 was refused</code> errors while executing <code>kubectl</code> commands,
 check that your &ldquo;current&rdquo; context is set.</p>
 <p>Run <code>kubectl config get-contexts</code>:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>CURRENT   NAME                                           CLUSTER                                        AUTHINFO                 NAMESPACE
           live-1.cloud-platform.service.justice.gov.uk   live-1.cloud-platform.service.justice.gov.uk   &lt;your github e-mail&gt;
 </code></pre></div><p>Set the context you want to use as &ldquo;current&rdquo; with: <code>kubectl config use-context &lt;NAME&gt;</code>.</p>
 <p>E.g. <code>kubectl config use-context live-1.cloud-platform.service.justice.gov.uk</code></p>
-<h5 id="multiple-clusters">Multiple clusters</h5><p>To setup additional clusters, follow the process above and save the generated <code>kubeconfig</code> with a different filename (eg.: <code>~/.kube/config_live1</code>).</p>
+<h4 id="multiple-clusters">Multiple clusters</h4><p>To setup additional clusters, follow the process above and save the generated <code>kubeconfig</code> with a different filename (eg.: <code>~/.kube/config_live1</code>).</p>
 <p>You can then use the <code>KUBECONFIG</code> environment variable to have <code>kubectl</code> parse the additional configuration files, eg.: <code>KUBECONFIG=~/.kube/config:~/.kube/config_live1</code></p>
 <p>For more information please read the <a href="https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/">official documentation</a></p>
-<h6 id="usernames">Usernames</h6><p>By default, Kuberos will use your email address as the username in the generated <code>kubeconfig</code>.</p>
+<h5 id="usernames">Usernames</h5><p>By default, Kuberos will use your email address as the username in the generated <code>kubeconfig</code>.</p>
 <p>When setting up multiple clusters, this will generate conflicts so you should rename the users by editing the files (and update the contexts appropriately).</p>
-<h4 id="where-to-go-from-here">Where to go from here?</h4><p>Now that you&rsquo;ve setup <code>kubectl</code>, you might want to look at this handy <a href="https://kubernetes.io/docs/reference/kubectl/cheatsheet/">cheatsheet</a>.</p>
+<h3 id="where-to-go-from-here">Where to go from here?</h3><p>Now that you&rsquo;ve setup <code>kubectl</code>, you might want to look at this handy <a href="https://kubernetes.io/docs/reference/kubectl/cheatsheet/">cheatsheet</a>.</p>
 <p>Once you are ready to deploy applications you will need to create an environment first.</p>

@@ -125,6 +125,20 @@
     <a href="/tasks.html#tasks">Tasks</a>
     <ul>
       <li>
+        <a href="/tasks.html#how-to-use-kubectl-to-connect-to-the-cluster">How to use kubectl to connect to the cluster</a>
+        <ul>
+          <li>
+            <a href="/tasks.html#installation">Installation</a>
+          </li>
+          <li>
+            <a href="/tasks.html#authentication">Authentication</a>
+          </li>
+          <li>
+            <a href="/tasks.html#where-to-go-from-here">Where to go from here?</a>
+          </li>
+        </ul>
+      </li>
+      <li>
         <a href="/tasks.html#creating-a-cloud-platform-environment">Creating a Cloud Platform Environment</a>
         <ul>
           <li>
@@ -158,6 +172,17 @@
           </li>
           <li>
             <a href="/tasks.html#creating-an-ecr-repository-next-steps">Next steps</a>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="/tasks.html#adding-aws-resources-to-your-environment">Adding AWS resources to your environment</a>
+        <ul>
+          <li>
+            <a href="/tasks.html#available-modules">Available modules</a>
+          </li>
+          <li>
+            <a href="/tasks.html#usage">Usage</a>
           </li>
         </ul>
       </li>
@@ -235,14 +260,6 @@
     <a href="/archive.html#archive">Archive</a>
     <ul>
       <li>
-        <a href="/archive.html#getting-started">Getting Started</a>
-        <ul>
-          <li>
-            <a href="/archive.html#kubectl-configuration">kubectl configuration</a>
-          </li>
-        </ul>
-      </li>
-      <li>
         <a href="/archive.html#getting-help-deploying-applications">Deploying Applications</a>
         <ul>
           <li>
@@ -254,8 +271,25 @@
           <li>
             <a href="/archive.html#continuous-deployment-of-an-application-using-circleci-and-helm">Continuous Deployment of an application using CircleCI and Helm</a>
           </li>
+        </ul>
+      </li>
+      <li>
+        <a href="/archive.html#getting-help-cleaning-up">Cleaning up</a>
+        <ul>
           <li>
-            <a href="/archive.html#adding-aws-resources-to-your-environment">Adding AWS resources to your environment</a>
+            <a href="/archive.html#getting-help-cleaning-up-2-tell-terraform-to-delete-your-aws-resources">2. Tell terraform to delete your AWS resources</a>
+          </li>
+          <li>
+            <a href="/archive.html#getting-help-cleaning-up-3-remove-your-namespace-code-from-the-cloud-platform-environments-repository">3. Remove your namespace code from the cloud-platform-environments repository</a>
+          </li>
+          <li>
+            <a href="/archive.html#getting-help-cleaning-up-4-delete-all-of-the-kubernetes-resources-inside-your-namespace">4. Delete all of the kubernetes resources inside your namespace.</a>
+          </li>
+          <li>
+            <a href="/archive.html#getting-help-cleaning-up-5-delete-your-namespace-from-the-cluster">5. Delete your namespace from the cluster.</a>
+          </li>
+          <li>
+            <a href="/archive.html#getting-help-cleaning-up-summary">Summary</a>
           </li>
         </ul>
       </li>
@@ -341,6 +375,59 @@
               <h1 id="tasks">Tasks</h1><p>This is a placeholder page, into which content will be migrated.</p>
 <p>Please look in the <a href="/archive.html">archive section</a> to find existing content
 which is yet to be moved.</p>
+
+<h2 id="how-to-use-kubectl-to-connect-to-the-cluster">How to use <code>kubectl</code> to connect to the cluster</h2><p>The aim of this guide is to provide a walkthrough of the installation of the <code>kubectl</code> command-line tool, the official command-line tool for Kubernetes, as well as setting it up by authenticating with the Cloud Platform cluster.</p>
+<p><code>kubectl</code> is used to deploy and manage applications on Kubernetes and is fundamental for anyone who wants to interact with the cluster.</p>
+<p>When complete you should have access to perform API calls via a tool called <code>kubectl</code>.</p>
+<h3 id="installation">Installation</h3><p>Please read the <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl">official documentation</a> on how to install <code>kubectl</code>.</p>
+<h3 id="authentication">Authentication</h3><p>You must have a GitHub account and be a member of the Ministry of Justice Organisation.</p>
+<p>For our use case, we want authentication and identity to be handled by Github, and to derive all cluster access control from Github teams - projects will be deployed into namespaces (e.g. <code>pvb-production</code>, <code>cla-staging</code>), and access to resources in those namespaces should be available to the appropriate teams only (e.g. <code>PVB</code> and <code>CLA</code> teams).</p>
+<p>Kubernetes supports authentication from external identity providers, including group definition, via <a href="https://kubernetes.io/docs/reference/access-authn-authz/authentication/#openid-connect-tokens">OIDC</a>. Github however only support OAuth2 as an authentication method, so an identity broker is required to translate from OAuth2 to OIDC.</p>
+<p>As work on MOJ&rsquo;s identity service is ongoing, a development <a href="https://www.auth0.com">Auth0</a> account has been created to act as a standin in the meantime.</p>
+<h4 id="live-clusters">Live clusters</h4><p>Live clusters are those available to users:</p>
+
+<div style="height:1px;font-size:1px;">&nbsp;</div>
+<div class="table-container">
+        <table>
+          <tr>
+<th>Cluster Name</th>
+<th>Login page</th>
+</tr>
+<tr>
+<td><code>cloud-platform-live-0</code></td>
+<td><a href="https://login.apps.cloud-platform-live-0.k8s.integration.dsd.io/">https://login.apps.cloud-platform-live-0.k8s.integration.dsd.io/</a></td>
+</tr>
+<tr>
+<td><code>live-1.cloud-platform</code></td>
+<td><a href="https://login.cloud-platform.service.justice.gov.uk/">https://login.cloud-platform.service.justice.gov.uk/</a></td>
+</tr>
+
+        </table>
+      </div>
+<div style="height:1px;font-size:1px;">&nbsp;</div>
+<h4 id="how-do-i-connect-to-a-cluster">How do I connect to a cluster?</h4><p>We employ <a href="https://github.com/negz/kuberos">Kuberos</a> to help with the setup, a service that can generate the client configuration for users.</p>
+<p>To authenticate with a cluster, please follow the steps below;</p>
+
+<ul>
+<li>Navigate to a login page from the table above</li>
+<li>Click the login with GitHub option and authorise kuberos</li>
+<li>Follow the instructions on the page presented, once finished you should have a <a href="https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/"><code>kubeconfig</code></a> file in <code>~/.kube/config</code>.</li>
+<li>You should now be able to run <code>kubectl</code> commands; try running such <code>kubectl get namespaces</code></li>
+</ul>
+<h5 id="troubleshooting-quot-current-quot-context">Troubleshooting: &ldquo;current&rdquo; context</h5><p>If you receive <code>The connection to the server localhost:8080 was refused</code> errors while executing <code>kubectl</code> commands,
+check that your &ldquo;current&rdquo; context is set.</p>
+<p>Run <code>kubectl config get-contexts</code>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>CURRENT   NAME                                           CLUSTER                                        AUTHINFO                 NAMESPACE
+          live-1.cloud-platform.service.justice.gov.uk   live-1.cloud-platform.service.justice.gov.uk   &lt;your github e-mail&gt;
+</code></pre></div><p>Set the context you want to use as &ldquo;current&rdquo; with: <code>kubectl config use-context &lt;NAME&gt;</code>.</p>
+<p>E.g. <code>kubectl config use-context live-1.cloud-platform.service.justice.gov.uk</code></p>
+<h4 id="multiple-clusters">Multiple clusters</h4><p>To setup additional clusters, follow the process above and save the generated <code>kubeconfig</code> with a different filename (eg.: <code>~/.kube/config_live1</code>).</p>
+<p>You can then use the <code>KUBECONFIG</code> environment variable to have <code>kubectl</code> parse the additional configuration files, eg.: <code>KUBECONFIG=~/.kube/config:~/.kube/config_live1</code></p>
+<p>For more information please read the <a href="https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/">official documentation</a></p>
+<h5 id="usernames">Usernames</h5><p>By default, Kuberos will use your email address as the username in the generated <code>kubeconfig</code>.</p>
+<p>When setting up multiple clusters, this will generate conflicts so you should rename the users by editing the files (and update the contexts appropriately).</p>
+<h3 id="where-to-go-from-here">Where to go from here?</h3><p>Now that you&rsquo;ve setup <code>kubectl</code>, you might want to look at this handy <a href="https://kubernetes.io/docs/reference/kubectl/cheatsheet/">cheatsheet</a>.</p>
+<p>Once you are ready to deploy applications you will need to create an environment first.</p>
 
 <h2 id="creating-a-cloud-platform-environment">Creating a Cloud Platform Environment</h2><h3 id="introduction">Introduction</h3><p>This is a guide to creating a environment in one of our Kubernetes clusters.</p>
 <p>We define an environment as a Kubernetes <a href="https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/">namespace</a> with some key resources deployed in it. Each Kubernetes namespace creates a logical separation within our cluster that provides isolation from any other namespace.</p>
@@ -633,6 +720,42 @@ echo QWxhZGRpbjpvcGVuIHNlc2FtZQ== | base64 --decode; echo
 <h4 id="setting-up-circleci">Setting up CircleCI</h4><p>In your CircleCI project, go to the settings (the cog icon) and select &lsquo;AWS Permissions&rsquo; from the left hand menu. Fill in the IAM credentials and CircleCI will be able to use ECR images. For more information please see <a href="https://circleci.com/docs/2.0/private-images/">the official docs</a>.</p>
 <h3 id="creating-an-ecr-repository-next-steps">Next steps</h3><p>Try <a href="/archive.html#deploying-an-application-to-the-cloud-platform-with-helm">deploying an app</a> with <a href="https://helm.sh/">Helm</a>, a Kubernetes package manager, or <a href="/tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">deploying manually</a> by writing some custom YAML files.</p>
 
+<h2 id="adding-aws-resources-to-your-environment">Adding AWS resources to your environment</h2><p>Through the <a href="https://github.com/ministryofjustice/cloud-platform-environments/">cloud-platform-environments</a> repository, you can provision AWS resources for your environments. This is done using terraform and more specifically, terraform modules we provide for use on the Cloud Platform.</p>
+<p>The documentation for the modules lives in each module&rsquo;s repository and you can find a list of the available ones below.</p>
+<h3 id="available-modules">Available modules</h3><p>The updated list of terraform modules provided by the MoJ are available here: <a href="https://github.com/ministryofjustice/cloud-platform#terraform-modules">Terraform Modules</a></p>
+<div class="highlight"><pre class="highlight plaintext"><code>!!!  WARNING  !!!
+
+Be aware that the latest versions of these modules will only be compatible
+with Live-1.
+
+If you are planing on deploying them against Live-0, please read their
+respective READMEs carefully for instruction.
+
+</code></pre></div><h3 id="usage">Usage</h3><p>In each terraform module repository, you will find a directory named <code>example</code> which includes sample configuration for use in Cloud Platform.</p>
+<p>In your namespace&rsquo;s path in the <a href="https://github.com/ministryofjustice/cloud-platform-environments/">cloud-platform-environments</a> repository, create a directory called <code>resources</code> (if you have not created one already) and refer to the module&rsquo;s example to define your resources.</p>
+<p>Each example will have some global configuration defined, however, this should only be declared once, regardless of the number of modules used:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>terraform {
+  backend "s3" {}
+}
+
+provider "aws" {
+  region = "eu-west-1"
+}
+</code></pre></div><p>Additionally, some example might define variables; again, these should only be declared once per namespace:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>variable "cluster_name" {}
+
+variable "cluster_state_bucket" {}
+</code></pre></div><p>The main README file of each module repository will list all the available configuration options that can be passed to the module.</p>
+<h4 id="outputs">Outputs</h4><p>Each module will have its own outputs. These expose useful information, such as endpoints, credentials etc. The module examples all use a common approach: they employ the <code>kubernetes_secret</code> terraform resource to push the outputs straight into your environment in the form of a <code>Secret</code> which you could then extract information from or directly reference in <code>Pods</code>.</p>
+<p>This is currently the only supported way of accessing terraform outputs.</p>
+<h4 id="versioning">Versioning</h4><p>All modules are versioned. This allows us to implement changes without breaking existing resources. To use a specific version of a module you need to define it in the <code>source</code> attribute by specifying the <code>ref</code> attribute in the query string of the source URL:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>module "my_module" {
+  source = "https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=1.0"
+}
+</code></pre></div><p>Make sure that you have checked the releases page of a module and that you are using the latest of them in your configuration.</p>
+<p>Upgrading to a new major version usually means that the configured resource will have to be re-created by terraform.</p>
+<p>Refer to the <a href="http://terraform.io/docs/modules">terraform documentation on modules</a> for more information on usage.</p>
+
 
 <h2 id="deploying-applications">Deploying Applications</h2>
 <p><h3 id="deploying-a-39-hello-world-39-application-to-the-cloud-platform">Deploying a &lsquo;Hello World&rsquo; application to the Cloud Platform</h3><p><a href="../images/k8s-cluster-application-deployment-process.png" target="_blank" rel="noopener noreferrer"><img src="/images/k8s-cluster-application-deployment-process.png" alt="Deployment Process Diagram" /></a></p>
@@ -789,7 +912,7 @@ spec:
 <p><a href="../images/multi-container-k8s.png" target="_blank" rel="noopener noreferrer"><img src="/images/multi-container-k8s.png" alt="Multi-container architecture diagram" /></a></p>
 <p>Each container needs a <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/">Deployment</a> which will contain a <a href="https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/">Pod</a>. <a href="https://kubernetes.io/docs/concepts/services-networking/service/">Services</a> make pods available on the cluster&rsquo;s internal network, and an <a href="https://kubernetes.io/docs/concepts/services-networking/ingress/">Ingress</a> exposes one or more services to the outside world.</p>
 <h4 id="create-an-rds-instance">Create an RDS instance</h4><p>The application database will be an Amazon RDS instance. To create this, refer to the <a href="https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance">cloud platform RDS</a> repository, and create a terraform file in your sub-directory of the <a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud platform environments</a> repository (you will need to raise a PR for this, and get the cloud platform team to approve it).</p>
-<p>For more information see <a href="/archive.html#adding-aws-resources-to-your-environment">Adding AWS resources to your environment</a>.</p>
+<p>For more information see <a href="/tasks.html#adding-aws-resources-to-your-environment">Adding AWS resources to your environment</a>.</p>
 <h4 id="build-docker-images-and-pushing-to-ecr">Build docker images and pushing to ECR</h4><p>As before, we need to build docker images which we will push to our <a href="https://aws.amazon.com/ecr/">Amazon ECR</a>.</p>
 <p>Please carry out the following steps on your own working copy of the <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app">demo application</a>.</p>
 <p>For <code>team_name</code> and <code>repo_name</code> please use the values from your <code>ecr.tf</code> file, when you <a href="/tasks.html#creating-an-ecr-repository">created your ECR</a>.</p>
