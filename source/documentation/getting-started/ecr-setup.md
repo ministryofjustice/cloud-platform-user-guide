@@ -28,7 +28,7 @@ AWS resources are provisioned through the [cloud-platform-environments](https://
 
   $ mkdir resources ### make directory called resources
 
-  $ cd namespaces/live-1.cloud-platform.service.justice.gov.uk/$your_service/resources
+  $ cd resources
 
 ```
 
