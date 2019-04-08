@@ -189,6 +189,26 @@
           </li>
         </ul>
       </li>
+      <li>
+        <a href="/tasks.html#cleaning-up">Cleaning up</a>
+        <ul>
+          <li>
+            <a href="/tasks.html#2-tell-terraform-to-delete-your-aws-resources">2. Tell terraform to delete your AWS resources</a>
+          </li>
+          <li>
+            <a href="/tasks.html#3-remove-your-namespace-code-from-the-cloud-platform-environments-repository">3. Remove your namespace code from the cloud-platform-environments repository</a>
+          </li>
+          <li>
+            <a href="/tasks.html#4-delete-all-of-the-kubernetes-resources-inside-your-namespace">4. Delete all of the kubernetes resources inside your namespace.</a>
+          </li>
+          <li>
+            <a href="/tasks.html#5-delete-your-namespace-from-the-cluster">5. Delete your namespace from the cluster.</a>
+          </li>
+          <li>
+            <a href="/tasks.html#summary">Summary</a>
+          </li>
+        </ul>
+      </li>
     </ul>
   </li>
 </ul>
@@ -236,9 +256,6 @@
           </li>
           <li>
             <a href="/archive.html#adding-aws-resources-to-your-environment">Adding AWS resources to your environment</a>
-          </li>
-          <li>
-            <a href="/archive.html#cleaning-up">Cleaning up</a>
           </li>
         </ul>
       </li>
@@ -347,7 +364,7 @@
 </tr>
 <tr>
 <td><code>live-1.cloud-platform</code></td>
-<td><a href="https://login.apps.live-1.cloud-platform.service.justice.gov.uk/">https://login.apps.live-1.cloud-platform.service.justice.gov.uk/</a></td>
+<td><a href="https://login.cloud-platform.service.justice.gov.uk/">https://login.cloud-platform.service.justice.gov.uk/</a></td>
 </tr>
 
         </table>
@@ -366,12 +383,10 @@
 
 <h6 id="troubleshooting-quot-current-quot-context">Troubleshooting: &ldquo;current&rdquo; context</h6><p>If you receive <code>The connection to the server localhost:8080 was refused</code> errors while executing <code>kubectl</code> commands,
 check that your &ldquo;current&rdquo; context is set.</p>
-<p>Run <code>kubectl config get-contexts</code>:
-<code>
-CURRENT   NAME                                           CLUSTER                                        AUTHINFO                 NAMESPACE
+<p>Run <code>kubectl config get-contexts</code>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>CURRENT   NAME                                           CLUSTER                                        AUTHINFO                 NAMESPACE
           live-1.cloud-platform.service.justice.gov.uk   live-1.cloud-platform.service.justice.gov.uk   &lt;your github e-mail&gt;
-</code></p>
-<p>Set the context you want to use as &ldquo;current&rdquo; with: <code>kubectl config use-context &lt;NAME&gt;</code>.</p>
+</code></pre></div><p>Set the context you want to use as &ldquo;current&rdquo; with: <code>kubectl config use-context &lt;NAME&gt;</code>.</p>
 <p>E.g. <code>kubectl config use-context live-1.cloud-platform.service.justice.gov.uk</code></p>
 <h5 id="multiple-clusters">Multiple clusters</h5><p>To setup additional clusters, follow the process above and save the generated <code>kubeconfig</code> with a different filename (eg.: <code>~/.kube/config_live1</code>).</p>
 <p>You can then use the <code>KUBECONFIG</code> environment variable to have <code>kubectl</code> parse the additional configuration files, eg.: <code>KUBECONFIG=~/.kube/config:~/.kube/config_live1</code></p>
@@ -666,77 +681,6 @@ variable "cluster_state_bucket" {}
 </code></pre></div><p>Make sure that you have checked the releases page of a module and that you are using the latest of them in your configuration.</p>
 <p>Upgrading to a new major version usually means that the configured resource will have to be re-created by terraform.</p>
 <p>Refer to the <a href="http://terraform.io/docs/modules">terraform documentation on modules</a> for more information on usage.</p>
-
-<h3 id="cleaning-up">Cleaning up</h3><p>When you have finished with a namespace, please clean it up, along with any
-additional AWS resources you created. This helps to keep the cloud platform
-repositories well-organised, and speeds up deployments and changes to the
-cluster (because the build process doesn&rsquo;t have to spend time managing
-unnecessary resources). It also helps to keep our hosting costs down.</p>
-<p>The resources to be removed are:</p>
-
-<ul>
-<li>The AWS ECR which stores your docker images</li>
-<li>Your namespace in the cluster. This contains all of the pods, containers and
-other cluster resources for your application.</li>
-<li>Any other AWS resources (e.g. RDS/Elasticache instances, S3 buckets, etc.)</li>
-</ul>
-<p>Cleaning up a namespace is a multi-stage process, as follows:</p>
-
-<ol>
-<li>Delete any CI/CD pipeline you have created, which deploys into your
-namespace. This should be done first, so that anything you delete is not
-immediately recreated by your build pipeline.</li>
-<li>Tell terraform to delete the AWS resources it created for you.</li>
-<li>Remove your namespace code from the <a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud-platform-environments</a> repository.</li>
-<li>Delete all of the kubernetes resources inside your namespace.</li>
-<li>Delete your namespace from the cluster.</li>
-</ol>
-<p>The first step depends on how you have set up your CI/CD pipeline, and is not
-covered here.</p>
-<h4 id="2-tell-terraform-to-delete-your-aws-resources">2. Tell terraform to delete your AWS resources</h4><p>AWS resources are created by adding terraform code to the <code>resources</code> directory
-in your namespace&rsquo;s folder in the <a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud-platform-environments</a> repository:</p>
-<div class="highlight"><pre class="highlight plaintext"><code> cloud-platform-environments/namespaces/[live0 or live1 cluster]/[your namespace]/resources/
-</code></pre></div><p>To get terraform to delete the resources it created, you need to delete all the
-<code>*.tf</code> files in this directory <strong>except <code>main.tf</code></strong></p>
-<p>If you delete <code>main.tf</code> at this point, terraform has no way of knowing it is
-responsible for managing any resources in the namespace, so it will not delete
-anything. By leaving <code>main.tf</code> but nothing else, you are telling terraform that
-it should manage resources for this namespace, but that there should be no
-resources, so terraform will delete any resources that do exist.</p>
-<p>Once you have deleted the other <code>*.tf</code> files from your namespace&rsquo;s resources
-folder, raise a <a href="https://help.github.com/en/articles/about-pull-requests">PR</a> to get your changes merged. As soon as this happens, the
-cloud platform build pipeline will run, and your AWS resources will be deleted.</p>
-<h4 id="3-remove-your-namespace-code-from-the-cloud-platform-environments-repository">3. Remove your namespace code from the cloud-platform-environments repository</h4><p>After your change to delete all the <code>*.tf</code> files except <code>main.tf</code> has been
-merged, please raise an additional <a href="https://help.github.com/en/articles/about-pull-requests">PR</a> removing the whole of your namespace code
-from the <a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud-platform-environments</a> repository.</p>
-<p>i.e. deleting the whole of the directory:</p>
-<div class="highlight"><pre class="highlight plaintext"><code> cloud-platform-environments/namespaces/[live0 or live1 cluster]/[your namespace]
-</code></pre></div><p>Merging this <a href="https://help.github.com/en/articles/about-pull-requests">PR</a> will prevent the cloud platform build pipeline from recreating
-your namespace, after it is deleted.</p>
-<h4 id="4-delete-all-of-the-kubernetes-resources-inside-your-namespace">4. Delete all of the kubernetes resources inside your namespace.</h4><p>In your working copy of your application code, you can use the kubernetes
-deployment yaml files to delete your namespace and all the kubernetes resources
-within it.</p>
-<p>Assuming your current working directory is a working copy of your application,
-and that your kubernetes deployment yaml files are in a directory called
-<code>kubernetes_deploy</code>, immediately below your current working directory, you
-would run the following command to delete everything within your namespace.</p>
-<div class="highlight"><pre class="highlight plaintext"><code>kubectl delete --filename kubernetes_deploy --namespace [your namespace]
-</code></pre></div><p>This is analogous to using <code>kubectl apply</code> to create the resources from your
-YAML files, but it will delete all the named resources.</p>
-<p>If you are using <a href="https://helm.sh">Helm</a>, the equivalent command is:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>helm delete --purge
-</code></pre></div><h4 id="5-delete-your-namespace-from-the-cluster">5. Delete your namespace from the cluster.</h4><p>Deleting a namespace requires admin access to the cluster.</p>
-<p>Please raise a <a href="https://help.github.com/en/articles/about-pull-requests">PR</a> against the <a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud-platform-environments</a> repository,
-specifying the namespace you would like the team to delete.</p>
-<h4 id="summary">Summary</h4><p>Removing your namespace and associated resources is a multi-stage process:</p>
-
-<ol>
-<li>Stop any CI/CD process from recreating everything</li>
-<li>Get terraform to delete AWS resources</li>
-<li>Remove the code that defines your namespace</li>
-<li>Remove everything inside the namespace</li>
-<li>Tell the cloud platform team to delete the namespace</li>
-</ol>
 
 
 
