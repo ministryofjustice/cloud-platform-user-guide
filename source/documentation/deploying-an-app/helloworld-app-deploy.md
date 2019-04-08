@@ -235,11 +235,13 @@ For `[POD-NAME]` use the value returned by the `kubectl get pods...` command
 
 You should be able to view the app. at the following URL:
 
-      curl -L http://helloworld-rubyapp.apps.live-1.cloud-platform.service.justice.gov.uk
+      curl -L https://helloworld-rubyapp.apps.live-1.cloud-platform.service.justice.gov.uk
 
 Don't forget to change `helloworld-rubyapp` to whatever hostname you chose earlier.
 
-Note: You need the `-L` flag to make curl follow the 308 redirect response that it will receive from the ingress controller. If you view the URL in a web browser, it should just work.
+You need the `-L` flag to make curl follow the 308 redirect response that it will receive from the ingress controller. If you view the URL in a web browser, it should just work.
+
+If you are wondering why https 'just works', there is some magic behind the scenes whereby a LetsEncrypt SSL certificate is created for you, and applied to your ingress. A future user guide article will describe this in more detail.
 
 [rubyapp-github]: https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app
 [homebrew]: https://brew.sh
