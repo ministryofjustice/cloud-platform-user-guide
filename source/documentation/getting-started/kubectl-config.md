@@ -32,8 +32,8 @@ Live clusters are those available to users:
 
 | Cluster Name | Login page |
 | ------------ | ---------- |
-| `cloud-platform-live-0` | [https://login.apps.cloud-platform-live-0.k8s.integration.dsd.io/][live-0-login] |
-| `live-1.cloud-platform` | [https://login.apps.live-1.cloud-platform.service.justice.gov.uk/][live-1-login] |
+| `cloud-platform-live-0` | [https://login.apps.cloud-platform-live-0.k8s.integration.dsd.io/](https://login.apps.cloud-platform-live-0.k8s.integration.dsd.io/) |
+| `live-1.cloud-platform` | [https://login.cloud-platform.service.justice.gov.uk/](https://login.cloud-platform.service.justice.gov.uk/) |
 
 <div style="height:1px;font-size:1px;">&nbsp;</div>
 
@@ -54,6 +54,7 @@ If you receive `The connection to the server localhost:8080 was refused` errors 
 check that your "current" context is set.
 
 Run `kubectl config get-contexts`:
+
 ```
 CURRENT   NAME                                           CLUSTER                                        AUTHINFO                 NAMESPACE
           live-1.cloud-platform.service.justice.gov.uk   live-1.cloud-platform.service.justice.gov.uk   <your github e-mail>
