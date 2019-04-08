@@ -136,6 +136,7 @@ spec:
 <p>For <code>[POD-NAME]</code> use the value returned by the <code>kubectl get pods...</code> command</p>
 <p><em>Tip:</em> You can find more about the <code>kubectl</code> command <a href="https://kubernetes.io/docs/reference/kubectl/overview/">here</a></p>
 <p>You should be able to view the app. at the following URL:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>  curl -L http://helloworld-rubyapp.apps.live-1.cloud-platform.service.justice.gov.uk
+<div class="highlight"><pre class="highlight plaintext"><code>  curl -L https://helloworld-rubyapp.apps.live-1.cloud-platform.service.justice.gov.uk
 </code></pre></div><p>Don&rsquo;t forget to change <code>helloworld-rubyapp</code> to whatever hostname you chose earlier.</p>
-<p>Note: You need the <code>-L</code> flag to make curl follow the 308 redirect response that it will receive from the ingress controller. If you view the URL in a web browser, it should just work.</p>
+<p>You need the <code>-L</code> flag to make curl follow the 308 redirect response that it will receive from the ingress controller. If you view the URL in a web browser, it should just work.</p>
+<p>If you are wondering why https &#39;just works&rsquo;, there is some magic behind the scenes whereby a LetsEncrypt SSL certificate is created for you, and applied to your ingress. A future user guide article will describe this in more detail.</p>
