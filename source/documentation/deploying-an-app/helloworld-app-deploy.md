@@ -40,7 +40,7 @@ This guide assumes the following:
 
 The `ECR Team Name` and `ECR Repository Name` must match the `team_name` and `repo_name` values you entered when you created the ECR via [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments) Github repository.
 
-You can find them in the file `namespaces/cloud-platform-live-0.k8s.integration.dsd.io/[YOUR ENVIRONMENT]/resources/ecr.tf`.
+You can find them in the file `namespaces/live-1.cloud-platform.service.justice.gov.uk/[YOUR ENVIRONMENT]/resources/ecr.tf`.
 
 ##### Amazon ECR Terminology
 
