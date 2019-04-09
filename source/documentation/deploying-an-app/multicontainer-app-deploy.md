@@ -20,6 +20,17 @@ The application database will be an Amazon RDS instance. To create this, refer t
 
 For more information see [Adding AWS resources to your environment][add-aws-resources].
 
+The [demo application][multi-demo], and this guide, assumes a DATABASE_URL environment variable, exported by the terraform RDS module as follows:
+
+    # rds.tf
+    ...
+    data {
+      url = postgres://${module.module_name.database_username}:${module.module_name.database_password}@${module.module_name.rds_instance_endpoint}/${module.module_name.database_name}
+    }
+    ...
+
+Please ensure that your `rds.tf` file exports a database `url` value in this way (changing `module_name` to match the name you use in your `rds.tf` file).
+
 #### Build docker images and pushing to ECR
 
 As before, we need to build docker images which we will push to our [Amazon ECR][ecr].
