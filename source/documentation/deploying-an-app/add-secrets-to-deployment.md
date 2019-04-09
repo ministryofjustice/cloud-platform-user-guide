@@ -92,7 +92,7 @@ Add the AWS_ACCESS_KEY_ID referencing 'aws_access_key_id' and AWS_SECRET_ACCESS_
     spec:
       containers:
         - name: django-demo-container
-          image: 926803513772.dkr.ecr.eu-west-1.amazonaws.com/cloud-platform-reference-app:django
+          image: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/cloud-platform-reference-app:django
           ports:
             - containerPort: 8000
           env:
