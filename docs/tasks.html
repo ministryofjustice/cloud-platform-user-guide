@@ -1059,6 +1059,14 @@ spec:
 <p>Each container needs a <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/">Deployment</a> which will contain a <a href="https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/">Pod</a>. <a href="https://kubernetes.io/docs/concepts/services-networking/service/">Services</a> make pods available on the cluster&rsquo;s internal network, and an <a href="https://kubernetes.io/docs/concepts/services-networking/ingress/">Ingress</a> exposes one or more services to the outside world.</p>
 <h4 id="create-an-rds-instance">Create an RDS instance</h4><p>The application database will be an Amazon RDS instance. To create this, refer to the <a href="https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance">cloud platform RDS</a> repository, and create a terraform file in your sub-directory of the <a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud platform environments</a> repository (you will need to raise a PR for this, and get the cloud platform team to approve it).</p>
 <p>For more information see <a href="/tasks.html#adding-aws-resources-to-your-environment">Adding AWS resources to your environment</a>.</p>
+<p>The <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app">demo application</a>, and this guide, assumes a DATABASE_URL environment variable, exported by the terraform RDS module as follows:</p>
+<div class="highlight"><pre class="highlight plaintext"><code># rds.tf
+...
+data {
+  url = postgres://${module.module_name.database_username}:${module.module_name.database_password}@${module.module_name.rds_instance_endpoint}/${module.module_name.database_name}
+}
+...
+</code></pre></div><p>Please ensure that your <code>rds.tf</code> file exports a database <code>url</code> value in this way (changing <code>module_name</code> to match the name you use in your <code>rds.tf</code> file).</p>
 <h4 id="build-docker-images-and-pushing-to-ecr">Build docker images and pushing to ECR</h4><p>As before, we need to build docker images which we will push to our <a href="https://aws.amazon.com/ecr/">Amazon ECR</a>.</p>
 <p>Please carry out the following steps on your own working copy of the <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app">demo application</a>.</p>
 <p>For <code>team_name</code> and <code>repo_name</code> please use the values from your <code>ecr.tf</code> file, when you <a href="/tasks.html#creating-an-ecr-repository">created your ECR</a>.</p>
