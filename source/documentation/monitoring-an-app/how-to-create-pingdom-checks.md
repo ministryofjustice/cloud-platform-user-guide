@@ -10,7 +10,7 @@ This guide assumes the following:
 * You have a slack channel to send alerts into
 
 #### Creating a Pingdom webhook and integration id
-For Pingdom to communicate with Slack you require an integration id. Setting this up is really simple but requires access to the MoJ [Pingdom Slack]() and [Pingdom]() console.
+For Pingdom to communicate with Slack you require an integration id. Setting this up is really simple but requires access to the MoJ [Pingdom Slack](https://mojdt.slack.com/apps/A0F814AV7-pingdom?next_id=0) and [Pingdom](https://my.pingdom.com) console.
 
 The Cloud Platform team can do this on your behalf. Create a ticket requesting a Pingdom integration id with the following information:
 
@@ -18,10 +18,10 @@ The Cloud Platform team can do this on your behalf. Create a ticket requesting a
 - application name
 - slack channel
 
-The team will provide you with an integration id, following the steps outlined [here]().
+The team will provide you with an integration id, following the steps outlined [here](https://github.com/ministryofjustice/cloud-platform-environments/blob/master/docs/creating-pingdom-webhook.md).
 
 #### Create a Pingdom terraform file
-In the [cloud-platform-environments]() repository create a resources directory (if it isn't already created)in your namespace, now add a `pingdom.tf` file and using the resources outlined [here](https://github.com/russellcardullo/terraform-provider-pingdom#usage) create a basic check. Here's a working example of a [basic check](https://github.com/ministryofjustice/cloud-platform-environments/blob/master/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/monitoring/resources/pingdom.tf):
+In the [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments) repository create a resources directory (if it isn't already created) in your namespace, now add a `pingdom.tf` file and using the resources outlined [here](https://github.com/russellcardullo/terraform-provider-pingdom#usage) create a basic check. Here's a working example of a [basic check](https://github.com/ministryofjustice/cloud-platform-environments/blob/master/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/monitoring/resources/pingdom.tf):
 ```
 provider "pingdom" {}
 
