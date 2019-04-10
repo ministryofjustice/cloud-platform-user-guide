@@ -1,0 +1,56 @@
+<h2 id="how-do-i-run-rails-database-migrations">How do I run Rails database migrations?</h2><p>The short and naive answer is that you create a Kubernetes &lsquo;Job&rsquo; yaml file, using your rails application Docker image, and run <code>rails db:migrate</code></p>
+<p>Here is an <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/kubernetes_deploy/rails-migrations-job.yaml">example</a></p>
+<p>This approach may work for your service, but there are potential issues that
+you should be aware of. In particular, kubernetes makes no guarantees about
+when your job will run, in relation to when the rest of your service starts.</p>
+<p>So, it is possible for your application containers to be replaced with the
+latest version <strong>before</strong> your migration job has run. In this case, there will
+be a period of time when your updated application code may try to interact with
+the database while it is still in the &#39;old&rsquo; state (e.g. before your migration
+added a new column). This might cause users to see errors.</p>
+<p>Alternatively, it is possible that your migration job will complete before all
+of your application pods have been replaced with pods running the latest code.
+So, you might have application code which expects to see the old database
+structure, but which are running against an updated database. If your migration
+removed a column, or otherwise updated the database in ways which are
+incompatible with the old version of the application code, then this could
+cause users to see errors.</p>
+<p>These problems are not unique to Kubernetes. They occur in any scenario where a
+mismatch between the state of your database and the state of your application
+code can cause errors.</p>
+<p>In the majority of cases, the window during which errors might occur is likely
+to be so brief that no users will be affected, but it is worth being aware of,
+even if you decide to just accept that it <strong>might</strong> happen.</p>
+<p>Some strategies to protect against this include:</p>
+
+<ul>
+<li>If planned downtime is a possibility, put the service into maintenance mode
+before the migration, and bring it back into service when you are confident
+that the application code and the database are both in the appropriate state.</li>
+<li>Create a healthcheck endpoint in your application code which tests the
+state of the database and fails if the database structure is not as
+expected, so that kubernetes does not start any new application pods until
+after the migration has completed (although this will not prevent problems if
+the new database structure is incompatible with the old application code).</li>
+<li>Break your migration into several stages such that, at every stage, your
+application code works with both the current and next/previous state of the
+database.</li>
+</ul>
+<h3 id="do-not-run-migrations-on-container-startup">Do not run migrations on container startup</h3><p>A pattern to avoid is having your application container start up using a
+command like this:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>bundle exec rails db:migrate &amp;&amp; bundle exec rails server
+</code></pre></div><p>In general, you should avoid overloading container startup in this way. If your
+container takes a long time to start up (e.g. if the migration task takes a
+long time to complete, in this example) then the cluster might assume your pod
+has failed, and it will kill it and start a new one. In the worst cases, this
+can cause your application to go into a crash loop such that it never starts at
+all.</p>
+<p>Keep your containers dedicated to a single purpose and, if you need to run
+one-off jobs, use a dedicated job or other kubernetes object to do so.</p>
+<h3 id="further-reading">Further reading</h3><p>The following StackOverflow threads discuss these issues:</p>
+
+<ul>
+<li><a href="https://stackoverflow.com/questions/50218376/managing-db-migrations-on-kubernetes-cluster">Managing DB migrations on Kubernetes cluster</a></li>
+<li><a href="https://stackoverflow.com/questions/48877182/kubernetes-rolling-deployments-and-database-migrations">Kubernetes rolling deployments and database migrations</a></li>
+<li><a href="https://stackoverflow.com/questions/37058812/how-best-to-run-one-off-migration-tasks-in-a-kubernetes-cluster">How best to run one-off migration tasks in a kubernetes cluster</a></li>
+</ul>
