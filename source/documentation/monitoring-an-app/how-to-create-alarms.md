@@ -99,7 +99,7 @@ PrometheusRules can still be tested/amended/applied manually, then a PR can be c
 
 #### Advisory Note 2: CPUThrottlingHigh Alert
 
-The `CPUThrottlingHigh` alert is configured as part of the default rules when installing prometheus-operator. The alert can tigger when containers have low cpu limits, spiky workloads but very low average usage. CPU throttling can activate during those spikes. CPU usage is based on [CFS](https://en.wikipedia.org/wiki/Completely_Fair_Scheduler).
+The `CPUThrottlingHigh` alert is configured as part of the default rules when installing prometheus-operator. The alert can trigger when containers have low cpu limits, spiky workloads but very low average usage. CPU throttling can activate during those spikes. CPU usage is based on [CFS](https://en.wikipedia.org/wiki/Completely_Fair_Scheduler).
 
 If you think this may be causing an issue with your application, we recommend raising your CPU limit, whilst keeping the container CPU request as close to the 95%-ile average usage as possible. 
 
