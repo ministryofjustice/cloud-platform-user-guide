@@ -1,16 +1,17 @@
-### Creating Pingdom checks
+## Creating Pingdom checks
 
-#### Overview
+### Overview
 [Pingdom](https://my.pingdom.com) is a global performance and availability monitor for your web application. The aim of this document is to provide you with the necessary information to create Pingom checks via the [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments) pipeline, and then send failing checks to a Slack channel of your choosing.
 
-#### Prerequisites
+### Prerequisites
 This guide assumes the following:
 
 * You have [created a namespace for your application][env-create]
 * You have a slack channel to send alerts to
 
-#### Create a Pingdom check
+### Create a Pingdom check
 To create a Pingdom check simply add a `pingdom.tf` file in the resources directory of your namespace in your [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces/live-1.cloud-platform.service.justice.gov.uk) repository. You can define the conditions of your check using the resources outlined in the [Terraform community provider](https://github.com/russellcardullo/terraform-provider-pingdom). Here's a working example of a [basic check](https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/monitoring/resources).
+
 ```yaml
 terraform {
   backend "s3" {}
@@ -29,11 +30,12 @@ resource "pingdom_check" "cloud-platform-prometheus-live-0-healthcheck" {
    url                      = "/-/healthy"
    encryption               = true
    port                     = 443
-   tags                     = "businessunit_platforms,application_prometheus,component_healthcheck,isproduction_true,environment_prod,                              infrastructuresupport_platforms"
+   tags                     = "businessunit_platforms,application_prometheus,component_healthcheck,isproduction_true,environment_prod,infrastructuresupport_platforms"
    probefilters             = "region:EU"
    publicreport             = "true"
  }
 ```
+
 **Note**: You'll need to include the `provider "pingdom"` and `terraform` blocks either in this file or in a `main.tf` file. 
 
 This basic check simply checks that the host/url (in this case; https://prometheus.apps.cloud-platform-live-0.k8s.integration.dsd.io/-/healthy) returns a 200 every minute (resolution = 1 minute). When six (sendnotificationwhendown = 6) consecutive checks fail it triggers an alarm. As publicreport is set to true, you can view the status of your check by visiting the [public status page](http://pingdom.service.dsd.io), where this check would appear with the name "Prometheus - live-0 - cloud-platform - Healthcheck".
@@ -56,6 +58,7 @@ The Cloud Platform team can do this on your behalf. Create a ticket requesting a
 The team will provide you with an integration id, following the steps outlined [here](https://github.com/ministryofjustice/cloud-platform-environments/blob/master/docs/creating-pingdom-webhook.md).
 
 You can now add `integrationids` to your `pingdom.tf`. Appending the example above, your check will now appear as follows (assuming you were given 1000 as the integration id):
+
 ```yaml
 terraform {
    backend "s3" {}
@@ -74,7 +77,7 @@ terraform {
     url                      = "/-/healthy"
     encryption               = true
     port                     = 443
-    tags                     = "businessunit_platforms,application_prometheus,component_healthcheck,isproduction_true,environment_prod,                                          infrastructuresupport_platforms"
+    tags                     = "businessunit_platforms,application_prometheus,component_healthcheck,isproduction_true,environment_prod,infrastructuresupport_platforms"
     probefilters             = "region:EU"
     publicreport             = "true"
     integrationids           = [1000]
