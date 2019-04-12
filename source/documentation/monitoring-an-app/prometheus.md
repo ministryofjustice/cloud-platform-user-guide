@@ -47,11 +47,11 @@ Make sure you've included the `label` and that the JSON string is properly inden
 
 All links provided below require you to authenticate with your Github account.
 
-Prometheus: [https://prometheus.apps.live-1.cloud-platform.service.justice.gov.uk](https://prometheus.apps.live-1.cloud-platform.service.justice.gov.uk)
+Prometheus: [https://prometheus.cloud-platform.service.justice.gov.uk](https://prometheus.cloud-platform.service.justice.gov.uk)
 
-AlertManager: [https://alertmanager.apps.live-1.cloud-platform.service.justice.gov.uk](https://alertmanager.apps.live-1.cloud-platform.service.justice.gov.uk/)
+AlertManager: [https://alertmanager.cloud-platform.service.justice.gov.uk](https://alertmanager.cloud-platform.service.justice.gov.uk/)
 
-Grafana: [https://grafana.apps.live-1.cloud-platform.service.justice.gov.uk](https://grafana.apps.live-1.cloud-platform.service.justice.gov.uk)
+Grafana: [https://grafana.cloud-platform.service.justice.gov.uk](https://grafana.cloud-platform.service.justice.gov.uk)
 
 #### Further documentation
 

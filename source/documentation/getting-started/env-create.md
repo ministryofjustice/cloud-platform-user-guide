@@ -212,7 +212,7 @@ our `myenv-dev` namespace, we would run:
 
 Then you can try [deploying an app to Kubernetes manually][deploy-hello-world]
 by writing some custom YAML files or [deploying an app with Helm][deploy-helm],
-a Kubernetes [package manager]((https://helm.sh/)).
+a Kubernetes [package manager](https://helm.sh/).
 
 ### More information on environment definition
 

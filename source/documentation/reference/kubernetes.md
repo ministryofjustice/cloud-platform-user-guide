@@ -11,7 +11,7 @@ Here are some links to Kubernetes resources:
 
 Kubernetes has it's own official CLI tool for interacting with a Cluster called `kubectl`. It is certainly worth learning the basics of `kubectl`, As the vast majority of time interacting with Kubernetes will be through this tool.
 
-We have our own page on [Kubectl Basics](/other-topics.html#kubectl-quick-reference).
+We have our own page on [Kubectl Basics](/archive.html#kubectl-quick-reference).
 
 [Kubernetes]: https://kubernetes.io
 [k8s-docs]: https://kubernetes.io/docs/concepts
