@@ -1,0 +1,66 @@
+<h3 id="creating-pingdom-checks">Creating Pingdom checks</h3><h4 id="overview">Overview</h4><p><a href="https://my.pingdom.com">Pingdom</a> is a global performance and availability monitor for your web application. The aim of this document is to provide you with the necessary information to create Pingom checks via the <a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud-platform-environments</a> pipeline, and then send failing checks to a Slack channel of your choosing.</p>
+<h4 id="prerequisites">Prerequisites</h4><p>This guide assumes the following:</p>
+
+<ul>
+<li>You have [created a namespace for your application][env-create]</li>
+<li>You have a slack channel to send alerts to</li>
+</ul>
+<h4 id="create-a-pingdom-check">Create a Pingdom check</h4><p>To create a Pingdom check simply add a <code>pingdom.tf</code> file in the resources directory of your namespace in your <a href="https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces/live-1.cloud-platform.service.justice.gov.uk">cloud-platform-environments</a> repository. You can define the conditions of your check using the resources outlined in the <a href="https://github.com/russellcardullo/terraform-provider-pingdom">Terraform community provider</a>. Here&rsquo;s a working example of a <a href="https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/monitoring/resources">basic check</a>.
+&ldquo;`yaml
+terraform {
+  backend &quot;s3&rdquo; {}
+}</p>
+<p>provider &ldquo;pingdom&rdquo; {}</p>
+<p>resource &ldquo;pingdom_check&rdquo; &ldquo;cloud-platform-prometheus-live-0-healthcheck&rdquo; {
+   type                     = &ldquo;http&rdquo;
+   name                     = &ldquo;Prometheus - live-0 - cloud-platform - Healthcheck&rdquo;
+   host                     = &ldquo;prometheus.apps.cloud-platform-live-0.k8s.integration.dsd.io&rdquo;
+   resolution               = 1
+   notifywhenbackup         = true
+   sendnotificationwhendown = 6
+   notifyagainevery         = 0
+   url                      = &ldquo;/-/healthy&rdquo;
+   encryption               = true
+   port                     = 443
+   tags                     = &ldquo;businessunit_platforms,application_prometheus,component_healthcheck,isproduction_true,environment_prod,                              infrastructuresupport_platforms&rdquo;
+   probefilters             = &ldquo;region:EU&rdquo;
+   publicreport             = &ldquo;true&rdquo;
+ }
+&ldquo;<code>
+**Note**: You&#39;ll need to include the</code>provider &quot;pingdom&rdquo;<code>and</code>terraform<code>blocks either in this file or in a</code>main.tf` file.</p>
+<p>This basic check simply checks that the host/url (in this case; https://prometheus.apps.cloud-platform-live-0.k8s.integration.dsd.io/-/healthy) returns a 200 every minute (resolution = 1 minute). When six (sendnotificationwhendown = 6) consecutive checks fail it triggers an alarm. As publicreport is set to true, you can view the status of your check by visiting the <a href="http://pingdom.service.dsd.io">public status page</a>, where this check would appear with the name &ldquo;Prometheus - live-0 - cloud-platform - Healthcheck&rdquo;.</p>
+<p><a href="https://github.com/russellcardullo/terraform-provider-pingdom#pingdom-check">This</a> page explains all the attributes used in the check.</p>
+<p>All resources, including Pingdom checks <strong>must</strong> be tagged and adhere to the technical guidance outlined <a href="https://github.com/ministryofjustice/technical-guidance/blob/master/standards/documenting-infrastructure-owners.md">here</a>. Ensure your check has appropriate tags before submitting a pull request.</p>
+<p>Once reviewed and merged to master, the pipeline will create your check in the MoJ Pingdom account.</p>
+<h4 id="adding-slack-notification">Adding Slack notification</h4><p>You can enable the option to send a failing alert to Slack via a webhook by simply adding Pingdom integration id. You need administrator permissions to manage the mojdt <a href="https://mojdt.slack.com/apps/A0F814AV7-pingdom?next_id=0">Pingdom Slack</a> webhook and then <a href="https://my.pingdom.com">Pingdom</a> to create the integration id.</p>
+<p>The Cloud Platform team can do this on your behalf. Create a ticket requesting a Pingdom integration id with the following information:</p>
+
+<ul>
+<li>team name</li>
+<li>application name</li>
+<li>slack channel</li>
+</ul>
+<p>The team will provide you with an integration id, following the steps outlined <a href="https://github.com/ministryofjustice/cloud-platform-environments/blob/master/docs/creating-pingdom-webhook.md">here</a>.</p>
+<p>You can now add <code>integrationids</code> to your <code>pingdom.tf</code>. Appending the example above, your check will now appear as follows (assuming you were given 1000 as the integration id):
+&ldquo;`yaml
+terraform {
+   backend &quot;s3&rdquo; {}
+ }</p>
+<p>provider &ldquo;pingdom&rdquo; {}</p>
+<p>resource &ldquo;pingdom_check&rdquo; &ldquo;cloud-platform-prometheus-live-0-healthcheck&rdquo; {
+    type                     = &ldquo;http&rdquo;
+    name                     = &ldquo;Prometheus - live-0 - cloud-platform - Healthcheck&rdquo;
+    host                     = &ldquo;prometheus.apps.cloud-platform-live-0.k8s.integration.dsd.io&rdquo;
+    resolution               = 1
+    notifywhenbackup         = true
+    sendnotificationwhendown = 6
+    notifyagainevery         = 0
+    url                      = &ldquo;/-/healthy&rdquo;
+    encryption               = true
+    port                     = 443
+    tags                     = &ldquo;businessunit_platforms,application_prometheus,component_healthcheck,isproduction_true,environment_prod,                                          infrastructuresupport_platforms&rdquo;
+    probefilters             = &ldquo;region:EU&rdquo;
+    publicreport             = &ldquo;true&rdquo;
+    integrationids           = [1000]
+  }</p>
+<div class="highlight"><pre class="highlight plaintext"><code></code></pre></div>
