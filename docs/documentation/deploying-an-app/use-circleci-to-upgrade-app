@@ -10,7 +10,7 @@
 <h5 id="requirements">Requirements</h5><p>It is assumed you have the following:</p>
 
 <ul>
-<li>You have <a href="/getting-started/env-create">created an environment for your application</a></li>
+<li>You have <a href="tasks.html#creating-a-cloud-platform-environment">created an environment for your application</a></li>
 <li>You have <a href="archive.html#deploying-an-application-to-the-cloud-platform-with-helm">deployed an application</a> to the &lsquo;cloud-platform-live-1&rsquo; cluster using Helm.</li>
 <li>You have created an <a href="tasks.html#creating-an-ecr-repository">ECR repository</a></li>
 </ul>

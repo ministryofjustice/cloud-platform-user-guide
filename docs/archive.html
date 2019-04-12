@@ -233,6 +233,9 @@
           <li>
             <a href="/tasks.html#creating-the-secret">Creating the secret</a>
           </li>
+          <li>
+            <a href="/tasks.html#creating-pingdom-checks">Creating Pingdom checks</a>
+          </li>
         </ul>
       </li>
       <li>
@@ -599,7 +602,7 @@ django-app-&lt;Name&gt;-postgresql-7b4bdff4b8-xdlw2   1/1       Running   0     
 <h5 id="continuous-deployment-of-an-application-using-circleci-and-helm-introduction-requirements">Requirements</h5><p>It is assumed you have the following:</p>
 
 <ul>
-<li>You have <a href="/getting-started/env-create">created an environment for your application</a></li>
+<li>You have <a href="/tasks.html#creating-a-cloud-platform-environment">created an environment for your application</a></li>
 <li>You have <a href="/archive.html#deploying-an-application-to-the-cloud-platform-with-helm">deployed an application</a> to the &lsquo;cloud-platform-live-1&rsquo; cluster using Helm.</li>
 <li>You have created an <a href="/tasks.html#creating-an-ecr-repository">ECR repository</a></li>
 </ul>
@@ -777,9 +780,9 @@ data:
 <li>Use <code>kubectl</code> to apply the <code>ConfigMap</code> above, your dashboard should be visible in Grafana shortly.</li>
 </ol>
 <h4 id="how-to-access-monitoring-tools">How to access monitoring tools</h4><p>All links provided below require you to authenticate with your Github account.</p>
-<p>Prometheus: <a href="https://prometheus.apps.live-1.cloud-platform.service.justice.gov.uk">https://prometheus.apps.live-1.cloud-platform.service.justice.gov.uk</a></p>
-<p>AlertManager: <a href="https://alertmanager.apps.live-1.cloud-platform.service.justice.gov.uk/">https://alertmanager.apps.live-1.cloud-platform.service.justice.gov.uk</a></p>
-<p>Grafana: <a href="https://grafana.apps.live-1.cloud-platform.service.justice.gov.uk">https://grafana.apps.live-1.cloud-platform.service.justice.gov.uk</a></p>
+<p>Prometheus: <a href="https://prometheus.cloud-platform.service.justice.gov.uk">https://prometheus.cloud-platform.service.justice.gov.uk</a></p>
+<p>AlertManager: <a href="https://alertmanager.cloud-platform.service.justice.gov.uk/">https://alertmanager.cloud-platform.service.justice.gov.uk</a></p>
+<p>Grafana: <a href="https://grafana.cloud-platform.service.justice.gov.uk">https://grafana.cloud-platform.service.justice.gov.uk</a></p>
 <h4 id="further-documentation">Further documentation</h4><p><a href="https://prometheus.io/docs/prometheus/latest/querying/basics">Prometheus querying</a></p>
 <p><a href="https://prometheus.io/docs/alerting/alertmanager">AlertManager</a></p>
 <p><a href="https://prometheus.io/docs/introduction/overview/###architecture">Architecture</a></p>
@@ -953,7 +956,7 @@ data:
 <h3 id="accessing-application-log-data">Accessing Application Log Data</h3><h4 id="accessing-application-log-data-overview">Overview</h4><p>This document is intended to assist engineers in accessing application and system logs stored in a centralized Elasticsearch cluster.</p>
 <h4 id="access-kibana">Access Kibana</h4><p>The Cloud Platform collects, indexes and presents your application and system log data enabling you to query using Kibana’s standard query language (based on Lucene query syntax).</p>
 <p>To access Kibana, follow the appropriate link below and authenticate with your GitHub credentials:</p>
-<h5 id="live-1-cluster">Live-1 Cluster</h5><p><a href="https://kibana.apps.live-1.cloud-platform.service.justice.gov.uk/_plugin/kibana/">https://kibana.apps.live-1.cloud-platform.service.justice.gov.uk/plugin/kibana/</a></p>
+<h5 id="live-1-cluster">Live-1 Cluster</h5><p><a href="https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana">https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana</a></p>
 <h5 id="live-0-cluster">Live-0 Cluster</h5><p><a href="https://kibana.apps.cloud-platform-live-0.k8s.integration.dsd.io/_plugin/kibana/">https://kibana.apps.cloud-platform-live-0.k8s.integration.dsd.io/plugin/kibana/</a></p>
 <h4 id="using-kibana">Using Kibana</h4><p>As a quick example, we will filter down to the logs of a particular environment.</p>
 <p>1) On the Kibana dashboard, select the &lsquo;Discover&rsquo; tab.</p>

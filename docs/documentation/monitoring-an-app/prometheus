@@ -28,9 +28,9 @@ data:
 <li>Use <code>kubectl</code> to apply the <code>ConfigMap</code> above, your dashboard should be visible in Grafana shortly.</li>
 </ol>
 <h4 id="how-to-access-monitoring-tools">How to access monitoring tools</h4><p>All links provided below require you to authenticate with your Github account.</p>
-<p>Prometheus: <a href="https://prometheus.apps.live-1.cloud-platform.service.justice.gov.uk">https://prometheus.apps.live-1.cloud-platform.service.justice.gov.uk</a></p>
-<p>AlertManager: <a href="https://alertmanager.apps.live-1.cloud-platform.service.justice.gov.uk/">https://alertmanager.apps.live-1.cloud-platform.service.justice.gov.uk</a></p>
-<p>Grafana: <a href="https://grafana.apps.live-1.cloud-platform.service.justice.gov.uk">https://grafana.apps.live-1.cloud-platform.service.justice.gov.uk</a></p>
+<p>Prometheus: <a href="https://prometheus.cloud-platform.service.justice.gov.uk">https://prometheus.cloud-platform.service.justice.gov.uk</a></p>
+<p>AlertManager: <a href="https://alertmanager.cloud-platform.service.justice.gov.uk/">https://alertmanager.cloud-platform.service.justice.gov.uk</a></p>
+<p>Grafana: <a href="https://grafana.cloud-platform.service.justice.gov.uk">https://grafana.cloud-platform.service.justice.gov.uk</a></p>
 <h4 id="further-documentation">Further documentation</h4><p><a href="https://prometheus.io/docs/prometheus/latest/querying/basics">Prometheus querying</a></p>
 <p><a href="https://prometheus.io/docs/alerting/alertmanager">AlertManager</a></p>
 <p><a href="https://prometheus.io/docs/introduction/overview/###architecture">Architecture</a></p>

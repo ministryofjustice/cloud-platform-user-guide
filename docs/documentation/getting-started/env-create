@@ -206,7 +206,7 @@ our <code>myenv-dev</code> namespace, we would run:</p>
 <h3 id="next-steps">Next steps</h3><p><a href="tasks.html#creating-an-ecr-repository">Create an ECR repository</a> to push your application docker image to.</p>
 <p>Then you can try <a href="tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">deploying an app to Kubernetes manually</a>
 by writing some custom YAML files or <a href="archive.html#deploying-an-application-to-the-cloud-platform-with-helm">deploying an app with Helm</a>,
-a Kubernetes <a href="(https://helm.sh/)">package manager</a>.</p>
+a Kubernetes <a href="https://helm.sh/">package manager</a>.</p>
 <h3 id="more-information-on-environment-definition">More information on environment definition</h3><p>To set up an environment we create 5 files in that directory:</p>
 
 <ul>
