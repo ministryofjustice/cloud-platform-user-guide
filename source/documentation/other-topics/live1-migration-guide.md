@@ -12,7 +12,7 @@ The reason behind this decision is based on the need to move to a dedicated AWS 
 
 The purpose of this document is to aid development teams in migrating their existing applications from `live-0` to `live-1`.
 
-The migration steps that need to be taken may differ for individual applications. 
+The migration steps that need to be taken may differ for individual applications.
 
 The following steps are for an application that is considered to be fairly normal and deployed through CircleCI.
 
@@ -20,7 +20,7 @@ Appending these steps are a few extra consideration points, that are not covered
 
 ### Accessing the Live-1 cluster
 
-To access the `live-1` cluster, navigate to the [Kuberos configuration page](https://login.apps.live-1.cloud-platform.service.justice.gov.uk), and download your Kube config file.
+To access the `live-1` cluster, follow the steps in the [authentication](/tasks.html#authentication) section of this guide, and download your Kube config file.
 
 Kubernetes provides a [brief guide](https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/#set-the-kubeconfig-environment-variable) on how to set up `kubectl` to use multiple config files simultaneously.
 
@@ -36,9 +36,9 @@ Run a `kubectl get namespaces` to check your environment has been successfully c
 
 ### Generating a new ECR repository
 
-Once you've generated a new environment in the `live-1` cluster, you will need to generate a new ECR repository for your application to be pushed to. 
+Once you've generated a new environment in the `live-1` cluster, you will need to generate a new ECR repository for your application to be pushed to.
 
-The reason why the previous ECR repo can't be used is due to the new `live-1` cluster being hosted in a separate AWS account. 
+The reason why the previous ECR repo can't be used is due to the new `live-1` cluster being hosted in a separate AWS account.
 
 If you need reminding of the ECR creation process, please see the [user documentation](tasks.html#creating-an-ecr-repository).
 
@@ -63,7 +63,7 @@ The environment variables you will need to replace are as follows:
 | `K8S_<ENVIRONMENT>_NAMESPACE` |  This variable should be equal to the name of your namespace. |
 | `K8S_<ENVIRONMENT>_TOKEN` |    The token is another attribute found in the `default-token` secret and needs base64 decoding.   |
 
-After triggering the CircleCI pipeline, your application should now deploy into your new environment. 
+After triggering the CircleCI pipeline, your application should now deploy into your new environment.
 
 ### Deleting your Live-0 deployment
 
@@ -71,4 +71,4 @@ The last thing you will need to do is to delete your application from the `live-
 
 Please see the documentation on [cleaning up within the Cloud Platform](archive.html#cleaning-up).
 
-### Other considerations 
+### Other considerations
