@@ -72,3 +72,12 @@ The last thing you will need to do is to delete your application from the `live-
 Please see the documentation on [cleaning up within the Cloud Platform](archive.html#cleaning-up).
 
 ### Other considerations
+
+#### PodSecurityPolicy
+In the `live-1` cluster we are introducing a restrictive [`PodSecurityPolicy`](https://kubernetes.io/docs/concepts/policy/pod-security-policy/) as part of our effort to harden the cluster and provide a stable, secure and reliable service.
+
+The major change this brings is that root containers are not allowed to run. What this means is that the containers that run on the platform need to run as a non-root user. The [solution](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/9ad6caf101cc21117742e5ab2cbe5507efd54efd/rails-app/Dockerfile) is straightforward for images we build: by using the `USER` directive in the `Dockerfile` with a **numeric uid**.
+
+Sometimes we use images built by third parties which may or may not have taken the steps to build them as non-root images. One such very common example is nginx from the dockerhub library. If you need to run an nginx container we recommend that you use the [`bitnami/nginx`](https://github.com/bitnami/bitnami-docker-nginx) image.
+
+See [here](https://docs.bitnami.com/containers/how-to/work-with-non-root-containers/) for more information on non-root containers.
