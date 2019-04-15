@@ -1242,7 +1242,7 @@ metadata:
 <h3 id="creating-pingdom-checks-prerequisites">Prerequisites</h3><p>This guide assumes the following:</p></p>
 
 <ul>
-<li>You have [created a namespace for your application][env-create]</li>
+<li>You have <a href="/tasks.html#creating-a-cloud-platform-environment">created a namespace for your application</a></li>
 <li>You have a slack channel to send alerts to</li>
 </ul>
 <p><h3 id="create-a-pingdom-check">Create a Pingdom check</h3><p>To create a Pingdom check simply add a <code>pingdom.tf</code> file in the resources directory of your namespace in your <a href="https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces/live-1.cloud-platform.service.justice.gov.uk">cloud-platform-environments</a> repository. You can define the conditions of your check using the resources outlined in the <a href="https://github.com/russellcardullo/terraform-provider-pingdom">Terraform community provider</a>. Here&rsquo;s a working example of a <a href="https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/monitoring/resources">basic check</a>.</p>
