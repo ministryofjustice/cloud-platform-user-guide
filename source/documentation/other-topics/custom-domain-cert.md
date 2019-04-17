@@ -18,6 +18,8 @@ up for usage.
 Please [create a support ticket](http://goo.gl/msfGiS) providing as much
 information as possible.
 
+Once the zone is ready, you can continue with the rest of this guide.
+
 ##### You already have a DNS zone for the desired hostname
 
 ###### > It's a Route53 zone
@@ -28,64 +30,70 @@ name for your `Certificate` (see the next step).
 The `secretName` attribute defines the `Secret` where the certificate and key
 material will be stored, in your namespace.
 
-```
----
-apiVersion: certmanager.k8s.io/v1alpha1
-kind: Certificate
-metadata:
-  name: <my-cert>
-  namespace: <my-namespace>
-spec:
-  secretName: <my-cert-secret>
-  issuerRef:
-    name: letsencrypt-production
-    kind: ClusterIssuer
-  commonName: '<hostname>'
-  acme:
-    config:
-    - domains:
-      - '<hostname>'
-      dns01:
-        provider: <provider>
-```
+   ```
+   ---
+   apiVersion: certmanager.k8s.io/v1alpha1
+   kind: Certificate
+   metadata:
+     name: <my-cert>
+     namespace: <my-namespace>
+   spec:
+     secretName: <my-cert-secret>
+     issuerRef:
+       name: letsencrypt-production
+       kind: ClusterIssuer
+     commonName: '<hostname>'
+     acme:
+       config:
+       - domains:
+         - '<hostname>'
+         dns01:
+           provider: <provider>
+   ```
 
 3. Make sure the certificate has been issued correctly, by checking its `Status`:
 
-```
-$ kubectl describe certificate <my-cert>
-```
+   ```
+   $ kubectl describe certificate <my-cert>
+   ```
 
-4. You will need to update your `Ingress` spec to include the new hostname. **Once your host is defined here, the cluster will take control of the DNS record and automatically adjust to point to the cluster.**
+4. You will need to update your `Ingress` spec to include the new hostname.
 
-```
-  apiVersion: extensions/v1beta1
-  kind: Ingress
-  metadata:
-    name: <my-ingress>
-    namespace: <my-namespace>
-  spec:
-    tls:
-    - hosts:
-      - my-app.apps.live-1.cloud-platform.service.justice.gov.uk
-+   - hosts:
-+     - <hostname>
-+     secretName: <my-cert-secret>
-    rules:
-    - host: my-app.apps.live-1.cloud-platform.service.justice.gov.uk
-      http:
-        paths:
-        - path: /
-          backend:
-            serviceName: <my-svc>
-            servicePort: 80
-+   - host: <hostname>
-+     http:
-+       paths:
-+       - path: /
-+         backend:
-+           serviceName: <my-svc>
-+           servicePort: 80
-```
+   **Once your host is defined here, the cluster will take control of the DNS record and automatically adjust to point to the cluster.**
+
+   If this does not happen, please get in touch with us in #ask-cloud-platform. Depending on your setup, we might need to
+   intervene manually to allow `external-dns` to assume ownership of the DNS record.
+
+
+   ```
+     apiVersion: extensions/v1beta1
+     kind: Ingress
+     metadata:
+       name: <my-ingress>
+       namespace: <my-namespace>
+     spec:
+       tls:
+       - hosts:
+         - my-app.apps.live-1.cloud-platform.service.justice.gov.uk
+   +   - hosts:
+   +     - <hostname>
+   +     secretName: <my-cert-secret>
+       rules:
+       - host: my-app.apps.live-1.cloud-platform.service.justice.gov.uk
+         http:
+           paths:
+           - path: /
+             backend:
+               serviceName: <my-svc>
+               servicePort: 80
+   +   - host: <hostname>
+   +     http:
+   +       paths:
+   +       - path: /
+   +         backend:
+   +           serviceName: <my-svc>
+   +           servicePort: 80
+   ```
 
 ###### > It's a DNS zone hosted with another provider
 For the time being, we only support Route53 natively. Depending on the provider
