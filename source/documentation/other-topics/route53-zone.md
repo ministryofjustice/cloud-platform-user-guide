@@ -1,18 +1,18 @@
-### Creating a Route 53 Hosted Zone
+## Creating a Route 53 Hosted Zone
 
-#### Overview
+### Overview
 
-This short guide will run through the process of creating a Route 53 Hosted Zone through Terraform for your environment. 
+This short guide will run through the process of creating a Route 53 Hosted Zone through Terraform for your environment.
 
-#### Pre-Requisite
+### Pre-Requisite
 
 * This guide assumes you have an environment already created in the `Live-1` cluster and defined in the `cloud-platform-environments` repo.
 
-#### Terraform files
+### Terraform files
 
 Copy the Terraform resource code below and save it into the respective 3 files `main.tf`, `variables.tf`, and `outputs.tf` in the `resources` directory under your environment in the `cloud-platform-environments` repo.
 
-##### main.tf
+#### main.tf
 ```
 resource "aws_route53_zone" "main" {
   name = "${var.domain}"
@@ -28,7 +28,7 @@ resource "aws_route53_zone" "main" {
 }
 ```
 
-##### variables.tf
+#### variables.tf
 ```
 variable "domain" {
   description = "The domain you intend to create. This should be a part of either parent zone of *.service.gov.uk or *.service.justice.gov.uk"
@@ -58,7 +58,7 @@ variable "is-production" {
 }
 ```
 
-##### outputs.tf
+#### outputs.tf
 ```
 output "zone_id" {
   description = "The zone ID of your hosted zone."
@@ -71,7 +71,7 @@ output "name_servers" {
 }
 ```
 
-#### Creating the resource
+### Creating the resource
 
 With the 3 files saved, navigate to the `resources` directory and run:
 
