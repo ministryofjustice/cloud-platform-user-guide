@@ -10,7 +10,11 @@ This guide assumes you have an environment already created in the `Live-1` clust
 
 ### Terraform files
 
-Copy the Terraform resource code below and save it into the respective 3 files `main.tf`, `variables.tf`, and `outputs.tf` in the `resources` directory under your environment in the `cloud-platform-environments` repo.
+Copy the Terraform resource code below and save it into the respective 3 files in the `resources` directory under your environment in the `cloud-platform-environments` repo:
+
+ * `main.tf`
+ * `variables.tf`
+ * `outputs.tf`
 
 #### main.tf
 ```
