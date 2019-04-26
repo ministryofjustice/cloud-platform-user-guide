@@ -87,8 +87,8 @@ $ terraform apply
 
 When prompted, fill the variables with appropriate values.
 
-Once the terraform has ran successfully, you will receive the `Zone_ID` and `Nameservers` as outputs.
+After terraform has run, you will receive the `Zone_ID` and `Name servers` as outputs.
 
-These outputs will now need to be passed to the Cloud Platform team, who will verify the Hosted Zone.
+Once you have these, please contact the Cloud Platform team via the `#ask-cloud-platform` Slack channel. Provide them with the zone_ID and nameservers values, and they will verify that your hosted zone has been created successfully.
 
 [env-repo]: https://github.com/ministryofjustice/cloud-platform-environments
