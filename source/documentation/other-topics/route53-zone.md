@@ -2,7 +2,7 @@
 
 ### Overview
 
-This short guide will run through the process of creating a Route 53 Hosted Zone through Terraform for your environment.
+This short guide will run through the process of creating a [Route 53 Hosted Zone][aws-hosted-zone] through Terraform for your environment.
 
 ### Pre-Requisites
 
@@ -92,3 +92,4 @@ After terraform has run, you will receive the `Zone_ID` and `Name servers` as ou
 Once you have these, please contact the Cloud Platform team via the `#ask-cloud-platform` Slack channel. Provide them with the zone_ID and nameservers values, and they will verify that your hosted zone has been created successfully.
 
 [env-repo]: https://github.com/ministryofjustice/cloud-platform-environments
+[aws-hosted-zone]: https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/AboutHZWorkingWith.html
