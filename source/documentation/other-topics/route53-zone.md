@@ -4,9 +4,9 @@
 
 This short guide will run through the process of creating a Route 53 Hosted Zone through Terraform for your environment.
 
-### Pre-Requisite
+### Pre-Requisites
 
-* This guide assumes you have an environment already created in the `Live-1` cluster and defined in the `cloud-platform-environments` repo.
+This guide assumes you have an environment already created in the `Live-1` cluster and defined in the `cloud-platform-environments` repo.
 
 ### Terraform files
 
