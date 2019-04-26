@@ -6,11 +6,11 @@ This short guide will run through the process of creating a Route 53 Hosted Zone
 
 ### Pre-Requisites
 
-This guide assumes you have an environment already created in the `Live-1` cluster and defined in the `cloud-platform-environments` repo.
+This guide assumes you have an environment already created in the `Live-1` cluster and defined in the [cloud-platform-environments repository][env-repo].
 
 ### Terraform files
 
-Copy the Terraform resource code below and save it into the respective 3 files in the `resources` directory under your environment in the `cloud-platform-environments` repo:
+Copy the Terraform resource code below and save it into the respective 3 files in the `resources` directory under your environment in the [cloud-platform-environments repository][env-repo]:
 
  * `main.tf`
  * `variables.tf`
@@ -90,3 +90,5 @@ When prompted, fill the variables with appropriate values.
 Once the terraform has ran successfully, you will receive the `Zone_ID` and `Nameservers` as outputs.
 
 These outputs will now need to be passed to the Cloud Platform team, who will verify the Hosted Zone.
+
+[env-repo]: https://github.com/ministryofjustice/cloud-platform-environments
