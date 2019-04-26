@@ -70,7 +70,7 @@ output "zone_id" {
 }
 
 output "name_servers" {
-  description = "The name severs of your hosted zone."
+  description = "The name servers of your hosted zone."
   value       = "${aws_route53_zone.main.name_servers}"
 }
 ```
