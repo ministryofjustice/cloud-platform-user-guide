@@ -17,6 +17,12 @@ While content is being moved, all the existing content has been moved to a
 temporary "Archive" section. We will be migrating content from there into the
 new structure over the next few weeks.
 
+#### Contributing
+
+Contributions to this guide are very welcome. Please fork the [github
+repository][repo] for this guide, and submit your contribution as a pull
+request.
+
 ### Who is the platform for
 
 The platform is for teams working anywhere in the Ministry of Justice that need
@@ -28,3 +34,5 @@ deploy applications using the guides below.
 
 Users can create non-production and production environments and get access to
 the Kubernetes API for those environments.
+
+[repo]: https://github.com/ministryofjustice/cloud-platform-user-guide
