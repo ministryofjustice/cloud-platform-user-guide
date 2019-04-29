@@ -81,7 +81,7 @@ Once it is merged and applied, you will have a service account for Tiller that a
 
 ###### Installing and configuring Helm and Tiller
 
-Install the client via Homebrew or by other [means](https://docs.helm.sh/using_helm/###installing-helm):
+Install the client via Homebrew or by other [means](https://docs.helm.sh/using_helm/#installing-helm):
 
     $ brew install kubernetes-helm
 
