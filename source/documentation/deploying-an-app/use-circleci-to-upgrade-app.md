@@ -23,6 +23,7 @@ It is assumed you have the following:
 As part of the CircleCI deployment pipeline, CircleCI will need to authenticate with the Kubernetes cluster. In order to do so, Kubernetes uses [Service Accounts](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/). Service Accounts provide an identity for processes that run in a cluster allowing the process to access the API server.
 
 A Service Account is created in the [namespace creation github repository](https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces).
+
 ```bash
   $ kubectl get serviceaccounts --namespace $ns
   NAME       SECRETS   AGE
