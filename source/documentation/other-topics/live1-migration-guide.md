@@ -73,7 +73,7 @@ After triggering the CircleCI pipeline, your application should now deploy into 
 
 The last thing you will need to do is to delete your application from the `live-0` cluster.
 
-Please see the documentation on [cleaning up within the Cloud Platform](archive.html#cleaning-up).
+Please see the documentation on [cleaning up within the Cloud Platform](tasks.html#cleaning-up).
 
 ### Other considerations
 
