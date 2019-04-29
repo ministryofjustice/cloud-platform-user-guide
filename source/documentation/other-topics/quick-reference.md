@@ -32,6 +32,7 @@ You can get a shell inside a running container:
 ```
 $ kubectl -n <namespace> exec -it <pod> sh
 ```
+
 https://kubernetes.io/docs/tasks/debug-application-cluster/get-shell-running-container/
 
 
@@ -40,4 +41,5 @@ To forward port `5000` on `localhost` to port `5001` in the `Pod`:
 ```
 $ kubectl -n <namespace> port-forward <pod> 5000:5001
 ```
+
 https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/
