@@ -269,6 +269,32 @@
           </li>
         </ul>
       </li>
+      <li>
+        <a href="/tasks.html#migrating-from-live-0-to-live-1">Migrating from Live-0 to Live-1</a>
+        <ul>
+          <li>
+            <a href="/tasks.html#migrating-from-live-0-to-live-1-overview">Overview</a>
+          </li>
+          <li>
+            <a href="/tasks.html#accessing-the-live-1-cluster">Accessing the Live-1 cluster</a>
+          </li>
+          <li>
+            <a href="/tasks.html#generating-a-new-environment">Generating a new environment</a>
+          </li>
+          <li>
+            <a href="/tasks.html#generating-a-new-ecr-repository">Generating a new ECR repository</a>
+          </li>
+          <li>
+            <a href="/tasks.html#changing-the-circleci-environment-variables">Changing the CircleCI environment variables</a>
+          </li>
+          <li>
+            <a href="/tasks.html#deleting-your-live-0-deployment">Deleting your Live-0 deployment</a>
+          </li>
+          <li>
+            <a href="/tasks.html#other-considerations">Other considerations</a>
+          </li>
+        </ul>
+      </li>
     </ul>
   </li>
 </ul>
@@ -374,32 +400,6 @@
           </li>
           <li>
             <a href="/archive.html#applying-a-maintenance-page">Applying a Maintenance Page</a>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <a href="/archive.html#live-1-migration-guide">Live 1 Migration Guide</a>
-        <ul>
-          <li>
-            <a href="/archive.html#live-1-migration-guide-overview">Overview</a>
-          </li>
-          <li>
-            <a href="/archive.html#accessing-the-live-1-cluster">Accessing the Live-1 cluster</a>
-          </li>
-          <li>
-            <a href="/archive.html#generating-a-new-environment">Generating a new environment</a>
-          </li>
-          <li>
-            <a href="/archive.html#generating-a-new-ecr-repository">Generating a new ECR repository</a>
-          </li>
-          <li>
-            <a href="/archive.html#changing-the-circleci-environment-variables">Changing the CircleCI environment variables</a>
-          </li>
-          <li>
-            <a href="/archive.html#deleting-your-live-0-deployment">Deleting your Live-0 deployment</a>
-          </li>
-          <li>
-            <a href="/archive.html#other-considerations">Other considerations</a>
           </li>
         </ul>
       </li>
@@ -1359,6 +1359,79 @@ specifying the namespace you would like the team to delete.</p>
 <li>Remove everything inside the namespace</li>
 <li>Tell the cloud platform team to delete the namespace</li>
 </ol>
+<p><h2 id="migrating-from-live-0-to-live-1">Migrating from Live-0 to Live-1</h2><h3 id="migrating-from-live-0-to-live-1-overview">Overview</h3><p>After some long consideration of possible options, the decision has been made to migrate from the <code>live-0</code> cluster to the new <code>live-1</code> cluster.</p>
+<p>The reason behind this decision is based on the need to move to a dedicated AWS account, which will be much easier to support, and the need to move away from the Ireland (EU) region to the London (UK) region.</p>
+<p>The purpose of this document is to aid development teams in migrating their existing applications from <code>live-0</code> to <code>live-1</code>.</p>
+<p>The migration steps that need to be taken may differ for individual applications.</p>
+<p>The following steps are for an application that is considered to be fairly normal and deployed through CircleCI.</p>
+<p>Appending these steps are a few extra consideration points, that are not covered in the example, but may apply to your application.</p>
+<h3 id="accessing-the-live-1-cluster">Accessing the Live-1 cluster</h3><p>To access the <code>live-1</code> cluster, follow the steps in the <a href="/tasks.html#authentication">authentication</a> section of this guide, and download your Kube config file.</p>
+<p>Kubernetes provides a <a href="https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/#set-the-kubeconfig-environment-variable">brief guide</a> on how to set up <code>kubectl</code> to use multiple config files simultaneously.</p>
+<p>You should now be able to switch contexts between the <code>live-0</code> and <code>live-1</code> clusters.</p>
+<h3 id="generating-a-new-environment">Generating a new environment</h3><p>Start by following the guide to generate a new environment, this follows the same process as was followed for <code>live-0</code>, and you should use the same details as you did for your environment then.</p>
+<p><a href="/tasks.html#create-an-environment">Environment generation guide.</a></p>
+<p>Run a <code>kubectl get namespaces</code> to check your environment has been successfully created.</p>
+<h3 id="generating-a-new-ecr-repository">Generating a new ECR repository</h3><p>Once you&rsquo;ve generated a new environment in the <code>live-1</code> cluster, you will need to generate a new ECR repository for your application to be pushed to.</p>
+<p>The reason why the previous ECR repo can&rsquo;t be used is due to the new <code>live-1</code> cluster being hosted in a separate AWS account.</p>
+<p>If you need reminding of the ECR creation process, please see the <a href="/tasks.html#creating-an-ecr-repository">user documentation</a>.</p>
+<h3 id="changing-the-circleci-environment-variables">Changing the CircleCI environment variables</h3><p>Now that you have a new empty environment and ECR repository set-up, the next step is to point your existing CircleCI pipeline away from the <code>live-0</code> environment, to your new <code>live-1</code> environment.</p>
+<p>This is done by replacing the CircleCI environment variables with the ones generated for your <code>live-1</code> environment and then rerunning the pipeline.</p>
+<p>Our helper script expects environment variables to be named according to the list below where <code>&lt;ENVIRONMENT&gt;</code> should be replaced by some identifier of your choosing (eg.: <code>STAGING</code>, <code>PRODUCTION</code>).</p>
+<p>The environment variables you will need to replace are as follows:</p></p>
+
+<div style="height:1px;font-size:1px;">&nbsp;</div>
+
+<div class="table-container">
+        <table>
+          <tr>
+<th>Variable</th>
+<th style="text-align: left"></th>
+</tr>
+<tr>
+<td><code>AWS_DEFAULT_REGION</code></td>
+<td style="text-align: left">The default region will now be <code>eu-west-2</code>.</td>
+</tr>
+<tr>
+<td><code>AWS_ACCESS_KEY_ID</code></td>
+<td style="text-align: left">The access key can be found in the secret created by the ECR generation. This requires base64 decoding.</td>
+</tr>
+<tr>
+<td><code>AWS_SECRET_ACCESS_KEY</code></td>
+<td style="text-align: left">The secret key can be found in the secret created by the ECR generation. This requires base64 decoding.</td>
+</tr>
+<tr>
+<td><code>ECR_ENDPOINT</code></td>
+<td style="text-align: left">The ECR endpoint for all repos in <code>live-1</code> is <code>754256621582.dkr.ecr.eu-west-2.amazonaws.com</code></td>
+</tr>
+<tr>
+<td><code>K8S_&lt;ENVIRONMENT&gt;_CLUSTER_CERT</code></td>
+<td style="text-align: left">The cert is an attribute found in the <code>default-token</code> secret and does not need base64 decoding.</td>
+</tr>
+<tr>
+<td><code>K8S_&lt;ENVIRONMENT&gt;_CLUSTER_NAME</code></td>
+<td style="text-align: left">The cluster name is <code>live-1.cloud-platform.service.justice.gov.uk</code></td>
+</tr>
+<tr>
+<td><code>K8S_&lt;ENVIRONMENT&gt;_NAMESPACE</code></td>
+<td style="text-align: left">This variable should be equal to the name of your namespace.</td>
+</tr>
+<tr>
+<td><code>K8S_&lt;ENVIRONMENT&gt;_TOKEN</code></td>
+<td style="text-align: left">The token is another attribute found in the <code>default-token</code> secret and needs base64 decoding.</td>
+</tr>
+
+        </table>
+      </div>
+
+<div style="height:1px;font-size:1px;">&nbsp;</div>
+
+<p>After triggering the CircleCI pipeline, your application should now deploy into your new environment.</p>
+<p><h3 id="deleting-your-live-0-deployment">Deleting your Live-0 deployment</h3><p>The last thing you will need to do is to delete your application from the <code>live-0</code> cluster.</p>
+<p>Please see the documentation on <a href="/tasks.html#cleaning-up">cleaning up within the Cloud Platform</a>.</p>
+<h3 id="other-considerations">Other considerations</h3><h4 id="podsecuritypolicy">PodSecurityPolicy</h4><p>In the <code>live-1</code> cluster we are introducing a restrictive <a href="https://kubernetes.io/docs/concepts/policy/pod-security-policy/"><code>PodSecurityPolicy</code></a> as part of our effort to harden the cluster and provide a stable, secure and reliable service.</p>
+<p>The major change this brings is that root containers are not allowed to run. What this means is that the containers that run on the platform need to run as a non-root user. The <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/9ad6caf101cc21117742e5ab2cbe5507efd54efd/rails-app/Dockerfile">solution</a> is straightforward for images we build: by using the <code>USER</code> directive in the <code>Dockerfile</code> with a <strong>numeric uid</strong>.</p>
+<p>Sometimes we use images built by third parties which may or may not have taken the steps to build them as non-root images. One such very common example is nginx from the dockerhub library. If you need to run an nginx container we recommend that you use the <a href="https://github.com/bitnami/bitnami-docker-nginx"><code>bitnami/nginx</code></a> image.</p>
+<p>See <a href="https://docs.bitnami.com/containers/how-to/work-with-non-root-containers">here</a> for more information on non-root containers.</p></p>
 
 
             
