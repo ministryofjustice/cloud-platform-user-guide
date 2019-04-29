@@ -77,7 +77,7 @@ variable "is-production" {
 
 Make sure to change placeholder values to what is appropriate, with the 2 files saved, commit your changes to a branch and raise a pull request. Once approved, you can merge and the changes will be applied. Shortly after, you should be able to access the `Zone_ID` as Secret on kubernetes in your namespace.
 
-Please contact the Cloud Platform team via the `#ask-cloud-platform` Slack channel. Provide them with the zone_ID and nameservers values, and they will verify that your hosted zone has been created successfully.
+Please contact the Cloud Platform team via the `#ask-cloud-platform` Slack channel. Provide them with the zone_ID, and they will verify that your hosted zone has been created successfully.
 
 [env-repo]: https://github.com/ministryofjustice/cloud-platform-environments
 [aws-hosted-zone]: https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/AboutHZWorkingWith.html
