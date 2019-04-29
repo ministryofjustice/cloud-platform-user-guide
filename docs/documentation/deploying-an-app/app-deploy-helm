@@ -1,6 +1,6 @@
-<h3 id="deploying-an-application-to-the-cloud-platform-with-helm">Deploying an application to the Cloud Platform with Helm</h3><h4 id="introduction">Introduction</h4><p>This document will act as a guide to your first application deployment into the Cloud Platform. If you have any issues completing the objective or have any suggestions please feel free to drop use a line in the ##ask-cloud-platform slack channel.</p>
+<h3 id="deploying-an-application-to-the-cloud-platform-with-helm">Deploying an application to the Cloud Platform with Helm</h3><h4 id="introduction">Introduction</h4><p>This document will act as a guide to your first application deployment into the Cloud Platform. If you have any issues completing the objective or have any suggestions please feel free to drop use a line in the <code>#ask-cloud-platform</code> slack channel.</p>
 <h5 id="objective">Objective</h5><p>By the end of this guide you&rsquo;ll have deployed a reference <a href="https://github.com/ministryofjustice/cloud-platform-reference-app">Django application</a> to a cluster using the Kubernetes package manager <a href="https://helm.sh/">Helm</a>.</p>
-<p><em>Disclaimer: You&rsquo;ll see fairly quickly that the application is not fit for production. A perfect example of this is the <a href="https://github.com/ministryofjustice/cloud-platform-reference-app/blob/master/helm_deploy/django-app/templates/secret.yaml">plaintext secrets file</a>. For the reference application we&rsquo;ve left this file in plaintext but it *</em>must** be encrypted when writing your own manifests for production/non-production work in the MoJ.*</p>
+<p><em>Disclaimer: You&rsquo;ll see fairly quickly that the application is not fit for production. A perfect example of this is the <a href="https://github.com/ministryofjustice/cloud-platform-reference-app/blob/master/helm_deploy/django-app/templates/secret.yaml">plaintext secrets file</a>. For the reference application we&rsquo;ve left this file in plaintext but it <strong>must</strong> be encrypted when writing your own manifests for production/non-production work in the MoJ.</em></p>
 <h5 id="requirements">Requirements</h5><p>It is assumed you have the following:</p>
 
 <ul>
@@ -50,7 +50,7 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 </code></pre></div><p>After you have added this to the file, commit it and create a pull request against the <a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud-platform-environments</a> master repo.</p>
 <p>Once it is merged and applied, you will have a service account for Tiller that allows it act on your namespace. Now you have to install Helm and Tiller into your namespace.</p>
-<h6 id="installing-and-configuring-helm-and-tiller">Installing and configuring Helm and Tiller</h6><p>Install the client via Homebrew or by other <a href="https://docs.helm.sh/using_helm/###installing-helm">means</a>:</p>
+<h6 id="installing-and-configuring-helm-and-tiller">Installing and configuring Helm and Tiller</h6><p>Install the client via Homebrew or by other <a href="https://docs.helm.sh/using_helm/#installing-helm">means</a>:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>$ brew install kubernetes-helm
 </code></pre></div><p>Now configure the installation with Tiller:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>$ helm init --tiller-namespace &lt;env-name&gt; --service-account tiller
