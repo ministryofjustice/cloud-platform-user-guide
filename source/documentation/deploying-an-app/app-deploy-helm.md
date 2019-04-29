@@ -1,7 +1,7 @@
 ### Deploying an application to the Cloud Platform with Helm
 
 #### Introduction
-This document will act as a guide to your first application deployment into the Cloud Platform. If you have any issues completing the objective or have any suggestions please feel free to drop use a line in the ##ask-cloud-platform slack channel.
+This document will act as a guide to your first application deployment into the Cloud Platform. If you have any issues completing the objective or have any suggestions please feel free to drop use a line in the `#ask-cloud-platform` slack channel.
 
 ##### Objective
 By the end of this guide you'll have deployed a reference [Django application](https://github.com/ministryofjustice/cloud-platform-reference-app) to a cluster using the Kubernetes package manager [Helm](https://helm.sh/).
