@@ -20,9 +20,9 @@ Appending these steps are a few extra consideration points, that are not covered
 
 ### Accessing the Live-1 cluster
 
-To access the `live-1` cluster, follow the steps in the [authentication](/tasks.html#authentication) section of this guide, and download your Kube config file.
+To access the `live-1` cluster, follow the steps in the [authentication][ug-authentication] section of this guide, and download your Kube config file.
 
-Kubernetes provides a [brief guide](https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/#set-the-kubeconfig-environment-variable) on how to set up `kubectl` to use multiple config files simultaneously.
+Kubernetes provides a [brief guide][set-kubeconfig-env] on how to set up `kubectl` to use multiple config files simultaneously.
 
 You should now be able to switch contexts between the `live-0` and `live-1` clusters.
 
@@ -30,7 +30,7 @@ You should now be able to switch contexts between the `live-0` and `live-1` clus
 
 Start by following the guide to generate a new environment, this follows the same process as was followed for `live-0`, and you should use the same details as you did for your environment then.
 
-[Environment generation guide.](tasks.html#create-an-environment)
+[Environment generation guide.][ug-create-env]
 
 Run a `kubectl get namespaces` to check your environment has been successfully created.
 
@@ -40,7 +40,7 @@ Once you've generated a new environment in the `live-1` cluster, you will need t
 
 The reason why the previous ECR repo can't be used is due to the new `live-1` cluster being hosted in a separate AWS account.
 
-If you need reminding of the ECR creation process, please see the [user documentation](tasks.html#creating-an-ecr-repository).
+If you need reminding of the ECR creation process, please see the [user documentation][ug-create-ecr].
 
 ### Changing the CircleCI environment variables
 
@@ -73,15 +73,25 @@ After triggering the CircleCI pipeline, your application should now deploy into 
 
 The last thing you will need to do is to delete your application from the `live-0` cluster.
 
-Please see the documentation on [cleaning up within the Cloud Platform](tasks.html#cleaning-up).
+Please see the documentation on [cleaning up within the Cloud Platform][ug-cleaning-up].
 
 ### Other considerations
 
 #### PodSecurityPolicy
-In the `live-1` cluster we are introducing a restrictive [`PodSecurityPolicy`](https://kubernetes.io/docs/concepts/policy/pod-security-policy/) as part of our effort to harden the cluster and provide a stable, secure and reliable service.
+In the `live-1` cluster we are introducing a restrictive [`PodSecurityPolicy`][PodSecurityPolicy] as part of our effort to harden the cluster and provide a stable, secure and reliable service.
 
-The major change this brings is that root containers are not allowed to run. What this means is that the containers that run on the platform need to run as a non-root user. The [solution](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/9ad6caf101cc21117742e5ab2cbe5507efd54efd/rails-app/Dockerfile) is straightforward for images we build: by using the `USER` directive in the `Dockerfile` with a **numeric uid**.
+The major change this brings is that root containers are not allowed to run. What this means is that the containers that run on the platform need to run as a non-root user. The [solution][rails-app-dockerfile] is straightforward for images we build: by using the `USER` directive in the `Dockerfile` with a **numeric uid**.
 
-Sometimes we use images built by third parties which may or may not have taken the steps to build them as non-root images. One such very common example is nginx from the dockerhub library. If you need to run an nginx container we recommend that you use the [`bitnami/nginx`](https://github.com/bitnami/bitnami-docker-nginx) image.
+Sometimes we use images built by third parties which may or may not have taken the steps to build them as non-root images. One such very common example is nginx from the dockerhub library. If you need to run an nginx container we recommend that you use the [`bitnami/nginx`][bitnami/nginx] image.
 
-See [here](https://docs.bitnami.com/containers/how-to/work-with-non-root-containers/) for more information on non-root containers.
+See [here][non-root-containers] for more information on non-root containers.
+
+[ug-authentication]: tasks.html#authentication
+[ug-create-ecr]: tasks.html#creating-an-ecr-repository
+[ug-create-env]: tasks.html#create-an-environment
+[ug-cleaning-up]: tasks.html#cleaning-up
+[set-kubeconfig-env]: https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/#set-the-kubeconfig-environment-variable
+[PodSecurityPolicy]: https://kubernetes.io/docs/concepts/policy/pod-security-policy/
+[rails-app-dockerfile]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/9ad6caf101cc21117742e5ab2cbe5507efd54efd/rails-app/Dockerfile
+[bitnami/nginx]: https://github.com/bitnami/bitnami-docker-nginx
+[non-root-containers]: https://docs.bitnami.com/containers/how-to/work-with-non-root-containers
