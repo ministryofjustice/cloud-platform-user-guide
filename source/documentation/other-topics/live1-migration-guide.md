@@ -2,7 +2,7 @@
 category: cloud-platform
 expires: 2018-06-30
 ---
-## Live 1 Migration Guide
+## Migrating from Live-0 to Live-1
 
 ### Overview
 
