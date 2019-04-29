@@ -20,10 +20,10 @@ $ kubectl -n &lt;namespace&gt; get events
 <h6 id="container-shell">Container shell</h6><p>You can get a shell inside a running container:
 <code>
 $ kubectl -n &lt;namespace&gt; exec -it &lt;pod&gt; sh
-</code>
-https://kubernetes.io/docs/tasks/debug-application-cluster/get-shell-running-container/</p>
+</code></p>
+<p>For more information, click <a href="https://kubernetes.io/docs/tasks/debug-application-cluster/get-shell-running-container/">here</a></p>
 <h6 id="pod-port-forwarding">Pod port-forwarding</h6><p>To forward port <code>5000</code> on <code>localhost</code> to port <code>5001</code> in the <code>Pod</code>:
 <code>
 $ kubectl -n &lt;namespace&gt; port-forward &lt;pod&gt; 5000:5001
-</code>
-https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/</p>
+</code></p>
+<p>For more information, click <a href="https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/">here</a></p>

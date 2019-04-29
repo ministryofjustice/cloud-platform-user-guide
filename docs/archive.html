@@ -192,7 +192,7 @@
             <a href="/tasks.html#available-modules">Available modules</a>
           </li>
           <li>
-            <a href="/tasks.html#adding-aws-resources-to-your-environment-usage">Usage</a>
+            <a href="/tasks.html#usage">Usage</a>
           </li>
         </ul>
       </li>
@@ -295,6 +295,38 @@
           </li>
         </ul>
       </li>
+      <li>
+        <a href="/tasks.html#other-topics">Other Topics</a>
+        <ul>
+          <li>
+            <a href="/tasks.html#git-crypt">Git-Crypt</a>
+          </li>
+          <li>
+            <a href="/tasks.html#secrets-overview">Secrets overview</a>
+          </li>
+          <li>
+            <a href="/tasks.html#kubectl-quick-reference">Kubectl quick reference</a>
+          </li>
+          <li>
+            <a href="/tasks.html#cloud-platform-support">Cloud Platform Support</a>
+          </li>
+          <li>
+            <a href="/tasks.html#zero-downtime-deployments">Zero Downtime Deployments</a>
+          </li>
+          <li>
+            <a href="/tasks.html#using-an-externally-managed-hostname">Using an externally-managed hostname</a>
+          </li>
+          <li>
+            <a href="/tasks.html#ip-whitelisting">IP Whitelisting</a>
+          </li>
+          <li>
+            <a href="/tasks.html#ecr-lifecycle-policy">ECR Lifecycle Policy</a>
+          </li>
+          <li>
+            <a href="/tasks.html#applying-a-maintenance-page">Applying a Maintenance Page</a>
+          </li>
+        </ul>
+      </li>
     </ul>
   </li>
 </ul>
@@ -365,41 +397,6 @@
           </li>
           <li>
             <a href="/archive.html#accessing-application-log-data">Accessing Application Log Data</a>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <a href="/archive.html#other-topics">Other Topics</a>
-        <ul>
-          <li>
-            <a href="/archive.html#git-crypt">Git-Crypt</a>
-          </li>
-          <li>
-            <a href="/archive.html#secrets-overview">Secrets overview</a>
-          </li>
-          <li>
-            <a href="/archive.html#kubectl-quick-reference">Kubectl quick reference</a>
-          </li>
-          <li>
-            <a href="/archive.html#cloud-platform-support">Cloud Platform Support</a>
-          </li>
-          <li>
-            <a href="/archive.html#zero-downtime-deployments">Zero Downtime Deployments</a>
-          </li>
-          <li>
-            <a href="/archive.html#contributing-to-this-document">Contributing to this document</a>
-          </li>
-          <li>
-            <a href="/archive.html#using-an-externally-managed-hostname">Using an externally-managed hostname</a>
-          </li>
-          <li>
-            <a href="/archive.html#ip-whitelisting">IP Whitelisting</a>
-          </li>
-          <li>
-            <a href="/archive.html#ecr-lifecycle-policy">ECR Lifecycle Policy</a>
-          </li>
-          <li>
-            <a href="/archive.html#applying-a-maintenance-page">Applying a Maintenance Page</a>
           </li>
         </ul>
       </li>
@@ -758,8 +755,7 @@ data:
 </ul>
 
 <p>A working example of this would be:</p>
-
-<div class="highlight"><pre class="highlight yaml"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">monitoring.coreos.com/v1</span>
+<p><div class="highlight"><pre class="highlight yaml"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">monitoring.coreos.com/v1</span>
 <span class="na">kind</span><span class="pi">:</span> <span class="s">PrometheusRule</span>
 <span class="na">metadata</span><span class="pi">:</span>
   <span class="na">creationTimestamp</span><span class="pi">:</span> <span class="no">null</span>
@@ -772,12 +768,12 @@ data:
   <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">node.rules</span>
     <span class="na">rules</span><span class="pi">:</span>
     <span class="pi">-</span> <span class="na">alert</span><span class="pi">:</span> <span class="s">Quota-Exceeded</span>
-      <span class="na">expr</span><span class="pi">:</span> <span class="s">100 * kube_resourcequota{job="kube-state-metrics",type="used",namespace="monitoring"} / ignoring(instance, job, type) (kube_resourcequota{job="kube-state-metrics",type="hard"} &gt; 0) &gt; 90</span>
+      <span class="na">expr</span><span class="pi">:</span> <span class="s">100 * kube_resourcequota{job=&quot;kube-state-metrics&quot;,type=&quot;used&quot;,namespace=&quot;monitoring&quot;} / ignoring(instance, job, type) (kube_resourcequota{job=&quot;kube-state-metrics&quot;,type=&quot;hard&quot;} &gt; 0) &gt; 90</span>
       <span class="na">for</span><span class="pi">:</span> <span class="s">5m</span>
       <span class="na">labels</span><span class="pi">:</span>
         <span class="na">severity</span><span class="pi">:</span> <span class="s">cp-team</span>
       <span class="na">annotations</span><span class="pi">:</span>
-        <span class="na">message</span><span class="pi">:</span> <span class="s">Namespace {{ $labels.namespace }} is using {{ printf "%0.0f" $value}}% of its {{ $labels.resource }} quota.</span>
+        <span class="na">message</span><span class="pi">:</span> <span class="s">Namespace {{ $labels.namespace }} is using {{ printf &quot;%0.0f&quot; $value}}% of its {{ $labels.resource }} quota.</span>
         <span class="na">runbook_url</span><span class="pi">:</span> <span class="s">https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md###alert-name-kubequotaexceeded</span>
 </code></pre></div><p>The <code>alert</code> name, <code>message</code> and <code>runbook_url</code> annotations will be sent to the Slack channel when the rule has been triggered.</p>
 <p>You can view the applied rules with the following command:</p>
@@ -792,10 +788,9 @@ data:
 <ul>
 <li><a href="https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/getting-started.md">Prometheus Operator - Getting Started</a></li>
 <li><a href="https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/alerting.md">Alerting</a></li>
-</ul>
-
-<h3 id="getting-application-metrics-into-prometheus">Getting Application Metrics into Prometheus</h3><p>Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. There are two ways to create a metrics endpoint. The first is when the metrics endpoint is embedded within the application referred to as <code>instrumentation</code>. The second is when the metrics endpoint is part of a deployed process that bridges the gap between Prometheus and systems that do not export metrics in the prometheus format, this is called an <code>exporter</code>.</p>
-<p>The following exporters are installed as part of the Cloud Platform cluster build:</p>
+</ul></p>
+<p><h3 id="getting-application-metrics-into-prometheus">Getting Application Metrics into Prometheus</h3><p>Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. There are two ways to create a metrics endpoint. The first is when the metrics endpoint is embedded within the application referred to as <code>instrumentation</code>. The second is when the metrics endpoint is part of a deployed process that bridges the gap between Prometheus and systems that do not export metrics in the prometheus format, this is called an <code>exporter</code>.</p>
+<p>The following exporters are installed as part of the Cloud Platform cluster build:</p></p>
 
 <ul>
 <li>kubeEtcd</li>
@@ -807,8 +802,9 @@ data:
 <li>nodeExporter</li>
 <li>kubelet</li>
 </ul>
+
 <p>Click <a href="https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exporters.md">here</a> for a list of exporters and client libraries listed on the official Prometheus Github repo.</p>
-<h4 id="instrumentation-of-the-cloud-platform-reference-application">Instrumentation of The Cloud-Platform Reference Application</h4><p>The <a href="https://github.com/ministryofjustice/cloud-platform-reference-app">Cloud Platform Reference Application</a> has <code>instrumentation</code> setup using <a href="https://github.com/korfuri/django-prometheus">django-prometheus</a>. The default install steps were followed which created a metrics endpoint.</p>
+<p><h4 id="instrumentation-of-the-cloud-platform-reference-application">Instrumentation of The Cloud-Platform Reference Application</h4><p>The <a href="https://github.com/ministryofjustice/cloud-platform-reference-app">Cloud Platform Reference Application</a> has <code>instrumentation</code> setup using <a href="https://github.com/korfuri/django-prometheus">django-prometheus</a>. The default install steps were followed which created a metrics endpoint.</p>
 <p>See screenshot below of how the metrics endpoint looks on a browser:
 <a href="https://raw.githubusercontent.com/ministryofjustice/cloud-platform-user-docs/master/images/metrics-endpoint.png" target="_blank" rel="noopener noreferrer"><img src="https://raw.githubusercontent.com/ministryofjustice/cloud-platform-user-docs/master/images/metrics-endpoint.png" alt="Image of metrics" /></a></p>
 <h4 id="create-a-service-to-expose-pods">Create a Service to expose Pods</h4><p>Scraping an exporter or separate metrics port requires a service that targets the Pod(s) of the exporter or application.</p>
@@ -864,297 +860,27 @@ data:
           <span class="na">component</span><span class="pi">:</span> <span class="s">monitoring</span>
 </code></pre></div><p>You can view your current NetworkPolices with the following command:</p>
 <div class="highlight"><pre class="highlight shell"><code>kubectl <span class="nt">-n</span> &lt;namespace&gt; get networkpolicies
-</code></pre></div><h4 id="advisory-note-applications-configured-to-use-multiple-processes">Advisory note: Applications configured to use multiple processes</h4><p>If you&rsquo;re using a pre-forking web server (like unicorn or puma for Ruby, or gunicorn for Python) and have it configured to use multiple processes, then you need to use a Prometheus client library which supports exporting metrics from multiple processes. Not all the official clients do that. If you don&rsquo;t use a library which supports this, then requests to <code>/metrics</code> could be served by any of the processes, which would mean Prometheus sees inconsistent data on each scrape</p>
-
-
-
+</code></pre></div><h4 id="advisory-note-applications-configured-to-use-multiple-processes">Advisory note: Applications configured to use multiple processes</h4><p>If you&rsquo;re using a pre-forking web server (like unicorn or puma for Ruby, or gunicorn for Python) and have it configured to use multiple processes, then you need to use a Prometheus client library which supports exporting metrics from multiple processes. Not all the official clients do that. If you don&rsquo;t use a library which supports this, then requests to <code>/metrics</code> could be served by any of the processes, which would mean Prometheus sees inconsistent data on each scrape</p></p>
 
 <h2 id="application-logging">Application Logging</h2>
-<h3 id="application-log-collection-and-storage">Application Log Collection and Storage</h3><h4 id="application-log-collection-and-storage-overview">Overview</h4><p>The Cloud Platform supports the ability for application logs to be collected, stored, and accessed.</p>
+<p><h3 id="application-log-collection-and-storage">Application Log Collection and Storage</h3><h4 id="application-log-collection-and-storage-overview">Overview</h4><p>The Cloud Platform supports the ability for application logs to be collected, stored, and accessed.</p>
 <p>Logs are collected automatically, via Fluentd, stored in an AWS-Hosted ElasticSearch Cluster, and accessed via AWS-Hosted Kibana dashboard.</p>
 <h4 id="log-collection">Log Collection</h4><p>Fluentd is a cluster-wide log collection service that runs in it&rsquo;s own dedicated environment.</p>
 <p>The Fluentd application is configured with cluster-wide read permissions. The only requirement for Fluentd to start automatically collecting your application&rsquo;s logs is to have your application output logs to <code>stdout</code>.</p>
 <h4 id="log-storage">Log Storage</h4><p>As an application engineer, you won&rsquo;t really need to pay much attention to how the logs are stored, as this is handled by the Cloud Platform team.</p>
-<p>The logs are shipped from Fluentd and stored in an AWS-Hosted ElasticSearch cluster. All application logs are retained for 30 days, before being curated for deletion.</p>
-
-<h3 id="accessing-application-log-data">Accessing Application Log Data</h3><h4 id="accessing-application-log-data-overview">Overview</h4><p>This document is intended to assist engineers in accessing application and system logs stored in a centralized Elasticsearch cluster.</p>
+<p>The logs are shipped from Fluentd and stored in an AWS-Hosted ElasticSearch cluster. All application logs are retained for 30 days, before being curated for deletion.</p></p>
+<p><h3 id="accessing-application-log-data">Accessing Application Log Data</h3><h4 id="accessing-application-log-data-overview">Overview</h4><p>This document is intended to assist engineers in accessing application and system logs stored in a centralized Elasticsearch cluster.</p>
 <h4 id="access-kibana">Access Kibana</h4><p>The Cloud Platform collects, indexes and presents your application and system log data enabling you to query using Kibana’s standard query language (based on Lucene query syntax).</p>
 <p>To access Kibana, follow the appropriate link below and authenticate with your GitHub credentials:</p>
-<h5 id="live-1-cluster">Live-1 Cluster</h5><p><a href="https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana">https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana</a></p>
+<h5 id="live-1-cluster">Live-1 Cluster</h5><p><a href="https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana">https://kibana.cloud-platform.service.justice.gov.uk/<em>plugin/kibana</a></p>
 <h5 id="live-0-cluster">Live-0 Cluster</h5><p><a href="https://kibana.apps.cloud-platform-live-0.k8s.integration.dsd.io/_plugin/kibana/">https://kibana.apps.cloud-platform-live-0.k8s.integration.dsd.io/plugin/kibana/</a></p>
 <h4 id="using-kibana">Using Kibana</h4><p>As a quick example, we will filter down to the logs of a particular environment.</p>
 <p>1) On the Kibana dashboard, select the &lsquo;Discover&rsquo; tab.</p>
 <p>2) Select &#39;Add a filter +&rsquo;</p>
-<p>3) Filter <code>kubernetes.namespace_name</code>, with operator <code>is</code> and the value equal to your environment name.</p>
+<p>3) Filter <code>kubernetes.namespace</em>name</code>, with operator <code>is</code> and the value equal to your environment name.</p>
 <p>More in-depth guides on using Kibana can be found below:</p>
 <p><a href="https://www.elastic.co/guide/en/kibana/6.3/search.html">https://www.elastic.co/guide/en/kibana/6.3/search.html</a></p>
-<p><a href="https://www.elastic.co/guide/en/beats/packetbeat/current/kibana-queries-filters.html">https://www.elastic.co/guide/en/beats/packetbeat/current/kibana-queries-filters.html</a></p>
-
-
-
-
-<h2 id="other-topics">Other Topics</h2>
-<h3 id="git-crypt">Git-Crypt</h3><p>We use <code>git-crypt</code> to ensure that application secrets are encrypted at rest in git.</p>
-<h4 id="git-crypt-prerequisites">Prerequisites</h4>
-<ol>
-<li>Install <a href="https://gnupg.org/">GPG</a></li>
-<li>Install <a href="https://www.agwa.name/projects/git-crypt/">git-crypt</a></li>
-<li>Generate a key pair, if you don&rsquo;t have one already. The <a href="https://help.github.com/articles/generating-a-new-gpg-key/">GitHub documentation</a> is a good reference.</li>
-<li>Push your public key to a key server: <code>gpg --send-keys PUBKEYID</code></li>
-<li>Add the pubkey to your GitHub account, again, following <a href="https://help.github.com/articles/adding-a-new-gpg-key-to-your-github-account/">the documentation</a></li>
-</ol>
-<h4 id="setup">Setup</h4>
-<ul>
-<li>If the repository has not been setup before, please follow the <a href="https://github.com/AGWA/git-crypt##using-git-crypt">git-crypt documentation</a> to do so.</li>
-</ul>
-<p>otherwise,</p>
-
-<ul>
-<li>Share your <code>PUBKEYID</code> with an existing member of the CloudPlatforms team. They will need to trust your key and add you to the repository (see git-crypt documentation above).</li>
-</ul>
-<h4 id="usage">Usage</h4><p>Once the above has been setup, update your local repository clone and unlock the secrets:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>$ git pull
-$ git-crypt unlock
-</code></pre></div><p>From this point on, <code>git-crypt</code> operates transparently.</p>
-<p>You can verify the status of files by using <code>git-crypt status</code>.</p>
-
-<h3 id="secrets-overview">Secrets overview</h3><p>We identify secrets as one of three kinds:
-- user secrets
-- system secrets
-- application secrets</p>
-<h4 id="user-secrets">User Secrets</h4><p>They are essentially any kind of secret that is owned by a specific user (eg. GitHub or AWS credentials). The user is responsible for securely managing these secrets, typically using a password manager and they should not be shared with other individuals or used in applications.</p>
-<h4 id="system-secrets">System Secrets</h4><p>They are secrets used in system components, usually configured by someone who manages, configures or supports the system. For example, when setting up a CI pipeline, the credentials it uses to fetch the source code and push the produced artifacts to a repository are considered system secrets.</p>
-<p>These should not be tied to an individual user but machine users should be employed. The responsibility of managing these secrets securely lies with the owner of the system.</p>
-<h4 id="application-secrets">Application Secrets</h4><p>These are the secrets that the application requires at runtime. Some examples are: API keys for third-party services, keys that applications might use to communicate with each other, database credentials, cookie encryption keys and so on.</p>
-<p>This kind of secrets falls under the shared responsibility model:</p>
-
-<ul>
-<li><p>the owners of the application are responsible for securely managing the secrets at rest (eg. using <a href="/archive.html#git-crypt">git-crypt</a> to encrypt them alongside the source code) and also for managing access to the secrets once they&rsquo;ve been added to an environment,</p></li>
-<li><p>the Cloud Platform team, on the other hand, is responsible for ensuring the secrets remain secure inside the environment.</p></li>
-</ul>
-
-<h3 id="kubectl-quick-reference">Kubectl quick reference</h3><p>This document acts as a quick reference to <code>kubectl</code>, listing some of the most common operations.</p>
-<p>The examples here only address the most basic approach to these operations. For more options, please refer to the command-line help of <code>kubectl</code> subcommands.</p>
-<p>There is also a more detailed <a href="https://kubernetes.io/docs/reference/kubectl/cheatsheet/">cheatsheet</a> in the official kubernetes documentation.</p>
-<h6 id="inspecting-running-instances-of-the-application">Inspecting running instances of the application</h6><p>To list running <code>Pods</code>:
-<code>
-$ kubectl -n &lt;namespace&gt; get pods
-</code>
-To view details for a <code>Pod</code>:
-<code>
-$ kubectl -n &lt;namespace&gt; describe pod &lt;pod&gt;
-</code></p>
-<h6 id="viewing-logs">Viewing logs</h6><p>To access the logs of a running container:
-<code>
-$ kubectl -n &lt;namespace&gt; logs &lt;pod&gt;
-</code></p>
-<h6 id="viewing-kubernetes-events">Viewing kubernetes events</h6><p>To see kubernetes events, which can help debugging:
-<code>
-$ kubectl -n &lt;namespace&gt; get events
-</code></p>
-<h6 id="container-shell">Container shell</h6><p>You can get a shell inside a running container:
-<code>
-$ kubectl -n &lt;namespace&gt; exec -it &lt;pod&gt; sh
-</code>
-https://kubernetes.io/docs/tasks/debug-application-cluster/get-shell-running-container/</p>
-<h6 id="pod-port-forwarding">Pod port-forwarding</h6><p>To forward port <code>5000</code> on <code>localhost</code> to port <code>5001</code> in the <code>Pod</code>:
-<code>
-$ kubectl -n &lt;namespace&gt; port-forward &lt;pod&gt; 5000:5001
-</code>
-https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/</p>
-
-<h3 id="cloud-platform-support">Cloud Platform Support</h3><p><a href="https://docs.google.com/document/d/1M89TXQJIQAqu8yb2wzatlI8PgsXrgOi-GxLtB76XgjU/edit?usp=sharing">https://docs.google.com/document/d/1M89TXQJIQAqu8yb2wzatlI8PgsXrgOi-GxLtB76XgjU/edit?usp=sharing</a></p>
-
-<h3 id="zero-downtime-deployments">Zero Downtime Deployments</h3><h4 id="zero-downtime-deployments-introduction">Introduction</h4><p>Zero Downtime Deployments are a significant feature of the Cloud Platform, that bring a host of advantages.</p>
-<h4 id="rolling-updates">Rolling Updates</h4><p>Rolling updates introduce the ability to update an application without any downtime.</p>
-<p>A rolling update works by ensuring there is always one extra Pod than the maximum number stated in the deployment.</p>
-<p>The new deployment is applied incrementally, usually one to two Pods at a time until all Pods are running the latest version. How the deployment is rolled out, can be configured by the user. More information about configuring a rolling update can be found <a href="https://kubernetes.io/docs/tasks/run-application/rolling-update-replication-controller/">here</a>.</p>
-<p>If an application is exposed publicly, traffic will only be routed to the available Pods. However, this is only the case if the user configured <code>readinessProbes</code> correctly. This is a large topic, so more information can be found <a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/">here</a>.</p>
-<h5 id="the-major-advantage">The Major Advantage</h5><p>Where rolling updates really brings benefit is the enabling of Continuous Integration and Continuous Delivery.</p>
-<p>The ability to constantly update your application, with zero downtime, brings a host of benefits.</p>
-<h5 id="rolling-updates-further-reading">Further Reading</h5><p>If you&rsquo;d like to read more in-depth into rolling updates, then Kubernetes has some great documentation <a href="https://kubernetes.io/docs/tutorials/kubernetes-basics/update/update-intro/">here</a>.</p>
-<h5 id="readiness-liveness-probes-and-ssl-in-rails-applications">Readiness/Liveness probes and SSL in Rails applications</h5><p>For zero downtime deployments, you will need a readiness probe in your application, so that the cluster knows when your container is ready to receive traffic. You will also need a liveness probe, so that the cluster knows if it needs to restart your container after a crash.</p>
-<p>SSL will be terminated outside of your pod, so your probes will need to respond to HTTP requests. However, Ruby on Rails applications are sometimes configured to only respond to HTTPS traffic (by adding <code>config.force_ssl = true</code> in the <code>config/environments/production.rb</code> file).</p>
-<p>In this case, the application will respond to any HTTP request with a redirect status code, asking the requester to resend the request to the equivalent HTTPS URL. This will cause your probes to fail, because the redirect will not be followed.</p>
-<p>To fix this, the probe needs to tell the application that it is an HTTPS request, even though it isn&rsquo;t, so that the application will process the request rather than sending a redirect response. You can do this by adding some HTTP headers to your probe definitions like this:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>readinessProbe:
-  httpGet:
-    path: /ping.json
-    port: 3000
-    httpHeaders:
-      - name: X-Forwarded-Proto
-        value: https
-      - name: X-Forwarded-Ssl
-        value: "on"
-</code></pre></div><p>This will send an HTTP request to <code>/ping.json</code>, but the rails application will respond as if it is HTTPS, and your probe should work as expected. This works for both readiness and liveness probes.</p>
-
-<h3 id="contributing-to-this-document">Contributing to this document</h3><p>This guide is built using <a href="https://pages.github.com/">GitHub Pages</a>.</p>
-<p>If you would like to contribute to this guide, please fork <a href="https://github.com/ministryofjustice/cloud-platform-user-docs">the repository</a>, make your changes and then raise a pull request.</p>
-
-<h3 id="using-an-externally-managed-hostname">Using an externally-managed hostname</h3><h4 id="background">Background</h4><p>Every application running on Cloud Platform is able to use a hostname for their
-HTTP endpoints, under a pre-defined DNS zone. For example, on the <code>live-1</code>
-cluster, this would be <code>*.apps.live-1.cloud-platform.service.justice.gov.uk</code>. As
-long as it is defined on the <code>Ingress</code> resource, it works automatically with a
-wildcard TLS certificate.</p>
-<p>However, most applications will typically need to be served on a <code>gov.uk</code>
-hostname. These hostnames (or usually, DNS zones) are managed externally,
-relative to the cluster, and there is a number of actions in order to set them
-up for usage.</p>
-<h4 id="using-an-externally-managed-hostname-setup">Setup</h4><h5 id="you-do-not-have-a-dns-zone-for-the-desired-hostname">You do not have a DNS zone for the desired hostname</h5><p>Please <a href="http://goo.gl/msfGiS">create a support ticket</a> providing as much
-information as possible.</p>
-<p>Once the zone is ready, you can continue with the rest of this guide.</p>
-<h5 id="you-already-have-a-dns-zone-for-the-desired-hostname">You already have a DNS zone for the desired hostname</h5><h6 id="gt-it-39-s-a-route53-zone">&gt; It&rsquo;s a Route53 zone</h6>
-<ol>
-<li><p><a href="http://goo.gl/msfGiS">Create a support ticket</a> requesting the <code>provider</code>
-name for your <code>Certificate</code> (see the next step).</p></li>
-<li><p>Create the <code>Certificate</code>, using the <code>provider</code> name from the previous step.
-The <code>secretName</code> attribute defines the <code>Secret</code> where the certificate and key
-material will be stored, in your namespace.</p></li>
-</ol>
-<div class="highlight"><pre class="highlight plaintext"><code>   ---
-   apiVersion: certmanager.k8s.io/v1alpha1
-   kind: Certificate
-   metadata:
-     name: &lt;my-cert&gt;
-     namespace: &lt;my-namespace&gt;
-   spec:
-     secretName: &lt;my-cert-secret&gt;
-     issuerRef:
-       name: letsencrypt-production
-       kind: ClusterIssuer
-     commonName: '&lt;hostname&gt;'
-     acme:
-       config:
-       - domains:
-         - '&lt;hostname&gt;'
-         dns01:
-           provider: &lt;provider&gt;
-</code></pre></div>
-
-<ol>
-<li>Make sure the certificate has been issued correctly, by checking its <code>Status</code>:</li>
-</ol>
-
-<div class="highlight"><pre class="highlight plaintext"><code>   $ kubectl describe certificate &lt;my-cert&gt;
-</code></pre></div>
-
-<ol>
-<li>You will need to update your <code>Ingress</code> spec to include the new hostname.</li>
-</ol>
-
-<p><strong>Once your host is defined here, the cluster will take control of the DNS record and automatically adjust to point to the cluster.</strong></p>
-
-<p>If this does not happen, please get in touch with us in #ask-cloud-platform. Depending on your setup, we might need to
-   intervene manually to allow <code>external-dns</code> to assume ownership of the DNS record.</p>
-
-<div class="highlight"><pre class="highlight plaintext"><code>     apiVersion: extensions/v1beta1
-     kind: Ingress
-     metadata:
-       name: &lt;my-ingress&gt;
-       namespace: &lt;my-namespace&gt;
-     spec:
-       tls:
-       - hosts:
-         - my-app.apps.live-1.cloud-platform.service.justice.gov.uk
-   +   - hosts:
-   +     - &lt;hostname&gt;
-   +     secretName: &lt;my-cert-secret&gt;
-       rules:
-       - host: my-app.apps.live-1.cloud-platform.service.justice.gov.uk
-         http:
-           paths:
-           - path: /
-             backend:
-               serviceName: &lt;my-svc&gt;
-               servicePort: 80
-   +   - host: &lt;hostname&gt;
-   +     http:
-   +       paths:
-   +       - path: /
-   +         backend:
-   +           serviceName: &lt;my-svc&gt;
-   +           servicePort: 80
-</code></pre></div><h6 id="gt-it-39-s-a-dns-zone-hosted-with-another-provider">&gt; It&rsquo;s a DNS zone hosted with another provider</h6><p>For the time being, we only support Route53 natively. Depending on the provider
-we might be able to accommodate you or we might need to handle this manually, if possible.
-Please <a href="http://goo.gl/msfGiS">create a support ticket</a>.</p>
-
-<h3 id="ip-whitelisting">IP Whitelisting</h3><h4 id="inbound-ip-whitelisting">Inbound IP Whitelisting</h4><p>Allowed client IP source ranges can be specified using the nginx.ingress.kubernetes.io/whitelist-source-range annotation. The value is a comma separated list of CIDRs, e.g. 1.1.1.1/24,10.0.0.0/24.</p>
-<p><a href="https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#whitelist-source-range">Kubernetes official documentation on whitelisting source ranges</a>.</p>
-<p>An example configuration using &ldquo;nginx.ingress.kubernetes.io/whitelist-source-range: 1.1.1.1/24,10.0.0.0/24&rdquo;</p>
-<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  annotations:
-    kubectl.kubernetes.io/last-applied-configuration: |
-          {"apiVersion":"extensions/v1beta1","kind":"Ingress","metadata":{"annotations":{"kubernetes.io/ingress.class":"nginx","nginx.ingress.kubernetes.io/whitelist-source-range":"1.1.1.1/24,10.0.0.0/24"},"name":"&lt;my-ingress&gt;","namespace":"&lt;my-namespace&gt;"},"spec":{"rules":[{"host":"my-app.apps.live-1.cloud-platform.service.justice.gov.uk","http":{"paths":[{"backend":{"serviceName":"&lt;my-svc&gt;","servicePort":3000},"path":"/"}]}}],"tls":[{"hosts":["my-app.apps.live-1.cloud-platform.service.justice.gov.uk"]}]}}
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/whitelist-source-range: 1.1.1.1/24,10.0.0.0/24
-  creationTimestamp: 2019-03-21T14:26:31Z
-  generation: 1
-  name: &lt;my-ingress&gt;
-  namespace: &lt;my-namespace&gt;
-spec:
-  rules:
-  - host: my-app.apps.live-1.cloud-platform.service.justice.gov.uk
-    http:
-      paths:
-      - path: /
-      - backend:
-          serviceName: &lt;my-svc&gt;
-          servicePort: 3000
-  tls:
-  - hosts:
-    - my-app.apps.live-1.cloud-platform.service.justice.gov.uk
-status:
-  loadBalancer:
-    ingress:
-    - hostname: &lt;hostname&gt;
-</code></pre></div><p>Testing with the annotation set:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>curl -v -H "Host: my-app.apps.live-1.cloud-platform.service.justice.gov.uk" &lt;HOST-IP&gt;
-</code></pre></div><p>Will return a &ldquo;403 forbidden&rdquo; status</p>
-<h4 id="outbound-ip-whitelisting">Outbound IP Whitelisting</h4><h5 id="nat-gateways">NAT Gateways</h5><p>Many applications use third-party tools for a variety of reasons, and many of these tools require IP Whitelisting.</p>
-<p>The Cloud Platform uses NAT Gateways as its external IP Endpoints.</p>
-<p>The IP addresses for the clusters are as follows:</p>
-<h6 id="nat-gateways-live-0-cluster">Live-0 Cluster</h6><div class="highlight"><pre class="highlight plaintext"><code>52.17.133.167
-34.251.93.81
-34.247.134.240
-</code></pre></div><h6 id="nat-gateways-live-1-cluster">Live-1 Cluster</h6><div class="highlight"><pre class="highlight plaintext"><code>35.178.209.113
-3.8.51.207
-35.177.252.54
-</code></pre></div>
-<p><h3 id="ecr-lifecycle-policy">ECR Lifecycle Policy</h3><h4 id="ecr-lifecycle-policy-overview">Overview</h4><p>ECR repositories created for use in the Cloud Platform will have a default lifecycle policy applied.</p>
-<p>Due to some applications having a constant rate of images being pushed to their ECR repo, we found that the AWS limit of 1000 images was being hit by some teams.</p>
-<p>After consulting with application teams, we decided to implement a lifecycle policy of <em>40 images</em> per ECR repo.</p>
-<p>If you feel that you have a need to archive more than the last 40 images, please contact the Cloud Platform team, who can adjust or remove the lifecycle policy.</p></p>
-<p><h3 id="applying-a-maintenance-page">Applying a Maintenance Page</h3><h4 id="applying-a-maintenance-page-overview">Overview</h4><p>This document will serve as a guide on how to apply a default
-maintenance page to your application on the Cloud Platform.</p>
-<h4 id="deploying-the-page">Deploying the page</h4><p>A repository has been created to store all the files related to the
-maintenance page:</p>
-<p><a href="https://github.com/ministryofjustice/cloud-platform-maintenance-page">cloud-platform-maintenance-page</a></p>
-<p>The repository contains the manifest files needed to deploy a
-standard maintenance page into your namespace. This directory also
-contains the maintenance page HTML file, along with a DockerFile
-to build an image to serve the maintenance page.</p>
-<p>Within the <code>Kubectl_deploy</code> directory, there are 3 simple manifest
-files that make up the deployment, <code>deploy.yaml</code>, <code>ingress.yaml</code>
-and <code>service.yaml</code>.</p>
-<p>To use this example, copy the files into your namespace and make
-any changes you require, to tailor the maintenance page to your
-service.</p>
-<p>Once you have done this, the maintenance page will be deployed
-into your namespace, ready for you to use as and when you need
-it.</p>
-<h5 id="maintenance-deploy-yaml">maintenance-deploy.yaml</h5><p>A notable part of this file is the <code>image</code> line, which points to
-the ECR URI.</p>
-<p>If you wish to customize the maintenance page, you must edit and
-build the image and update the <code>image</code> value.</p>
-<h5 id="maintenance-ingress-yaml">maintenance-ingress.yaml</h5><p>In this file, change the example <code>host</code> field to your applications
-URL.</p>
-<p>Rather than using this file, you may prefer to change your existing
-<code>Ingress</code> so that the <code>backend</code> points to your maintenance page,
-whenever you need to replace your service with the maintenance page.</p>
-<p>This will ensure that you do not incur any downtime (by deleting
-the previous ingress and creating a new one).</p></p>
+<p><a href="https://www.elastic.co/guide/en/beats/packetbeat/current/kibana-queries-filters.html">https://www.elastic.co/guide/en/beats/packetbeat/current/kibana-queries-filters.html</a></p></p>
 
 
             
