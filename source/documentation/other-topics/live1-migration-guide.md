@@ -52,6 +52,8 @@ Our helper script expects environment variables to be named according to the lis
 
 The environment variables you will need to replace are as follows:
 
+<div style="height:1px;font-size:1px;">&nbsp;</div>
+
 | Variable   |            |
 |----------|:-------------:|
 | `AWS_DEFAULT_REGION` |  The default region will now be `eu-west-2`. |
@@ -62,6 +64,8 @@ The environment variables you will need to replace are as follows:
 | `K8S_<ENVIRONMENT>_CLUSTER_NAME` |    The cluster name is `live-1.cloud-platform.service.justice.gov.uk`  |
 | `K8S_<ENVIRONMENT>_NAMESPACE` |  This variable should be equal to the name of your namespace. |
 | `K8S_<ENVIRONMENT>_TOKEN` |    The token is another attribute found in the `default-token` secret and needs base64 decoding.   |
+
+<div style="height:1px;font-size:1px;">&nbsp;</div>
 
 After triggering the CircleCI pipeline, your application should now deploy into your new environment.
 
