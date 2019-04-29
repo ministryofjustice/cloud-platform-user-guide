@@ -10,15 +10,14 @@ This guide assumes you have an environment already created in the `Live-1` clust
 
 ### Terraform files
 
-Copy the Terraform resource code below and save it into the respective 3 files in the `[your namespace]/resources` directory in the [cloud-platform-environments repository][env-repo]:
+Copy the Terraform resource code below and save it into the respective 2 files in the `[your namespace]/resources` directory in the [cloud-platform-environments repository][env-repo]:
 
  * `main.tf`
  * `variables.tf`
- * `outputs.tf`
 
 #### main.tf
 ```
-resource "aws_route53_zone" "main" {
+resource "aws_route53_zone" "example_team_route53_zone" {
   name = "${var.domain}"
 
   tags {
@@ -30,6 +29,18 @@ resource "aws_route53_zone" "main" {
     infrastructure-support = "${var.infrastructure-support}"
   }
 }
+
+resource "kubernetes_secret" "example_route53_zone_sec" {
+  metadata {
+    name      = "example-route53-zone-output"
+    namespace = "${var.namespace}"
+  }
+
+  data {
+    zone_id   = "${aws_route53_zone.example_team_route53_zone.zone_id}"
+  }
+}
+
 ```
 
 #### variables.tf
@@ -62,34 +73,11 @@ variable "is-production" {
 }
 ```
 
-#### outputs.tf
-```
-output "zone_id" {
-  description = "The zone ID of your hosted zone."
-  value       = "${aws_route53_zone.main.zone_id}"
-}
-
-output "name_servers" {
-  description = "The name servers of your hosted zone."
-  value       = "${aws_route53_zone.main.name_servers}"
-}
-```
-
 ### Creating the resource
 
-With the 3 files saved, navigate to the `resources` directory and run:
+Make sure to change placeholder values to what is appropriate, with the 2 files saved, commit your changes to a branch and raise a pull request. Once approved, you can merge and the changes will be applied. Shortly after, you should be able to access the `Zone_ID` as Secret on kubernetes in your namespace.
 
-```
-$ terraform init
-$ terraform plan
-$ terraform apply
-```
-
-When prompted, fill the variables with appropriate values.
-
-After terraform has run, you will receive the `Zone_ID` and `Name servers` as outputs.
-
-Once you have these, please contact the Cloud Platform team via the `#ask-cloud-platform` Slack channel. Provide them with the zone_ID and nameservers values, and they will verify that your hosted zone has been created successfully.
+Please contact the Cloud Platform team via the `#ask-cloud-platform` Slack channel. Provide them with the zone_ID and nameservers values, and they will verify that your hosted zone has been created successfully.
 
 [env-repo]: https://github.com/ministryofjustice/cloud-platform-environments
 [aws-hosted-zone]: https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/AboutHZWorkingWith.html
