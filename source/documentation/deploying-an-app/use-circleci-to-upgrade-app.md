@@ -23,6 +23,7 @@ It is assumed you have the following:
 As part of the CircleCI deployment pipeline, CircleCI will need to authenticate with the Kubernetes cluster. In order to do so, Kubernetes uses [Service Accounts](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/). Service Accounts provide an identity for processes that run in a cluster allowing the process to access the API server.
 
 A Service Account is created in the [namespace creation github repository](https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces).
+
 ```bash
   $ kubectl get serviceaccounts --namespace $ns
   NAME       SECRETS   AGE
@@ -52,7 +53,9 @@ MoJ has as an account with CircleCI, please login to [CircleCI](https://circleci
 There is a number of environment variables that you will need to set on your CircleCI project in order to build a docker image, push it to the ECR and trigger a deployment in your environment. On the project page, click the cog icon in the top right corner and select `Enviroment Variables` under `Build Settings`. The variables you will need to set are listed below.
 
 ###### AWS credentials
+
 To authenticate with ECR, you will need to set:
+
 - `AWS_DEFAULT_REGION` - would be `eu-west-2` for Cloud Platform clusters unless specified otherwise
 - `AWS_ACCESS_KEY_ID`
 - `AWS_SECRET_ACCESS_KEY`
@@ -62,6 +65,7 @@ To authenticate with ECR, you will need to set:
 Since a single CircleCI project will need to access multiple namespaces in kubernetes (the environments), it will also need to handle multiple credentials. To simplify authentication, we provide a helper script in our supported [build image](https://github.com/ministryofjustice/cloud-platform-tools-image). For a usage example, see [Deploy To Kubernetes](###upload-to-ecr) below.
 
 There are four different variables that CircleCI will need to access *per environment*. Our helper script expects environment variables to be named according to the list below where `<ENVIRONMENT>` should be replaced by some identifier of your choosing (eg.: `STAGING`, `PRODUCTION`).
+
 - `KUBE_ENV_<ENVIRONMENT>_NAME` - the full name of the cluster (eg.: `live-1.cloud-platform.service.justice.gov.uk`)
 - `KUBE_ENV_<ENVIRONMENT>_NAMESPACE` - the name of the `Namespace` (see [Create a namespace][env-create])
 - `KUBE_ENV_<ENVIRONMENT>_CACERT` - the CA Certificate for the cluster, can be acquired from the `Secret` that is generated for the `ServiceAccount`

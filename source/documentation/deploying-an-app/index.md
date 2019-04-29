@@ -1,1 +1,1 @@
-## Deploying Applications
+## Deploying with Helm and CircleCI
