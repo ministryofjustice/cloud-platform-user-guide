@@ -6,7 +6,7 @@ This document will act as a guide to your first application deployment into the 
 ##### Objective
 By the end of this guide you'll have deployed a reference [Django application](https://github.com/ministryofjustice/cloud-platform-reference-app) to a cluster using the Kubernetes package manager [Helm](https://helm.sh/).
 
-*Disclaimer: You'll see fairly quickly that the application is not fit for production. A perfect example of this is the [plaintext secrets file](https://github.com/ministryofjustice/cloud-platform-reference-app/blob/master/helm_deploy/django-app/templates/secret.yaml). For the reference application we've left this file in plaintext but it **must** be encrypted when writing your own manifests for production/non-production work in the MoJ.*
+_Disclaimer: You'll see fairly quickly that the application is not fit for production. A perfect example of this is the [plaintext secrets file](https://github.com/ministryofjustice/cloud-platform-reference-app/blob/master/helm_deploy/django-app/templates/secret.yaml). For the reference application we've left this file in plaintext but it **must** be encrypted when writing your own manifests for production/non-production work in the MoJ._
 
 ##### Requirements
 It is assumed you have the following:
