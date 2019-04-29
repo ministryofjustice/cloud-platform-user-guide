@@ -55,7 +55,7 @@ The environment variables you will need to replace are as follows:
 <div style="height:1px;font-size:1px;">&nbsp;</div>
 
 | Variable   |            |
-|----------|:-------------:|
+|----------|:-------------|
 | `AWS_DEFAULT_REGION` |  The default region will now be `eu-west-2`. |
 | `AWS_ACCESS_KEY_ID` | The access key can be found in the secret created by the ECR generation. This requires base64 decoding.   |
 | `AWS_SECRET_ACCESS_KEY` |  The secret key can be found in the secret created by the ECR generation. This requires base64 decoding. |
