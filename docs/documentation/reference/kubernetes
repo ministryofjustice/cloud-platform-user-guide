@@ -7,4 +7,4 @@
 <li><a href="https://docs.docker.com/docker-for-mac/kubernetes">Running k8s locally using Minikube</a></li>
 </ul>
 <h4 id="command-line-kubernetes-interaction">Command Line Kubernetes Interaction</h4><p>Kubernetes has it&rsquo;s own official CLI tool for interacting with a Cluster called <code>kubectl</code>. It is certainly worth learning the basics of <code>kubectl</code>, As the vast majority of time interacting with Kubernetes will be through this tool.</p>
-<p>We have our own page on <a href="/archive.html#kubectl-quick-reference">Kubectl Basics</a>.</p>
+<p>We have our own page on <a href="tasks.html#kubectl-quick-reference">Kubectl Basics</a>.</p>

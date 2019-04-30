@@ -2,16 +2,6 @@
 developed for the Ministry of Justice. The platform manages the infrastructure
 that your application runs on and provides tooling for teams to deploy and
 manage their applications on that infrastructure.</p>
-<h3 id="this-guide">This guide</h3><p>This guide is in the process of being reorganised into three main sections:</p>
-
-<ul>
-<li>Concepts - Background and overview of the Cloud Platform, and some of the important concepts underlying it.</li>
-<li>Tasks - Tutorials and information to help you achieve specific outcomes.</li>
-<li>Reference - Details and links to external resources providing more thorough information about particular topics.</li>
-</ul>
-<p>While content is being moved, all the existing content has been moved to a
-temporary &ldquo;Archive&rdquo; section. We will be migrating content from there into the
-new structure over the next few weeks.</p>
 <h4 id="contributing">Contributing</h4><p>Contributions to this guide are very welcome. Please fork the <a href="https://github.com/ministryofjustice/cloud-platform-user-guide">github
 repository</a> for this guide, and submit your contribution as a pull
 request.</p>

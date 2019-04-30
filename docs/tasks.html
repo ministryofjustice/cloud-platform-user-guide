@@ -102,7 +102,6 @@
       <li>
         <ul>
           <li>
-            <a href="/#this-guide">This guide</a>
           </li>
           <li>
             <a href="/#who-is-the-platform-for">Who is the platform for</a>
@@ -342,6 +341,31 @@
         </ul>
       </li>
       <li>
+        <a href="/tasks.html#monitoring-applications">Monitoring Applications</a>
+        <ul>
+          <li>
+            <a href="/tasks.html#using-the-cloud-platform-prometheus-alertmanager-and-grafana">Using the Cloud Platform Prometheus, AlertManager and Grafana</a>
+          </li>
+          <li>
+            <a href="/tasks.html#creating-your-own-custom-alerts">Creating your own custom alerts</a>
+          </li>
+          <li>
+            <a href="/tasks.html#getting-application-metrics-into-prometheus">Getting Application Metrics into Prometheus</a>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="/tasks.html#application-logging">Application Logging</a>
+        <ul>
+          <li>
+            <a href="/tasks.html#application-log-collection-and-storage">Application Log Collection and Storage</a>
+          </li>
+          <li>
+            <a href="/tasks.html#accessing-application-log-data">Accessing Application Log Data</a>
+          </li>
+        </ul>
+      </li>
+      <li>
         <a href="/tasks.html#migrating-from-live-0-to-live-1">Migrating from Live-0 to Live-1</a>
         <ul>
           <li>
@@ -429,38 +453,6 @@
     </ul>
   </li>
 </ul>
-<ul>
-  <li>
-    <a href="/archive.html#archive">Archive</a>
-    <ul>
-      <li>
-        <a href="/archive.html#monitoring-applications">Monitoring Applications</a>
-        <ul>
-          <li>
-            <a href="/archive.html#using-the-cloud-platform-prometheus-alertmanager-and-grafana">Using the Cloud Platform Prometheus, AlertManager and Grafana</a>
-          </li>
-          <li>
-            <a href="/archive.html#creating-your-own-custom-alerts">Creating your own custom alerts</a>
-          </li>
-          <li>
-            <a href="/archive.html#getting-application-metrics-into-prometheus">Getting Application Metrics into Prometheus</a>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <a href="/archive.html#application-logging">Application Logging</a>
-        <ul>
-          <li>
-            <a href="/archive.html#application-log-collection-and-storage">Application Log Collection and Storage</a>
-          </li>
-          <li>
-            <a href="/archive.html#accessing-application-log-data">Accessing Application Log Data</a>
-          </li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-</ul>
 
 
               </nav>
@@ -469,10 +461,7 @@
 
         <div class="app-pane__content toc-open-disabled">
           <main id="content" class="technical-documentation" data-module="anchored-headings">
-              <h1 id="tasks">Tasks</h1><p>This is a placeholder page, into which content will be migrated.</p>
-<p>Please look in the <a href="/archive.html">archive section</a> to find existing content
-which is yet to be moved.</p>
-
+              <h1 id="tasks">Tasks</h1>
 <h2 id="how-to-use-kubectl-to-connect-to-the-cluster">How to use <code>kubectl</code> to connect to the cluster</h2><p>The aim of this guide is to provide a walkthrough of the installation of the <code>kubectl</code> command-line tool, the official command-line tool for Kubernetes, as well as setting it up by authenticating with the Cloud Platform cluster.</p>
 <p><code>kubectl</code> is used to deploy and manage applications on Kubernetes and is fundamental for anyone who wants to interact with the cluster.</p>
 <p>When complete you should have access to perform API calls via a tool called <code>kubectl</code>.</p>
@@ -733,7 +722,7 @@ our <code>myenv-dev</code> namespace, we would run:</p>
 <p><code>$ kubectl get pods --namespace myenv-dev</code></p>
 <h3 id="next-steps">Next steps</h3><p><a href="/tasks.html#creating-an-ecr-repository">Create an ECR repository</a> to push your application docker image to.</p>
 <p>Then you can try <a href="/tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">deploying an app to Kubernetes manually</a>
-by writing some custom YAML files or <a href="/archive.html#deploying-an-application-to-the-cloud-platform-with-helm">deploying an app with Helm</a>,
+by writing some custom YAML files or <a href="/tasks.html#deploying-an-application-to-the-cloud-platform-with-helm">deploying an app with Helm</a>,
 a Kubernetes <a href="https://helm.sh/">package manager</a>.</p>
 <h3 id="more-information-on-environment-definition">More information on environment definition</h3><p>To set up an environment we create 5 files in that directory:</p>
 
@@ -892,7 +881,7 @@ spec:
   <span class="nv">$ </span>vi ecr.tf  <span class="c">###create a terraform file.</span>
 
 </code></pre></div><p>4. Adapt the definition from the example described in the <a href="https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials/tree/master/examples">cloud-platform-terraform-ecr-credentials module</a>; make sure you adjust the values of <code>team_name</code>, <code>repo_name</code> <code>name</code> and <code>namespace</code> to what is appropriate for your environment.</p>
-<p>Note: A default ECR lifecycle policy is set, that will only keep the 40 most recent versions of an image. More infomation on the ECR lifecycle policy avalible <a href="/archive.html#ecr-lifecycle-policy">here.</a></p>
+<p>Note: A default ECR lifecycle policy is set, that will only keep the 40 most recent versions of an image. More infomation on the ECR lifecycle policy avalible <a href="/tasks.html#ecr-lifecycle-policy">here.</a></p>
 <p>5. git add, commit and push to your branch.</p>
 <div class="highlight"><pre class="highlight shell"><code>
   <span class="nv">$ </span>git add ecr.tf
@@ -915,7 +904,7 @@ kubectl -n &lt;namespace_name&gt; get secret example-team-ecr-credentials-output
 echo QWxhZGRpbjpvcGVuIHNlc2FtZQ== | base64 --decode; echo
 </code></p>
 <h4 id="setting-up-circleci">Setting up CircleCI</h4><p>In your CircleCI project, go to the settings (the cog icon) and select &lsquo;AWS Permissions&rsquo; from the left hand menu. Fill in the IAM credentials and CircleCI will be able to use ECR images. For more information please see <a href="https://circleci.com/docs/2.0/private-images/">the official docs</a>.</p>
-<h3 id="creating-an-ecr-repository-next-steps">Next steps</h3><p>Try <a href="/archive.html#deploying-an-application-to-the-cloud-platform-with-helm">deploying an app</a> with <a href="https://helm.sh/">Helm</a>, a Kubernetes package manager, or <a href="/tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">deploying manually</a> by writing some custom YAML files.</p>
+<h3 id="creating-an-ecr-repository-next-steps">Next steps</h3><p>Try <a href="/tasks.html#deploying-an-application-to-the-cloud-platform-with-helm">deploying an app</a> with <a href="https://helm.sh/">Helm</a>, a Kubernetes package manager, or <a href="/tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">deploying manually</a> by writing some custom YAML files.</p>
 
 <h2 id="creating-a-route-53-hosted-zone">Creating a Route 53 Hosted Zone</h2><h3 id="overview">Overview</h3><p>This short guide will run through the process of creating a <a href="https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/AboutHZWorkingWith.html">Route 53 Hosted Zone</a> through Terraform for your environment.</p>
 <h3 id="pre-requisites">Pre-Requisites</h3><p>This guide assumes you have an environment already created in the <code>Live-1</code> cluster and defined in the <a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud-platform-environments repository</a>.</p>
@@ -1368,7 +1357,7 @@ django-app-&lt;Name&gt;-postgresql-7b4bdff4b8-xdlw2   1/1       Running   0     
 </code></pre></div><p>And then confirm the pods are terminating as expected:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>$ kubectl get pods --namespace &lt;env-var&gt;
 </code></pre></div><h4 id="deploying-an-application-to-the-cloud-platform-with-helm-next-steps">Next steps</h4><p>The next step will be to create your own Helm Chart. You can try this with an application of your own or run through <a href="https://docs.bitnami.com/kubernetes/how-to/create-your-first-helm-chart/">Bitnami&rsquo;s excellent guide</a> on how to build using a simple quickstart.</p></p>
-<p><h3 id="continuous-deployment-of-an-application-using-circleci-and-helm">Continuous Deployment of an application using CircleCI and Helm</h3><h4 id="continuous-deployment-of-an-application-using-circleci-and-helm-introduction">Introduction</h4><p>This document covers how to continuously deploy your application in the Cloud Platform. It is essentially a continuation of <a href="/archive.html#deploying-an-application-to-the-cloud-platform-with-helm">‘Deploying an application to the Cloud Platform with Helm’</a>.</p>
+<p><h3 id="continuous-deployment-of-an-application-using-circleci-and-helm">Continuous Deployment of an application using CircleCI and Helm</h3><h4 id="continuous-deployment-of-an-application-using-circleci-and-helm-introduction">Introduction</h4><p>This document covers how to continuously deploy your application in the Cloud Platform. It is essentially a continuation of <a href="/tasks.html#deploying-an-application-to-the-cloud-platform-with-helm">‘Deploying an application to the Cloud Platform with Helm’</a>.</p>
 <p><em>Note: This document is specific to using <a href="https://circleci.com/">CircleCI</a> as the Continuous Integration method.</em></p>
 <h5 id="continuous-deployment-of-an-application-using-circleci-and-helm-introduction-objective">Objective</h5><p>By the end of the tutorial, you will have done the following:</p></p>
 
@@ -1381,7 +1370,7 @@ django-app-&lt;Name&gt;-postgresql-7b4bdff4b8-xdlw2   1/1       Running   0     
 
 <ul>
 <li>You have <a href="/tasks.html#creating-a-cloud-platform-environment">created an environment for your application</a></li>
-<li>You have <a href="/archive.html#deploying-an-application-to-the-cloud-platform-with-helm">deployed an application</a> to the &lsquo;cloud-platform-live-1&rsquo; cluster using Helm.</li>
+<li>You have <a href="/tasks.html#deploying-an-application-to-the-cloud-platform-with-helm">deployed an application</a> to the &lsquo;cloud-platform-live-1&rsquo; cluster using Helm.</li>
 <li>You have created an <a href="/tasks.html#creating-an-ecr-repository">ECR repository</a></li>
 </ul>
 <p><h5 id="creating-a-service-account-for-circleci">Creating a Service Account for CircleCI</h5><p>As part of the CircleCI deployment pipeline, CircleCI will need to authenticate with the Kubernetes cluster. In order to do so, Kubernetes uses <a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/">Service Accounts</a>. Service Accounts provide an identity for processes that run in a cluster allowing the process to access the API server.</p>
@@ -1724,6 +1713,224 @@ specifying the namespace you would like the team to delete.</p>
 </ol>
 
 
+<h2 id="monitoring-applications">Monitoring Applications</h2>
+<h3 id="using-the-cloud-platform-prometheus-alertmanager-and-grafana">Using the Cloud Platform Prometheus, AlertManager and Grafana</h3><h4 id="using-the-cloud-platform-prometheus-alertmanager-and-grafana-introduction">Introduction</h4><p>Prometheus, AlertManager and Grafana have been installed on Live-0 to ensure the reliability and availability of the Cloud Platform. This document will briefly outline how to access the monitoring tools and where to find further information.</p>
+<h4 id="what-is-prometheus">What is Prometheus</h4><p>Prometheus is an open-source systems monitoring and alerting toolkit originally built at SoundCloud. The Cloud Platform uses <a href="https://github.com/coreos/prometheus-operator">Prometheus Operator from CoreOS</a> which allows a number of Prometheus instances to be installed on a cluster.</p>
+<p>Prometheus scrapes metrics from instrumented jobs, either directly or via an intermediary push gateway for short-lived jobs. It stores all scraped samples locally and runs rules over this data to either aggregate and record new time series from existing data or generate alerts. Grafana or other API consumers can be used to visualize the collected data.</p>
+<h4 id="what-is-alertmanager">What is AlertManager</h4><p>The Alertmanager handles alerts sent by client applications such as the Prometheus server. It takes care of deduplicating, grouping, and routing them to the correct receiver integration such PagerDuty. It also takes care of silencing and inhibition of alerts.</p>
+<h4 id="what-is-grafana">What is Grafana</h4><p>Grafana allows you to query, visualize, alert on and understand your metrics no matter where they are stored. Create, explore, and share dashboards with your team and foster a data driven culture.</p>
+<h5 id="creating-dashboards">Creating dashboards</h5><p>Grafana is set up as a stateless app, managed entirely through code. This also helps achieve better availability. However, it means that dashboards will not persist in its database. To create a dashboard:</p>
+
+<ol>
+<li><p>Login to Grafana (see the links below) with your GitHub account. All users are able to edit dashboards but cannot save the changes. Find the dashboard titled &lsquo;Blank Dashboard&rsquo; and modify it as you see fit.</p></li>
+<li><p>Once happy with your dashboard, click the share icon on the top right corner, select the <code>Export</code> tab, check the <code>Export for sharing externally</code> box and click on <code>View JSON</code>. Copy the JSON string into a <code>ConfigMap</code> according to the example below.</p></li>
+</ol>
+<div class="highlight"><pre class="highlight plaintext"><code>---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: &lt;my-dashboard&gt;
+  namespace: &lt;my-namespace&gt;
+  labels:
+    grafana_dashboard: ""
+data:
+  my-dashboard.json: |
+    {
+      [ ... ]
+    }
+</code></pre></div><p>Make sure you&rsquo;ve included the <code>label</code> and that the JSON string is properly indented. Also, name of the key in the <code>ConfigMap</code> must end in <code>-dashboard.json</code>. Please note that you can have multiple dashboards exported in a single <code>ConfigMap</code> as well.</p>
+
+<ol>
+<li>Use <code>kubectl</code> to apply the <code>ConfigMap</code> above, your dashboard should be visible in Grafana shortly.</li>
+</ol>
+<h4 id="how-to-access-monitoring-tools">How to access monitoring tools</h4><p>All links provided below require you to authenticate with your Github account.</p>
+<p>Prometheus: <a href="https://prometheus.cloud-platform.service.justice.gov.uk">https://prometheus.cloud-platform.service.justice.gov.uk</a></p>
+<p>AlertManager: <a href="https://alertmanager.cloud-platform.service.justice.gov.uk/">https://alertmanager.cloud-platform.service.justice.gov.uk</a></p>
+<p>Grafana: <a href="https://grafana.cloud-platform.service.justice.gov.uk">https://grafana.cloud-platform.service.justice.gov.uk</a></p>
+<h4 id="further-documentation">Further documentation</h4><p><a href="https://prometheus.io/docs/prometheus/latest/querying/basics">Prometheus querying</a></p>
+<p><a href="https://prometheus.io/docs/alerting/alertmanager">AlertManager</a></p>
+<p><a href="https://prometheus.io/docs/introduction/overview/###architecture">Architecture</a></p>
+
+<h3 id="creating-your-own-custom-alerts">Creating your own custom alerts</h3><h4 id="creating-your-own-custom-alerts-overview">Overview</h4><p>Alertmanager allows you define your own alert conditions based on <a href="https://prometheus.io/docs/prometheus/latest/querying/basics">Prometheus expression language</a> expressions.</p>
+<p>The aim of this document is to provide you with the necessary information to create and send application specific alerts to a Slack channel of your choosing.</p>
+<h4 id="creating-your-own-custom-alerts-prerequisites">Prerequisites</h4><p>This guide assumes the following:</p>
+
+<ul>
+<li>You have <a href="/tasks.html#creating-a-cloud-platform-environment">created a namespace for your application</a></li>
+</ul>
+<h4 id="creating-a-slack-webhook-and-amend-alertmanager">Creating a slack webhook and amend Alertmanager</h4><p>This step requires the Cloud Platform team to create a receiver in <a href="https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/templates/prometheus-operator.yaml.tpl###L115">Alertmanager</a> and a <a href="https://api.slack.com/incoming-webhooks">Slack webhook</a>.</p>
+<p>Create a ticket to request a new alert route in Alertmanager. The team will need the following information:</p>
+
+<ul>
+<li>namespace name</li>
+<li>team name</li>
+<li>application name</li>
+<li>slack channel</li>
+</ul>
+<p>The team will provide you with a &ldquo;<code>custom severity level</code>&rdquo; that&rsquo;ll need to be defined in the next step. Please copy it to your clipboard.</p>
+<h4 id="create-a-prometheusrule">Create a PrometheusRule</h4><p>A <code>PrometheusRule</code> is a custom resource that defines your triggered alert. This file will contain the alert name, promql expression and time of check.</p>
+<p>To create your own custom alert you&rsquo;ll need to fill in the template below and deploy it to your namespace (tip: you can check rules in your namespace by running <code>kubectl get prometheusrule -n &lt;namespace&gt;</code>).</p>
+
+<ul>
+<li>Create a file called <code>prometheus-custom-rules-&lt;application_name&gt;.yaml</code></li>
+<li>Copy in the template below and replace the bracket values, specifying the requirements of your alert. The <code>&lt;custom_severity_level&gt;</code> field is the value you were passed earlier.</li>
+</ul>
+<div class="highlight"><pre class="highlight yaml"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">monitoring.coreos.com/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">PrometheusRule</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">&lt;namespace&gt;</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">role</span><span class="pi">:</span> <span class="s">alert-rules</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">prometheus-custom-rules-&lt;application_name&gt;</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">groups</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">application-rules</span>
+    <span class="na">rules</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">alert</span><span class="pi">:</span> <span class="s">&lt;alert_name&gt;</span>
+      <span class="na">expr</span><span class="pi">:</span> <span class="s">&lt;alert_query&gt;</span>
+      <span class="na">for</span><span class="pi">:</span> <span class="s">&lt;check_time_length&gt;</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">severity</span><span class="pi">:</span> <span class="s">&lt;custom_severity_level&gt;</span>
+      <span class="na">annotations</span><span class="pi">:</span>
+        <span class="na">message</span><span class="pi">:</span> <span class="s">&lt;alert_message&gt;</span>
+        <span class="na">runbook_url</span><span class="pi">:</span> <span class="s">&lt;http://my-support-docs&gt;</span>
+</code></pre></div>
+<ul>
+<li>Run <code>kubectl apply -f prometheus-custom-rules-&lt;application_name&gt;.yaml -n &lt;namespace&gt;</code></li>
+</ul>
+<p>A working example of this would be:</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">monitoring.coreos.com/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">PrometheusRule</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">creationTimestamp</span><span class="pi">:</span> <span class="no">null</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">monitoring</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">role</span><span class="pi">:</span> <span class="s">alert-rules</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">prometheus-custom-rules-my-application</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">groups</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">node.rules</span>
+    <span class="na">rules</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">alert</span><span class="pi">:</span> <span class="s">Quota-Exceeded</span>
+      <span class="na">expr</span><span class="pi">:</span> <span class="s">100 * kube_resourcequota{job="kube-state-metrics",type="used",namespace="monitoring"} / ignoring(instance, job, type) (kube_resourcequota{job="kube-state-metrics",type="hard"} &gt; 0) &gt; 90</span>
+      <span class="na">for</span><span class="pi">:</span> <span class="s">5m</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">severity</span><span class="pi">:</span> <span class="s">cp-team</span>
+      <span class="na">annotations</span><span class="pi">:</span>
+        <span class="na">message</span><span class="pi">:</span> <span class="s">Namespace {{ $labels.namespace }} is using {{ printf "%0.0f" $value}}% of its {{ $labels.resource }} quota.</span>
+        <span class="na">runbook_url</span><span class="pi">:</span> <span class="s">https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md###alert-name-kubequotaexceeded</span>
+</code></pre></div><p>The <code>alert</code> name, <code>message</code> and <code>runbook_url</code> annotations will be sent to the Slack channel when the rule has been triggered.</p>
+<p>You can view the applied rules with the following command:</p>
+<div class="highlight"><pre class="highlight shell"><code>kubectl <span class="nt">-n</span> &lt;namespace&gt; describe prometheusrules prometheus-custom-rules-&lt;application_name&gt;
+</code></pre></div><h4 id="prometheusrule-examples">PrometheusRule examples</h4><p>If you&rsquo;re struggling for ideas on how and which alerts to setup, please see some examples <a href="https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/resources/prometheusrule-examples/application-alerts.yaml">here</a>.</p>
+<h4 id="advisory-note-1-prometheusrules-status-incase-of-dr-requirement-for-a-new-prometheus-install">Advisory Note 1: PrometheusRules status incase of DR/requirement for a new Prometheus Install</h4><p>The  <code>PrometheusRule</code> is a <a href="https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/##customresourcedefinitions">CRD</a> that declaratively defines a desired Prometheus rule to be consumed by Prometheus and applied using a YAML file. However, if for any reason Prometheus has to be uninstalled, <code>all PrometheusRules are removed with the CRD.</code></p>
+<p>We recommend all PrometheusRules to be added to the <a href="https://github.com/ministryofjustice/cloud-platform-environments">Environments Repo</a> within the namespace folder the rules refer to. This will ensure all rules are applied/present at all times.</p>
+<p>PrometheusRules can still be tested/amended/applied manually, then a PR can be created to add to the Environments Repo when ready.</p>
+<h4 id="advisory-note-2-cputhrottlinghigh-alert">Advisory Note 2: CPUThrottlingHigh Alert</h4><p>The <code>CPUThrottlingHigh</code> alert is configured as part of the default rules when installing prometheus-operator. The alert can trigger when containers have low cpu limits, spiky workloads but very low average usage. CPU throttling can activate during those spikes. CPU usage is based on <a href="https://en.wikipedia.org/wiki/Completely_Fair_Scheduler">CFS</a>.</p>
+<p>If you think this may be causing an issue with your application, we recommend raising your CPU limit, whilst keeping the container CPU request as close to the 95%-ile average usage as possible.</p>
+<h4 id="creating-your-own-custom-alerts-further-reading">Further reading</h4>
+<ul>
+<li><a href="https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/getting-started.md">Prometheus Operator - Getting Started</a></li>
+<li><a href="https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/alerting.md">Alerting</a></li>
+</ul>
+
+<h3 id="getting-application-metrics-into-prometheus">Getting Application Metrics into Prometheus</h3><p>Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. There are two ways to create a metrics endpoint. The first is when the metrics endpoint is embedded within the application referred to as <code>instrumentation</code>. The second is when the metrics endpoint is part of a deployed process that bridges the gap between Prometheus and systems that do not export metrics in the prometheus format, this is called an <code>exporter</code>.</p>
+<p>The following exporters are installed as part of the Cloud Platform cluster build:</p>
+
+<ul>
+<li>kubeEtcd</li>
+<li>kubeApiServer</li>
+<li>kubeDns</li>
+<li>kubeControllerManager</li>
+<li>kubeScheduler</li>
+<li>kube-state-metrics</li>
+<li>nodeExporter</li>
+<li>kubelet</li>
+</ul>
+<p>Click <a href="https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exporters.md">here</a> for a list of exporters and client libraries listed on the official Prometheus Github repo.</p>
+<h4 id="instrumentation-of-the-cloud-platform-reference-application">Instrumentation of The Cloud-Platform Reference Application</h4><p>The <a href="https://github.com/ministryofjustice/cloud-platform-reference-app">Cloud Platform Reference Application</a> has <code>instrumentation</code> setup using <a href="https://github.com/korfuri/django-prometheus">django-prometheus</a>. The default install steps were followed which created a metrics endpoint.</p>
+<p>See screenshot below of how the metrics endpoint looks on a browser:
+<a href="https://raw.githubusercontent.com/ministryofjustice/cloud-platform-user-docs/master/images/metrics-endpoint.png" target="_blank" rel="noopener noreferrer"><img src="https://raw.githubusercontent.com/ministryofjustice/cloud-platform-user-docs/master/images/metrics-endpoint.png" alt="Image of metrics" /></a></p>
+<h4 id="create-a-service-to-expose-pods">Create a Service to expose Pods</h4><p>Scraping an exporter or separate metrics port requires a service that targets the Pod(s) of the exporter or application.</p>
+<p>Example:</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">my-app-service</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">my-app</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">my-app</span>
+  <span class="na">ports</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">protocol</span><span class="pi">:</span> <span class="s">TCP</span>
+    <span class="na">port</span><span class="pi">:</span> <span class="s">8000</span>
+    <span class="na">targetPort</span><span class="pi">:</span> <span class="s">8000</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">metrics</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">NodePort</span>
+</code></pre></div><h4 id="create-a-service-monitor">Create a Service-Monitor</h4><p>A <code>ServiceMonitor</code> is a resource the Prometheus Operator introduces for Kubernetes that describes the set of targets to be monitored by Prometheus</p>
+<p>Service Monitor Architecture
+<a href="https://raw.githubusercontent.com/ministryofjustice/cloud-platform-user-docs/master/images/service-monitor-arch.png" target="_blank" rel="noopener noreferrer"><img src="https://raw.githubusercontent.com/ministryofjustice/cloud-platform-user-docs/master/images/service-monitor-arch.png" alt="Image of Service-Monitor Architecture" /></a></p>
+<p>Example:</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">monitoring.coreos.com/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">ServiceMonitor</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">my-app</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">matchLabels</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">my-app</span>
+  <span class="na">endpoints</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">port</span><span class="pi">:</span> <span class="s">metrics</span>
+    <span class="na">interval</span><span class="pi">:</span> <span class="s">15s</span>
+</code></pre></div><p>More detailed information about service-monitors can be found <a href="https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/running-exporters.md">here</a></p>
+<h4 id="networkpolicy-for-monitoring-namespace">NetworkPolicy for Monitoring Namespace</h4><p>By default, all connections from outside a namespace are blocked, therefore a network policy is required for the <code>monitoring</code> namespace to be able to connect into an application namespace to scrape the metrics endpoint.</p>
+<p>Example:</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="na">kind</span><span class="pi">:</span> <span class="s">NetworkPolicy</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">networking.k8s.io/v1</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">allow-prometheus-scraping</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">my-app-namespace</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">podSelector</span><span class="pi">:</span>
+    <span class="na">matchLabels</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">my-app</span>
+  <span class="na">policyTypes</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s">Ingress</span>
+  <span class="na">ingress</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">from</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">namespaceSelector</span><span class="pi">:</span>
+        <span class="na">matchLabels</span><span class="pi">:</span>
+          <span class="na">component</span><span class="pi">:</span> <span class="s">monitoring</span>
+</code></pre></div><p>You can view your current NetworkPolices with the following command:</p>
+<div class="highlight"><pre class="highlight shell"><code>kubectl <span class="nt">-n</span> &lt;namespace&gt; get networkpolicies
+</code></pre></div><h4 id="advisory-note-applications-configured-to-use-multiple-processes">Advisory note: Applications configured to use multiple processes</h4><p>If you&rsquo;re using a pre-forking web server (like unicorn or puma for Ruby, or gunicorn for Python) and have it configured to use multiple processes, then you need to use a Prometheus client library which supports exporting metrics from multiple processes. Not all the official clients do that. If you don&rsquo;t use a library which supports this, then requests to <code>/metrics</code> could be served by any of the processes, which would mean Prometheus sees inconsistent data on each scrape</p>
+
+
+
+<h2 id="application-logging">Application Logging</h2>
+<h3 id="application-log-collection-and-storage">Application Log Collection and Storage</h3><h4 id="application-log-collection-and-storage-overview">Overview</h4><p>The Cloud Platform supports the ability for application logs to be collected, stored, and accessed.</p>
+<p>Logs are collected automatically, via Fluentd, stored in an AWS-Hosted ElasticSearch Cluster, and accessed via AWS-Hosted Kibana dashboard.</p>
+<h4 id="log-collection">Log Collection</h4><p>Fluentd is a cluster-wide log collection service that runs in it&rsquo;s own dedicated environment.</p>
+<p>The Fluentd application is configured with cluster-wide read permissions. The only requirement for Fluentd to start automatically collecting your application&rsquo;s logs is to have your application output logs to <code>stdout</code>.</p>
+<h4 id="log-storage">Log Storage</h4><p>As an application engineer, you won&rsquo;t really need to pay much attention to how the logs are stored, as this is handled by the Cloud Platform team.</p>
+<p>The logs are shipped from Fluentd and stored in an AWS-Hosted ElasticSearch cluster. All application logs are retained for 30 days, before being curated for deletion.</p>
+
+<h3 id="accessing-application-log-data">Accessing Application Log Data</h3><h4 id="accessing-application-log-data-overview">Overview</h4><p>This document is intended to assist engineers in accessing application and system logs stored in a centralized Elasticsearch cluster.</p>
+<h4 id="access-kibana">Access Kibana</h4><p>The Cloud Platform collects, indexes and presents your application and system log data enabling you to query using Kibana’s standard query language (based on Lucene query syntax).</p>
+<p>To access Kibana, follow the appropriate link below and authenticate with your GitHub credentials:</p>
+<h5 id="live-1-cluster">Live-1 Cluster</h5><p><a href="https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana">https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana</a></p>
+<h5 id="live-0-cluster">Live-0 Cluster</h5><p><a href="https://kibana.apps.cloud-platform-live-0.k8s.integration.dsd.io/_plugin/kibana/">https://kibana.apps.cloud-platform-live-0.k8s.integration.dsd.io/plugin/kibana/</a></p>
+<h4 id="using-kibana">Using Kibana</h4><p>As a quick example, we will filter down to the logs of a particular environment.</p>
+<p>1) On the Kibana dashboard, select the &lsquo;Discover&rsquo; tab.</p>
+<p>2) Select &#39;Add a filter +&rsquo;</p>
+<p>3) Filter <code>kubernetes.namespace_name</code>, with operator <code>is</code> and the value equal to your environment name.</p>
+<p>More in-depth guides on using Kibana can be found below:</p>
+<p><a href="https://www.elastic.co/guide/en/kibana/6.3/search.html">https://www.elastic.co/guide/en/kibana/6.3/search.html</a></p>
+<p><a href="https://www.elastic.co/guide/en/beats/packetbeat/current/kibana-queries-filters.html">https://www.elastic.co/guide/en/beats/packetbeat/current/kibana-queries-filters.html</a></p>
+
+
+
 <h2 id="migrating-from-live-0-to-live-1">Migrating from Live-0 to Live-1</h2><h3 id="migrating-from-live-0-to-live-1-overview">Overview</h3><p>After some long consideration of possible options, the decision has been made to migrate from the <code>live-0</code> cluster to the new <code>live-1</code> cluster.</p>
 <p>The reason behind this decision is based on the need to move to a dedicated AWS account, which will be much easier to support, and the need to move away from the Ireland (EU) region to the London (UK) region.</p>
 <p>The purpose of this document is to aid development teams in migrating their existing applications from <code>live-0</code> to <code>live-1</code>.</p>
@@ -2018,10 +2225,10 @@ status:
 <h4 id="outbound-ip-whitelisting">Outbound IP Whitelisting</h4><h5 id="nat-gateways">NAT Gateways</h5><p>Many applications use third-party tools for a variety of reasons, and many of these tools require IP Whitelisting.</p>
 <p>The Cloud Platform uses NAT Gateways as its external IP Endpoints.</p>
 <p>The IP addresses for the clusters are as follows:</p>
-<h6 id="live-0-cluster">Live-0 Cluster</h6><div class="highlight"><pre class="highlight plaintext"><code>52.17.133.167
+<h6 id="nat-gateways-live-0-cluster">Live-0 Cluster</h6><div class="highlight"><pre class="highlight plaintext"><code>52.17.133.167
 34.251.93.81
 34.247.134.240
-</code></pre></div><h6 id="live-1-cluster">Live-1 Cluster</h6><div class="highlight"><pre class="highlight plaintext"><code>35.178.209.113
+</code></pre></div><h6 id="nat-gateways-live-1-cluster">Live-1 Cluster</h6><div class="highlight"><pre class="highlight plaintext"><code>35.178.209.113
 3.8.51.207
 35.177.252.54
 </code></pre></div>
