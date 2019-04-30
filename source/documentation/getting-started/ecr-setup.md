@@ -42,7 +42,7 @@ AWS resources are provisioned through the [cloud-platform-environments](https://
 
 4\. Adapt the definition from the example described in the [cloud-platform-terraform-ecr-credentials module](https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials/tree/master/examples); make sure you adjust the values of `team_name`, `repo_name` `name` and `namespace` to what is appropriate for your environment.
 
-Note: A default ECR lifecycle policy is set, that will only keep the 40 most recent versions of an image. More infomation on the ECR lifecycle policy avalible [here.](archive.html#ecr-lifecycle-policy)
+Note: A default ECR lifecycle policy is set, that will only keep the 40 most recent versions of an image. More infomation on the ECR lifecycle policy avalible [here.](tasks.html#ecr-lifecycle-policy)
 
 5\. git add, commit and push to your branch.
 
@@ -86,4 +86,4 @@ In your CircleCI project, go to the settings (the cog icon) and select 'AWS Perm
 Try [deploying an app][deploy-helm] with [Helm](https://helm.sh/), a Kubernetes package manager, or [deploying manually][deploy-hello-world] by writing some custom YAML files.
 
 [deploy-hello-world]: tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform
-[deploy-helm]: archive.html#deploying-an-application-to-the-cloud-platform-with-helm
+[deploy-helm]: tasks.html#deploying-an-application-to-the-cloud-platform-with-helm

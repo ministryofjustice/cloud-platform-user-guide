@@ -387,5 +387,5 @@ spec:
 ```
 
 [deploy-hello-world]: tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform
-[deploy-helm]: archive.html#deploying-an-application-to-the-cloud-platform-with-helm
+[deploy-helm]: tasks.html#deploying-an-application-to-the-cloud-platform-with-helm
 [ecr-setup]: tasks.html#creating-an-ecr-repository
