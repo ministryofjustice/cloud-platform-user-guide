@@ -10,6 +10,8 @@ After some long consideration of possible options, the decision has been made to
 
 The reason behind this decision is based on the need to move to a dedicated AWS account, which will be much easier to support, and the need to move away from the Ireland (EU) region to the London (UK) region.
 
+> **Currently, there is no fixed deadline by which services must migrate off Live-0.** This guide will be updated as and when this changes.
+
 The purpose of this document is to aid development teams in migrating their existing applications from `live-0` to `live-1`.
 
 The migration steps that need to be taken may differ for individual applications.
