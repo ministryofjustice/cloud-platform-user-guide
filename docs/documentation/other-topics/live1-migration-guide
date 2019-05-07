@@ -1,5 +1,9 @@
 <h2 id="migrating-from-live-0-to-live-1">Migrating from Live-0 to Live-1</h2><h3 id="overview">Overview</h3><p>After some long consideration of possible options, the decision has been made to migrate from the <code>live-0</code> cluster to the new <code>live-1</code> cluster.</p>
 <p>The reason behind this decision is based on the need to move to a dedicated AWS account, which will be much easier to support, and the need to move away from the Ireland (EU) region to the London (UK) region.</p>
+
+<blockquote>
+<p><strong>Currently, there is no fixed deadline by which services must migrate off Live-0.</strong> This guide will be updated as and when this changes.</p>
+</blockquote>
 <p>The purpose of this document is to aid development teams in migrating their existing applications from <code>live-0</code> to <code>live-1</code>.</p>
 <p>The migration steps that need to be taken may differ for individual applications.</p>
 <p>The following steps are for an application that is considered to be fairly normal and deployed through CircleCI.</p>
