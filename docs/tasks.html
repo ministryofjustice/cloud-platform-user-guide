@@ -543,10 +543,10 @@ structure of the repo:</p>
 └── namespaces
     └── live-1.cloud-platform.service.justice.gov.uk
         ├── kube-system
+        ├── user-roles.yaml
 
-        ...
+        └── ... NAMESPACE FOLDERS ...
 
-        └── user-roles.yaml
 </code></pre></div><p><strong>cloud-platform-environments</strong></p>
 <p>This is the root of the repo, containing <code>namespaces</code> directory</p>
 <p><strong>/namespaces</strong></p>
@@ -560,7 +560,7 @@ in the format <code>&lt;servicename-env&gt;</code>, for example <code>myapp-dev<
 <p>The <code>&lt;servicename-env&gt;</code> directory for your environment defines the specific
 resources we will create in your namespace. We describe these resources in more
 detail in <a href="#how-we-set-up-an-environment">how we set up an environment</a>.</p>
-<h4 id="how-we-set-up-an-environment">How we set up an environment</h4><p>To set up an environment we create 5 files in the directory for your namespace:</p>
+<h4 id="how-we-set-up-an-environment">How we set up an environment</h4><p>To set up an environment we create 5 Kubernetes YAML files in the directory for your namespace:</p>
 
 <ul>
 <li><a href="#00-namespace-yaml"><code>00-namespace.yaml</code></a></li>
@@ -574,6 +574,12 @@ place on it so that we have security and resource allocation properties. We
 will use terraform to create these files from templates. We also describe each
 of these files <a href="#00-namespace-yaml">in more detail below</a> in case you want to
 make future changes.</p>
+<p>In addition to the Kubernetes configuration files, we create a terraform config file:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>resources/main.tf
+</code></pre></div><p>This file defines the standard terraform backend and providers which you will
+need when you add terraform modules to create the AWS resources your service
+will use (e.g. an <a href="/tasks.html#creating-an-ecr-repository">ECR</a> for your docker images, <a href="/tasks.html#create-an-rds-instance">RDS
+databases</a>, and S3 buckets).</p>
 <h4 id="create-your-namespace-and-namespace-resources">Create your namespace and namespace resources</h4><p>We automate the creation of the namespace resource files using terraform. You will need to install terraform locally:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>$ brew install terraform
 </code></pre></div><p>In each of the template files you need to replace some example values with
@@ -669,10 +675,6 @@ commands and filling in the values.</p>
 <div class="highlight"><pre class="highlight plaintext"><code>$ cd cloud-platform-environments/namespace-resources/
 $ terraform init
 $ terraform apply
-</code></pre></div><p>Our terraform module creates the files for a new namespace on the live-1
-cluster by default but if you would like to deploy to another cluster you can
-use:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>$ terraform apply -var "cluster=&lt;cluster-name&gt;"
 </code></pre></div><p>Fill in your values in response to the prompts.</p>
 <p>For <code>var.namespace</code>, this is the name of your (team&rsquo;s) &lsquo;private&rsquo; part of the
 cluster. The name of your namespace must be unique across the whole of the
