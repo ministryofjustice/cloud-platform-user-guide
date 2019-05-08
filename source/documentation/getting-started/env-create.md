@@ -51,10 +51,10 @@ cloud-platform-environments
 └── namespaces
     └── live-1.cloud-platform.service.justice.gov.uk
         ├── kube-system
+        ├── user-roles.yaml
 
-        ...
+        └── ... NAMESPACE FOLDERS ...
 
-        └── user-roles.yaml
 ```
 
 **cloud-platform-environments**
@@ -80,7 +80,7 @@ detail in [how we set up an environment](#how-we-set-up-an-environment).
 
 #### How we set up an environment
 
-To set up an environment we create 5 files in the directory for your namespace:
+To set up an environment we create 5 Kubernetes YAML files in the directory for your namespace:
 
 * [`00-namespace.yaml`](#00-namespace-yaml)
 * [`01-rbac.yaml`](#01-rbac-yaml)
@@ -93,6 +93,15 @@ place on it so that we have security and resource allocation properties. We
 will use terraform to create these files from templates. We also describe each
 of these files [in more detail below](#00-namespace-yaml) in case you want to
 make future changes.
+
+In addition to the Kubernetes configuration files, we create a terraform config file:
+
+    resources/main.tf
+
+This file defines the standard terraform backend and providers which you will
+need when you add terraform modules to create the AWS resources your service
+will use (e.g. an [ECR][ecr-setup] for your docker images, [RDS
+databases][create-rds], and S3 buckets).
 
 #### Create your namespace and namespace resources
 
@@ -131,14 +140,6 @@ Run the following commands to create your namespace and these resources files:
 $ cd cloud-platform-environments/namespace-resources/
 $ terraform init
 $ terraform apply
-```
-
-Our terraform module creates the files for a new namespace on the live-1
-cluster by default but if you would like to deploy to another cluster you can
-use:
-
-```Shell
-$ terraform apply -var "cluster=<cluster-name>"
 ```
 
 Fill in your values in response to the prompts.
@@ -389,3 +390,4 @@ spec:
 [deploy-hello-world]: tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform
 [deploy-helm]: tasks.html#deploying-an-application-to-the-cloud-platform-with-helm
 [ecr-setup]: tasks.html#creating-an-ecr-repository
+[create-rds]: tasks.html#create-an-rds-instance
