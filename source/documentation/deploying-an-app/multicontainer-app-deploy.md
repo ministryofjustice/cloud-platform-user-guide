@@ -31,6 +31,12 @@ The [demo application][multi-demo], and this guide, assumes a DATABASE_URL envir
 
 Please ensure that your `rds.tf` file exports a database `url` value in this way (changing `module_name` to match the name you use in your `rds.tf` file).
 
+#### Connecting to your RDS instance from your local machine
+
+This is not required for this tutorial.
+
+If you need to access an RDS instance from your local machine, you can find instructions for doing so [here][rds-access-instructions].
+
 ### Build docker images and pushing to ECR
 
 As before, we need to build docker images which we will push to our [Amazon ECR][ecr].
@@ -93,3 +99,4 @@ It should behave in the same way as when you were running it locally via docker-
 [cp-env]: https://github.com/ministryofjustice/cloud-platform-environments
 [ecr-setup]: tasks.html#creating-an-ecr-repository
 [add-aws-resources]: tasks.html#adding-aws-resources-to-your-environment
+[rds-access-instructions]: https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance#access-outside-the-cluster
