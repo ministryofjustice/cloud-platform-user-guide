@@ -13,6 +13,8 @@ data {
 }
 ...
 </code></pre></div><p>Please ensure that your <code>rds.tf</code> file exports a database <code>url</code> value in this way (changing <code>module_name</code> to match the name you use in your <code>rds.tf</code> file).</p>
+<h4 id="connecting-to-your-rds-instance-from-your-local-machine">Connecting to your RDS instance from your local machine</h4><p>This is not required for this tutorial.</p>
+<p>If you need to access an RDS instance from your local machine, you can find instructions for doing so <a href="https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance#access-outside-the-cluster">here</a>.</p>
 <h3 id="build-docker-images-and-pushing-to-ecr">Build docker images and pushing to ECR</h3><p>As before, we need to build docker images which we will push to our <a href="https://aws.amazon.com/ecr/">Amazon ECR</a>.</p>
 <p>Please carry out the following steps on your own working copy of the <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app">demo application</a>.</p>
 <p>For <code>team_name</code> and <code>repo_name</code> please use the values from your <code>ecr.tf</code> file, when you <a href="tasks.html#creating-an-ecr-repository">created your ECR</a>.</p>
