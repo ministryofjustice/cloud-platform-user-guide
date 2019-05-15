@@ -62,10 +62,10 @@ The environment variables you will need to replace are as follows:
 | `AWS_ACCESS_KEY_ID` | The access key can be found in the secret created by the ECR generation. This requires base64 decoding.   |
 | `AWS_SECRET_ACCESS_KEY` |  The secret key can be found in the secret created by the ECR generation. This requires base64 decoding. |
 | `ECR_ENDPOINT` |    The ECR endpoint for all repos in `live-1` is `754256621582.dkr.ecr.eu-west-2.amazonaws.com`   |
-| `K8S_<ENVIRONMENT>_CLUSTER_CERT` |  The cert is an attribute found in the `default-token` secret and does not need base64 decoding. |
-| `K8S_<ENVIRONMENT>_CLUSTER_NAME` |    The cluster name is `live-1.cloud-platform.service.justice.gov.uk`  |
-| `K8S_<ENVIRONMENT>_NAMESPACE` |  This variable should be equal to the name of your namespace. |
-| `K8S_<ENVIRONMENT>_TOKEN` |    The token is another attribute found in the `default-token` secret and needs base64 decoding.   |
+| `KUBE_<ENVIRONMENT>_CLUSTER_CERT` |  The cert is an attribute found in the `default-token` secret and does not need base64 decoding. |
+| `KUBE_<ENVIRONMENT>_CLUSTER_NAME` |    The cluster name is `live-1.cloud-platform.service.justice.gov.uk`  |
+| `KUBE_<ENVIRONMENT>_NAMESPACE` |  This variable should be equal to the name of your namespace. |
+| `KUBE_<ENVIRONMENT>_TOKEN` |    The token is another attribute found in the `default-token` secret and needs base64 decoding.   |
 
 <div style="height:1px;font-size:1px;">&nbsp;</div>
 
