@@ -52,7 +52,7 @@ This is done by replacing the CircleCI environment variables with the ones gener
 
 Our helper script expects environment variables to be named according to the list below where `<ENVIRONMENT>` should be replaced by some identifier of your choosing (eg.: `STAGING`, `PRODUCTION`).
 
-Please refer to the instructions [here]() 
+Please refer to the instructions [here][ug-deploy-to-kubernetes].
 The environment variables you will need to replace are as follows:
 
 <div style="height:1px;font-size:1px;">&nbsp;</div>
@@ -93,6 +93,7 @@ See [here][non-root-containers] for more information on non-root containers.
 [ug-create-ecr]: tasks.html#creating-an-ecr-repository
 [ug-create-env]: tasks.html#create-an-environment
 [ug-cleaning-up]: tasks.html#cleaning-up
+[ug-deploy-to-kubernetes]: tasks.html#deploy-to-kubernetes
 [set-kubeconfig-env]: https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/#set-the-kubeconfig-environment-variable
 [PodSecurityPolicy]: https://kubernetes.io/docs/concepts/policy/pod-security-policy/
 [rails-app-dockerfile]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/9ad6caf101cc21117742e5ab2cbe5507efd54efd/rails-app/Dockerfile
