@@ -1960,7 +1960,8 @@ data:
 <h3 id="changing-the-circleci-environment-variables">Changing the CircleCI environment variables</h3><p>Now that you have a new empty environment and ECR repository set-up, the next step is to point your existing CircleCI pipeline away from the <code>live-0</code> environment, to your new <code>live-1</code> environment.</p>
 <p>This is done by replacing the CircleCI environment variables with the ones generated for your <code>live-1</code> environment and then rerunning the pipeline.</p>
 <p>Our helper script expects environment variables to be named according to the list below where <code>&lt;ENVIRONMENT&gt;</code> should be replaced by some identifier of your choosing (eg.: <code>STAGING</code>, <code>PRODUCTION</code>).</p>
-<p>The environment variables you will need to replace are as follows:</p>
+<p>Please refer to the instructions <a href="/tasks.html#deploy-to-kubernetes">here</a>.
+The environment variables you will need to replace are as follows:</p>
 
 <div style="height:1px;font-size:1px;">&nbsp;</div>
 <div class="table-container">
@@ -1986,20 +1987,20 @@ data:
 <td style="text-align: left">The ECR endpoint for all repos in <code>live-1</code> is <code>754256621582.dkr.ecr.eu-west-2.amazonaws.com</code></td>
 </tr>
 <tr>
-<td><code>KUBE_&lt;ENVIRONMENT&gt;_CLUSTER_CERT</code></td>
-<td style="text-align: left">The cert is an attribute found in the <code>default-token</code> secret and does not need base64 decoding.</td>
-</tr>
-<tr>
-<td><code>KUBE_&lt;ENVIRONMENT&gt;_CLUSTER_NAME</code></td>
+<td><code>KUBE_ENV_&lt;ENVIRONMENT&gt;_NAME</code></td>
 <td style="text-align: left">The cluster name is <code>live-1.cloud-platform.service.justice.gov.uk</code></td>
 </tr>
 <tr>
-<td><code>KUBE_&lt;ENVIRONMENT&gt;_NAMESPACE</code></td>
+<td><code>KUBE_ENV_&lt;ENVIRONMENT&gt;_NAMESPACE</code></td>
 <td style="text-align: left">This variable should be equal to the name of your namespace.</td>
 </tr>
 <tr>
-<td><code>KUBE_&lt;ENVIRONMENT&gt;_TOKEN</code></td>
-<td style="text-align: left">The token is another attribute found in the <code>default-token</code> secret and needs base64 decoding.</td>
+<td><code>KUBE_ENV_&lt;ENVIRONMENT&gt;_TOKEN</code></td>
+<td style="text-align: left">The token can be found in your ServiceAccount&rsquo;s <code>Secret</code> (eg.: <code>circleci-token-abcdef</code>) and needs base64 decoding.</td>
+</tr>
+<tr>
+<td><code>KUBE_ENV_&lt;ENVIRONMENT&gt;_CACERT</code></td>
+<td style="text-align: left">The cert is an attribute found in the ServiceAccount&rsquo;s <code>Secret</code> and does not need base64 decoding.</td>
 </tr>
 
         </table>
