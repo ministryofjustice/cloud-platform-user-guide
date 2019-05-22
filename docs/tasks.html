@@ -1448,7 +1448,7 @@ django-app-&lt;Name&gt;-postgresql-7b4bdff4b8-xdlw2   1/1       Running   0     
                           <span class="no">--tiller-namespace=${NON_PROD_NS} \</span>
                           <span class="no">--namespace=${NON_PROD_NS} \</span>
                           <span class="no">--set image.repository="${ECR_ENDPOINT}/${GITHUB_TEAM_NAME_SLUG}/${CIRCLE_PROJECT_REPONAME}" \</span>
-                          <span class="no">--set image.tag="latest" \</span>
+                          <span class="no">--set image.tag="${CIRCLE_SHA1}" \</span>
                           <span class="no">--set deploy.host="${APPLICATION_HOST_URL}" \</span>
                           <span class="no">--set replicaCount="4" \</span>
                           <span class="no">--debug</span>
