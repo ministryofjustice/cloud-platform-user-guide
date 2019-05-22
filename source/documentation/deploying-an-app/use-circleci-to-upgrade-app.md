@@ -113,7 +113,7 @@ deploy_development:
                           --tiller-namespace=${NON_PROD_NS} \
                           --namespace=${NON_PROD_NS} \
                           --set image.repository="${ECR_ENDPOINT}/${GITHUB_TEAM_NAME_SLUG}/${CIRCLE_PROJECT_REPONAME}" \
-                          --set image.tag="latest" \
+                          --set image.tag="${CIRCLE_SHA1}" \
                           --set deploy.host="${APPLICATION_HOST_URL}" \
                           --set replicaCount="4" \
                           --debug
