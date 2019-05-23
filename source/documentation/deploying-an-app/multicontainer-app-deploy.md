@@ -102,8 +102,8 @@ After you deployed and Interacting with multi-container application and would li
       ```
       kubectl apply --filename prometheus-app-alert.yaml --namespace [your namespace]
       ```
-
-* **Cronjobs** - Follow the [guide] [cron-jobs] on creating a Cronjob, make corresponding changes to [cronjob-ecr.yaml][cronjob-yaml] file and apply the Cronjob to your namespace in the kubernetes cluster, this runs a job periodically on a given schedule to delete untagged images in the ecr-repo, this will help to limit the count of Images in the ecr-repo.
+      
+* **Cronjobs** - Follow the [guide][cron-jobs] on creating a Cronjob, make corresponding changes to [cronjob-ecr.yaml][cronjob-yaml] file and apply the Cronjob to your namespace in the kubernetes cluster, this runs a job periodically on a given schedule to delete untagged images in the ecr-repo, this will help to limit the count of Images in the ecr-repo.
 
       ```
       kubectl apply --filename cronjob-ecr.yaml --namespace [your namespace]
