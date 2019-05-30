@@ -122,7 +122,7 @@ After you deployed and Interacting with multi-container application and would li
 [ecr-setup]: tasks.html#creating-an-ecr-repository
 [add-aws-resources]: tasks.html#adding-aws-resources-to-your-environment
 [rds-access-instructions]: https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance#access-outside-the-cluster
-[creating-dashboards]: https://user-guide.cloud-platform.service.justice.gov.uk/
+[creating-dashboards]: tasks.html#creating-dashboards
 [dashboard-configmap]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/tree/grafana-dashboard-v1.0/k8s_additional_resources
 [custom-alert]: https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#creating-your-own-custom-alerts
 [alert-prometheusrule]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/tree/custom-alerts-v1.0/k8s_additional_resources
