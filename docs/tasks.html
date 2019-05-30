@@ -262,6 +262,9 @@
           <li>
             <a href="/tasks.html#deploying-a-multi-container-application-to-the-cloud-platform-interacting-with-the-application">Interacting with the application</a>
           </li>
+          <li>
+            <a href="/tasks.html#further-development">Further Development</a>
+          </li>
         </ul>
       </li>
       <li>
@@ -1194,6 +1197,19 @@ docker push 754256621582.dkr.ecr.eu-west-2.amazonaws.com/[team_name]/[repo_name]
 </code></pre></div><h3 id="deploying-a-multi-container-application-to-the-cloud-platform-interacting-with-the-application">Interacting with the application</h3><p>You should be able to view the application in your browser at:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>  https://multi-container-demo.apps.live-1.cloud-platform.service.justice.gov.uk/
 </code></pre></div><p>It should behave in the same way as when you were running it locally via docker-compose.</p>
+<h3 id="further-development">Further Development</h3><p>After you deployed and Interacting with multi-container application and would like to create Monitoring dashboard , Custom Alerts and Cronjobs for your application use this working examples:</p>
+
+<ul>
+<li><p><strong>Grafana dashboard</strong> - Follow the <a href="/tasks.html#creating-dashboards">guide</a> on how to create a Graphana dashboard, make corresponding changes to <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/tree/grafana-dashboard-v1.0/k8s_additional_resources">monitoring-grafana-dashboard.yaml</a> file and apply the configmap to your namespace in the kubernetes cluster, which will show your Grafana-Dashboard <a href="https://grafana.cloud-platform.service.justice.gov.uk">here</a>.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  kubectl apply --filename monitoring-grafana-dashboard.yaml --namespace [your namespace]
+</code></pre></div></li>
+<li><p><strong>Custom Alerts</strong> - Follow the <a href="https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#creating-your-own-custom-alerts">guide</a> on how to create Custom Alerts, make corresponding changes to <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/tree/custom-alerts-v1.0/k8s_additional_resources">prometheus-app-alert.yaml</a> file and apply the PrometheusRule to your namespace in the kubernetes cluster, this will create custom alerts for your application.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  kubectl apply --filename prometheus-app-alert.yaml --namespace [your namespace]
+</code></pre></div></li>
+<li><p><strong>Cronjobs</strong> - Follow the <a href="https://kubernetes.io/docs/tasks/job/automated-tasks-with-cron-jobs/#creating-a-cron-job">guide</a> on creating a Cronjob, make corresponding changes to <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/tree/cronjob-example-v1.0/k8s_additional_resources">cronjob-ecr.yaml</a> file and apply the Cronjob to your namespace in the kubernetes cluster, this runs a job periodically on a given schedule to delete untagged images in the ecr-repo, this will help to limit the count of Images in the ecr-repo.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  kubectl apply --filename cronjob-ecr.yaml --namespace [your namespace]
+</code></pre></div></li>
+</ul>
 
 
 <h2 id="deploying-with-helm-and-circleci">Deploying with Helm and CircleCI</h2>
