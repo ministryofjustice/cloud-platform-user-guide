@@ -15,17 +15,11 @@ It is assumed you have the following:
  - You have configured [Helm and Tiller][using-helm]. 
 
 ##### Set up
-First we need to clone our reference application and change directory:
-
-    $ git clone https://github.com/ministryofjustice/cloud-platform-reference-app.git
-    $ cd cloud-platform-reference-app/helm_deploy/django-app/charts/postgresql
-
-You now have a [Bitnami PostgreSQL][postgresql-chart] Helm Chart, default values for postgresql are stored in the `values.yaml`, if you need to create your own values for postgresqlUsername,postgresqlPassword and postgresqlDatabase you can provide those as an argument on our installation command, the `set postgresql values` overwrites the value stored in `value.yaml` file.
+First copy [values.yaml][postgresql-values] file in to your working directory. You now have a [Bitnami PostgreSQL][postgresql-chart] Helm Chart "values.yaml" file. If you need to create your own values for postgresqlUsername,postgresqlPassword and postgresqlDatabase you can update the `values.yaml` or provide those as an argument on our installation command, the `set postgresql values` overwrites the value stored in `value.yaml` file.
 
 Run the following (replacing the `YourName` with your own name and `env-name` with your environment name:
 
-        $ helm install . \
-          --name postgres-<YourName> \
+        $ helm install --name <YourName> -f values.yaml stable/postgresql \
           --namespace <env-name> \
           --set postgresqlUsername=postgres,postgresqlPassword=secretpassword,postgresqlDatabase=my-database \
           --tiller-namespace <env-name>
@@ -77,3 +71,4 @@ Congratulations on getting this far. If all went well your postgresql pod is now
 [django-app]: tasks.html#deploying-an-application-to-the-cloud-platform-with-helm
 [using-helm]: tasks.html#using-helm
 [postgresql-chart]: https://github.com/helm/charts/tree/master/stable/postgresql
+[postgresql-values]: https://github.com/ministryofjustice/cloud-platform-reference-app/blob/master/helm_deploy/django-app/charts/postgresql/values.yaml
