@@ -74,6 +74,6 @@ Congratulations on getting this far. If all went well your postgresql pod is now
 
 [env-create]: tasks.html#creating-a-cloud-platform-environment
 [auth-to-cluster]: tasks.html#authentication
-[django-app]: https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#deploying-an-application-to-the-cloud-platform-with-helm
-[using-helm]: https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#using-helm
+[django-app]: tasks.html#deploying-an-application-to-the-cloud-platform-with-helm
+[using-helm]: tasks.html#using-helm
 [postgresql-chart]: https://github.com/helm/charts/tree/master/stable/postgresql
