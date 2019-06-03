@@ -107,7 +107,7 @@ Please refer to [this](https://github.com/ministryofjustice/cloud-platform-terra
  [https://github.com/ministryofjustice/cloud-platform-terraform-dms](https://github.com/ministryofjustice/cloud-platform-terraform-dms)
 
 
- Please also note that at this is a sensitive step, please consult with the Cloud Platform beforehand.
+ Please also note that as this is a sensitive step, please consult with the Cloud Platform beforehand.
 
 #### Step 4 - Post-Data
 
