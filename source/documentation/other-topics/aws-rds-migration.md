@@ -1,27 +1,39 @@
-### Migrating an RDS instance with AWS DMS
+### Migrating an RDS instance
+
+This guide covers different ways of migrating RDS instances from one AWS account to another:
+ - AWS Database Migration Service (DMS) 
+ - Pure `pg_dump` & `psql` 
+
+**The only difference between the processes is at Step 3**
 
 This guide assumes the migration comply with the following :
- - The migration happens from a _source_ RDS to a _target_ RDS
- - The _source_ RDS is running postgresql 9.4.9 or above
- - Elevated sets of postgres credentials are available for both _source_ and _target_
+ - The migration happens from a _source_ postresql RDS instance to a _target_ postresql RDS instance
+ - [DMS only] The _source_ RDS is running postgresql 9.4.9 or above
+ - Elevated & short-lived sets of postgres credentials are available for both _source_ and _target_
+
 
 
 
 #### Overview 
 
-AWS Database Migration Service (DMS) is useful to migrate pure data from a database to another, and keep them unidirectionally in sync. 
+##### Postgres utilities 
 
-The DMS stack is composed of a few components: 
- - A replication task : the process migrating data, complying with its configuration.
- - A replication instance : Where the replication task actually runs from.
- - A _source_ endpoint :  the object containing _source_'s credentials and host information
- - A _target_ endpoint :  the object containing _target_'s credentials and host information
- - A subnet group : it incapsulate everything.
+It is possible to do a full database migration using only official CLI tools, provided by Postgres. 
+Using `pg_dump` and `psql`, this documents describes the migration process. 
 
+**Using this tooling imply having a _source_ database downtime**. (As you don't want data being written to it while migrating it.)
 
- As mentioned aboved, DMS can only migrate data.  
-  In other words, in the context of a full database migration, we  need to rely on other tools for the remaining bits. Therefore, `pg_dump`, `pg_restore` and `psql` will be used to migrate the table structure, the sequences and the contraints, foreign keys and indexes.  
- The steps including those tools will always be the same; on one side we export from source, on the other we restore them.
+The steps including those tools will always be the same; on one side we export from source, on the other we restore.
+
+##### DMS 
+
+AWS Database Migration Service (DMS) is useful to migrate pure data from a database to another, and *keep them unidirectionally in sync*.
+
+DMS can only migrate data, but it ensures that any changes on _source_ will be replicated to _target_
+Note: any change to _target_ will not be replicated to _source_.
+
+In other words, even if DMS is used to migrate the data, the postgres utilities are still needed to migrate the meta-data.
+
 
 #### Step 0 - Pod
 
@@ -36,7 +48,7 @@ Regarding the network access:
   
 
 
-#### Step 1 - pre-data migration
+#### Step 1 - Pre-Data 
 
 
 First, to export,  we run : 
@@ -67,7 +79,7 @@ If using a local file is problematic, those two commands can be piped together (
 
 
 
-#### Step 2 - sequences migration
+#### Step 2 - Sequences
 
 Sequences are essential for your database to know what the latest increment of the primary keys is. Sequences are hold in special tables that will not be migrated from step 1.
 
@@ -98,7 +110,9 @@ If using a local file is problematic, those two commands can be piped together (
 
 
 
-#### Step 3 - DMS 
+#### Step 3 [ DMS ONLY ]  
+
+This step has to be done with the assistance of the Cloud Platform.
 
 The DMS stack is build using a terraform module. 
 
@@ -107,7 +121,42 @@ Please refer to [this](https://github.com/ministryofjustice/cloud-platform-terra
  [https://github.com/ministryofjustice/cloud-platform-terraform-dms](https://github.com/ministryofjustice/cloud-platform-terraform-dms)
 
 
- Please also note that as this is a sensitive step, please consult with the Cloud Platform beforehand.
+**IF YOU HAVE FOLLOWED THAT STEP, GO STRAIGHT TO STEP 4**
+
+#### Step 3 [ PURE PG_DUMP ]
+
+**IF YOU HAVE FOLLOWED THE DMS STEP ABOVE (DMS), SKIP THIS ONE.**
+
+
+Sequences are essential for your database to know what the latest increment of the primary keys is. Sequences are hold in special tables that will not be migrated from step 1.
+
+
+First, to export,  we run : 
+
+``` 
+pg_dump -U source_username \
+     -h source_endpoint \
+     -d source_database \
+     -O \
+     --section=data > data.sql
+``` 
+
+Here, `-O` tells RDS to export the table structure without owners.
+The command above stores the data in a local file.
+
+
+Then to restore this into the _target_, we use `psql`:
+
+```
+psql -U target_username \
+     -h target_endpoint \
+     -d target_database \
+     -f data.sql
+
+```
+
+If using a local file is problematic, those two commands can be piped together (`|`)
+
 
 #### Step 4 - Post-Data
 
@@ -134,7 +183,6 @@ psql -U target_username \
      -h target_endpoint \
      -d target_database \
      -f post-data.sql
-
 ```
 
 If using a local file is problematic, those two commands can be piped together (`|`)
@@ -148,3 +196,12 @@ After a migration, **it is your team's responsibility** to ensure the data, its 
 Even though the process above is handling the data and the meta-data migration, it is essentials for you to have a Data-Validation Strategy to confirm everything is in order.
 
 The Cloud Platform team can't provide a how-to guide on data validation, as each database migrations are wildly different.
+
+
+#### Step 6 - Clean up 
+
+After a successful migration, we can clean up by : 
+ - Deleting the pod from STEP 1 
+ - Disabling the network access from the live-1 cluster to the _source_ RDS
+ - Remove the DMS stack (if applicable)
+ - Revoke the temporary credentials created for the migration
