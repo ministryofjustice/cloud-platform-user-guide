@@ -53,7 +53,7 @@ Here, `-O` tells RDS to export the table structure without owners.
 The command above stores the data in a local file.
 
 
-Then to restore thi into the _target_, we use `psql`:
+Then to restore this into the _target_, we use `psql`:
 
 ```
 psql -U target_username \
@@ -84,7 +84,7 @@ pg_dump -U source_username \
 Here, `-t '*_seq'` indicates to `pg_dump` that we only want to export the table ending in `_seq`, which are the sequences.
 
 
-Then to restore thi into the _target_, we use `psql`:
+Then to restore this into the _target_, we use `psql`:
 
 ```
 psql -U target_username \
@@ -127,7 +127,7 @@ pg_dump -U source_username \
 ``` 
 
 
-Then to restore thi into the _target_, we use `psql`:
+Then to restore this into the _target_, we use `psql`:
 
 ```
 psql -U target_username \
