@@ -419,9 +419,6 @@
             <a href="/tasks.html#ip-whitelisting">IP Whitelisting</a>
           </li>
           <li>
-            <a href="/tasks.html#ecr-lifecycle-policy">ECR Lifecycle Policy</a>
-          </li>
-          <li>
             <a href="/tasks.html#setup-postgres-container">Setup Postgres container</a>
           </li>
           <li>
@@ -892,7 +889,6 @@ spec:
   <span class="nv">$ </span>vi ecr.tf  <span class="c">###create a terraform file.</span>
 
 </code></pre></div><p>4. Adapt the definition from the example described in the <a href="https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials/tree/master/examples">cloud-platform-terraform-ecr-credentials module</a>; make sure you adjust the values of <code>team_name</code>, <code>repo_name</code> <code>name</code> and <code>namespace</code> to what is appropriate for your environment.</p>
-<p>Note: A default ECR lifecycle policy is set, that will only keep the 100 most recent versions of an image. More infomation on the ECR lifecycle policy avalible <a href="/tasks.html#ecr-lifecycle-policy">here.</a></p>
 <p>5. git add, commit and push to your branch.</p>
 <div class="highlight"><pre class="highlight shell"><code>
   <span class="nv">$ </span>git add ecr.tf
@@ -2263,10 +2259,6 @@ status:
 3.8.51.207
 35.177.252.54
 </code></pre></div>
-<p><h3 id="ecr-lifecycle-policy">ECR Lifecycle Policy</h3><h4 id="ecr-lifecycle-policy-overview">Overview</h4><p>ECR repositories created for use in the Cloud Platform will have a default lifecycle policy applied.</p>
-<p>Due to some applications having a constant rate of images being pushed to their ECR repo, we found that the AWS limit of 1000 images was being hit by some teams.</p>
-<p>After consulting with application teams, we decided to implement a lifecycle policy of <em>100 images</em> per ECR repo.</p>
-<p>If you feel that you have a need to archive more than the last 100 images, please contact the Cloud Platform team, who can adjust or remove the lifecycle policy.</p></p>
 <p><h3 id="setup-postgres-container">Setup Postgres container</h3><p>If you need to quickly create DB for test/dev, you can set up a pod in your namespace running postgres in a container. Deploying <a href="https://github.com/helm/charts/tree/master/stable/postgresql">Bitnami PostgreSQL</a> as Helm Chart is the easiest way to get started with PostgreSQL on Kubernetes. This chart bootstraps a PostgreSQL deployment on a Kubernetes cluster using the Helm package manager.</p>
 <p>The <a href="/tasks.html#deploying-an-application-to-the-cloud-platform-with-helm">django-reference-application</a> uses Bitnami PostgreSQL Helm Chart to add a postgres instance, you can use the same Chart to setup postgres in your namespace.</p></p>
 
