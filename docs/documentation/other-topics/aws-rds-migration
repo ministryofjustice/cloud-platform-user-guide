@@ -1,0 +1,106 @@
+<h3 id="migrating-an-rds-instance">Migrating an RDS instance</h3><p>This guide covers different ways of migrating RDS instances from one AWS account to another:</p>
+
+<ul>
+<li>AWS Database Migration Service (DMS)<br></li>
+<li>Pure <code>pg_dump</code> &amp; <code>psql</code><br></li>
+</ul>
+<p><strong>The only difference between the processes is at Step 3</strong></p>
+<p>This guide assumes the migration comply with the following :</p>
+
+<ul>
+<li>The migration happens from a <em>source</em> postresql RDS instance to a <em>target</em> postresql RDS instance</li>
+<li>[DMS only] The <em>source</em> RDS is running postgresql 9.4.9 or above</li>
+<li>Elevated &amp; short-lived sets of postgres credentials are available for both <em>source</em> and <em>target</em></li>
+</ul>
+<h4 id="overview">Overview</h4><h5 id="postgres-utilities">Postgres utilities</h5><p>It is possible to do a full database migration using only official CLI tools, provided by Postgres. 
+Using <code>pg_dump</code> and <code>psql</code>, this documents describes the migration process.</p>
+<p><strong>Using this tooling implies having a <em>source</em> database downtime</strong>. (As you don&rsquo;t want data being written to it while migrating it.)</p>
+<p>The steps including those tools will always be the same; on one side we export from source, on the target side we restore.</p>
+<h5 id="dms">DMS</h5><p>AWS Database Migration Service (DMS) is useful to migrate data from a database to another, and <em>keep them unidirectionally in sync</em>.</p>
+<p>In  other words, DMS can only migrate data, but it ensures that any changes on <em>source</em> will be replicated to <em>target</em>
+Note: any change to <em>target</em> will not be replicated to <em>source</em>.</p>
+<p>Even if DMS is used to migrate the data, the postgres utilities are still needed to migrate the meta-data. (FK, sequences, etc.).</p>
+<h4 id="step-0-pod">Step 0 - Pod</h4><p>In order to run postgresql commands against both of those endpoints, there needs to be a place that has access to both.</p>
+<p>This is solved by running a pod into the kubernetes cluster, on live-1, into the team&rsquo;s namespace. 
+The migration steps outlined below have been tested from a pod running a <code>bitnami/postgresql</code> Docker image.</p>
+<p>Regarding the network access: 
+ - The <em>source</em> RDS needs to have its <code>public accessibility</code> config turned on.
+ - The RDS security group needs to be opened to the Cluster. For that, add inbound rules from the NAT gateways&rsquo; IP address on the 5432 port.</p>
+<h4 id="step-1-pre-data">Step 1 - Pre-Data</h4><p>First, to export,  we run :</p>
+<div class="highlight"><pre class="highlight plaintext"><code>pg_dump -U source_username \
+     -h source_endpoint \
+     -d source_database \
+     -O \
+     --section=pre-data &gt; pre-data.sql
+</code></pre></div><p>Here, <code>-O</code> tells RDS to export the table structure without owners.
+The command above stores the data in a local file.</p>
+<p>Then to restore this into the <em>target</em>, we use <code>psql</code>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>psql -U target_username \
+     -h target_endpoint \
+     -d target_database \
+     -f pre-data.sql
+
+</code></pre></div><p>If using a local file is problematic, those two commands can be piped together (<code>|</code>)</p>
+<h4 id="step-2-sequences">Step 2 - Sequences</h4><p>Sequences are essential for your database to know what the latest increment of the primary keys is. Sequences are held in special tables that will not be migrated from step 1.</p>
+<p>First, to export,  we run :</p>
+<div class="highlight"><pre class="highlight plaintext"><code>pg_dump -U source_username \
+     -h source_endpoint \
+     -d source_database \
+     -t '*_seq' &gt; sequences.sql
+</code></pre></div><p>Here, <code>-t &#39;*_seq&#39;</code> indicates to <code>pg_dump</code> that we only want to export the table ending in <code>_seq</code>, which are the sequences.</p>
+<p>Then to restore this into the <em>target</em>, we use <code>psql</code>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>psql -U target_username \
+     -h target_endpoint \
+     -d target_database \
+     -f sequences.sql
+
+</code></pre></div><p>If using a local file is problematic, those two commands can be piped together (<code>|</code>)</p>
+<h4 id="step-3-dms-only">Step 3 [ DMS ONLY ]</h4><p>This step has to be done with the assistance of the Cloud Platform.</p>
+<p>The DMS stack is build using a terraform module.</p>
+<p>Please refer to <a href="https://github.com/ministryofjustice/cloud-platform-terraform-dms">this</a>
+ repository to see the DMS module instructions:<br>
+ <a href="https://github.com/ministryofjustice/cloud-platform-terraform-dms">https://github.com/ministryofjustice/cloud-platform-terraform-dms</a></p>
+<p>IF YOU HAVE FOLLOWED THAT STEP, GO STRAIGHT TO STEP 4</p>
+<h4 id="step-3-pure-pg-dump">Step 3 [ PURE PG_DUMP ]</h4><p>IF YOU HAVE FOLLOWED THE DMS STEP ABOVE (DMS), SKIP THIS ONE.</p>
+<p>Sequences are essential for your database to know what the latest increment of the primary keys is. Sequences are held in special tables that will not be migrated from step 1.</p>
+<p>First, to export,  we run :</p>
+<div class="highlight"><pre class="highlight plaintext"><code>pg_dump -U source_username \
+     -h source_endpoint \
+     -d source_database \
+     -O \
+     --section=data &gt; data.sql
+</code></pre></div><p>Here, <code>-O</code> tells RDS to export the table structure without owners.
+The command above stores the data in a local file.</p>
+<p>Then to restore this into the <em>target</em>, we use <code>psql</code>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>psql -U target_username \
+     -h target_endpoint \
+     -d target_database \
+     -f data.sql
+
+</code></pre></div><p>If using a local file is problematic, those two commands can be piped together (<code>|</code>)</p>
+<h4 id="step-4-post-data">Step 4 - Post-Data</h4><p>Any constraints, indexes and foreign keys are also a special kind of metadata that would not be migrated during any of the steps above. 
+All of data is contained within the <code>post-data</code> section.</p>
+<p>The process is almost identical as Step 1 :</p>
+<p>First, to export,  we run :</p>
+<div class="highlight"><pre class="highlight plaintext"><code>pg_dump -U source_username \
+     -h source_endpoint \
+     -d source_database \
+     -O \
+     --section=post-data &gt; post-data.sql
+</code></pre></div><p>Then to restore this into the <em>target</em>, we use <code>psql</code>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>psql -U target_username \
+     -h target_endpoint \
+     -d target_database \
+     -f post-data.sql
+</code></pre></div><p>If using a local file is problematic, those two commands can be piped together (<code>|</code>)</p>
+<h4 id="step-5-data-validation-very-important">Step 5 - Data Validation (Very Important)</h4><p>After a migration, <strong>it is your team&rsquo;s responsibility</strong> to ensure the data, its integrity and anything required by your application to operate properly have been preserved.</p>
+<p>Even though the process above is handling the data and the meta-data migration, it is essential for you to have a <em>data validation strategy</em> to confirm everything is in order.</p>
+<p>The Cloud Platform team can&rsquo;t provide a how-to guide on data validation, as each database migrations are wildly different.</p>
+<h4 id="step-6-clean-up">Step 6 - Clean up</h4><p>After a successful migration, we can clean up by :</p>
+
+<ul>
+<li>Deleting the pod from STEP 1 </li>
+<li>Disabling the network access from the live-1 cluster to the <em>source</em> RDS</li>
+<li>Remove the DMS stack (if applicable)</li>
+<li>Revoke the temporary credentials created for the migration</li>
+</ul>
