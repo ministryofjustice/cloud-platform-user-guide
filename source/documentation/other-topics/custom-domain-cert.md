@@ -103,13 +103,10 @@ namespace where the certificate and key material will be stored
 
    It generally takes but a few minutes for the certificate to be prepared and
    the events displayed should indicate if there is a problem or it simply needs
-   more time.
+   more time. If you cannot obtain a certificate, please get in touch with us in
+   `#ask-cloud-platform`.
 
 3. You will need to update your `Ingress` spec to include the new hostname.
-
-   If this does not happen, please get in touch with us in #ask-cloud-platform. Depending on your setup, we might need to
-   intervene manually to allow `external-dns` to assume ownership of the DNS record.
-
 
    ```
      apiVersion: extensions/v1beta1
