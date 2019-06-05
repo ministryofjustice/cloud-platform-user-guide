@@ -40,6 +40,14 @@ For any other domains (including any subdomain of `gov.uk`, eg.: `https://myserv
 you will need to contact the parent zone's administrators to set this up. If in
 doubt, don't hesitate to get in touch with us in `#ask-cloud-platform`.
 
+Please note, once you setup the NS records, you'll be delegating control of the
+zone to the Cloud Platform. Hostnames used by your services (using `Ingresses`)
+will be automatically managed by the cluster.
+
+If you wish to create custom records in your zone you can do so by defining them
+in the [environments repository][env-repo] using the terraform
+[`aws_route53_record`][tf-route53-record] resource.
+
 ##### Obtaining a certificate
 
 1. Create the `Certificate` resource, filling in any placeholders with your
@@ -99,8 +107,6 @@ namespace where the certificate and key material will be stored
 
 3. You will need to update your `Ingress` spec to include the new hostname.
 
-   **Once your host is defined here, the cluster will take control of the DNS record and automatically adjust to point to the cluster.**
-
    If this does not happen, please get in touch with us in #ask-cloud-platform. Depending on your setup, we might need to
    intervene manually to allow `external-dns` to assume ownership of the DNS record.
 
@@ -135,8 +141,10 @@ namespace where the certificate and key material will be stored
    +           servicePort: 80
    ```
 
+[env-repo]: https://github.com/ministryofjustice/cloud-platform-environments/
 [naming-domains]: https://ministryofjustice.github.io/technical-guidance/standards/naming-domains/#naming-domains
 [creating-zone]: tasks.html#creating-a-route-53-hosted-zone
 [support-ticket]: http://goo.gl/msfGiS
 [wiki-domain-structure]: https://en.wikipedia.org/wiki/Domain_Name_System#Structure
 [wiki-nameservers]: https://en.wikipedia.org/wiki/Name_server#Authoritative_name_server
+[tf-route53-record]: https://www.terraform.io/docs/providers/aws/r/route53_record.html
