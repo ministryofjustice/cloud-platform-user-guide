@@ -64,6 +64,30 @@ namespace where the certificate and key material will be stored
    $ kubectl describe certificate <my-cert>
    ```
 
+   The certificate status of type `"Ready"` should be `True`:
+
+   ```
+   Status:
+     Conditions:
+       Last Transition Time:  2019-06-05T10:16:43Z
+       Message:               Certificate is up to date and has not expired
+       Reason:                Ready
+       Status:                True
+       Type:                  Ready
+     Not After:               2019-09-03T09:16:42Z
+   Events:
+     Type    Reason         Age   From          Message
+     ----    ------         ----  ----          -------
+     Normal  Generated      3m    cert-manager  Generated new private key
+     Normal  OrderCreated   3m    cert-manager  Created Order resource "<my-cert>-3189350212"
+     Normal  OrderComplete  1m    cert-manager  Order "<my-cert>-3189350212" completed successfully
+     Normal  CertIssued     1m    cert-manager  Certificate issued successfully
+   ```
+
+   It generally takes but a few minutes for the certificate to be prepared and
+   the events displayed should indicate if there is a problem or it simply needs
+   more time.
+
 3. You will need to update your `Ingress` spec to include the new hostname.
 
    **Once your host is defined here, the cluster will take control of the DNS record and automatically adjust to point to the cluster.**
