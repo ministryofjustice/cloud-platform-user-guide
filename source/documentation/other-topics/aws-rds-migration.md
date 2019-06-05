@@ -101,7 +101,7 @@ If using a local file is problematic, those two commands can be piped together (
 
 #### Step 2 - Sequences
 
-Sequences are essential for your database to know what the latest increment of the primary keys is. Sequences are hold in special tables that will not be migrated from step 1.
+Sequences are essential for your database to know what the latest increment of the primary keys is. Sequences are held in special tables that will not be migrated from step 1.
 
 
 First, to export,  we run : 
