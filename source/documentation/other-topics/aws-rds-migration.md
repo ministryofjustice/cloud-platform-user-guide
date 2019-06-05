@@ -23,6 +23,9 @@ This guide assumes the migration comply with the following :
 It is possible to do a full database migration using only official CLI tools, provided by Postgres. 
 Using `pg_dump` and `psql`, this documents describes the migration process. 
 
+[pg_dump](https://www.postgresql.org/docs/9.4/app-pgdump.html)
+
+
 **Using this tooling implies having a _source_ database downtime**. (As you don't want data being written to it while migrating it.)
 
 The steps including those tools will always be the same; on one side we export from source, on the target side we restore.
@@ -36,6 +39,20 @@ Note: any change to _target_ will not be replicated to _source_.
 
 Even if DMS is used to migrate the data, the postgres utilities are still needed to migrate the meta-data. (FK, sequences, etc.).
 
+##### Pre-Data, Data, Post-Data
+
+`pg_dump` can be used to export one big archive that can then be restored with `pg_restore`.
+One issue with that approach is the difficulty of troubleshooting migration issues. 
+
+Since we are trying to make this process as clear as possible, the following guide is decomposing `pg_dump` into its three components :
+
+ - Pre-data : The table structures, functions.
+ - Post-data: indexes, triggers, rules, and constraints
+ - Data : data
+
+
+With that deconstructed process, it is easier to debug issues (and get help from the Cloud Platform team) and most importantly your team can perform validation/testing incrementally.
+
 
 #### Step 0 - Pod
 
@@ -45,8 +62,10 @@ This is solved by running a pod into the kubernetes cluster, on live-1, into the
 The migration steps outlined below have been tested from a pod running a `bitnami/postgresql` Docker image.
 
 Regarding the network access: 
+
  - The _source_ RDS needs to have its `public accessibility` config turned on.
  - The RDS security group needs to be opened to the Cluster. For that, add inbound rules from the NAT gateways' IP address on the 5432 port.   
+ - The RDS instance needs to support SSL connections
 
 
 #### Step 1 - Pre-Data 
@@ -82,7 +101,7 @@ If using a local file is problematic, those two commands can be piped together (
 
 #### Step 2 - Sequences
 
-Sequences are essential for your database to know what the latest increment of the primary keys is. Sequences are held in special tables that will not be migrated from step 1.
+Sequences are essential for your database to know what the latest increment of the primary keys is. Sequences are hold in special tables that will not be migrated from step 1.
 
 
 First, to export,  we run : 
