@@ -141,6 +141,14 @@ namespace where the certificate and key material will be stored
    +           servicePort: 80
    ```
 
+Once you've made the changes to your `Ingress`, the cluster (and more
+specifically, `external-dns`) will update the necessary records defined in it.
+This usually takes less than a minute before you are able to access your
+endpoint. However, depending on the DNS name servers your workstation uses, you
+might need to wait longer or try to "flush" your local DNS cache in order to
+speed up the process. You should search online for the proper method to do so,
+based on your operating system and/or browser.
+
 [env-repo]: https://github.com/ministryofjustice/cloud-platform-environments/
 [naming-domains]: https://ministryofjustice.github.io/technical-guidance/standards/naming-domains/#naming-domains
 [creating-zone]: tasks.html#creating-a-route-53-hosted-zone
