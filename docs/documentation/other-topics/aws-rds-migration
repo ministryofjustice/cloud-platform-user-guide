@@ -14,18 +14,33 @@
 </ul>
 <h4 id="overview">Overview</h4><h5 id="postgres-utilities">Postgres utilities</h5><p>It is possible to do a full database migration using only official CLI tools, provided by Postgres. 
 Using <code>pg_dump</code> and <code>psql</code>, this documents describes the migration process.</p>
+<p><a href="https://www.postgresql.org/docs/9.4/app-pgdump.html">pg_dump</a></p>
 <p><strong>Using this tooling implies having a <em>source</em> database downtime</strong>. (As you don&rsquo;t want data being written to it while migrating it.)</p>
 <p>The steps including those tools will always be the same; on one side we export from source, on the target side we restore.</p>
 <h5 id="dms">DMS</h5><p>AWS Database Migration Service (DMS) is useful to migrate data from a database to another, and <em>keep them unidirectionally in sync</em>.</p>
 <p>In  other words, DMS can only migrate data, but it ensures that any changes on <em>source</em> will be replicated to <em>target</em>
 Note: any change to <em>target</em> will not be replicated to <em>source</em>.</p>
 <p>Even if DMS is used to migrate the data, the postgres utilities are still needed to migrate the meta-data. (FK, sequences, etc.).</p>
+<h5 id="pre-data-data-post-data">Pre-Data, Data, Post-Data</h5><p><code>pg_dump</code> can be used to export one big archive that can then be restored with <code>pg_restore</code>.
+One issue with that approach is the difficulty of troubleshooting migration issues.</p>
+<p>Since we are trying to make this process as clear as possible, the following guide is decomposing <code>pg_dump</code> into its three components :</p>
+
+<ul>
+<li>Pre-data : The table structures, functions.</li>
+<li>Post-data: indexes, triggers, rules, and constraints</li>
+<li>Data : data</li>
+</ul>
+<p>With that deconstructed process, it is easier to debug issues (and get help from the Cloud Platform team) and most importantly your team can perform validation/testing incrementally.</p>
 <h4 id="step-0-pod">Step 0 - Pod</h4><p>In order to run postgresql commands against both of those endpoints, there needs to be a place that has access to both.</p>
 <p>This is solved by running a pod into the kubernetes cluster, on live-1, into the team&rsquo;s namespace. 
 The migration steps outlined below have been tested from a pod running a <code>bitnami/postgresql</code> Docker image.</p>
-<p>Regarding the network access: 
- - The <em>source</em> RDS needs to have its <code>public accessibility</code> config turned on.
- - The RDS security group needs to be opened to the Cluster. For that, add inbound rules from the NAT gateways&rsquo; IP address on the 5432 port.</p>
+<p>Regarding the network access:</p>
+
+<ul>
+<li>The <em>source</em> RDS needs to have its <code>public accessibility</code> config turned on.</li>
+<li>The RDS security group needs to be opened to the Cluster. For that, add inbound rules from the NAT gateways&rsquo; IP address on the 5432 port.<br></li>
+<li>The RDS instance needs to support SSL connections</li>
+</ul>
 <h4 id="step-1-pre-data">Step 1 - Pre-Data</h4><p>First, to export,  we run :</p>
 <div class="highlight"><pre class="highlight plaintext"><code>pg_dump -U source_username \
      -h source_endpoint \
