@@ -1,4 +1,4 @@
-### Using an externally-managed hostname
+### Using a custom domain
 
 #### Background
 Every application running on Cloud Platform is able to use a hostname for their
@@ -7,28 +7,35 @@ cluster, this would be `*.apps.live-1.cloud-platform.service.justice.gov.uk`. As
 long as it is defined on the `Ingress` resource, it works automatically with a
 wildcard TLS certificate.
 
-However, most applications will typically need to be served on a `gov.uk`
-hostname. These hostnames (or usually, DNS zones) are managed externally,
-relative to the cluster, and there is a number of actions in order to set them
+However, most applications will typically need to be served on their own,
+application-specific `gov.uk` hostname. These hostnames (or usually, DNS zones)
+are managed individually and there is a number of actions in order to set them
 up for usage.
 
 #### Setup
 
-##### You do not have a DNS zone for the desired hostname
-Please [create a support ticket](http://goo.gl/msfGiS) providing as much
-information as possible.
+##### Defining the DNS zone
 
-Once the zone is ready, you can continue with the rest of this guide.
+To create the zone, you simply need to define it as a resource in your
+environment. Make sure to read [the guidance on naming domains][naming-domains]
+first and follow the instructions to [create the Route53 zone][creating-zone].
+To simplify management, we recommend that you only define a single zone, as part
+of the resources for your production environment, if possible.
 
-##### You already have a DNS zone for the desired hostname
+Once the zone is created, you will need to setup the necessary NS records in the
+parent DNS zone, before you're able to use it.
 
-###### > It's a Route53 zone
-1. [Create a support ticket](http://goo.gl/msfGiS) requesting the `provider`
-name for your `Certificate` (see the next step).
+If it is a subdomain of `service.justice.gov.uk`, the Cloud Platform team can
+help you set it up; please [create a support ticket][support-ticket].
 
-2. Create the `Certificate`, using the `provider` name from the previous step.
-The `secretName` attribute defines the `Secret` where the certificate and key
-material will be stored, in your namespace.
+For any other zone (including any other subdomain of `gov.uk`), you will need to
+contact its administrators.
+
+##### Obtaining a certificate
+
+1. Create the `Certificate` resource, filling in any placeholders with your
+details. The `secretName` attribute defines the name of a `Secret` in your
+namespace where the certificate and key material will be stored
 
    ```
    ---
@@ -48,16 +55,16 @@ material will be stored, in your namespace.
        - domains:
          - '<hostname>'
          dns01:
-           provider: <provider>
+           provider: route53-cloud-platform
    ```
 
-3. Make sure the certificate has been issued correctly, by checking its `Status`:
+2. Make sure the certificate has been issued correctly, by checking its `Status`:
 
    ```
    $ kubectl describe certificate <my-cert>
    ```
 
-4. You will need to update your `Ingress` spec to include the new hostname.
+3. You will need to update your `Ingress` spec to include the new hostname.
 
    **Once your host is defined here, the cluster will take control of the DNS record and automatically adjust to point to the cluster.**
 
@@ -95,7 +102,6 @@ material will be stored, in your namespace.
    +           servicePort: 80
    ```
 
-###### > It's a DNS zone hosted with another provider
-For the time being, we only support Route53 natively. Depending on the provider
-we might be able to accommodate you or we might need to handle this manually, if possible.
-Please [create a support ticket](http://goo.gl/msfGiS).
+[naming-domains]: https://ministryofjustice.github.io/technical-guidance/standards/naming-domains/#naming-domains
+[creating-zone]: tasks.html#creating-a-route-53-hosted-zone
+[support-ticket]: http://goo.gl/msfGiS
