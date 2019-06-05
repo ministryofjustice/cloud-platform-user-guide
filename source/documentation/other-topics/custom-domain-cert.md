@@ -25,11 +25,11 @@ of the resources for your production environment, if possible.
 Once the zone is created, you will need to setup the necessary NS records in the
 parent DNS zone, before you're able to use it.
 
-If it is a subdomain of `service.justice.gov.uk`, the Cloud Platform team can
-help you set it up; please [create a support ticket][support-ticket].
+If it is a subdomain of `service.justice.gov.uk` (eg.: `https://myapp.service.justice.gov.uk`),
+the Cloud Platform team can help you set it up; please [create a support ticket][support-ticket].
 
-For any other zone (including any other subdomain of `gov.uk`), you will need to
-contact its administrators.
+For any other zone (including any other subdomain of `gov.uk`, eg.: `https://myservice.gov.uk`),
+you will need to contact its administrators.
 
 ##### Obtaining a certificate
 
