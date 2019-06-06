@@ -416,7 +416,7 @@
             <a href="/tasks.html#zero-downtime-deployments">Zero Downtime Deployments</a>
           </li>
           <li>
-            <a href="/tasks.html#using-an-externally-managed-hostname">Using an externally-managed hostname</a>
+            <a href="/tasks.html#using-a-custom-domain">Using a custom domain</a>
           </li>
           <li>
             <a href="/tasks.html#ip-whitelisting">IP Whitelisting</a>
@@ -1342,7 +1342,8 @@ roleRef:
 </blockquote>
 
 <p>The <code>set deploy.host</code> overwrites the value stored in my <code>value.yaml</code> file and you&rsquo;ll see a fairly verbose output showing your pods creating.</p>
-<p><h5 id="viewing-your-application">Viewing your application</h5><p>Congratulations on getting this far. If all went well your pods are now deployed and is now being served on your specified URL.</p>
+
+<h5 id="viewing-your-application">Viewing your application</h5><p>Congratulations on getting this far. If all went well your pods are now deployed and is now being served on your specified URL.</p>
 <p>Let&rsquo;s check:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>$ kubectl get pods --namespace &lt;env-name&gt;
 </code></pre></div><p>If the deploy was successful you should be greeted with something similar to the below:</p>
@@ -1381,44 +1382,48 @@ django-app-&lt;Name&gt;-postgresql-7b4bdff4b8-xdlw2   1/1       Running   0     
 <div class="highlight"><pre class="highlight plaintext"><code>$ helm del --purge django-app-&lt;YourName&gt; --tiller-namespace &lt;env-name&gt;
 </code></pre></div><p>And then confirm the pods are terminating as expected:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>$ kubectl get pods --namespace &lt;env-var&gt;
-</code></pre></div><h4 id="deploying-an-application-to-the-cloud-platform-with-helm-next-steps">Next steps</h4><p>The next step will be to create your own Helm Chart. You can try this with an application of your own or run through <a href="https://docs.bitnami.com/kubernetes/how-to/create-your-first-helm-chart/">Bitnami&rsquo;s excellent guide</a> on how to build using a simple quickstart.</p></p>
-<p><h3 id="continuous-deployment-of-an-application-using-circleci-and-helm">Continuous Deployment of an application using CircleCI and Helm</h3><h4 id="continuous-deployment-of-an-application-using-circleci-and-helm-introduction">Introduction</h4><p>This document covers how to continuously deploy your application in the Cloud Platform. It is essentially a continuation of <a href="/tasks.html#deploying-an-application-to-the-cloud-platform-with-helm">‘Deploying an application to the Cloud Platform with Helm’</a>.</p>
+</code></pre></div><h4 id="deploying-an-application-to-the-cloud-platform-with-helm-next-steps">Next steps</h4><p>The next step will be to create your own Helm Chart. You can try this with an application of your own or run through <a href="https://docs.bitnami.com/kubernetes/how-to/create-your-first-helm-chart/">Bitnami&rsquo;s excellent guide</a> on how to build using a simple quickstart.</p>
+
+<h3 id="continuous-deployment-of-an-application-using-circleci-and-helm">Continuous Deployment of an application using CircleCI and Helm</h3><h4 id="continuous-deployment-of-an-application-using-circleci-and-helm-introduction">Introduction</h4><p>This document covers how to continuously deploy your application in the Cloud Platform. It is essentially a continuation of <a href="/tasks.html#deploying-an-application-to-the-cloud-platform-with-helm">‘Deploying an application to the Cloud Platform with Helm’</a>.</p>
 <p><em>Note: This document is specific to using <a href="https://circleci.com/">CircleCI</a> as the Continuous Integration method.</em></p>
-<h5 id="continuous-deployment-of-an-application-using-circleci-and-helm-introduction-objective">Objective</h5><p>By the end of the tutorial, you will have done the following:</p></p>
+<h5 id="continuous-deployment-of-an-application-using-circleci-and-helm-introduction-objective">Objective</h5><p>By the end of the tutorial, you will have done the following:</p>
 
 <ul>
 <li>Created a Service Account for CircleCI in your namespace</li>
 <li>Generated a CircleCI configuration file in your application repository. The configuration file will authenticate with your chosen cluster, build a docker image and push it to ECR and upgrade your helm deployment with the new docker image.</li>
 <li>Have an automated CircleCI pipeline that upgrades your helm deployment when a new change is pushed to your master branch</li>
 </ul>
-<p><h5 id="continuous-deployment-of-an-application-using-circleci-and-helm-introduction-requirements">Requirements</h5><p>It is assumed you have the following:</p></p>
+<h5 id="continuous-deployment-of-an-application-using-circleci-and-helm-introduction-requirements">Requirements</h5><p>It is assumed you have the following:</p>
 
 <ul>
 <li>You have <a href="/tasks.html#creating-a-cloud-platform-environment">created an environment for your application</a></li>
 <li>You have <a href="/tasks.html#deploying-an-application-to-the-cloud-platform-with-helm">deployed an application</a> to the &lsquo;cloud-platform-live-1&rsquo; cluster using Helm.</li>
 <li>You have created an <a href="/tasks.html#creating-an-ecr-repository">ECR repository</a></li>
 </ul>
-<p><h5 id="creating-a-service-account-for-circleci">Creating a Service Account for CircleCI</h5><p>As part of the CircleCI deployment pipeline, CircleCI will need to authenticate with the Kubernetes cluster. In order to do so, Kubernetes uses <a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/">Service Accounts</a>. Service Accounts provide an identity for processes that run in a cluster allowing the process to access the API server.</p>
+<h5 id="creating-a-service-account-for-circleci">Creating a Service Account for CircleCI</h5><p>As part of the CircleCI deployment pipeline, CircleCI will need to authenticate with the Kubernetes cluster. In order to do so, Kubernetes uses <a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/">Service Accounts</a>. Service Accounts provide an identity for processes that run in a cluster allowing the process to access the API server.</p>
 <p>A Service Account is created in the <a href="https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces">namespace creation github repository</a>.</p>
 <div class="highlight"><pre class="highlight shell"><code>  <span class="nv">$ </span>kubectl get serviceaccounts <span class="nt">--namespace</span> <span class="nv">$ns</span>
   NAME       SECRETS   AGE
-  circleci   1         3h</p>
-<p><span class="nv">$ </span>kubectl get serviceaccounts/circleci <span class="nt">--namespace</span> reference-app <span class="nt">-o</span> yaml
+  circleci   1         3h
+
+  <span class="nv">$ </span>kubectl get serviceaccounts/circleci <span class="nt">--namespace</span> reference-app <span class="nt">-o</span> yaml
   apiVersion: v1
   kind: ServiceAccount
   ...
   secrets:
-  - name: circleci-token-prlkp</p>
-<p><span class="nv">$ </span>kubectl get secrets <span class="nt">--namespace</span> <span class="nv">$ns</span>
+  - name: circleci-token-prlkp
+
+  <span class="nv">$ </span>kubectl get secrets <span class="nt">--namespace</span> <span class="nv">$ns</span>
   NAME                   TYPE                                  DATA      AGE
-  circleci-token-prlkp   kubernetes.io/service-account-token   3         3h</p>
-<p><span class="nv">$ </span>kubectl get secrets/circleci-token-prlkp <span class="nt">--namespace</span> <span class="nv">$ns</span> <span class="nt">-o</span> yaml
+  circleci-token-prlkp   kubernetes.io/service-account-token   3         3h
+
+  <span class="nv">$ </span>kubectl get secrets/circleci-token-prlkp <span class="nt">--namespace</span> <span class="nv">$ns</span> <span class="nt">-o</span> yaml
   ...
   namespace: cm..cA<span class="o">==</span>
   token: ZX...EE<span class="o">=</span>
 </code></pre></div><h5 id="linking-repository-to-circleci">Linking Repository to CircleCI</h5><p>MoJ has as an account with CircleCI, please login to <a href="https://circleci.com/dashboard">CircleCI</a> using GitHub credentials. Select project, and if config.yml is in the repo CircleCI will build and run tests.</p>
 <h5 id="add-variables-to-circleci">Add variables to CircleCI</h5><p>There is a number of environment variables that you will need to set on your CircleCI project in order to build a docker image, push it to the ECR and trigger a deployment in your environment. On the project page, click the cog icon in the top right corner and select <code>Enviroment Variables</code> under <code>Build Settings</code>. The variables you will need to set are listed below.</p>
-<h6 id="aws-credentials">AWS credentials</h6><p>To authenticate with ECR, you will need to set:</p></p>
+<h6 id="aws-credentials">AWS credentials</h6><p>To authenticate with ECR, you will need to set:</p>
 
 <ul>
 <li><code>AWS_DEFAULT_REGION</code> - would be <code>eu-west-2</code> for Cloud Platform clusters unless specified otherwise</li>
@@ -1426,7 +1431,6 @@ django-app-&lt;Name&gt;-postgresql-7b4bdff4b8-xdlw2   1/1       Running   0     
 <li><code>AWS_SECRET_ACCESS_KEY</code></li>
 <li><code>ECR_ENDPOINT</code> is optional but useful if you want to avoid having to hardcode the full hostname of the registry</li>
 </ul>
-
 <h6 id="kubernetes-serviceaccount-credentials">Kubernetes <code>ServiceAccount</code> credentials</h6><p>Since a single CircleCI project will need to access multiple namespaces in kubernetes (the environments), it will also need to handle multiple credentials. To simplify authentication, we provide a helper script in our supported <a href="https://github.com/ministryofjustice/cloud-platform-tools-image">build image</a>. For a usage example, see <a href="###upload-to-ecr">Deploy To Kubernetes</a> below.</p>
 <p>There are four different variables that CircleCI will need to access <em>per environment</em>. Our helper script expects environment variables to be named according to the list below where <code>&lt;ENVIRONMENT&gt;</code> should be replaced by some identifier of your choosing (eg.: <code>STAGING</code>, <code>PRODUCTION</code>).</p>
 
@@ -2251,26 +2255,46 @@ $ kubectl -n &lt;namespace&gt; port-forward &lt;pod&gt; 5000:5001
         value: "on"
 </code></pre></div><p>This will send an HTTP request to <code>/ping.json</code>, but the rails application will respond as if it is HTTPS, and your probe should work as expected. This works for both readiness and liveness probes.</p>
 
-<h3 id="using-an-externally-managed-hostname">Using an externally-managed hostname</h3><h4 id="background">Background</h4><p>Every application running on Cloud Platform is able to use a hostname for their
-HTTP endpoints, under a pre-defined DNS zone. For example, on the <code>live-1</code>
+<h3 id="using-a-custom-domain">Using a custom domain</h3><h4 id="background">Background</h4><p>Every application running on Cloud Platform is able to use a hostname for their
+HTTP endpoints, under a pre-defined domain. For example, on the <code>live-1</code>
 cluster, this would be <code>*.apps.live-1.cloud-platform.service.justice.gov.uk</code>. As
-long as it is defined on the <code>Ingress</code> resource, it works automatically with a
+long as it is defined on the <code>Ingress</code> resource, it works automatically, using a
 wildcard TLS certificate.</p>
-<p>However, most applications will typically need to be served on a <code>gov.uk</code>
-hostname. These hostnames (or usually, DNS zones) are managed externally,
-relative to the cluster, and there is a number of actions in order to set them
+<p>However, most applications will typically need to be served on their own,
+application-specific <code>gov.uk</code> hostname. These hostnames (or usually, entire domains)
+are managed individually and there is a number of actions in order to set them
 up for usage.</p>
-<h4 id="using-an-externally-managed-hostname-setup">Setup</h4><h5 id="you-do-not-have-a-dns-zone-for-the-desired-hostname">You do not have a DNS zone for the desired hostname</h5><p>Please <a href="http://goo.gl/msfGiS">create a support ticket</a> providing as much
-information as possible.</p>
-<p>Once the zone is ready, you can continue with the rest of this guide.</p>
-<h5 id="you-already-have-a-dns-zone-for-the-desired-hostname">You already have a DNS zone for the desired hostname</h5><h6 id="gt-it-39-s-a-route53-zone">&gt; It&rsquo;s a Route53 zone</h6>
+<h4 id="using-a-custom-domain-setup">Setup</h4><p>Domains are managed inside DNS zones. You can read more about the structure of
+the Domain Name System in this <a href="https://en.wikipedia.org/wiki/Domain_Name_System#Structure">page</a>. It is recommended
+that applications use their own DNS zones, in order to aid with management and
+provide better isolation.</p>
+<h5 id="defining-the-dns-zone">Defining the DNS zone</h5><p>To create the zone, you simply need to define it as a resource in your
+environment. Make sure to read <a href="https://ministryofjustice.github.io/technical-guidance/standards/naming-domains/#naming-domains">the guidance on naming domains</a>
+first and follow the instructions to <a href="/tasks.html#creating-a-route-53-hosted-zone">create the Route53 zone</a>.
+To simplify management, we recommend that you only define a single zone, as part
+of the resources for your production environment, if possible. You can still use
+subdomains of that zone for different environments.</p>
+<p>Once the zone is created, you will need to setup the necessary name server (NS)
+records in the parent DNS zone, before you&rsquo;re able to use it. For more
+information on how this delegation method works, you can read about authoritative
+name servers in this <a href="https://en.wikipedia.org/wiki/Name_server#Authoritative_name_server">page</a>.</p>
+<p>If your zone is for a subdomain of <code>service.justice.gov.uk</code> (eg.: <code>https://myapp.service.justice.gov.uk</code>),
+the Cloud Platform team can help you set it up; please <a href="http://goo.gl/msfGiS">create a support ticket</a>.</p>
+<p>For any other domains (including any subdomain of <code>gov.uk</code>, eg.: <code>https://myservice.gov.uk</code>),
+you will need to contact the parent zone&rsquo;s administrators to set this up. If in
+doubt, don&rsquo;t hesitate to get in touch with us in <code>#ask-cloud-platform</code>.</p>
+<p>Please note, once you setup the NS records, you&rsquo;ll be delegating control of the
+zone to the Cloud Platform. Hostnames used by your services (using <code>Ingresses</code>)
+will be automatically managed by the cluster.</p>
+<p>If you wish to create custom records in your zone you can do so by defining them
+in the <a href="https://github.com/ministryofjustice/cloud-platform-environments/">environments repository</a> using the terraform
+<a href="https://www.terraform.io/docs/providers/aws/r/route53_record.html"><code>aws_route53_record</code></a> resource.</p>
+<h5 id="obtaining-a-certificate">Obtaining a certificate</h5>
 
 <ol>
-<li><p><a href="http://goo.gl/msfGiS">Create a support ticket</a> requesting the <code>provider</code>
-name for your <code>Certificate</code> (see the next step).</p></li>
-<li><p>Create the <code>Certificate</code>, using the <code>provider</code> name from the previous step.
-The <code>secretName</code> attribute defines the <code>Secret</code> where the certificate and key
-material will be stored, in your namespace.</p></li>
+<li>Create the <code>Certificate</code> resource, filling in any placeholders with your
+details. The <code>secretName</code> attribute defines the name of a <code>Secret</code> in your
+namespace where the certificate and key material will be stored</li>
 </ol>
 
 <div class="highlight"><pre class="highlight plaintext"><code>   ---
@@ -2290,7 +2314,7 @@ material will be stored, in your namespace.</p></li>
        - domains:
          - '&lt;hostname&gt;'
          dns01:
-           provider: &lt;provider&gt;
+           provider: route53-cloud-platform
 </code></pre></div>
 
 <ol>
@@ -2298,17 +2322,30 @@ material will be stored, in your namespace.</p></li>
 </ol>
 
 <div class="highlight"><pre class="highlight plaintext"><code>   $ kubectl describe certificate &lt;my-cert&gt;
-</code></pre></div>
+</code></pre></div><p>The certificate status of type <code>&quot;Ready&quot;</code> should be <code>True</code>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>   Status:
+     Conditions:
+       Last Transition Time:  2019-06-05T10:16:43Z
+       Message:               Certificate is up to date and has not expired
+       Reason:                Ready
+       Status:                True
+       Type:                  Ready
+     Not After:               2019-09-03T09:16:42Z
+   Events:
+     Type    Reason         Age   From          Message
+     ----    ------         ----  ----          -------
+     Normal  Generated      3m    cert-manager  Generated new private key
+     Normal  OrderCreated   3m    cert-manager  Created Order resource "&lt;my-cert&gt;-3189350212"
+     Normal  OrderComplete  1m    cert-manager  Order "&lt;my-cert&gt;-3189350212" completed successfully
+     Normal  CertIssued     1m    cert-manager  Certificate issued successfully
+</code></pre></div><p>It generally takes but a few minutes for the certificate to be prepared and
+   the events displayed should indicate if there is a problem or it simply needs
+   more time. If you cannot obtain a certificate, please get in touch with us in
+   <code>#ask-cloud-platform</code>.</p>
 
 <ol>
 <li>You will need to update your <code>Ingress</code> spec to include the new hostname.</li>
 </ol>
-
-<p><strong>Once your host is defined here, the cluster will take control of the DNS record and automatically adjust to point to the cluster.</strong></p>
-
-<p>If this does not happen, please get in touch with us in #ask-cloud-platform. Depending on your setup, we might need to
-   intervene manually to allow <code>external-dns</code> to assume ownership of the DNS record.</p>
-
 <div class="highlight"><pre class="highlight plaintext"><code>     apiVersion: extensions/v1beta1
      kind: Ingress
      metadata:
@@ -2336,9 +2373,13 @@ material will be stored, in your namespace.</p></li>
    +         backend:
    +           serviceName: &lt;my-svc&gt;
    +           servicePort: 80
-</code></pre></div><h6 id="gt-it-39-s-a-dns-zone-hosted-with-another-provider">&gt; It&rsquo;s a DNS zone hosted with another provider</h6><p>For the time being, we only support Route53 natively. Depending on the provider
-we might be able to accommodate you or we might need to handle this manually, if possible.
-Please <a href="http://goo.gl/msfGiS">create a support ticket</a>.</p>
+</code></pre></div><p>Once you&rsquo;ve made the changes to your <code>Ingress</code>, the cluster (and more
+specifically, <code>external-dns</code>) will update the necessary records defined in it.
+This usually takes less than a minute before you are able to access your
+endpoint. However, depending on the DNS name servers your workstation uses, you
+might need to wait longer or try to &ldquo;flush&rdquo; your local DNS cache in order to
+speed up the process. You should search online for the proper method to do so,
+based on your operating system and/or browser.</p>
 
 <h3 id="ip-whitelisting">IP Whitelisting</h3><h4 id="inbound-ip-whitelisting">Inbound IP Whitelisting</h4><p>Allowed client IP source ranges can be specified using the nginx.ingress.kubernetes.io/whitelist-source-range annotation. The value is a comma separated list of CIDRs, e.g. 1.1.1.1/24,10.0.0.0/24.</p>
 <p><a href="https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#whitelist-source-range">Kubernetes official documentation on whitelisting source ranges</a>.</p>
