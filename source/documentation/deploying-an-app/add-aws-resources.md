@@ -62,7 +62,7 @@ module "my_module" {
 }
 ```
 
-Make sure that you have checked the releases page of a module and that you are using the latest of them in your configuration.
+Please check the version badge for the module you are using (visit the web page of the module's github repository - the version badge will be just below the heading), and make sure you are using the latest version of the module in your configuration.
 
 Upgrading to a new major version usually means that the configured resource will have to be re-created by terraform.
 
