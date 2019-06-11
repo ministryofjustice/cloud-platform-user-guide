@@ -243,6 +243,112 @@ You need the `-L` flag to make curl follow the 308 redirect response that it wil
 
 If you are wondering why https 'just works', there is some magic behind the scenes whereby a LetsEncrypt SSL certificate is created for you, and applied to your ingress. A future user guide article will describe this in more detail.
 
+### Add HTTP Basic Authentication
+
+The application can be accessed from the internet at:
+
+    https://helloworld-rubyapp.apps.live-1.cloud-platform.service.justice.gov.uk
+
+As per the [guidance for domain names], our application should have some authentication to prevent citizens accidentally mistaking development websites for live government services. Whilst this isn't much of a problem with a 'hello world' site, it could be an issue for sites using the GDS prototype kit, which look exactly like live services. So, let's add [http basic authentication] to our application.
+
+We can do this by amending our [Ingress], which is the kubernetes object that routes traffic to our application from the internet. We'll create an encrypted username and password, and then store that in a [kubernetes secret]. Then, we will update our Ingress to use basic authentication, and tell it where to find the credentials.
+
+#### Create the username and password
+
+First we'll use the [htpasswd] program to create a one-way hashed username and password. htpasswd is a system program which should be pre-installed on your computer.
+
+To create a username 'bob' with password 'password123' in a file called 'auth', run the following command:
+
+```bash
+$ htpasswd -cb auth bob password123
+```
+
+Whatever value you use for your password (which should *not* be 'password123' be sure to make a note of it now - it will not be visible again.
+
+Kubernetes secrets are stored as base64-encoded text strings, so we need to run the 'auth' file through base64 (which should also be pre-installed):
+
+```bash
+$ cat auth | base64
+```
+
+This will output the string we need to store in our secret. For the purpose of this tutorial, I'm going to use `Ym9iOiRhcHIxJFVXQ1cxWDlvJGt3WDdoMTFZemNYdmVseHE2UFV2VzAK` Please substitute the value you got from the step above, using your own choice of username and password.
+
+Note: only the hash of the password is stored in this string, not the password itself, so it is safe to store this string in a public github repository.
+
+You can now delete the 'auth' file - we don't need it anymore.
+
+#### Create the kubernetes secret
+
+Create a file called `kubectl_deploy/secret.yaml` containing the following:
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: basic-auth
+data:
+  auth: Ym9iOiRhcHIxJFVXQ1cxWDlvJGt3WDdoMTFZemNYdmVseHE2UFV2VzAK
+```
+
+Remember to substitute your base64-encoded credentials string.
+
+The next time we apply our yaml files to our namespace, this file will create a kubernetes secret called 'basic-auth'. Now we need to configure our Ingress to use it.
+
+#### Configure the Ingress
+
+To configure our ingress to use basic authentication, we just need to add a couple of lines to the metadata section of `kubectl_deploy/ingress.yaml`
+
+Replace this:
+
+```yaml
+...
+metadata:
+  name: helloworld-rubyapp-ingress
+spec:
+...
+```
+
+...with this:
+
+```yaml
+...
+metadata:
+  name: helloworld-rubyapp-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: basic-auth
+spec:
+...
+```
+
+This tells the Ingress what kind of authentication to use, and which kubernetes secret contains the credentials.
+
+#### Apply the changes
+
+All that remains is to apply our updated yaml files in almost exactly the same way as we did before, when we deployed the application:
+
+```bash
+kubectl apply --filename kubectl_deploy --namespace [your namespace]
+```
+
+The only difference is that we are running `kubectl apply` instead of `kubectl create`.
+
+You should see output like this:
+
+```bash
+deployment.extensions "helloworld-rubyapp" unchanged
+ingress.extensions "helloworld-rubyapp-ingress" configured
+secret "basic-auth" created
+service "rubyapp-service" unchanged
+```
+
+Now, if you reload the browser page showing the 'Hello world' message from the application, you will be prompted to enter the username and password.
+
+[guidance for domain names]: https://ministryofjustice.github.io/technical-guidance/standards/naming-domains/#justicegovuk
+[http basic authentication]: https://en.wikipedia.org/wiki/Basic_access_authentication
+[kubernetes secret]: https://kubernetes.io/docs/concepts/configuration/secret/
+[htpasswd]: https://httpd.apache.org/docs/2.4/programs/htpasswd.html
+[Ingress]: https://kubernetes.io/docs/concepts/services-networking/ingress/
 [rubyapp-github]: https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app
 [homebrew]: https://brew.sh
 [docker]: https://www.docker.com
