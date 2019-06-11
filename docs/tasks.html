@@ -236,6 +236,9 @@
           <li>
             <a href="/tasks.html#interacting-with-the-application">Interacting with the application</a>
           </li>
+          <li>
+            <a href="/tasks.html#add-http-basic-authentication">Add HTTP Basic Authentication</a>
+          </li>
         </ul>
       </li>
       <li>
@@ -1009,7 +1012,7 @@ variable "cluster_state_bucket" {}
 <div class="highlight"><pre class="highlight plaintext"><code>module "my_module" {
   source = "https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=1.0"
 }
-</code></pre></div><p>Make sure that you have checked the releases page of a module and that you are using the latest of them in your configuration.</p>
+</code></pre></div><p>Please check the version badge for the module you are using (visit the web page of the module&rsquo;s github repository - the version badge will be just below the heading), and make sure you are using the latest version of the module in your configuration.</p>
 <p>Upgrading to a new major version usually means that the configured resource will have to be re-created by terraform.</p>
 <p>Refer to the <a href="http://terraform.io/docs/modules">terraform documentation on modules</a> for more information on usage.</p>
 
@@ -1156,6 +1159,54 @@ spec:
 </code></pre></div><p>Don&rsquo;t forget to change <code>helloworld-rubyapp</code> to whatever hostname you chose earlier.</p>
 <p>You need the <code>-L</code> flag to make curl follow the 308 redirect response that it will receive from the ingress controller. If you view the URL in a web browser, it should just work.</p>
 <p>If you are wondering why https &#39;just works&rsquo;, there is some magic behind the scenes whereby a LetsEncrypt SSL certificate is created for you, and applied to your ingress. A future user guide article will describe this in more detail.</p>
+<h3 id="add-http-basic-authentication">Add HTTP Basic Authentication</h3><p>The application can be accessed from the internet at:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>https://helloworld-rubyapp.apps.live-1.cloud-platform.service.justice.gov.uk
+</code></pre></div><p>As per the <a href="https://ministryofjustice.github.io/technical-guidance/standards/naming-domains/#justicegovuk">guidance for domain names</a>, our application should have some authentication to prevent citizens accidentally mistaking development websites for live government services. Whilst this isn&rsquo;t much of a problem with a &#39;hello world&rsquo; site, it could be an issue for sites using the GDS prototype kit, which look exactly like live services. So, let&rsquo;s add <a href="https://en.wikipedia.org/wiki/Basic_access_authentication">http basic authentication</a> to our application.</p>
+<p>We can do this by amending our <a href="https://kubernetes.io/docs/concepts/services-networking/ingress/">Ingress</a>, which is the kubernetes object that routes traffic to our application from the internet. We&rsquo;ll create an encrypted username and password, and then store that in a <a href="https://kubernetes.io/docs/concepts/configuration/secret/">kubernetes secret</a>. Then, we will update our Ingress to use basic authentication, and tell it where to find the credentials.</p>
+<h4 id="create-the-username-and-password">Create the username and password</h4><p>First we&rsquo;ll use the <a href="https://httpd.apache.org/docs/2.4/programs/htpasswd.html">htpasswd</a> program to create a one-way hashed username and password. htpasswd is a system program which should be pre-installed on your computer.</p>
+<p>To create a username &#39;bob&rsquo; with password &#39;password123&rsquo; in a file called &#39;auth&rsquo;, run the following command:</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>htpasswd <span class="nt">-cb</span> auth bob password123
+</code></pre></div><p>Whatever value you use for your password (which should <em>not</em> be &#39;password123&rsquo; be sure to make a note of it now - it will not be visible again.</p>
+<p>Kubernetes secrets are stored as base64-encoded text strings, so we need to run the &#39;auth&rsquo; file through base64 (which should also be pre-installed):</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span><span class="nb">cat </span>auth | base64
+</code></pre></div><p>This will output the string we need to store in our secret. For the purpose of this tutorial, I&rsquo;m going to use <code>Ym9iOiRhcHIxJFVXQ1cxWDlvJGt3WDdoMTFZemNYdmVseHE2UFV2VzAK</code> Please substitute the value you got from the step above, using your own choice of username and password.</p>
+<p>Note: only the hash of the password is stored in this string, not the password itself, so it is safe to store this string in a public github repository.</p>
+<p>You can now delete the &#39;auth&rsquo; file - we don&rsquo;t need it anymore.</p>
+<h4 id="create-the-kubernetes-secret">Create the kubernetes secret</h4><p>Create a file called <code>kubectl_deploy/secret.yaml</code> containing the following:</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Secret</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">basic-auth</span>
+<span class="na">data</span><span class="pi">:</span>
+  <span class="na">auth</span><span class="pi">:</span> <span class="s">Ym9iOiRhcHIxJFVXQ1cxWDlvJGt3WDdoMTFZemNYdmVseHE2UFV2VzAK</span>
+</code></pre></div><p>Remember to substitute your base64-encoded credentials string.</p>
+<p>The next time we apply our yaml files to our namespace, this file will create a kubernetes secret called &#39;basic-auth&rsquo;. Now we need to configure our Ingress to use it.</p>
+<h4 id="configure-the-ingress">Configure the Ingress</h4><p>To configure our ingress to use basic authentication, we just need to add a couple of lines to the metadata section of <code>kubectl_deploy/ingress.yaml</code></p>
+<p>Replace this:</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="nn">...</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">helloworld-rubyapp-ingress</span>
+<span class="na">spec</span><span class="pi">:</span>
+<span class="nn">...</span>
+</code></pre></div><p>&hellip;with this:</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="nn">...</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">helloworld-rubyapp-ingress</span>
+  <span class="na">annotations</span><span class="pi">:</span>
+    <span class="s">nginx.ingress.kubernetes.io/auth-type</span><span class="pi">:</span> <span class="s">basic</span>
+    <span class="s">nginx.ingress.kubernetes.io/auth-secret</span><span class="pi">:</span> <span class="s">basic-auth</span>
+<span class="na">spec</span><span class="pi">:</span>
+<span class="nn">...</span>
+</code></pre></div><p>This tells the Ingress what kind of authentication to use, and which kubernetes secret contains the credentials.</p>
+<h4 id="apply-the-changes">Apply the changes</h4><p>All that remains is to apply our updated yaml files in almost exactly the same way as we did before, when we deployed the application:</p>
+<div class="highlight"><pre class="highlight shell"><code>kubectl apply <span class="nt">--filename</span> kubectl_deploy <span class="nt">--namespace</span> <span class="o">[</span>your namespace]
+</code></pre></div><p>The only difference is that we are running <code>kubectl apply</code> instead of <code>kubectl create</code>.</p>
+<p>You should see output like this:</p>
+<div class="highlight"><pre class="highlight shell"><code>deployment.extensions <span class="s2">"helloworld-rubyapp"</span> unchanged
+ingress.extensions <span class="s2">"helloworld-rubyapp-ingress"</span> configured
+secret <span class="s2">"basic-auth"</span> created
+service <span class="s2">"rubyapp-service"</span> unchanged
+</code></pre></div><p>Now, if you reload the browser page showing the &#39;Hello world&rsquo; message from the application, you will be prompted to enter the username and password.</p>
 
 <h2 id="deploying-a-multi-container-application-to-the-cloud-platform">Deploying a multi-container application to the Cloud Platform</h2><h3 id="deploying-a-multi-container-application-to-the-cloud-platform-overview">Overview</h3><p>This section goes through the process of deploying a <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app">demo application</a> consisting of several components, each running in its own container.</p>
 <p>Please see the <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app#multi-container-demo-application">application README</a> for a description of the different components, and how they connect. You can also run the application locally via docker-compose to confirm that it works as it should.</p>

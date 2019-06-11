@@ -30,6 +30,6 @@ variable "cluster_state_bucket" {}
 <div class="highlight"><pre class="highlight plaintext"><code>module "my_module" {
   source = "https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=1.0"
 }
-</code></pre></div><p>Make sure that you have checked the releases page of a module and that you are using the latest of them in your configuration.</p>
+</code></pre></div><p>Please check the version badge for the module you are using (visit the web page of the module&rsquo;s github repository - the version badge will be just below the heading), and make sure you are using the latest version of the module in your configuration.</p>
 <p>Upgrading to a new major version usually means that the configured resource will have to be re-created by terraform.</p>
 <p>Refer to the <a href="http://terraform.io/docs/modules">terraform documentation on modules</a> for more information on usage.</p>
