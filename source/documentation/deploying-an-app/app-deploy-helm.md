@@ -71,7 +71,7 @@ subjects:
   namespace: myapp-dev ### Your namespace `<servicename-env>`
 roleRef:
   kind: ClusterRole
-  name: cluster-admin
+  name: admin
   apiGroup: rbac.authorization.k8s.io
 ```
 
