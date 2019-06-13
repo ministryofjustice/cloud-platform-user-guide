@@ -108,8 +108,10 @@ databases][create-rds], and S3 buckets).
 We automate the creation of the namespace resource files using terraform. You will need to install terraform locally:
 
 ```Shell
-$ brew install terraform
+$ brew install terraform@0.11
 ```
+
+> Note: You must specify version 0.11 of terraform. 0.12 (the latest, at the time of writing) introduces breaking changes, and the cluster has not yet been upgraded to work with Terraform 0.12. If you try to use terraform 0.12, you will get errors about formatting and other problems. Please stick to version 0.11, for now.
 
 In each of the template files you need to replace some example values with
 information about your namespace, team or app. We do this by running terraform
