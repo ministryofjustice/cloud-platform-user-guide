@@ -64,8 +64,12 @@ need when you add terraform modules to create the AWS resources your service
 will use (e.g. an <a href="tasks.html#creating-an-ecr-repository">ECR</a> for your docker images, <a href="tasks.html#create-an-rds-instance">RDS
 databases</a>, and S3 buckets).</p>
 <h4 id="create-your-namespace-and-namespace-resources">Create your namespace and namespace resources</h4><p>We automate the creation of the namespace resource files using terraform. You will need to install terraform locally:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>$ brew install terraform
-</code></pre></div><p>In each of the template files you need to replace some example values with
+<div class="highlight"><pre class="highlight plaintext"><code>$ brew install terraform@0.11
+</code></pre></div>
+<blockquote>
+<p>Note: You must specify version 0.11 of terraform. 0.12 (the latest, at the time of writing) introduces breaking changes, and the cluster has not yet been upgraded to work with Terraform 0.12. If you try to use terraform 0.12, you will get errors about formatting and other problems. Please stick to version 0.11, for now.</p>
+</blockquote>
+<p>In each of the template files you need to replace some example values with
 information about your namespace, team or app. We do this by running terraform
 commands and filling in the values.</p>
 <p>These are the inputs for the terraform module, that you will need to fill:</p>
