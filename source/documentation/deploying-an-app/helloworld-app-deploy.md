@@ -31,12 +31,16 @@ This guide assumes the following:
 
 * Clone the [demo application](https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app)
 
-      git clone https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app
-      cd cloud-platform-helloworld-ruby-app
+```bash
+git clone https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app  
+cd cloud-platform-helloworld-ruby-app
+```
 
 * Build the docker image
 
-      docker build -t [ECR Team Name]/[ECR Repository Name] .
+```bash
+docker build -t [ECR Team Name]/[ECR Repository Name] .
+```
 
 The `ECR Team Name` and `ECR Repository Name` must match the `team_name` and `repo_name` values you entered when you created the ECR via [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments) Github repository.
 
