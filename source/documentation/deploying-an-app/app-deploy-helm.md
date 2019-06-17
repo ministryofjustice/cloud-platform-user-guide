@@ -172,11 +172,11 @@ As you can see, this tails the log and you should see our health checks giving a
 Read more about Kubernetes logging [here](https://kubernetes.io/docs/concepts/cluster-administration/logging/).
 
 ##### Scale the application
-You now have our application up and running but you decide two pods aren't enough. Say you want to run three. This is simply a case of changing the replicaCount value in the values.yaml whilst running the `helm upgrade` command.
+You now have our application up and running but you decide two pods aren't enough. Say you want to run three. This is simply a case of changing the replicaCount value in the values.yaml and then running the `helm upgrade` command.
 
-Let's try:
+Edit `values.yaml` and change `replicaCount` from 1 to 3. Save the file, then run:
 
-    $ helm upgrade django-app-<YourName> . --set replicaCount=3 --tiller-namespace <env-name> --set deploy.host=<DeploymentURL>
+    $ helm upgrade django-app-<YourName> . --tiller-namespace <env-name> --set deploy.host=<DeploymentURL>
 
 This command spins up another pod to bring the total number to 3.
 
