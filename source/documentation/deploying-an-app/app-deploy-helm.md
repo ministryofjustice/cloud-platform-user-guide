@@ -85,6 +85,8 @@ Install the client via Homebrew or by other [means](https://docs.helm.sh/using_h
 
     $ brew install kubernetes-helm
 
+Note: The Helm version **must** be at least **2.14**. Earlier versions try to run `tiller` as root, which is incompatible with our cluster security policies.
+
 Now configure the installation with Tiller:
 
     $ helm init --tiller-namespace <env-name> --service-account tiller
