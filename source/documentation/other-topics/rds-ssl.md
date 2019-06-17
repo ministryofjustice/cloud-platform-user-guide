@@ -13,6 +13,7 @@ Type "help" for help.
 
 dba02192a049ed7ce8=> ^D\q
 ```
+
 Where `$url` is of the form `postgres://user:pass@host:port/db`.
 
 Additionally, AWS [offer strong assurances][aws-sec-wp] that a malicious actor cannot spoof their traffic or sniff
@@ -30,11 +31,13 @@ the client with the root CA certificate before it is able to verify the chain of
 on how to exactly that.
 
 As you can see below, unless provided with the root CA certificate, the client cannot fully verify the endpoint:
+
 ```
 $ psql "$url?sslmode=verify-full"
 psql: could not get home directory to locate root certificate file
 Either provide the file or change sslmode to disable server certificate verification.
 ```
+
 ```
 $ psql "$url?sslmode=verify-full&sslrootcert=/tmp/rds-combined-ca-bundle.pem"
 psql (9.6.13, server 10.6)
@@ -48,12 +51,14 @@ dba02192a049ed7ce8=> ^D\q
 
 This CA bundle can be added into your application's docker image. You can simply add the following directive in your
 `Dockerfile`:
+
 ```
 ADD https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem /path/to/rds-combined-ca-bundle.pem
 ```
 
 If you're developing a Ruby on Rails application, you can configure this by adding the following two options in your
 `config/database.yml`:
+
 ```
   sslmode: verify-full
   sslrootcert: /path/to/rds-combined-ca-bundle.pem
