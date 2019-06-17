@@ -1,4 +1,4 @@
-# SSL connections with RDS
+## SSL connections with RDS
 
 RDS instances are configured to allow SSL connections by default and also the latest versions of the client (`psql`) and
 libraries (eg.: the `pg` ruby gem which builds on `libpq`) will establish an SSL connection by default.
@@ -24,7 +24,7 @@ However, best practices dictate that an SSL connection should be explicitly forc
 establish an encrypted connection with `sslmode=require`, which forces an SSL connection but does not verify the server
 certificate.
 
-## Full verification of certificates
+### Full verification of certificates
 
 In order to establish a connection with `sslmode=verify-full`, which offers [MITM][mitm] protection, we have to provide
 the client with the root CA certificate before it is able to verify the chain of trust. AWS offers [detailed instructions][aws-rds-ssl]
@@ -67,7 +67,7 @@ If you're developing a Ruby on Rails application, you can configure this by addi
 For other frameworks, you should consult their documentation on how to configure the database client to use SSL
 connections.
 
-## Force SSL connections
+### Force SSL connections
 
 Ideally, we also want to completely disable unencrypted connections (by using the RDS `force_ssl` parameter) and always
 perform a full verification when connecting to the RDS endpoint.
