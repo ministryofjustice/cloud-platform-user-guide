@@ -105,7 +105,7 @@ To deploy the application with Helm first change directory so we can focus on th
 
 Values for our application are stored in the `values.yaml` at the root of our directory. Configurations such as 'number of pods running' and which image repository to use is stored here in this file. Open this file and get familiar with our application layout.
 
-There is an important value in this file called `host`, which sets the URL for your application. We have to provide this value as an argument on our installation command.
+We need to set a `host` value, to set the URL for your application. We have to provide this value as an argument to our installation command.
 
 Run the following (replacing the `YourName` with your own name and `env-name` with your environment name:
 
@@ -117,7 +117,7 @@ Run the following (replacing the `YourName` with your own name and `env-name` wi
 
 > Note: We're naming it like this as app names and host names have to be unique on the cluster.
 
-The `set deploy.host` overwrites the value stored in my `value.yaml` file and you'll see a fairly verbose output showing your pods creating.
+You'll see quite a lot of output as the various components are created.
 
 ##### Viewing your application
 Congratulations on getting this far. If all went well your pods are now deployed and is now being served on your specified URL.
