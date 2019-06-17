@@ -1,0 +1,83 @@
+# SSL connections with RDS
+
+RDS instances are configured to allow SSL connections by default and also the latest versions of the client (`psql`) and
+libraries (eg.: the `pg` ruby gem which builds on `libpq`) will establish an SSL connection by default.
+
+```
+$ psql "$url"
+psql (9.6.13, server 10.6)
+WARNING: psql major version 9.6, server major version 10.
+         Some psql features might not work.
+SSL connection (protocol: TLSv1.2, cipher: ECDHE-RSA-AES256-GCM-SHA384, bits: 256, compression: off)
+Type "help" for help.
+
+dba02192a049ed7ce8=> ^D\q
+```
+Where `$url` is of the form `postgres://user:pass@host:port/db`.
+
+Additionally, AWS [offer strong assurances][aws-sec-wp] that a malicious actor cannot spoof their traffic or sniff
+another tenant's traffic, even if they operate inside the same VPC.
+
+However, best practices dictate that an SSL connection should be explicitly forced. PostgreSQL implements various
+[modes of operation][libpq-ssl], each one offering a different level of security. Without any additional setup, we can
+establish an encrypted connection with `sslmode=require`, which forces an SSL connection but does not verify the server
+certificate.
+
+## Full verification of certificates
+
+In order to establish a connection with `sslmode=verify-full`, which offers [MITM][mitm] protection, we have to provide
+the client with the root CA certificate before it is able to verify the chain of trust. AWS offers [detailed instructions][aws-rds-ssl]
+on how to exactly that.
+
+As you can see below, unless provided with the root CA certificate, the client cannot fully verify the endpoint:
+```
+$ psql "$url?sslmode=verify-full"
+psql: could not get home directory to locate root certificate file
+Either provide the file or change sslmode to disable server certificate verification.
+```
+```
+$ psql "$url?sslmode=verify-full&sslrootcert=/tmp/rds-combined-ca-bundle.pem"
+psql (9.6.13, server 10.6)
+WARNING: psql major version 9.6, server major version 10.
+         Some psql features might not work.
+SSL connection (protocol: TLSv1.2, cipher: ECDHE-RSA-AES256-GCM-SHA384, bits: 256, compression: off)
+Type "help" for help.
+
+dba02192a049ed7ce8=> ^D\q
+```
+
+This CA bundle can be added into your application's docker image. You can simply add the following directive in your
+`Dockerfile`:
+```
+ADD https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem /path/to/rds-combined-ca-bundle.pem
+```
+
+If you're developing a Ruby on Rails application, you can configure this by adding the following two options in your
+`config/database.yml`:
+```
+  sslmode: verify-full
+  sslrootcert: /path/to/rds-combined-ca-bundle.pem
+```
+
+For other frameworks, you should consult their documentation on how to configure the database client to use SSL
+connections.
+
+## Force SSL connections
+
+Ideally, we also want to completely disable unencrypted connections (by using the RDS `force_ssl` parameter) and always
+perform a full verification when connecting to the RDS endpoint.
+
+In order to force using secure connections for your RDS instance, you'll need to set `force_ssl = true` in your module
+definition. See the [documentation][rds-module] for details. Once applied, you should no longer be able to establish
+a connection using `sslmode=disable`:
+
+```
+$ psql "$url?sslmode=disable"
+psql: FATAL:  no pg_hba.conf entry for host "172.20.32.241", user "fDsQgBlavX", database "dba02192a049ed7ce8", SSL off
+```
+
+[aws-sec-wp]: https://d1.awsstatic.com/whitepapers/aws-security-whitepaper.pdf
+[aws-rds-ssl]: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html#PostgreSQL.Concepts.General.SSL
+[libpq-ssl]: https://www.postgresql.org/docs/current/libpq-ssl.html
+[mitm]: https://en.wikipedia.org/wiki/Man-in-the-middle_attack
+[rds-module]: https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance/#inputs
