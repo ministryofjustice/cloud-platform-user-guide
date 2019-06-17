@@ -435,16 +435,16 @@
           </li>
         </ul>
       </li>
-    </ul>
-  </li>
-  <li>
-    <a href="/tasks.html#ssl-connections-with-rds">SSL connections with RDS</a>
-    <ul>
       <li>
-        <a href="/tasks.html#full-verification-of-certificates">Full verification of certificates</a>
-      </li>
-      <li>
-        <a href="/tasks.html#force-ssl-connections">Force SSL connections</a>
+        <a href="/tasks.html#ssl-connections-with-rds">SSL connections with RDS</a>
+        <ul>
+          <li>
+            <a href="/tasks.html#full-verification-of-certificates">Full verification of certificates</a>
+          </li>
+          <li>
+            <a href="/tasks.html#force-ssl-connections">Force SSL connections</a>
+          </li>
+        </ul>
       </li>
     </ul>
   </li>
@@ -2605,7 +2605,7 @@ iv.  The deploy repository will then be archived (confirmatory message will appe
 <div class="highlight"><pre class="highlight plaintext"><code>i.   As for archiving -Locate your deploy-repos. Click on the “Settings” button. Then click on the “Delete this repository” button:
 </code></pre></div><h4 id="4-docker-images">4. Docker Images:</h4><p>a.   The docker image repository will be completely decommissioned when we have switched everything over from template-deploy</p>
 
-<h1 id="ssl-connections-with-rds">SSL connections with RDS</h1><p>RDS instances are configured to allow SSL connections by default and also the latest versions of the client (<code>psql</code>) and
+<h2 id="ssl-connections-with-rds">SSL connections with RDS</h2><p>RDS instances are configured to allow SSL connections by default and also the latest versions of the client (<code>psql</code>) and
 libraries (eg.: the <code>pg</code> ruby gem which builds on <code>libpq</code>) will establish an SSL connection by default.</p>
 <div class="highlight"><pre class="highlight plaintext"><code>$ psql "$url"
 psql (9.6.13, server 10.6)
@@ -2622,7 +2622,7 @@ another tenant&rsquo;s traffic, even if they operate inside the same VPC.</p>
 <a href="https://www.postgresql.org/docs/current/libpq-ssl.html">modes of operation</a>, each one offering a different level of security. Without any additional setup, we can
 establish an encrypted connection with <code>sslmode=require</code>, which forces an SSL connection but does not verify the server
 certificate.</p>
-<h2 id="full-verification-of-certificates">Full verification of certificates</h2><p>In order to establish a connection with <code>sslmode=verify-full</code>, which offers <a href="https://en.wikipedia.org/wiki/Man-in-the-middle_attack">MITM</a> protection, we have to provide
+<h3 id="full-verification-of-certificates">Full verification of certificates</h3><p>In order to establish a connection with <code>sslmode=verify-full</code>, which offers <a href="https://en.wikipedia.org/wiki/Man-in-the-middle_attack">MITM</a> protection, we have to provide
 the client with the root CA certificate before it is able to verify the chain of trust. AWS offers <a href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html#PostgreSQL.Concepts.General.SSL">detailed instructions</a>
 on how to exactly that.</p>
 <p>As you can see below, unless provided with the root CA certificate, the client cannot fully verify the endpoint:</p>
@@ -2646,7 +2646,7 @@ dba02192a049ed7ce8=&gt; ^D\q
   sslrootcert: /path/to/rds-combined-ca-bundle.pem
 </code></pre></div><p>For other frameworks, you should consult their documentation on how to configure the database client to use SSL
 connections.</p>
-<h2 id="force-ssl-connections">Force SSL connections</h2><p>Ideally, we also want to completely disable unencrypted connections (by using the RDS <code>force_ssl</code> parameter) and always
+<h3 id="force-ssl-connections">Force SSL connections</h3><p>Ideally, we also want to completely disable unencrypted connections (by using the RDS <code>force_ssl</code> parameter) and always
 perform a full verification when connecting to the RDS endpoint.</p>
 <p>In order to force using secure connections for your RDS instance, you&rsquo;ll need to set <code>force_ssl = true</code> in your module
 definition. See the <a href="https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance/#inputs">documentation</a> for details. Once applied, you should no longer be able to establish
