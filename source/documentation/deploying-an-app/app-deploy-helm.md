@@ -145,6 +145,8 @@ Let's check your host has a URL by running:
 
 This will return the URL of your given app. Open it using your favourite browser.
 
+The application is secured with http basic authentication. The default credentials are user: `myuser`, password: `password123`. For more information, see [this topic][basic-auth-topic].
+
 You should be met with an MoJ reference app with the title, *'Cloud Platforms Deployment'*. As we mentioned before, there is nothing complicated about this application. You can enter your name and job role, calling the on-cluster postgresql database.
 
 ##### View the logs
@@ -202,3 +204,4 @@ The next step will be to create your own Helm Chart. You can try this with an ap
 
 [env-create]: tasks.html#creating-a-cloud-platform-environment
 [auth-to-cluster]: tasks.html#authentication
+[basic-auth-topic]: tasks.html#add-http-basic-authentication
