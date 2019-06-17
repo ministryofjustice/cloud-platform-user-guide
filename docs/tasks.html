@@ -437,6 +437,17 @@
       </li>
     </ul>
   </li>
+  <li>
+    <a href="/tasks.html#ssl-connections-with-rds">SSL connections with RDS</a>
+    <ul>
+      <li>
+        <a href="/tasks.html#full-verification-of-certificates">Full verification of certificates</a>
+      </li>
+      <li>
+        <a href="/tasks.html#force-ssl-connections">Force SSL connections</a>
+      </li>
+    </ul>
+  </li>
 </ul>
 <ul>
   <li>
@@ -2569,11 +2580,13 @@ Should you wish to go ahead yourselves, whilst it is possible to delete from the
 <p>b.   Run the fabric command to delete your stack</p>
 
 <p>The Fabric command to delete an AWS stack:</p>
-<p><div class="highlight"><pre class="highlight plaintext"><code>$ fab aws:&lt;awsaccountname&gt; environment:&lt;environmentname&gt; application:&lt;projectname&gt; config:cloudformation/&lt;projectname&gt;.yaml  passwords:cloudformation/&lt;projectname&gt;-secrets.yaml -u &lt;githubsshkey&gt; cfn_delete
+
+<div class="highlight"><pre class="highlight plaintext"><code>$ fab aws:&lt;awsaccountname&gt; environment:&lt;environmentname&gt; application:&lt;projectname&gt; config:cloudformation/&lt;projectname&gt;.yaml  passwords:cloudformation/&lt;projectname&gt;-secrets.yaml -u &lt;githubsshkey&gt; cfn_delete
 </code></pre></div><h4 id="2-jenkins-projects">2. Jenkins Projects:</h4><p>NOTE If you do not have the necessary permissions to carry out the following actions, raise a support ticket in [#ask-cloud-platform](https://mojdt.slack.com/messages/C57UPMZLY/team/U58MLFA0M/</p>
 <p>a.   Disable the project (if you wish to retain the configuration for reference):</p>
-<div class="highlight"><pre class="highlight plaintext"><code>i.   Locate your project’s job:</p>
-<p>ii.  Click on the “Disable Project” button:
+<div class="highlight"><pre class="highlight plaintext"><code>i.   Locate your project’s job:
+
+ii.  Click on the “Disable Project” button:
 </code></pre></div><p><a href="https://i.stack.imgur.com/n77nl.png" target="_blank" rel="noopener noreferrer"><img src="https://i.stack.imgur.com/n77nl.png" alt="Image description" /></a></p>
 <div class="highlight"><pre class="highlight plaintext"><code>iii. If you wish to resurrect your project job, click on “Enable” button: 
 </code></pre></div><p>b.   Delete the project (if you no longer require the Jenkins deploy config):</p>
@@ -2581,13 +2594,73 @@ Should you wish to go ahead yourselves, whilst it is possible to delete from the
 </code></pre></div><p><a href="https://issues.jenkins-ci.org/secure/attachment/31690/upload.png" target="_blank" rel="noopener noreferrer"><img src="https://issues.jenkins-ci.org/secure/attachment/31690/upload.png" alt="Image description" /></a></p>
 <h4 id="3-github-deploy-repos-this-should-take-place-after-you-have-deleted-the-aws-resources">3. Github deploy repos (this should take place after you have deleted the AWS resources)</h4><p>NOTE If you do not have the necessary permissions to carry out the following actions, raise a support ticket in [#ask-cloud-platform](https://mojdt.slack.com/messages/C57UPMZLY/team/U58MLFA0M/</p>
 <p>a.   <a href="https://help.github.com/en/articles/archiving-repositories">Archive the Github deploy repos</a>  (if you still require the deploy configuration for reference)</p>
-<div class="highlight"><pre class="highlight plaintext"><code>i.   Locate your deploy-repos. Click on the “Settings” button:</p>
-<p>ii.  Click on the “Archive this repository” button:</p>
-<p>iii. Type in the name of the repository and then click “I understand the consequences, archive this repository”:</p>
-<p>iv.  The deploy repository will then be archived (confirmatory message will appear):
+<div class="highlight"><pre class="highlight plaintext"><code>i.   Locate your deploy-repos. Click on the “Settings” button:
+
+ii.  Click on the “Archive this repository” button:
+
+iii. Type in the name of the repository and then click “I understand the consequences, archive this repository”:
+
+iv.  The deploy repository will then be archived (confirmatory message will appear):
 </code></pre></div><p>b.   <a href="https://help.github.com/en/articles/deleting-a-repository">Delete the Github deploy repos</a>  (if you no longer require the deploy configuration for reference)</p>
 <div class="highlight"><pre class="highlight plaintext"><code>i.   As for archiving -Locate your deploy-repos. Click on the “Settings” button. Then click on the “Delete this repository” button:
-</code></pre></div><h4 id="4-docker-images">4. Docker Images:</h4><p>a.   The docker image repository will be completely decommissioned when we have switched everything over from template-deploy</p></p>
+</code></pre></div><h4 id="4-docker-images">4. Docker Images:</h4><p>a.   The docker image repository will be completely decommissioned when we have switched everything over from template-deploy</p>
+
+<h1 id="ssl-connections-with-rds">SSL connections with RDS</h1><p>RDS instances are configured to allow SSL connections by default and also the latest versions of the client (<code>psql</code>) and
+libraries (eg.: the <code>pg</code> ruby gem which builds on <code>libpq</code>) will establish an SSL connection by default.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ psql "$url"
+psql (9.6.13, server 10.6)
+WARNING: psql major version 9.6, server major version 10.
+         Some psql features might not work.
+SSL connection (protocol: TLSv1.2, cipher: ECDHE-RSA-AES256-GCM-SHA384, bits: 256, compression: off)
+Type "help" for help.
+
+dba02192a049ed7ce8=&gt; ^D\q
+</code></pre></div><p>Where <code>$url</code> is of the form <code>postgres://user:pass@host:port/db</code>.</p>
+<p>Additionally, AWS <a href="https://d1.awsstatic.com/whitepapers/aws-security-whitepaper.pdf">offer strong assurances</a> that a malicious actor cannot spoof their traffic or sniff
+another tenant&rsquo;s traffic, even if they operate inside the same VPC.</p>
+<p>However, best practices dictate that an SSL connection should be explicitly forced. PostgreSQL implements various
+<a href="https://www.postgresql.org/docs/current/libpq-ssl.html">modes of operation</a>, each one offering a different level of security. Without any additional setup, we can
+establish an encrypted connection with <code>sslmode=require</code>, which forces an SSL connection but does not verify the server
+certificate.</p>
+<h2 id="full-verification-of-certificates">Full verification of certificates</h2><p>In order to establish a connection with <code>sslmode=verify-full</code>, which offers <a href="https://en.wikipedia.org/wiki/Man-in-the-middle_attack">MITM</a> protection, we have to provide
+the client with the root CA certificate before it is able to verify the chain of trust. AWS offers <a href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html#PostgreSQL.Concepts.General.SSL">detailed instructions</a>
+on how to exactly that.</p>
+<p>As you can see below, unless provided with the root CA certificate, the client cannot fully verify the endpoint:
+<code>
+$ psql &quot;$url?sslmode=verify-full&quot;
+psql: could not get home directory to locate root certificate file
+Either provide the file or change sslmode to disable server certificate verification.
+</code>
+&ldquo;`
+$ psql &rdquo;$url?sslmode=verify-full&amp;sslrootcert=/tmp/rds-combined-ca-bundle.pem&quot;
+psql (9.6.13, server 10.6)
+WARNING: psql major version 9.6, server major version 10.
+         Some psql features might not work.
+SSL connection (protocol: TLSv1.2, cipher: ECDHE-RSA-AES256-GCM-SHA384, bits: 256, compression: off)
+Type &ldquo;help&rdquo; for help.</p>
+<p>dba02192a049ed7ce8=&gt; ^D\q
+&ldquo;`</p>
+<p>This CA bundle can be added into your application&rsquo;s docker image. You can simply add the following directive in your
+<code>Dockerfile</code>:
+<code>
+ADD https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem /path/to/rds-combined-ca-bundle.pem
+</code></p>
+<p>If you&rsquo;re developing a Ruby on Rails application, you can configure this by adding the following two options in your
+<code>config/database.yml</code>:
+<code>
+  sslmode: verify-full
+  sslrootcert: /path/to/rds-combined-ca-bundle.pem
+</code></p>
+<p>For other frameworks, you should consult their documentation on how to configure the database client to use SSL
+connections.</p>
+<h2 id="force-ssl-connections">Force SSL connections</h2><p>Ideally, we also want to completely disable unencrypted connections (by using the RDS <code>force_ssl</code> parameter) and always
+perform a full verification when connecting to the RDS endpoint.</p>
+<p>In order to force using secure connections for your RDS instance, you&rsquo;ll need to set <code>force_ssl = true</code> in your module
+definition. See the <a href="https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance/#inputs">documentation</a> for details. Once applied, you should no longer be able to establish
+a connection using <code>sslmode=disable</code>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ psql "$url?sslmode=disable"
+psql: FATAL:  no pg_hba.conf entry for host "172.20.32.241", user "fDsQgBlavX", database "dba02192a049ed7ce8", SSL off
+</code></pre></div>
 
 
             
