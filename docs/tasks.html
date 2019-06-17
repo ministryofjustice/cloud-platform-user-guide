@@ -1044,13 +1044,16 @@ variable "cluster_state_bucket" {}
 </ul>
 <h3 id="step-1-build-your-docker-image">Step 1 - Build your docker image</h3>
 <ul>
-<li><p>Clone the <a href="https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app">demo application</a></p>
-<p>git clone https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app
-  cd cloud-platform-helloworld-ruby-app</p></li>
-<li><p>Build the docker image</p>
-<p>docker build -t [ECR Team Name]/[ECR Repository Name] .</p></li>
+<li>Clone the <a href="https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app">demo application</a></li>
 </ul>
-<p>The <code>ECR Team Name</code> and <code>ECR Repository Name</code> must match the <code>team_name</code> and <code>repo_name</code> values you entered when you created the ECR via <a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud-platform-environments</a> Github repository.</p>
+<div class="highlight"><pre class="highlight shell"><code>git clone https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app  
+<span class="nb">cd </span>cloud-platform-helloworld-ruby-app
+</code></pre></div>
+<ul>
+<li>Build the docker image</li>
+</ul>
+<div class="highlight"><pre class="highlight shell"><code>docker build <span class="nt">-t</span> <span class="o">[</span>ECR Team Name]/[ECR Repository Name] <span class="nb">.</span>
+</code></pre></div><p>The <code>ECR Team Name</code> and <code>ECR Repository Name</code> must match the <code>team_name</code> and <code>repo_name</code> values you entered when you created the ECR via <a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud-platform-environments</a> Github repository.</p>
 <p>You can find them in the file <code>namespaces/live-1.cloud-platform.service.justice.gov.uk/[YOUR ENVIRONMENT]/resources/ecr.tf</code>.</p>
 <h4 id="amazon-ecr-terminology">Amazon ECR Terminology</h4><p>Amazon ECR uses the terms <code>repository</code> and <code>image</code> in a rather confusing way. Normally, you would think of a docker image repository as holding multiple images, each with a different name, where each image can have multiple tags. Amazon ECR conflates the repository and image - i.e. you can only push images with the same name to a given ECR.</p>
 <p>So, if you created your ECR using the team_name <code>davids-dummy-team</code> and repo_name <code>davids-dummy-app</code>, then you can only push images to the ECR if they are named <code>davids-dummy-team/davids-dummy-app:[something]</code>. You are free to change the tag of the image (shown as [something], here), and some teams overload the tag value as a way to store multiple completely different docker images in a single ECR.</p>
@@ -1375,7 +1378,8 @@ roleRef:
 <p>Once it is merged and applied, you will have a service account for Tiller that allows it act on your namespace. Now you have to install Helm and Tiller into your namespace.</p>
 <h6 id="installing-and-configuring-helm-and-tiller">Installing and configuring Helm and Tiller</h6><p>Install the client via Homebrew or by other <a href="https://docs.helm.sh/using_helm/#installing-helm">means</a>:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>$ brew install kubernetes-helm
-</code></pre></div><p>Now configure the installation with Tiller:</p>
+</code></pre></div><p>Note: The Helm version <strong>must</strong> be at least <strong>2.14</strong>. Earlier versions try to run <code>tiller</code> as root, which is incompatible with our cluster security policies.</p>
+<p>Now configure the installation with Tiller:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>$ helm init --tiller-namespace &lt;env-name&gt; --service-account tiller
 </code></pre></div><p>When succesful, you&rsquo;ll be greeted with the message:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>Happy Helming
@@ -1383,7 +1387,7 @@ roleRef:
 <h6 id="application-install">Application install</h6><p>To deploy the application with Helm first change directory so we can focus on the app we need:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>$ cd helm_deploy/django-app/
 </code></pre></div><p>Values for our application are stored in the <code>values.yaml</code> at the root of our directory. Configurations such as &lsquo;number of pods running&rsquo; and which image repository to use is stored here in this file. Open this file and get familiar with our application layout.</p>
-<p>There is an important value in this file called <code>host</code>, which sets the URL for your application. We have to provide this value as an argument on our installation command.</p>
+<p>We need to set a <code>host</code> value, to set the URL for your application. We have to provide this value as an argument to our installation command.</p>
 <p>Run the following (replacing the <code>YourName</code> with your own name and <code>env-name</code> with your environment name:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>    $ helm install . \
       --name django-app-&lt;YourName&gt; \
@@ -1396,7 +1400,7 @@ roleRef:
 <p>Note: We&rsquo;re naming it like this as app names and host names have to be unique on the cluster.</p>
 </blockquote>
 
-<p>The <code>set deploy.host</code> overwrites the value stored in my <code>value.yaml</code> file and you&rsquo;ll see a fairly verbose output showing your pods creating.</p>
+<p>You&rsquo;ll see quite a lot of output as the various components are created.</p>
 
 <h5 id="viewing-your-application">Viewing your application</h5><p>Congratulations on getting this far. If all went well your pods are now deployed and is now being served on your specified URL.</p>
 <p>Let&rsquo;s check:</p>
@@ -1412,6 +1416,7 @@ django-app-&lt;Name&gt;-postgresql-7b4bdff4b8-xdlw2   1/1       Running   0     
 <p>Let&rsquo;s check your host has a URL by running:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>$ kubectl get ingress --namespace &lt;env-name&gt;
 </code></pre></div><p>This will return the URL of your given app. Open it using your favourite browser.</p>
+<p>The application is secured with http basic authentication. The default credentials are user: <code>myuser</code>, password: <code>password123</code>. For more information, see <a href="/tasks.html#add-http-basic-authentication">this topic</a>.</p>
 <p>You should be met with an MoJ reference app with the title, <em>&#39;Cloud Platforms Deployment&rsquo;</em>. As we mentioned before, there is nothing complicated about this application. You can enter your name and job role, calling the on-cluster postgresql database.</p>
 <h5 id="view-the-logs">View the logs</h5><p>Each pod will generate logs that can be viewed via the API. Let&rsquo;s have a browse of our application logs.</p>
 <p>First grab the pod name:</p>
@@ -1425,9 +1430,9 @@ django-app-&lt;Name&gt;-postgresql-7b4bdff4b8-xdlw2   1/1       Running   0     
 <div class="highlight"><pre class="highlight plaintext"><code>$ kubectl logs django-app-&lt;name&gt;-fcc657679-w69cr --namespace &lt;env-name&gt; -f
 </code></pre></div><p>As you can see, this tails the log and you should see our health checks giving a HTTP 200.</p>
 <p>Read more about Kubernetes logging <a href="https://kubernetes.io/docs/concepts/cluster-administration/logging/">here</a>.</p>
-<h5 id="scale-the-application">Scale the application</h5><p>You now have our application up and running but you decide two pods aren&rsquo;t enough. Say you want to run three. This is simply a case of changing the replicaCount value in the values.yaml whilst running the <code>helm upgrade</code> command.</p>
-<p>Let&rsquo;s try:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>$ helm upgrade django-app-&lt;YourName&gt; . --set replicaCount=3 --tiller-namespace &lt;env-name&gt; --set deploy.host=&lt;DeploymentURL&gt;
+<h5 id="scale-the-application">Scale the application</h5><p>You now have our application up and running but you decide two pods aren&rsquo;t enough. Say you want to run three. This is simply a case of changing the replicaCount value in the values.yaml and then running the <code>helm upgrade</code> command.</p>
+<p>Edit <code>values.yaml</code> and change <code>replicaCount</code> from 1 to 3. Save the file, then run:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ helm upgrade django-app-&lt;YourName&gt; . --tiller-namespace &lt;env-name&gt; --set deploy.host=&lt;DeploymentURL&gt;
 </code></pre></div><p>This command spins up another pod to bring the total number to 3.</p>
 <p>If we run the familiar command we&rsquo;ve been using:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>$ kubectl get pods --namespace &lt;env-var&gt;
