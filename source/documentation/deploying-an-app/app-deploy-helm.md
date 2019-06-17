@@ -85,6 +85,8 @@ Install the client via Homebrew or by other [means](https://docs.helm.sh/using_h
 
     $ brew install kubernetes-helm
 
+Note: The Helm version **must** be at least **2.14**. Earlier versions try to run `tiller` as root, which is incompatible with our cluster security policies.
+
 Now configure the installation with Tiller:
 
     $ helm init --tiller-namespace <env-name> --service-account tiller
@@ -103,7 +105,7 @@ To deploy the application with Helm first change directory so we can focus on th
 
 Values for our application are stored in the `values.yaml` at the root of our directory. Configurations such as 'number of pods running' and which image repository to use is stored here in this file. Open this file and get familiar with our application layout.
 
-There is an important value in this file called `host`, which sets the URL for your application. We have to provide this value as an argument on our installation command.
+We need to set a `host` value, to set the URL for your application. We have to provide this value as an argument to our installation command.
 
 Run the following (replacing the `YourName` with your own name and `env-name` with your environment name:
 
@@ -115,7 +117,7 @@ Run the following (replacing the `YourName` with your own name and `env-name` wi
 
 > Note: We're naming it like this as app names and host names have to be unique on the cluster.
 
-The `set deploy.host` overwrites the value stored in my `value.yaml` file and you'll see a fairly verbose output showing your pods creating.
+You'll see quite a lot of output as the various components are created.
 
 ##### Viewing your application
 Congratulations on getting this far. If all went well your pods are now deployed and is now being served on your specified URL.
@@ -142,6 +144,8 @@ Let's check your host has a URL by running:
     $ kubectl get ingress --namespace <env-name>
 
 This will return the URL of your given app. Open it using your favourite browser.
+
+The application is secured with http basic authentication. The default credentials are user: `myuser`, password: `password123`. For more information, see [this topic][basic-auth-topic].
 
 You should be met with an MoJ reference app with the title, *'Cloud Platforms Deployment'*. As we mentioned before, there is nothing complicated about this application. You can enter your name and job role, calling the on-cluster postgresql database.
 
@@ -170,11 +174,11 @@ As you can see, this tails the log and you should see our health checks giving a
 Read more about Kubernetes logging [here](https://kubernetes.io/docs/concepts/cluster-administration/logging/).
 
 ##### Scale the application
-You now have our application up and running but you decide two pods aren't enough. Say you want to run three. This is simply a case of changing the replicaCount value in the values.yaml whilst running the `helm upgrade` command.
+You now have our application up and running but you decide two pods aren't enough. Say you want to run three. This is simply a case of changing the replicaCount value in the values.yaml and then running the `helm upgrade` command.
 
-Let's try:
+Edit `values.yaml` and change `replicaCount` from 1 to 3. Save the file, then run:
 
-    $ helm upgrade django-app-<YourName> . --set replicaCount=3 --tiller-namespace <env-name> --set deploy.host=<DeploymentURL>
+    $ helm upgrade django-app-<YourName> . --tiller-namespace <env-name> --set deploy.host=<DeploymentURL>
 
 This command spins up another pod to bring the total number to 3.
 
@@ -200,3 +204,4 @@ The next step will be to create your own Helm Chart. You can try this with an ap
 
 [env-create]: tasks.html#creating-a-cloud-platform-environment
 [auth-to-cluster]: tasks.html#authentication
+[basic-auth-topic]: tasks.html#add-http-basic-authentication
