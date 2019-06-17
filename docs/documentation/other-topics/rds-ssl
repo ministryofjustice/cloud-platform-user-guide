@@ -18,33 +18,26 @@ certificate.</p>
 <h2 id="full-verification-of-certificates">Full verification of certificates</h2><p>In order to establish a connection with <code>sslmode=verify-full</code>, which offers <a href="https://en.wikipedia.org/wiki/Man-in-the-middle_attack">MITM</a> protection, we have to provide
 the client with the root CA certificate before it is able to verify the chain of trust. AWS offers <a href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html#PostgreSQL.Concepts.General.SSL">detailed instructions</a>
 on how to exactly that.</p>
-<p>As you can see below, unless provided with the root CA certificate, the client cannot fully verify the endpoint:
-<code>
-$ psql &quot;$url?sslmode=verify-full&quot;
+<p>As you can see below, unless provided with the root CA certificate, the client cannot fully verify the endpoint:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ psql "$url?sslmode=verify-full"
 psql: could not get home directory to locate root certificate file
 Either provide the file or change sslmode to disable server certificate verification.
-</code>
-&ldquo;`
-$ psql &rdquo;$url?sslmode=verify-full&amp;sslrootcert=/tmp/rds-combined-ca-bundle.pem&quot;
+</code></pre></div><div class="highlight"><pre class="highlight plaintext"><code>$ psql "$url?sslmode=verify-full&amp;sslrootcert=/tmp/rds-combined-ca-bundle.pem"
 psql (9.6.13, server 10.6)
 WARNING: psql major version 9.6, server major version 10.
          Some psql features might not work.
 SSL connection (protocol: TLSv1.2, cipher: ECDHE-RSA-AES256-GCM-SHA384, bits: 256, compression: off)
-Type &ldquo;help&rdquo; for help.</p>
-<p>dba02192a049ed7ce8=&gt; ^D\q
-&ldquo;`</p>
-<p>This CA bundle can be added into your application&rsquo;s docker image. You can simply add the following directive in your
-<code>Dockerfile</code>:
-<code>
-ADD https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem /path/to/rds-combined-ca-bundle.pem
-</code></p>
-<p>If you&rsquo;re developing a Ruby on Rails application, you can configure this by adding the following two options in your
-<code>config/database.yml</code>:
-<code>
-  sslmode: verify-full
+Type "help" for help.
+
+dba02192a049ed7ce8=&gt; ^D\q
+</code></pre></div><p>This CA bundle can be added into your application&rsquo;s docker image. You can simply add the following directive in your
+<code>Dockerfile</code>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>ADD https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem /path/to/rds-combined-ca-bundle.pem
+</code></pre></div><p>If you&rsquo;re developing a Ruby on Rails application, you can configure this by adding the following two options in your
+<code>config/database.yml</code>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  sslmode: verify-full
   sslrootcert: /path/to/rds-combined-ca-bundle.pem
-</code></p>
-<p>For other frameworks, you should consult their documentation on how to configure the database client to use SSL
+</code></pre></div><p>For other frameworks, you should consult their documentation on how to configure the database client to use SSL
 connections.</p>
 <h2 id="force-ssl-connections">Force SSL connections</h2><p>Ideally, we also want to completely disable unencrypted connections (by using the RDS <code>force_ssl</code> parameter) and always
 perform a full verification when connecting to the RDS endpoint.</p>
