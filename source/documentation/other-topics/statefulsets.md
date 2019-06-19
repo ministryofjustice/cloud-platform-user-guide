@@ -2,8 +2,8 @@
 
 #### Introduction
 
-Like a Deployment, a [StatefulSet](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/) manages Pods that are based on an identical container spec. Unlike a Deployment, a StatefulSet maintains a sticky identity for each of their Pods. These pods are created from the same spec, but are not interchangeable: each has a persistent identifier (UID) that it maintains across any rescheduling. It also provides guarantees ordering and uniqueness of the Pods.
-StatefulSets also require a [headless service](https://kubernetes.io/docs/concepts/services-networking/service/#headless-services) to manage network identities for pods. Each Pod gets a sticky network sub-domain and CRV record that does not change if a Pod is deleted and recreated.
+Like a Deployment, a [StatefulSet](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/) manages Pods that are based on an identical container spec. Unlike a Deployment, a StatefulSet maintains a sticky identity for each of their Pods. These pods are created from the same spec, but are not interchangeable: each has a persistent identifier (UID) that it maintains across any rescheduling. It also provides guarantees on the ordering and uniqueness of the Pods.
+StatefulSets also require a [headless service](https://kubernetes.io/docs/concepts/services-networking/service/#headless-services) to manage network identities for pods. Each Pod gets a sticky network sub-domain and SRV record that does not change if a Pod is deleted and recreated.
 
 You can see an example below where a Pod is deleted, however, it is recreated with the same `Name` using the StatefulSet spec. 
 
