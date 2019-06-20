@@ -1,0 +1,92 @@
+<h3 id="statefulsets-pods-with-persistent-volumes">StatefulSets (Pods with Persistent Volumes)</h3><h4 id="introduction">Introduction</h4><p>Like a Deployment, a <a href="https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/">StatefulSet</a> manages Pods that are based on an identical container spec. Unlike a Deployment, a StatefulSet maintains a sticky identity for each of their Pods. These pods are created from the same spec, but are not interchangeable: each has a persistent identifier (UID) that it maintains across any rescheduling. It also provides guarantees on the ordering and uniqueness of the Pods.
+StatefulSets also require a <a href="https://kubernetes.io/docs/concepts/services-networking/service/#headless-services">headless service</a> to manage network identities for pods. Each Pod gets a sticky network sub-domain and SRV record that does not change if a Pod is deleted and recreated.</p>
+<p>You can see an example below where a Pod is deleted, however, it is recreated with the same <code>Name</code> using the StatefulSet spec.</p>
+<div class="highlight"><pre class="highlight shell"><code>kubectl get pods
+NAME    READY   STATUS    RESTARTS   AGE
+web-0   1/1     Running   0          3d
+web-1   1/1     Running   0          3d
+
+kubectl delete pod web-0 
+pod <span class="s2">"web-0"</span> deleted
+
+kubectl get pods 
+NAME    READY   STATUS              RESTARTS   AGE
+web-0   0/1     ContainerCreating   0          7s
+web-1   1/1     Running             0          3d
+</code></pre></div><h4 id="headless-service">Headless Service</h4><p>As mentioned above, a headless service is required for StatefulSets, where the network type <code>clusterIP</code> has a value of <code>none</code>. This does not predefine an IP for the service.</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">nginx-service</span> <span class="c1">#Name of Service</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">nginx</span> <span class="c1"># Pod label</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">ports</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">port</span><span class="pi">:</span> <span class="s">8080</span> <span class="c1"># Mapped port used by service</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">web</span> <span class="c1"># Named port</span>
+  <span class="na">clusterIP</span><span class="pi">:</span> <span class="s">None</span> <span class="c1"># Headless service setting</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">nginx</span> <span class="c1"># Selector should match the name of the app being deployed as the Statefulset</span>
+</code></pre></div><h4 id="statefulset-creation">StatefulSet creation</h4><p>Below is an example of StatefulSet template:</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">apps/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">StatefulSet</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">web</span> <span class="c1"># Name of StatefulSet</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">matchLabels</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">nginx</span> <span class="c1"># defines a set of pods to be managed by the StatefulSet</span>
+  <span class="na">serviceName</span><span class="pi">:</span> <span class="s2">"</span><span class="s">nginx-service"</span> <span class="c1">#  The name of the headless service</span>
+  <span class="na">replicas</span><span class="pi">:</span> <span class="s">3</span>
+  <span class="na">template</span><span class="pi">:</span>
+    <span class="na">metadata</span><span class="pi">:</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">app</span><span class="pi">:</span> <span class="s">nginx</span> <span class="c1"># This should be the same of selector:matchLabels:app</span>
+    <span class="na">spec</span><span class="pi">:</span>
+      <span class="na">containers</span><span class="pi">:</span> <span class="c1"># Container images with their corresponding settings</span>
+      <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">nginx</span>
+        <span class="na">image</span><span class="pi">:</span> <span class="s">bitnami/nginx:latest</span>
+        <span class="na">ports</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">containerPort</span><span class="pi">:</span> <span class="s">8080</span>
+          <span class="na">name</span><span class="pi">:</span> <span class="s">web</span>
+        <span class="na">volumeMounts</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">www</span>
+          <span class="na">mountPath</span><span class="pi">:</span> <span class="s2">"</span><span class="s">/usr/share/nginx/html"</span>
+        <span class="na">securityContext</span><span class="pi">:</span>
+          <span class="na">runAsNonRoot</span><span class="pi">:</span> <span class="no">true</span>
+          <span class="na">runAsUser</span><span class="pi">:</span> <span class="s">1000</span>
+  <span class="na">volumeClaimTemplates</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">metadata</span><span class="pi">:</span>
+      <span class="na">name</span><span class="pi">:</span> <span class="s">www</span>
+    <span class="na">spec</span><span class="pi">:</span>
+      <span class="na">accessModes</span><span class="pi">:</span> <span class="pi">[</span> <span class="s2">"</span><span class="s">ReadWriteOnce"</span> <span class="pi">]</span>
+      <span class="na">storageClassName</span><span class="pi">:</span> <span class="s2">"</span><span class="s">gp2-expand"</span> <span class="c1"># StorageClass name used to create PV</span>
+      <span class="na">resources</span><span class="pi">:</span>
+        <span class="na">requests</span><span class="pi">:</span>
+          <span class="na">storage</span><span class="pi">:</span> <span class="s">4Gi</span> <span class="c1"># Storage resource request size</span>
+</code></pre></div><p>Please use StorageClass <code>gp2-expand</code> to be able to expand PVs in the future.</p>
+<p>Once all pods are created for the StatefulSet, they have an unique identity based on the metadata name of the StatefulSet.
+The pods are named using the following: [StatefulSet_Name]-[Ordinal_Index] e.g. web-0</p>
+<div class="highlight"><pre class="highlight shell"><code>kubectl get pods 
+NAME    READY   STATUS    RESTARTS   AGE
+web-0   1/1     Running   0          22m
+web-1   1/1     Running   0          22m
+web-2   1/1     Running   0          21m
+web-3   1/1     Running   0          21m
+web-4   1/1     Running   0          20m
+web-5   1/1     Running   0          20m
+web-6   1/1     Running   0          20m
+</code></pre></div><p>All PVCs would have all been created also. The PVC are named using the following: [VolumeClaim_Name]-[StatefulSet_Name]-[Ordinal_Index]</p>
+<div class="highlight"><pre class="highlight shell"><code>kubectl get pvc 
+NAME        STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+www-web-0   Bound    pvc-0ca662d1-9299-11e9-b4c5-0a5b8815a91e   4Gi        RWO            gp2-expand      29m
+www-web-1   Bound    pvc-1cc800d2-9299-11e9-b4c5-0a5b8815a91e   4Gi        RWO            gp2-expand      28m
+www-web-2   Bound    pvc-2abbbeb6-9299-11e9-b4c5-0a5b8815a91e   4Gi        RWO            gp2-expand      28m
+www-web-3   Bound    pvc-40e2bc95-9299-11e9-b4c5-0a5b8815a91e   4Gi        RWO            gp2-expand      27m
+www-web-4   Bound    pvc-4ebb8afd-9299-11e9-b4c5-0a5b8815a91e   4Gi        RWO            gp2-expand      27m
+www-web-5   Bound    pvc-641f5a61-9299-11e9-b4c5-0a5b8815a91e   4Gi        RWO            gp2-expand      26m
+www-web-6   Bound    pvc-6c2a187c-9299-11e9-b4c5-0a5b8815a91e   4Gi        RWO            gp2-expand      26m
+</code></pre></div><p>If a Pod is deleted, it will be rescheduled, use the same name, and the corresponding above PVC will be attached. 
+The Pod also has and will keep a network ID that persists with restarts.</p>
+<p>If a StatefulSet is deleted, the PVCs remain along with PVs. PVCs and in turn PVs have to be deleted separately.</p>
+<h4 id="advisory-note-expanding-persistent-volumes">Advisory note: Expanding Persistent Volumes</h4><p>It is currently not possible to expand PVs using the StatefulSet template. For the time being, please create PVs with the previous statement in mind. There is a manual way to do this, which the Cloud Platform team can help with if required.</p>
