@@ -55,6 +55,8 @@ web-1   1/1     Running             0          3d
         <span class="na">securityContext</span><span class="pi">:</span>
           <span class="na">runAsNonRoot</span><span class="pi">:</span> <span class="no">true</span>
           <span class="na">runAsUser</span><span class="pi">:</span> <span class="s">1000</span>
+          <span class="na">runAsGroup</span><span class="pi">:</span> <span class="s">1000</span>
+          <span class="na">fsGroup</span><span class="pi">:</span> <span class="s">1000</span>
   <span class="na">volumeClaimTemplates</span><span class="pi">:</span>
   <span class="pi">-</span> <span class="na">metadata</span><span class="pi">:</span>
       <span class="na">name</span><span class="pi">:</span> <span class="s">www</span>
