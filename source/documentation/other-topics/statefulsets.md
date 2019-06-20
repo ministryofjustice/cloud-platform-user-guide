@@ -74,6 +74,8 @@ spec:
         securityContext:
           runAsNonRoot: true
           runAsUser: 1000
+          runAsGroup: 1000
+          fsGroup: 1000
   volumeClaimTemplates:
   - metadata:
       name: www
