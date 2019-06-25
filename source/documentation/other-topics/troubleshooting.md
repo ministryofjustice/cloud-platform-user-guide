@@ -55,3 +55,19 @@ As this issue is quite vague, you'll want to start by checking STDOUT using the 
 ### Solution
 Fix application or misconfiguration errors.
 
+## My pod shows `ImagePullBackOff` after deployment
+### Scenario
+You have deployed an application to the Cloud Platform and its status shows `ImagePullBackOff` (you can get the status by running `kubect get pods -n <namespace>`).
+
+### Cause
+This error is caused by a misconfiguration in your deployment, usually an invalid image `tag:`.
+
+### Troubleshooting
+Again, utilising the `kubectl -n <namespace> describe <pod_name>` command you can see that the pod has failed to pull down the correct image:
+```
+  Normal   Pulling    10m (x4 over 12m)    kubelet, worker-node  pulling image "redis:foobar"
+  Warning  Failed     10m (x4 over 12m)    kubelet, worker-node  Error: ErrImagePull
+```
+
+### Solution
+This can be corrected by amdending the `image` in your deployment.
