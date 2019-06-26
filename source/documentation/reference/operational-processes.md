@@ -53,7 +53,7 @@ The [`#ask-cloud-platform`](https://mojdt.slack.com/messages/C57UPMZLY/) channel
 
 One engineer should be available to answer questions throughout the hours of support (10AM - 5PM).  
 
-##### Communication style
+#### Communication style
 
 In our responses we aim to be:
 
@@ -63,11 +63,11 @@ In our responses we aim to be:
 
 When the solution is a quick one, it is good to have the whole conversation in the channel rather than in a direct message so that other people can search/see what the resolution was..
 
-##### What we communicate
+#### What we communicate
 
 The main purpose of [`#ask-cloud-platform`](https://mojdt.slack.com/messages/C57UPMZLY/) is to discuss the problems that people are having and help them to solve them.
 
-##### User support tickets
+#### User support tickets
 
 If someone is asking for help that will be quick to do (less than 15 mins) or is mainly advice then keep the interaction in channel and get it done.
 
