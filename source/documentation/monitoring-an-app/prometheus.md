@@ -1,6 +1,6 @@
 ### Using the Cloud Platform Prometheus, AlertManager and Grafana
 #### Introduction
-Prometheus, AlertManager and Grafana have been installed on Live-0 to ensure the reliability and availability of the Cloud Platform. This document will briefly outline how to access the monitoring tools and where to find further information.
+Prometheus, AlertManager and Grafana have been installed on Live-1 to ensure the reliability and availability of the Cloud Platform. This document will briefly outline how to access the monitoring tools and where to find further information.
 
 #### What is Prometheus
 
