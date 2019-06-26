@@ -437,6 +437,9 @@
             <a href="/tasks.html#how-to-decommission-unused-template-deploy-services">How to decommission unused template deploy services</a>
           </li>
           <li>
+            <a href="/tasks.html#troubleshooting-guide">Troubleshooting guide</a>
+          </li>
+          <li>
             <a href="/tasks.html#ssl-connections-with-rds">SSL connections with RDS</a>
           </li>
         </ul>
@@ -2692,16 +2695,85 @@ iv.  The deploy repository will then be archived (confirmatory message will appe
 <div class="highlight"><pre class="highlight plaintext"><code>i.   As for archiving -Locate your deploy-repos. Click on the “Settings” button. Then click on the “Delete this repository” button:
 </code></pre></div><h4 id="4-docker-images">4. Docker Images:</h4><p>a.   The docker image repository will be completely decommissioned when we have switched everything over from template-deploy</p>
 
-<h3 id="ssl-connections-with-rds">SSL connections with RDS</h3><p>RDS instances are configured to allow SSL connections by default and also the latest versions of the client (<code>psql</code>) and
+<h3 id="troubleshooting-guide">Troubleshooting guide</h3><h4 id="troubleshooting-guide-overview">Overview</h4><p>This document intends to give you an idea of potential troubleshooting tips and techniques to investigate and resolve application issues on the Cloud Platform. The Kubernetes project also offers a resource on <a href="https://kubernetes.io/docs/tasks/debug-application-cluster/troubleshooting/">troubleshooting</a> so we will attempt to avoid overlap.</p>
+<p>Throughout this document we will refer to terms such as <code>&lt;pod_name&gt;</code> and <code>&lt;namespace&gt;</code>, it is assumed you&rsquo;ll know how to gather this information using the <code>kubectl get</code> commands.</p>
+<h4 id="contents">Contents</h4>
+<ul>
+<li><a href="#my-pod-shows-createcontainerconfigerror-after-deployment">My pod shows &lsquo;CreateContainerConfigError&rsquo; after deployment</a></li>
+<li><a href="#my-pod-shows-crashloopbackoff-after-deployment">My pod shows &#39;CrashLoopBackOff&rsquo; after deployment</a></li>
+<li><a href="#my-pod-shows-imagepullbackoff-after-deployment">My pod shows &#39;ImagePullBackOff&rsquo; after deployment</a></li>
+<li><a href="#i-get-the-error-39-container-is-unhealthy-it-will-be-killed-and-re-created-39">I get the error &#39;container is unhealthy, it will be killed and re-created’</a></li>
+</ul>
+<h4 id="my-pod-shows-39-createcontainerconfigerror-39-after-deployment">My pod shows &#39;CreateContainerConfigError&rsquo; after deployment</h4><h5 id="scenario">Scenario</h5><p>You have deployed an application to the Cloud Platform and its status shows <code>CreateContainerConfigError</code> (you can get the status by running <code>kubect get pods -n &lt;namespace&gt;</code>).</p>
+<h5 id="cause">Cause</h5><p>There are a number of reasons why this error will appear but the most probable cause is a missing secret or environment variable.</p>
+<h5 id="troubleshooting">Troubleshooting</h5><p>To investigate this issue you&rsquo;ll want to look at the events of your pod. Run <code>kubectl -n &lt;namespace&gt; describe &lt;pod_name&gt;</code>, in the section titled <code>Events</code> you&rsquo;ll have something similar to:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>Events:
+  Type     Reason     Age                    From                                                   Message
+  ----     ------     ----                   ----                                                   -------
+  Normal   Scheduled  54m                    default-scheduler                                      Successfully assigned myapplication-namespace/myapplication to worker-node
+  Warning  Failed     49m (x8 over 53m)      kubelet, worker-node  Error: Couldn't find key postgresUser in Secret myapplication-dev/myapplication
+</code></pre></div>
+
+<blockquote>
+<p>Note: you can also find this out using <code>kubectl -n &lt;namespace&gt; get events</code></p>
+</blockquote>
+<p><h5 id="solution">Solution</h5><p>Ensure all secrets and environment variables have been defined.</p>
+<h4 id="my-pod-shows-crashloopbackoff-after-deployment">My pod shows <code>CrashLoopBackOff</code> after deployment</h4><h5 id="my-pod-shows-crashloopbackoff-after-deployment-scenario">Scenario</h5><p>Following the deployment of your application, you receive a status of <code>CrashLoopBackOff</code> when querying the pods in your namespace with <code>kubectl get pods -n &lt;namespace&gt;</code>.</p>
+<h5 id="my-pod-shows-crashloopbackoff-after-deployment-cause">Cause</h5><p>A <code>CrashloopBackOff</code> means that you have a pod starting, crashing, starting again, and then crashing again.</p>
+<p>A PodSpec has a restartPolicy field with possible values Always, OnFailure, and Never which applies to all containers in a pod. The default value is Always and the restartPolicy only refers to restarts of the containers by the kubelet on the same node (so the restart count will reset if the pod is rescheduled in a different node). Failed containers that are restarted by the kubelet are restarted with an exponential back-off delay (10s, 20s, 40s …) capped at five minutes, and is reset after ten minutes of successful execution. This is an example of a PodSpec with the restartPolicy field:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: v1
+kind: Pod
+metadata:
+  name: dummy-pod
+spec:
+  containers:
+    - name: dummy-pod
+      image: ubuntu
+  restartPolicy: Always
+</code></pre></div><p>The main causes of <code>CrashloopBackOff</code> are:</p></p>
+
+<ul>
+<li>The application inside the container keeps crashing.</li>
+<li>Some parameters of the pod or container have been configured incorrectly.</li>
+<li>An error has been made when deploying Kubernetes.</li>
+</ul>
+<p><h5 id="my-pod-shows-crashloopbackoff-after-deployment-troubleshooting">Troubleshooting</h5><p>As this issue is quite vague, you&rsquo;ll want to start by checking what your pod is printing to STDOUT using the command <code>kubectl -n &lt;namespace&gt; logs &lt;pod_name&gt;</code>. This should give you a clear understanding of whether the application has crashed. If your application is crashing, you need to identify the reason and try to fix it. Some possibilities are missing environment variables, insufficient resources, missing files or directories, or a lack of required permissions.</p>
+<h5 id="my-pod-shows-crashloopbackoff-after-deployment-solution">Solution</h5><p>Fix application or misconfiguration errors.</p>
+<h4 id="my-pod-shows-imagepullbackoff-after-deployment">My pod shows <code>ImagePullBackOff</code> after deployment</h4><h5 id="my-pod-shows-imagepullbackoff-after-deployment-scenario">Scenario</h5><p>You have deployed an application to the Cloud Platform and its status shows <code>ImagePullBackOff</code> (you can get the status by running <code>kubect get pods -n &lt;namespace&gt;</code>).</p>
+<h5 id="my-pod-shows-imagepullbackoff-after-deployment-cause">Cause</h5><p>This error is caused by a misconfiguration in your deployment, there are three primary culprits besides network connectivity issues:</p></p>
+
+<ul>
+<li>The image tag is incorrect</li>
+<li>The image doesn&rsquo;t exist (or is in a different registry)</li>
+<li>Kubernetes doesn&rsquo;t have permissions to pull that image</li>
+</ul>
+<p><h5 id="my-pod-shows-imagepullbackoff-after-deployment-troubleshooting">Troubleshooting</h5><p>Again, utilising the <code>kubectl -n &lt;namespace&gt; describe &lt;pod_name&gt;</code> command you can see that the pod has failed to pull down the correct image:
+<code>
+  Normal   Pulling    10m (x4 over 12m)    kubelet, worker-node  pulling image &quot;redis:foobar&quot;
+  Warning  Failed     10m (x4 over 12m)    kubelet, worker-node  Error: ErrImagePull
+</code></p>
+<h5 id="my-pod-shows-imagepullbackoff-after-deployment-solution">Solution</h5><p>This can be corrected by amending the <code>image</code> in your deployment.</p>
+<h4 id="i-get-the-error-39-container-is-unhealthy-it-will-be-killed-and-re-created-39">I get the error &#39;container is unhealthy, it will be killed and re-created&rsquo;</h4><h5 id="situation">Situation</h5><p>Your pod appears to be jumping between an <code>error</code> and <code>ready</code> state. You describe the pod and get an error <code>container is unhealthy, it will be killed and re-created</code></p>
+<h5 id="i-get-the-error-39-container-is-unhealthy-it-will-be-killed-and-re-created-39-cause">Cause</h5><p>Kubernetes provides two essential features called <a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/">Liveness Probes and Readiness Probes</a>. Essentially, Liveness/Readiness Probes will periodically perform an action (e.g. make an HTTP request, open a tcp connection, or run a command in your container) to confirm that your application is working as intended.</p>
+<p>If the Liveness Probe fails, Kubernetes will kill your container and create a new one. If the Readiness Probe fails, that Pod will not be available as a Service endpoint, meaning no traffic will be sent to that Pod until it becomes Ready.</p>
+<h5 id="i-get-the-error-39-container-is-unhealthy-it-will-be-killed-and-re-created-39-troubleshooting">Troubleshooting</h5><p>Using the log output (<code>kubectl -n &lt;namespace&gt; &lt;pod_name&gt;</code>) you should see the cause of your Probe failure.</p>
+<p>There are likely three possibilities:</p></p>
+
+<ul>
+<li> Your Probes are now incorrect - Did the health URL change?</li>
+<li> Your Probes are too sensitive - Does your application take a while to start or respond?</li>
+<li> Your application is no longer responding correctly to the Probe - Is your database misconfigured?</li>
+</ul>
+<p><h5 id="i-get-the-error-39-container-is-unhealthy-it-will-be-killed-and-re-created-39-solution">Solution</h5><p>Once a change has been made to either your application or Probe, a fresh deployment should succeed.</p></p>
+<p><h3 id="ssl-connections-with-rds">SSL connections with RDS</h3><p>RDS instances are configured to allow SSL connections by default and also the latest versions of the client (<code>psql</code>) and
 libraries (eg.: the <code>pg</code> ruby gem which builds on <code>libpq</code>) will establish an SSL connection by default.</p>
-<div class="highlight"><pre class="highlight plaintext"><code>$ psql "$url"
+<div class="highlight"><pre class="highlight plaintext"><code>$ psql &quot;$url&quot;
 psql (9.6.13, server 10.6)
 WARNING: psql major version 9.6, server major version 10.
          Some psql features might not work.
 SSL connection (protocol: TLSv1.2, cipher: ECDHE-RSA-AES256-GCM-SHA384, bits: 256, compression: off)
-Type "help" for help.
-
-dba02192a049ed7ce8=&gt; ^D\q
+Type &quot;help&quot; for help.</p>
+<p>dba02192a049ed7ce8=&gt; ^D\q
 </code></pre></div><p>Where <code>$url</code> is of the form <code>postgres://user:pass@host:port/db</code>.</p>
 <p>Additionally, AWS <a href="https://d1.awsstatic.com/whitepapers/aws-security-whitepaper.pdf">offer strong assurances</a> that a malicious actor cannot spoof their traffic or sniff
 another tenant&rsquo;s traffic, even if they operate inside the same VPC.</p>
@@ -2713,17 +2785,16 @@ certificate.</p>
 the client with the root CA certificate before it is able to verify the chain of trust. AWS offers <a href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html#PostgreSQL.Concepts.General.SSL">detailed instructions</a>
 on how to exactly that.</p>
 <p>As you can see below, unless provided with the root CA certificate, the client cannot fully verify the endpoint:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>$ psql "$url?sslmode=verify-full"
+<div class="highlight"><pre class="highlight plaintext"><code>$ psql &quot;$url?sslmode=verify-full&quot;
 psql: could not get home directory to locate root certificate file
 Either provide the file or change sslmode to disable server certificate verification.
-</code></pre></div><div class="highlight"><pre class="highlight plaintext"><code>$ psql "$url?sslmode=verify-full&amp;sslrootcert=/tmp/rds-combined-ca-bundle.pem"
+</code></pre></div><div class="highlight"><pre class="highlight plaintext"><code>$ psql &quot;$url?sslmode=verify-full&amp;sslrootcert=/tmp/rds-combined-ca-bundle.pem&quot;
 psql (9.6.13, server 10.6)
 WARNING: psql major version 9.6, server major version 10.
          Some psql features might not work.
 SSL connection (protocol: TLSv1.2, cipher: ECDHE-RSA-AES256-GCM-SHA384, bits: 256, compression: off)
-Type "help" for help.
-
-dba02192a049ed7ce8=&gt; ^D\q
+Type &quot;help&quot; for help.</p>
+<p>dba02192a049ed7ce8=&gt; ^D\q
 </code></pre></div><p>This CA bundle can be added into your application&rsquo;s docker image. You can simply add the following directive in your
 <code>Dockerfile</code>:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>ADD https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem /path/to/rds-combined-ca-bundle.pem
@@ -2738,9 +2809,9 @@ perform a full verification when connecting to the RDS endpoint.</p>
 <p>In order to force using secure connections for your RDS instance, you&rsquo;ll need to set <code>force_ssl = true</code> in your module
 definition. See the <a href="https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance/#inputs">documentation</a> for details. Once applied, you should no longer be able to establish
 a connection using <code>sslmode=disable</code>:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>$ psql "$url?sslmode=disable"
-psql: FATAL:  no pg_hba.conf entry for host "172.20.32.241", user "fDsQgBlavX", database "dba02192a049ed7ce8", SSL off
-</code></pre></div>
+<div class="highlight"><pre class="highlight plaintext"><code>$ psql &quot;$url?sslmode=disable&quot;
+psql: FATAL:  no pg_hba.conf entry for host &quot;172.20.32.241&quot;, user &quot;fDsQgBlavX&quot;, database &quot;dba02192a049ed7ce8&quot;, SSL off
+</code></pre></div></p>
 
 
             
