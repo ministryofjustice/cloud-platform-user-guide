@@ -1,20 +1,20 @@
-# Cloud Platform Operational Processes
+## Cloud Platform Operational Processes
 
 This is a record of the operational processes that we will use to support our users and to maintain the cloud platform.
 
-## Hours of support
+#### Hours of support
 
 Our hours of providing support are 10am - 5pm. During this time we will work on support requests from teams and make sure someone is available to answer questions in [`#ask-cloud-platform`](https://mojdt.slack.com/messages/C57UPMZLY/) and look at PR request notifications for the cloud-platform-environments repo on [`#cloud-platform-notify`](https://mojdt.slack.com/messages/CA5MDLM34/)
 
 Outside of these hours we will respond to [high priority](#prioritising-incidents) incidents as per our [on call](#our-on-call-process) process.
 
-## Working hours
+#### Working hours
 
 A member of the support team will be available online from 9am and until 6pm. This team member can be working remotely. We are doing this so that we cover incident response for the time when the person on call is coming into the office or going home at the end of the day.
 
 This support team member should be ready to respond to any high priority incidents.
 
-## The support sub team
+#### The support sub team
 
 The support sub team will consist of 1-2 engineers. Each cloud platform team member will be on the sub team on a regular basis.
 
@@ -43,13 +43,13 @@ _Before ending the day (6PM)_
 At least one engineer to:
 * Handover information about any planned work or in progress high priority incidents to on call engineer
 
-## `#ask-cloud-platform` slack channel
+#### `#ask-cloud-platform` slack channel
 
 The [`#ask-cloud-platform`](https://mojdt.slack.com/messages/C57UPMZLY/) channel is our main entry point for support. We encourage people to ask questions and report problems in this channel and we'll do the best we can to help.
 
 One engineer should be available to answer questions throughout the hours of support (10AM - 5PM).  
 
-### Communication style
+##### Communication style
 
 In our responses we aim to be:
 * friendly
@@ -58,11 +58,11 @@ In our responses we aim to be:
 
 When the solution is a quick one, it is good to have the whole conversation in the channel rather than in a direct message so that other people can search/see what the resolution was..
 
-### What we communicate
+##### What we communicate
 
 The main purpose of [`#ask-cloud-platform`](https://mojdt.slack.com/messages/C57UPMZLY/) is to discuss the problems that people are having and help them to solve them.
 
-### User support tickets
+##### User support tickets
 
 If someone is asking for help that will be quick to do (less than 15 mins) or is mainly advice then keep the interaction in channel and get it done.
 
@@ -74,7 +74,7 @@ In many cases it can be more helpful for the engineer on support to create the t
 
 Once they have created the ticket it will appear in the `Support New Issues` column of our [sprint board](https://app.zenhub.com/workspaces/cloud-platform-team-5ccb0b8a81f66118c983c189/board?repos=126507503,131595384,122635841,175829912). It can then be moved into the relevant columns as you work on it.
 
-## `#cloud-platform-update` slack channel
+#### `#cloud-platform-update` slack channel
 
 [`#cloud-platform-update`](https://mojdt.slack.com/messages/CH6D099DF/) has been created to make broadcast communications, examples include:
 
@@ -97,7 +97,7 @@ We will be doing this work between 10AM and 3PM, we will update at 1PM and 3PM t
 ```
 
 
-## Our incident process
+#### Our incident process
 
 An incident starts when a member of the support team says that it has. It is usually triggered by an alert that indicates a problem. The team member that calls it will send a message saying that there is an incident in progress to [`#cloud-platform`](https://mojdt.slack.com/messages/C514ETYJX/) and if user impacting, [`#ask-cloud-platform`](https://mojdt.slack.com/messages/C57UPMZLY/) and [`#cloud-platform-update`](https://mojdt.slack.com/messages/CH6D099DF/)
 
@@ -112,7 +112,7 @@ An incident starts when a member of the support team says that it has. It is usu
 
 4. Once the incident is resolved, the support team will communicate that out and prepare for a postmortem.  
 
-## Prioritising incidents
+#### Prioritising incidents
 
 An incident is a system failure or degradation that has an impact on users of the cloud platform.
 
@@ -125,7 +125,7 @@ The size of that impact determines the priority of the incident. At the moment, 
 * Failure of a system that stops one or more teams from working
 * Failure of a system that creates a major vulnerability in the cloud platform
 
-## Postmortems
+#### Postmortems
 
 In the cloud platform team we follow the practice of better understanding system failures through [blameless postmortems](https://codeascraft.com/2012/05/22/blameless-postmortems/).
 
@@ -141,7 +141,7 @@ Our approach to postmortems is to:
 
 We currently publish our postmortem reports on [pagerduty](https://moj-digital-tools.pagerduty.com/postmortems/). We have agreement to make these public and are in the process of working out how to do that.
 
-## Our on call process
+#### Our on call process
 
 Team members who are on call manage an on call rota in pagerduty. The on call rota consists of a primary engineer and a secondary engineer.
 
@@ -155,13 +155,13 @@ On call team members will respond to high priority incidents out of hours and wi
 * inform the affected team
 * put together a plan to resolve the issue in hours
 
-## Our documentation
+#### Our documentation
 
 For our current systems based around the Template Deploy tooling, our documentation lives in [Confluence](https://dsdmoj.atlassian.net/wiki/spaces/PLAT/overview). This documentation includes architecture, runbooks and common issues.
 
 During the development of the Cloud Platform we are putting our documentation into Git repos stored on Github. The starting point for this documentation is the [Cloud Platform repo](https://github.com/ministryofjustice/cloud-platform)
 
-## Measuring how we are doing
+#### Measuring how we are doing
 
 We would like to measure:
 

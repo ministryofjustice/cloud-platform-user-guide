@@ -1,6 +1,6 @@
-# Cloud Platform Support
+## Cloud Platform Support
 
-## Background
+#### Background
 
 The Cloud Platform Team has built a new platform to replace Template Deploy. We are employing modern tools and techniques to enable teams to develop and support their modern cloud native software and infrastructure.
 
@@ -8,13 +8,13 @@ This also provides us with an opportunity to enable teams, through self-service,
 
 This new flexibility changes the way in which the Cloud Platform team provides support to our users.
 
-## Cloud Platform Team Support Processes
+#### Cloud Platform Team Support Processes
 
 The Cloud Platform [Operational Processes](#operational-processes.md) details how we will offer support to our users for the new platform.
 
 This includes support hours, out-of-hours support, operational communication with users, incident management, and how we measure performance. 
 
-## What does Cloud Platform Team support
+#### What does Cloud Platform Team support
 
 Below is a diagram of the Cloud Platform.
 
@@ -29,7 +29,7 @@ Support includes:
 * responding to failures of the Kubernetes API 
 * security of the platform  
 
-## What the Cloud Platform Team doesn’t support
+#### What the Cloud Platform Team doesn’t support
 
 The Cloud Platform Team doesn’t provide:
 * any application related support, including responding to application-specific alerts or failures
@@ -38,7 +38,7 @@ The Cloud Platform Team doesn’t provide:
 * ongoing maintenance of the application, including patching, updating dependencies, and ensuring it remains deployable
 * user support for users of the application
 
-## What this means for Cloud Platform users
+#### What this means for Cloud Platform users
 
 It means teams using the platform will be responsible for supporting the infrastructure they build, and the applications running on it.
 
@@ -54,7 +54,7 @@ The new Cloud Platform introduces modern technology that users may not already b
 
 You can also speak to your line manager or Head of Profession should you have any further training needs.
 
-## How does this impact products still using Template Deploy?
+#### How does this impact products still using Template Deploy?
 
 The Cloud Platform Team have been reaching out to teams since October 2018 to help plan migration away from Template Deploy.
 
@@ -64,7 +64,7 @@ To raise Template Deploy related support requests you should create a [Github Is
 
 As Template Deploy is being phased out, the Cloud Platform Team will not develop this product further and will aim instead to only fix incidents as they arise.
 
-## Where to find help
+#### Where to find help
 
 If you have any questions or require help from the Cloud Platform Team in relation to the new Cloud Platform contact us at the `#ask-cloud-platform` slack channel.
 
