@@ -23,6 +23,7 @@ Below is a diagram of the Cloud Platform.
 The Cloud Platform Team supports everything outside of a user’s namespace. Namespaces are shaded blue in the picture above.
 
 Support includes:
+
 * responding to failures of the underlying platform e.g. the cluster
 * responding to failure of the management layer of the platform
 * responding to failure of reusable components created by the Cloud Platform team and provided to users 
@@ -32,6 +33,7 @@ Support includes:
 #### What the Cloud Platform Team doesn’t support
 
 The Cloud Platform Team doesn’t provide:
+
 * any application related support, including responding to application-specific alerts or failures
 * any support for infrastructure and other tools deployed within a users namespace
 * security of the application
@@ -43,6 +45,7 @@ The Cloud Platform Team doesn’t provide:
 It means teams using the platform will be responsible for supporting the infrastructure they build, and the applications running on it.
 
 We expect teams or service areas using the platform to ensure they can, for the life of the service:
+
 * monitor and manage the health of their applications and service-specific infrastructure (setting up and responding to monitoring, logging, and alerts, as appropriate)
 * keep their applications and service-specific infrastructure appropriately patched, up-to-date, and secure
 * ensure their applications remain deployable end-to-end from source code

@@ -4,7 +4,7 @@ This is a record of the operational processes that we will use to support our us
 
 #### Hours of support
 
-Our hours of providing support are 10am - 5pm. During this time we will work on support requests from teams and make sure someone is available to answer questions in [`#ask-cloud-platform`](https://mojdt.slack.com/messages/C57UPMZLY/) and look at PR request notifications for the cloud-platform-environments repo on [`#cloud-platform-notify`](https://mojdt.slack.com/messages/CA5MDLM34/)
+Our hours of providing support are 10am - 5pm. During this time we will work on support requests from teams and make sure someone is available to answer questions in Slack channel [`#ask-cloud-platform`](https://mojdt.slack.com/messages/C57UPMZLY/) and look at PR request notifications for the cloud-platform-environments repo on [`#cloud-platform-notify`](https://mojdt.slack.com/messages/CA5MDLM34/)
 
 Outside of these hours we will respond to [high priority](#prioritising-incidents) incidents as per our [on call](#our-on-call-process) process.
 
@@ -22,6 +22,7 @@ The key activities for the day are:
 
 _On starting the day (9AM)_
 At least one engineer to:
+
 * Check the [`#low-priority-alarms`](https://mojdt.slack.com/messages/C8QR5FQRX/) and [`#high-priority-alarms`](https://mojdt.slack.com/messages/C8PF51AT0/) slack channels for any issues to investigate
 * Check the board for any user requests that have been raised and not assigned
 * Get a handover from the on call engineer about any issues out of hours
@@ -29,18 +30,21 @@ At least one engineer to:
 
 _During support hours (10AM - 5PM)_
 At least one engineer to:
+
 * Actively participate in [`#ask-cloud-platform`](https://mojdt.slack.com/messages/C57UPMZLY/) to field support requests, triage, prioritise and fix
 * Monitor [`#high-priority-alarms`](https://mojdt.slack.com/messages/C8PF51AT0/) and [`#low-priority-alarms`](https://mojdt.slack.com/messages/C8QR5FQRX/) for incidents, triage, prioritise and fix
 * Monitor [`#cloud-platform-notify`](https://mojdt.slack.com/messages/CA5MDLM34/) for cloud-platform-environments repo PR request notifications and cloud platform build notifications.
 * Monitor user support requests being added to the board and triage them for priority
 
 The whole support team to:
+
 * Manage incident process for incidents in progress
 * Work on user requests for larger work
 * Work on support backlog stories
 
 _Before ending the day (6PM)_
 At least one engineer to:
+
 * Handover information about any planned work or in progress high priority incidents to on call engineer
 
 #### `#ask-cloud-platform` slack channel
@@ -52,6 +56,7 @@ One engineer should be available to answer questions throughout the hours of sup
 ##### Communication style
 
 In our responses we aim to be:
+
 * friendly
 * timely
 * open - no question is stupid
@@ -89,13 +94,12 @@ In these situations:
 
 So for example:
 
-```
+>
 **ANNOUNCEMENT:**
 As agreed with the relevant teams, the cloud platform team will be upgrading Postgres from version 9.2 (out of support) to version 9.6 on CLA, Moving People Safely and Prison Visits Booking RDS instances today.
 
+>
 We will be doing this work between 10AM and 3PM, we will update at 1PM and 3PM to say how it is going.
-```
-
 
 #### Our incident process
 
