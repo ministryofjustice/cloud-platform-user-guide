@@ -3,7 +3,7 @@
 #### Overview
 This document intends to give you an idea of potential troubleshooting tips and techniques to investigate and resolve application issues on the Cloud Platform. The Kubernetes project also offers a resource on [troubleshooting](https://kubernetes.io/docs/tasks/debug-application-cluster/troubleshooting/) so we will attempt to avoid overlap. 
 
-Throughout this document we will refer to terms such as <pod_name> and <namespace>, it is assumed you'll know how to gather this information using the `kubectl get` commands.
+Throughout this document we will refer to terms such as `<pod_name>` and `<namespace>`, it is assumed you'll know how to gather this information using the `kubectl get` commands.
 
 #### Contents
 
@@ -58,14 +58,14 @@ spec:
   restartPolicy: Always
 ```
 
-The main causes of `Crashloopback` are:
+The main causes of `CrashloopBackOff` are:
 
 - The application inside the container keeps crashing.
-- Some type of parameters of the pod or container have been configured incorrectly.
+- Some parameters of the pod or container have been configured incorrectly.
 - An error has been made when deploying Kubernetes.
 
 ##### Troubleshooting
-As this issue is quite vague, you'll want to start by checking STDOUT using the command `kubectl -n <namespace> logs <pod_name>`. This should give you a clear understanding of whether the application has crashed. If this is the case please review the application code and the solution will become evident.
+As this issue is quite vague, you'll want to start by checking what your pod is printing to STDOUT using the command `kubectl -n <namespace> logs <pod_name>`. This should give you a clear understanding of whether the application has crashed. If your application is crashing, you need to identify the reason and try to fix it. Some possibilities are missing environment variables, insufficient resources, missing files or directories, or a lack of required permissions.
 
 ##### Solution
 Fix application or misconfiguration errors.
@@ -76,7 +76,11 @@ Fix application or misconfiguration errors.
 You have deployed an application to the Cloud Platform and its status shows `ImagePullBackOff` (you can get the status by running `kubect get pods -n <namespace>`).
 
 ##### Cause
-This error is caused by a misconfiguration in your deployment, usually an invalid image `tag:`.
+This error is caused by a misconfiguration in your deployment, there are three primary culprits besides network connectivity issues:
+
+- The image tag is incorrect
+- The image doesn't exist (or is in a different registry)
+- Kubernetes doesn't have permissions to pull that image
 
 ##### Troubleshooting
 Again, utilising the `kubectl -n <namespace> describe <pod_name>` command you can see that the pod has failed to pull down the correct image:
@@ -94,7 +98,7 @@ This can be corrected by amending the `image` in your deployment.
 Your pod appears to be jumping between an `error` and `ready` state. You describe the pod and get an error `container is unhealthy, it will be killed and re-created` 
 
 ##### Cause
-Kubernetes provides two essential features called Liveness Probes and Readiness Probes. Essentially, Liveness/Readiness Probes will periodically perform an action (e.g. make an HTTP request, open a tcp connection, or run a command in your container) to confirm that your application is working as intended.
+Kubernetes provides two essential features called [Liveness Probes and Readiness Probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/). Essentially, Liveness/Readiness Probes will periodically perform an action (e.g. make an HTTP request, open a tcp connection, or run a command in your container) to confirm that your application is working as intended.
 
 If the Liveness Probe fails, Kubernetes will kill your container and create a new one. If the Readiness Probe fails, that Pod will not be available as a Service endpoint, meaning no traffic will be sent to that Pod until it becomes Ready.
 
