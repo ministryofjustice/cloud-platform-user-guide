@@ -1,6 +1,6 @@
 ## Cloud Platform Operational Processes
 
-This is a record of the operational processes that we will use to support our users and to maintain the cloud platform.
+This is a record of the operational processes that we will use to support our users and to maintain the cloud platform. 
 
 #### Hours of support
 
@@ -147,19 +147,9 @@ On call team members will respond to high priority incidents out of hours and wi
 * inform the affected team
 * put together a plan to resolve the issue in hours
 
-#### Measuring how we are doing
+#### Our documentation
 
-We would like to measure:
-
-* System availability
-* Number of incidents and high priority incidents
-* Mean time to recovery
-* User happiness with support
-
-We do not currently have a process in place for measuring these but we are working on it.
-
-#### Our TD documentation
-
-For our current systems based around the Template Deploy tooling, our documentation lives in [Confluence](https://dsdmoj.atlassian.net/wiki/spaces/PLAT/overview). This documentation includes architecture, runbooks and common issues.
+This documentation includes architecture, runbooks and common issues.
+For our current systems based around the Template Deploy tooling, our documentation lives in [Confluence](https://dsdmoj.atlassian.net/wiki/spaces/PLAT/overview). 
 
 
