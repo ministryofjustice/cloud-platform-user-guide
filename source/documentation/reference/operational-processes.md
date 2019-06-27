@@ -14,9 +14,7 @@ A member of the support team will be available online from 9am and until 6pm. Th
 
 This support team member should be ready to respond to any high priority incidents.
 
-#### The support sub team
-
-The support sub team will consist of 1-2 engineers. Each cloud platform team member will be on the sub team on a regular basis.
+#### The support team
 
 The key activities for the day are:
 
@@ -49,19 +47,9 @@ At least one engineer to:
 
 #### `#ask-cloud-platform` slack channel
 
-The [`#ask-cloud-platform`](https://mojdt.slack.com/messages/C57UPMZLY/) channel is our main entry point for support. We encourage people to ask questions and report problems in this channel and we'll do the best we can to help.
+The [`#ask-cloud-platform`](https://mojdt.slack.com/messages/C57UPMZLY/) channel is our main entry point for support. We encourage people to ask questions and report problems in this channel and we'll do the best we can to help. We also welcome comments, opinions and any feedback regarding any of the services and the platform as a whole. This channel can also be used to communicate to other cloud platform users on topics you think that might be useful for other users.  
 
-One engineer should be available to answer questions throughout the hours of support (10AM - 5PM).  
-
-#### Communication style
-
-In our responses we aim to be:
-
-* friendly
-* timely
-* open - no question is stupid
-
-When the solution is a quick one, it is good to have the whole conversation in the channel rather than in a direct message so that other people can search/see what the resolution was..
+One of the Cloud Platform Team will be available to answer questions throughout the hours of support (10AM - 5PM).  
 
 #### What we communicate
 
@@ -71,7 +59,7 @@ The main purpose of [`#ask-cloud-platform`](https://mojdt.slack.com/messages/C57
 
 If someone is asking for help that will be quick to do (less than 15 mins) or is mainly advice then keep the interaction in channel and get it done.
 
-If someone needs something that takes longer, is more challenging to complete or you find you've spent longer than 15 mins on it, then continue to talk in the channel but also ask the person asking for help to raise a ticket using the GitHub issue link: [long version](https://github.com/ministryofjustice/cloud-platform/issues/new?template=cloud-platform-support-request.md&labels=support%20team) and [short version](https://goo.gl/msfGiS).
+If someone needs something that takes longer, is more challenging to complete or you find you've spent longer than 15 mins on it, then continue to talk in the channel but also ask the person asking for help to raise a ticket using the GitHub issue [link](https://github.com/ministryofjustice/cloud-platform/issues/new?template=cloud-platform-support-request.md&labels=support%20team).
 
 The purpose of the ticket is to keep a record of the work we are doing and how it is progressing. It is *not* the primary communication channel with the person who raised the problem - this should remain slack where you can provide a richer and more human interaction, answering questions if necessary. The engineer working on the ticket should update the ticket for our record as work progresses.
 
@@ -159,12 +147,6 @@ On call team members will respond to high priority incidents out of hours and wi
 * inform the affected team
 * put together a plan to resolve the issue in hours
 
-#### Our documentation
-
-For our current systems based around the Template Deploy tooling, our documentation lives in [Confluence](https://dsdmoj.atlassian.net/wiki/spaces/PLAT/overview). This documentation includes architecture, runbooks and common issues.
-
-During the development of the Cloud Platform we are putting our documentation into Git repos stored on Github. The starting point for this documentation is the [Cloud Platform repo](https://github.com/ministryofjustice/cloud-platform)
-
 #### Measuring how we are doing
 
 We would like to measure:
@@ -175,4 +157,9 @@ We would like to measure:
 * User happiness with support
 
 We do not currently have a process in place for measuring these but we are working on it.
+
+#### Our TD documentation
+
+For our current systems based around the Template Deploy tooling, our documentation lives in [Confluence](https://dsdmoj.atlassian.net/wiki/spaces/PLAT/overview). This documentation includes architecture, runbooks and common issues.
+
 
