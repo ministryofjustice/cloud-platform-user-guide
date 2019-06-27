@@ -149,7 +149,8 @@ On call team members will respond to high priority incidents out of hours and wi
 
 #### Our documentation
 
-This documentation includes architecture, runbooks and common issues.
-For our current systems based around the Template Deploy tooling, our documentation lives in [Confluence](https://dsdmoj.atlassian.net/wiki/spaces/PLAT/overview). 
+All Cloud Platform documentation is openly available in Git repos stored on Github. The starting point for this documentation is the [Cloud Platform repo](https://github.com/ministryofjustice/cloud-platform).
 
+For using Cloud Platform we have created the [Cloud Platform User Guide](https://user-guide.cloud-platform.service.justice.gov.uk). This guide is the "front door" to the Cloud Platform and contains concepts, tasks, walkthroughs and other reference to help teams use the Cloud Platform.
 
+For our legacy systems based around the Template Deploy tooling, our documentation lives in [Confluence](https://dsdmoj.atlassian.net/wiki/spaces/PLAT/overview). This documentation includes architecture, runbooks and common issues.
