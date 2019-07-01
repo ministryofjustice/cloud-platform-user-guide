@@ -62,7 +62,7 @@ resource "kubernetes_secret" "example_route53_zone_sec" {
 
 Make sure to replace the placeholders and example values above with relevant ones, commit your changes to a branch and raise a pull request.    
 Once approved, you can merge and the changes will be applied.   
-Shortly after, you should be able to access the `Zone_ID` as Secret on kubernetes in your namespace.
+Shortly after, to confirm the zone has been created, you should be able to access the `Zone_ID` as Secret on kubernetes in your namespace.
 
 Please raise a [support ticket](goo.gl/msfGiS) with the Cloud Platform : [Here](goo.gl/msfGiS).  
 
