@@ -64,7 +64,7 @@ Make sure to replace the placeholders and example values above with relevant one
 Once approved, you can merge and the changes will be applied.   
 Shortly after, to confirm the zone has been created, you should be able to access the `Zone_ID` as Secret on kubernetes in your namespace.
 
-Please raise a [support ticket](goo.gl/msfGiS) with the Cloud Platform : [Here](goo.gl/msfGiS).  
+Please raise a [support ticket](goo.gl/msfGiS) with the Cloud Platform.
 
 Provide them with the domain name, the Cloud Platform team will finalize the process **by creating a a matching NS record in the DSD account.**
 
