@@ -13,27 +13,42 @@ This guide assumes you have an environment already created in the `Live-1` clust
 Copy the Terraform resource code below and save it into the respective 2 files in the `[your namespace]/resources` directory in the [cloud-platform-environments repository][env-repo]:
 
  * `main.tf`
- * `variables.tf`
+ * `route53.tf`
 
 #### main.tf
 ```
+terraform {
+  backend "s3" {}
+}
+
+provider "aws" {
+  region = "eu-west-2"
+}
+```
+Note: If you already have that file defined in your environment, do not recreate it.
+
+#### route53.tf
+
+Fill in the _name_ and the _namespace_ fields below, with your domain name & and your existing kubernetes namespace.
+
+```
 resource "aws_route53_zone" "example_team_route53_zone" {
-  name = "${var.domain}"
+  name = "YOUR DOMAIN GOES HERE"
 
   tags {
-    business-unit          = "${var.business-unit}"
-    application            = "${var.application}"
-    is-production          = "${var.is-production}"
-    environment-name       = "${var.environment-name}"
-    owner                  = "${var.team_name}"
-    infrastructure-support = "${var.infrastructure-support}"
+    business-unit          = "example-bu"
+    application            = "example-app"
+    is-production          = "false"
+    environment-name       = "dev"
+    owner                  = "example-owner"
+    infrastructure-support = "example@example.com"
   }
 }
 
 resource "kubernetes_secret" "example_route53_zone_sec" {
   metadata {
     name      = "example-route53-zone-output"
-    namespace = "${var.namespace}"
+    namespace = "YOUR KUBERNETES NAMESPACE GOES HERE"
   }
 
   data {
@@ -43,41 +58,17 @@ resource "kubernetes_secret" "example_route53_zone_sec" {
 
 ```
 
-#### variables.tf
-```
-variable "domain" {
-  description = "The domain you intend to create. This should be a part of either parent zone of *.service.gov.uk or *.service.justice.gov.uk"
-}
-
-variable "application" {}
-
-variable "business-unit" {
-  description = "Area of the MOJ responsible for the service."
-  default     = "mojdigital"
-}
-
-variable "team_name" {
-  description = "The name of your development team"
-}
-
-variable "environment-name" {
-  description = "The type of environment you're deploying to."
-}
-
-variable "infrastructure-support" {
-  description = "The team responsible for managing the infrastructure. Should be of the form team-email."
-}
-
-variable "is-production" {
-  default = "false"
-}
-```
-
 ### Creating the resource
 
-Make sure to change placeholder values to what is appropriate, with the 2 files saved, commit your changes to a branch and raise a pull request. Once approved, you can merge and the changes will be applied. Shortly after, you should be able to access the `Zone_ID` as Secret on kubernetes in your namespace.
+Make sure to replace the placeholders and example values above with relevant ones, commit your changes to a branch and raise a pull request.    
+Once approved, you can merge and the changes will be applied.   
+Shortly after, to confirm the zone has been created, you should be able to access the `Zone_ID` as Secret on kubernetes in your namespace.
 
-Please contact the Cloud Platform team via the `#ask-cloud-platform` Slack channel. Provide them with the zone_ID, and they will verify that your hosted zone has been created successfully.
+Please raise a [support ticket](goo.gl/msfGiS) with the Cloud Platform.
+
+Provide them with the domain name, the Cloud Platform team will finalize the process **by creating a a matching NS record in the DSD account.**
 
 [env-repo]: https://github.com/ministryofjustice/cloud-platform-environments
 [aws-hosted-zone]: https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/AboutHZWorkingWith.html
+
+
