@@ -96,4 +96,4 @@ Try [deploying an app][deploy-helm] with [Helm](https://helm.sh/), a Kubernetes 
 [deploy-helm]: tasks.html#deploying-an-application-to-the-cloud-platform-with-helm
 [delete-ecr-image]: https://docs.aws.amazon.com/AmazonECR/latest/userguide/delete_image.html
 [custom-alerts]: https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#creating-your-own-custom-alerts
-[ecr-metrics]: https://prometheus.cloud-platform.service.justice.gov.uk/graph?g0.range_input=1h&g0.expr=aws_ecr_repository_image_count&g0.ta
+[ecr-metrics]: https://prometheus.cloud-platform.service.justice.gov.uk/graph?g0.range_input=1h&g0.expr=aws_ecr_repository_image_count&g0.tab=1
