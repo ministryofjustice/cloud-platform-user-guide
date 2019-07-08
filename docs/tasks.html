@@ -180,6 +180,9 @@
             <a href="/tasks.html#accessing-the-credentials">Accessing the credentials</a>
           </li>
           <li>
+            <a href="/tasks.html#managing-ecr-repository">Managing ECR Repository</a>
+          </li>
+          <li>
             <a href="/tasks.html#creating-an-ecr-repository-next-steps">Next steps</a>
           </li>
         </ul>
@@ -943,6 +946,9 @@ kubectl -n &lt;namespace_name&gt; get secret example-team-ecr-credentials-output
 <code>
 echo QWxhZGRpbjpvcGVuIHNlc2FtZQ== | base64 --decode; echo
 </code></p>
+<h3 id="managing-ecr-repository">Managing ECR Repository</h3><p>Maximum number of images per repository is default to 1000 images for Amazon Elastic Container Registry. If a new image is created and pushed to ECR on every code change. As a result, repositories tend to quickly fill up with new revisions. It is important to discover and delete the stale images. In this way, repositories can be kept clean and manageable.</p>
+<p>You can delete an image with the AWS CLI using this <a href="https://docs.aws.amazon.com/AmazonECR/latest/userguide/delete_image.html">guide</a>.</p>
+<p>Create <a href="https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#creating-your-own-custom-alerts">custom-alerts</a> by monitoring count of ECR images in your Repository using <a href="https://prometheus.cloud-platform.service.justice.gov.uk/graph?g0.range_input=1h&amp;g0.expr=aws_ecr_repository_image_count&amp;g0.tab=1">Prometheus ecr-metrics</a>.</p>
 <h4 id="setting-up-circleci">Setting up CircleCI</h4><p>In your CircleCI project, go to the settings (the cog icon) and select &lsquo;AWS Permissions&rsquo; from the left hand menu. Fill in the IAM credentials and CircleCI will be able to use ECR images. For more information please see <a href="https://circleci.com/docs/2.0/private-images/">the official docs</a>.</p>
 <h3 id="creating-an-ecr-repository-next-steps">Next steps</h3><p>Try <a href="/tasks.html#deploying-an-application-to-the-cloud-platform-with-helm">deploying an app</a> with <a href="https://helm.sh/">Helm</a>, a Kubernetes package manager, or <a href="/tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">deploying manually</a> by writing some custom YAML files.</p>
 
