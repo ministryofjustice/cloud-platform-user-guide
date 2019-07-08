@@ -76,6 +76,14 @@ This can be done at the command line using the following:
 echo QWxhZGRpbjpvcGVuIHNlc2FtZQ== | base64 --decode; echo
 ```
 
+### Managing ECR Repository
+
+Maximum number of images per repository is default to 1000 images for Amazon Elastic Container Registry. If a new image is created and pushed to ECR on every code change. As a result, repositories tend to quickly fill up with new revisions. It is important to discover and delete the stale images. In this way, repositories can be kept clean and manageable.
+
+You can delete an image with the AWS CLI using this [guide][delete-ecr-image].
+
+Create [custom-alerts][custom-alerts] by monitoring count of ECR images in your Repository using [Prometheus ecr-metrics][ecr-metrics]. 
+
 #### Setting up CircleCI
 In your CircleCI project, go to the settings (the cog icon) and select 'AWS Permissions' from the left hand menu. Fill in the IAM credentials and CircleCI will be able to use ECR images. For more information please see [the official docs](https://circleci.com/docs/2.0/private-images/).
 
@@ -86,3 +94,6 @@ Try [deploying an app][deploy-helm] with [Helm](https://helm.sh/), a Kubernetes 
 
 [deploy-hello-world]: tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform
 [deploy-helm]: tasks.html#deploying-an-application-to-the-cloud-platform-with-helm
+[delete-ecr-image]: https://docs.aws.amazon.com/AmazonECR/latest/userguide/delete_image.html
+[custom-alerts]: https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#creating-your-own-custom-alerts
+[ecr-metrics]: https://prometheus.cloud-platform.service.justice.gov.uk/graph?g0.range_input=1h&g0.expr=aws_ecr_repository_image_count&g0.tab=1
