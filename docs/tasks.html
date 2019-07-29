@@ -445,6 +445,12 @@
           <li>
             <a href="/tasks.html#ssl-connections-with-rds">SSL connections with RDS</a>
           </li>
+          <li>
+            <a href="/tasks.html#kubernetes-cronjobs">Kubernetes Cronjobs</a>
+          </li>
+          <li>
+            <a href="/tasks.html#time-zone-cronjobs">Time Zone Cronjobs</a>
+          </li>
         </ul>
       </li>
     </ul>
@@ -1272,7 +1278,7 @@ docker push 754256621582.dkr.ecr.eu-west-2.amazonaws.com/[team_name]/[repo_name]
 </code></pre></div><h3 id="deploying-a-multi-container-application-to-the-cloud-platform-interacting-with-the-application">Interacting with the application</h3><p>You should be able to view the application in your browser at:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>  https://multi-container-demo.apps.live-1.cloud-platform.service.justice.gov.uk/
 </code></pre></div><p>It should behave in the same way as when you were running it locally via docker-compose.</p>
-<h3 id="further-development">Further Development</h3><p>After you deployed and Interacting with multi-container application and would like to create Monitoring dashboard , Custom Alerts and Cronjobs for your application use this working examples:</p>
+<h3 id="further-development">Further Development</h3><p>After you deployed and Interacting with multi-container application and would like to create Monitoring dashboard and Custom Alerts for your application use this working examples:</p>
 
 <ul>
 <li><p><strong>Grafana dashboard</strong> - Follow the <a href="/tasks.html#creating-dashboards">guide</a> on how to create a Graphana dashboard, make corresponding changes to <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/tree/grafana-dashboard-v1.0/k8s_additional_resources">monitoring-grafana-dashboard.yaml</a> file and apply the configmap to your namespace in the kubernetes cluster, which will show your Grafana-Dashboard <a href="https://grafana.cloud-platform.service.justice.gov.uk">here</a>.</p>
@@ -1280,9 +1286,6 @@ docker push 754256621582.dkr.ecr.eu-west-2.amazonaws.com/[team_name]/[repo_name]
 </code></pre></div></li>
 <li><p><strong>Custom Alerts</strong> - Follow the <a href="https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#creating-your-own-custom-alerts">guide</a> on how to create Custom Alerts, make corresponding changes to <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/tree/custom-alerts-v1.0/k8s_additional_resources">prometheus-app-alert.yaml</a> file and apply the PrometheusRule to your namespace in the kubernetes cluster, this will create custom alerts for your application.</p>
 <div class="highlight"><pre class="highlight plaintext"><code>  kubectl apply --filename prometheus-app-alert.yaml --namespace [your namespace]
-</code></pre></div></li>
-<li><p><strong>Cronjobs</strong> - Follow the <a href="https://kubernetes.io/docs/tasks/job/automated-tasks-with-cron-jobs/#creating-a-cron-job">guide</a> on creating a Cronjob, make corresponding changes to <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/tree/cronjob-example-v1.0/k8s_additional_resources">cronjob-ecr.yaml</a> file and apply the Cronjob to your namespace in the kubernetes cluster, this runs a job periodically on a given schedule to delete untagged images in the ecr-repo, this will help to limit the count of Images in the ecr-repo.</p>
-<div class="highlight"><pre class="highlight plaintext"><code>  kubectl apply --filename cronjob-ecr.yaml --namespace [your namespace]
 </code></pre></div></li>
 </ul>
 
@@ -2817,6 +2820,70 @@ definition. See the <a href="https://github.com/ministryofjustice/cloud-platform
 a connection using <code>sslmode=disable</code>:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>$ psql &quot;$url?sslmode=disable&quot;
 psql: FATAL:  no pg_hba.conf entry for host &quot;172.20.32.241&quot;, user &quot;fDsQgBlavX&quot;, database &quot;dba02192a049ed7ce8&quot;, SSL off
+</code></pre></div>
+<h3 id="kubernetes-cronjobs">Kubernetes Cronjobs</h3><h4 id="kubernetes-cronjobs-overview">Overview</h4><p>Kubernetes has the concept of <a href="https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/">Cronjobs</a> which creates Jobs on a time-based schedule, you can use CronJobs to run tasks at a specific time or interval. CronJobs are a good choice for automatic tasks, such as backups, reporting, sending emails, or cleanup tasks.</p>
+<h4 id="kubernetes-cronjobs-usage">Usage</h4><p>CronJobs use <a href="https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/">Job</a> objects to complete their tasks. A CronJob creates a Job object each time it runs. CronJobs are created, managed, scaled, and deleted in the same way as Jobs. Cron jobs require a config file, follow the <a href="https://kubernetes.io/docs/tasks/job/automated-tasks-with-cron-jobs/#creating-a-cron-job">guide</a> on creating a Cronjob.</p>
+<p>This example cron job below prints the current time and a hello message every first minute of every hour from 0200 to 1400 UTC on Sunday, Monday, Friday, and Saturday</p>
+<p>example:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: hello
+spec:
+  schedule: &quot;1 2-14 * * 0-1,5-6&quot;
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: hello
+            image: busybox
+            args:
+            - /bin/sh
+            - -c
+            - date; echo &quot;Hello, World!&quot;
+          restartPolicy: OnFailure
+</code></pre></div><h4 id="applying-cronjob-in-your-namespace">Applying Cronjob in your Namespace</h4><p>You need a yaml file to define your cronjob. You can either create your own, or use <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/tree/cronjob-example-v1.0/k8s_additional_resources">this one</a> as an example. This runs a job periodically on a given schedule to delete untagged images in the ecr-repo, this will help to limit the count of Images in the ecr-repo.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  <code>
+  kubectl apply --filename cronjob-ecr.yaml --namespace [your namespace]
+</code>
+</code></pre></div><p>Verify the Cronjob is created, and job is triggered on a given schedule.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  <code>
+  kubectl get cronjob --namespace [your namespace]
+</code>
+</code></pre></div><p>Note:
+Kubernetes uses UTC exclusively. Make sure you take that into account when you’re creating your schedule.</p></p>
+<p><h3 id="time-zone-cronjobs">Time Zone Cronjobs</h3><h4 id="time-zone-cronjobs-overview">Overview</h4><p>There may be a requirement for some Cronjobs to run at specific times of a day in the UK (including during BST), but Kubernetes Cronjob does not support time zone, our cluster uses UTC timezone internally. To enable service teams to run cronjobs at specific times, we deployed <a href="https://github.com/hiddeco/cronjobber">TZ Cronjobber</a>(cronjob controller for Kubernetes with support for time zones).</p>
+<h4 id="time-zone-cronjobs-usage">Usage</h4><p>Instead of creating a CronJob like you normally would, you create a TZCronJob, which works exactly the same but supports an additional field: <code>.spec.timezone</code>. Set this to the <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones">time zone</a> you wish to schedule your jobs in and Cronjobber will take care of the rest.</p>
+<p>In the below example timezone is set to &ldquo;Europe/London&rdquo; and scheduled every day at 14:10. During BST the job will trigger at 13:10 UTC, but the rest of the year it will trigger at 14:10 UTC.</p>
+<p>example:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: cronjobber.hidde.co/v1alpha1
+kind: TZCronJob
+metadata:
+  name: hello
+spec:
+  schedule: &quot;10 14 * * *&quot;
+  timezone: &quot;Europe/London&quot;
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: hello
+            image: bitnami/nginx:latest
+            args:
+            - /bin/sh
+            - -c
+            - date; echo &quot;Hello, World!&quot;
+          restartPolicy: OnFailure
+</code></pre></div><h4 id="applying-tzcronjob-in-your-namespace">Applying tzcronjob in your Namespace</h4><p>Using the above example create an tzcronjob.yaml and apply the TZCronjob to your namespace in the kubernetes cluster.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  <code>
+  kubectl apply --filename tzcronjob.yaml --namespace [your namespace]
+</code>
+</code></pre></div><p>Verify the tzcronjob is created, and job is triggered on a given schedule as per the timezone used.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  <code>
+  kubectl get tzcronjob --namespace [your namespace]
+</code>
 </code></pre></div></p>
 
 
