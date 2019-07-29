@@ -89,7 +89,7 @@ It should behave in the same way as when you were running it locally via docker-
 
 ### Further Development
 
-After you deployed and Interacting with multi-container application and would like to create Monitoring dashboard , Custom Alerts and Cronjobs for your application use this working examples:
+After you deployed and Interacting with multi-container application and would like to create Monitoring dashboard and Custom Alerts for your application use this working examples:
 
 * **Grafana dashboard** - Follow the [guide][creating-dashboards] on how to create a Graphana dashboard, make corresponding changes to [monitoring-grafana-dashboard.yaml][dashboard-configmap] file and apply the configmap to your namespace in the kubernetes cluster, which will show your Grafana-Dashboard [here][Dashboard].     
 
@@ -103,12 +103,6 @@ After you deployed and Interacting with multi-container application and would li
       kubectl apply --filename prometheus-app-alert.yaml --namespace [your namespace]
       ```
       
-* **Cronjobs** - Follow the [guide][cron-jobs] on creating a Cronjob, make corresponding changes to [cronjob-ecr.yaml][cronjob-yaml] file and apply the Cronjob to your namespace in the kubernetes cluster, this runs a job periodically on a given schedule to delete untagged images in the ecr-repo, this will help to limit the count of Images in the ecr-repo.
-
-      ```
-      kubectl apply --filename cronjob-ecr.yaml --namespace [your namespace]
-      ```
-
 [multi-demo]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app
 [multi-demo-readme]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app#multi-container-demo-application
 [cloudplatform]: https://github.com/ministryofjustice/cloud-platform
@@ -126,6 +120,4 @@ After you deployed and Interacting with multi-container application and would li
 [dashboard-configmap]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/tree/grafana-dashboard-v1.0/k8s_additional_resources
 [custom-alert]: https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#creating-your-own-custom-alerts
 [alert-prometheusrule]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/tree/custom-alerts-v1.0/k8s_additional_resources
-[cron-jobs]: https://kubernetes.io/docs/tasks/job/automated-tasks-with-cron-jobs/#creating-a-cron-job
-[cronjob-yaml]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/tree/cronjob-example-v1.0/k8s_additional_resources
 [Dashboard]: https://grafana.cloud-platform.service.justice.gov.uk
