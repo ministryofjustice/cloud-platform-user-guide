@@ -8,7 +8,7 @@ There may be a requirement for some Cronjobs to run at specific times of a day i
 
 Instead of creating a CronJob like you normally would, you create a TZCronJob, which works exactly the same but supports an additional field: `.spec.timezone`. Set this to the [time zone][tz_database_time_zones] you wish to schedule your jobs in and Cronjobber will take care of the rest.
 
-In the below example timezone is set to "Europe/London" and scheduled every day at 14:10, during BST the job will trigger at 13:10 UTC, but the rest of the year it will trigger at 14:10 UTC.
+In the below example timezone is set to "Europe/London" and scheduled every day at 14:10. During BST the job will trigger at 13:10 UTC, but the rest of the year it will trigger at 14:10 UTC.
 
 example:
 

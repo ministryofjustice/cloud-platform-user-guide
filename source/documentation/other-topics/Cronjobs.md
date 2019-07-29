@@ -35,7 +35,7 @@ spec:
 
 #### Applying Cronjob in your Namespace
 
-Make corresponding changes to [cronjob-ecr.yaml][cronjob-yaml] file and apply the Cronjob to your namespace in the kubernetes cluster, this runs a job periodically on a given schedule to delete untagged images in the ecr-repo, this will help to limit the count of Images in the ecr-repo.
+You need a yaml file to define your cronjob. You can either create your own, or use [this one][cronjob-yaml] as an example. This runs a job periodically on a given schedule to delete untagged images in the ecr-repo, this will help to limit the count of Images in the ecr-repo.
 
       ```
       kubectl apply --filename cronjob-ecr.yaml --namespace [your namespace]
