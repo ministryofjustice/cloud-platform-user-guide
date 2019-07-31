@@ -2,7 +2,7 @@
 
 The cloud platform is a single kubernetes cluster, hosting multiple different MoJ services. So, the cluster capacity (in terms of memory and CPU) needs to be [shared efficiently][kube-scheduler] between the different services.
 
-The smallest unit of work we ask the cluster to manage is a container, and in our case, the largest unit is a [namespace]. Scheduling these workloads across the [worker nodes] which comprise the cluster is a classic [packing problem], complicated by the fact that the cluster can't be sure in advance how much resource (memory and CPU) a container is going to need.
+The smallest unit of work we ask the cluster to manage is a container, and in our case, the largest unit is a [namespace]. The cluster has several [worker nodes], which supply the memory and CPU capacity on which workloads can run. So, kubernetes has to solve a classic [packing problem] - run a bunch of different workloads on the cluster, putting them on different worker nodes in the most efficient way possible. But, the cluster can't be sure in advance how much resource (memory and CPU) any given container is going to need.
 
 To help with this, we specify **request limits**. This article will use "request" because that's the official kubernetes term, but request is a slightly awkward term here. It might be better to think of "reserving" rather than requesting resources.
 
