@@ -126,6 +126,23 @@
           </li>
         </ul>
       </li>
+      <li>
+        <a href="/concepts.html#namespace-container-resource-limits">Namespace/Container Resource Limits</a>
+        <ul>
+          <li>
+            <a href="/concepts.html#memory-versus-cpu">Memory versus CPU</a>
+          </li>
+          <li>
+            <a href="/concepts.html#namespace-request-limits">Namespace request limits</a>
+          </li>
+          <li>
+            <a href="/concepts.html#container-request-limits">Container request limits</a>
+          </li>
+          <li>
+            <a href="/concepts.html#resources-requested-versus-resources-used">Resources Requested versus Resources Used</a>
+          </li>
+        </ul>
+      </li>
     </ul>
   </li>
 </ul>
@@ -516,6 +533,44 @@
 <li><a href="https://www.pluralsight.com/courses/getting-started-kubernetes">Pluralsight k8s course</a></li>
 <li><a href="https://eu.udacity.com/course/scalable-microservices-with-kubernetes--ud615">Udacity k8s course</a></li>
 </ul>
+<p><h2 id="namespace-container-resource-limits">Namespace/Container Resource Limits</h2><p>The cloud platform is a single kubernetes cluster, hosting multiple different MoJ services. So, the cluster capacity (in terms of memory and CPU) needs to be <a href="https://kubernetes.io/docs/concepts/scheduling/kube-scheduler/">shared efficiently</a> between the different services.</p>
+<p>The smallest unit of work we ask the cluster to manage is a container, and in our case, the largest unit is a <a href="https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/">namespace</a>. The cluster has several <a href="https://kubernetes.io/docs/concepts/architecture/nodes/">worker nodes</a>, which supply the memory and CPU capacity on which workloads can run. So, kubernetes has to solve a classic <a href="https://en.wikipedia.org/wiki/Packing_problems">packing problem</a> - run a bunch of different workloads on the cluster, putting them on different worker nodes in the most efficient way possible. But, the cluster can&rsquo;t be sure in advance how much resource (memory and CPU) any given container is going to need.</p>
+<p>To help with this, we specify <strong>request limits</strong>. This article will use &ldquo;request&rdquo; because that&rsquo;s the official kubernetes term, but request is a slightly awkward term here. It might be better to think of &ldquo;reserving&rdquo; rather than requesting resources.</p>
+<p>Essentially, a request limit says to kubernetes, &ldquo;this thing is going to need this much memory and this much CPU in order to do its job.&rdquo; So, whenever it encounters a request limit, the <a href="https://kubernetes.io/docs/concepts/scheduling/kube-scheduler/">kube-scheduler</a> sets aside that amount of memory and CPU, and ring-fences it so that it&rsquo;s guaranteed to be available.</p>
+<p>The other kind of limit in kubernetes are known as <strong>hard limits</strong>. These are important at runtime, as opposed to request limits, which are important for the scheduling decisions the cluster makes before your workloads start to run. From the name, it sounds as if these are limits that kubernetes will enforce, so that the workload will be terminated if it exceeds them. The reality is a little more nuanced. If the cluster has capacity available on the node where the workload is running, it will allow it to consume more resources than the hard limit specifies. But, it will flag the workload such that, if the node runs out of resources and kubernetes needs to evict pods, the pods from the offending workload will be first in line to be evicted.</p>
+<p>For simplicity&rsquo;s sake, you can just think of a hard limit as meaning what it sounds like - the maximum amount your workload will be allowed to consume before bad things start to happen.</p>
+<p>For the remainder of this article, we&rsquo;re only going to talk about request limits, since those are what is relevant for scheduling workloads onto the cluster.</p>
+<h3 id="memory-versus-cpu">Memory versus CPU</h3><p>Memory and CPU are the two types of resources we need to consider, and we&rsquo;re going to pretend, for the rest of this article, that they&rsquo;re handled in the same way. The truth is that they&rsquo;re not. If a workload tries to consume more memory than is available, it may be terminated by the cluster (&lsquo;out of memory killed&rsquo;, aka OOM-killed).</p>
+<p>If a workload tries to consume more CPU than is available, it will simply not receive as much CPU time as it wants, and will be throttled.</p>
+<p>This distinction doesn&rsquo;t really matter, for the purposes of this article, so we&rsquo;re going to pretend we can treat memory and CPU exactly the same.</p>
+<h3 id="namespace-request-limits">Namespace request limits</h3><p>A namespace is the largest &ldquo;unit of work&rdquo; that the cluster needs to worry about.</p>
+<p>When you create a namespace the <a href="https://kubernetes.io/docs/concepts/policy/resource-quotas/">ResourceQuota</a> specifies limits on the amount of resources that it will allow the namespace to request. This <a href="https://github.com/ministryofjustice/cloud-platform-environments/blob/master/namespace-resources/03-resourcequota.yaml">file</a> defines the defaults we assign to new namespaces. The <code>requests.cpu</code> specifies the CPU resources, usually in <a href="https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#meaning-of-cpu">millicores</a> aka millicpus. <code>requests.memory</code> specifies the required memory, usually in <a href="https://en.wikipedia.org/wiki/Mebibyte">mebibytes</a>.</p>
+<p>These values represent the amount of CPU and memory that the cluster will <strong>set aside as soon as this namespace is created</strong>, regardless of whether or not those resources are being used to do any useful work.</p>
+<p>This means it is possible to run out of cluster resources before any work is actually performed, just by requesting (i.e. reserving) capacity.</p>
+<p><a href="../images/cluster-namespace-packing.png" target="_blank" rel="noopener noreferrer"><img src="/images/cluster-namespace-packing.png" alt="Cluster namespace packing" /></a></p>
+<p>For this reason, we need to be conservative when assigning request limits to namespaces. This won&rsquo;t prevent your namespace from accessing resources that it needs, but a lower request limit will help us to use the capacity of the cluster more efficiently, to run everyone&rsquo;s workloads.</p>
+<h3 id="container-request-limits">Container request limits</h3><p>The smallest unit of work the cluster cares about is a container.</p>
+<p>Kubernetes workloads are generally defined in terms of <a href="https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/">pods</a>, where each pod defines a number of containers. Containers also have request limits and hard limits on the resources that will be set aside for them, or which they shouldn&rsquo;t exceed.</p>
+<p><a href="https://raw.githubusercontent.com/ministryofjustice/fb-av/6cdba5db4e2feb440c7b6a303f241728b9cee5f8/deploy/fb-av-chart/templates/deployment.yaml">Here</a> is an example of a deployment file which specifies limits for the container it launches.</p>
+<p>Whenever the scheduler tries to schedule a pod, it reserves whatever request limits are specified for each container. If the deployment doesn&rsquo;t specify request limits for a given container, the default for the namespace will be used. This default comes from the namespace&rsquo;s <a href="https://kubernetes.io/docs/concepts/policy/limit-range/">LimitRange</a>. In our case, the default we apply for new namespaces is specified <a href="https://github.com/ministryofjustice/cloud-platform-environments/blob/master/namespace-resources/02-limitrange.yaml">here</a>.</p>
+<p><a href="../images/deployment-one-replica.png" target="_blank" rel="noopener noreferrer"><img src="/images/deployment-one-replica.png" alt="Deployment one replica" /></a></p>
+<p>The diagram above shows a namespace with a deployment consisting of four containers. If the service team wanted to run multiple replicas of this deployment, the scheduler would not allow it, because the namespace capacity limit (the pink square) is not enough to set aside the amount of resources that each of the containers say they want (the green square; i.e. you couldn&rsquo;t fit another green square of that size inside the pink square).</p>
+<h3 id="resources-requested-versus-resources-used">Resources Requested versus Resources Used</h3><p>So far, we&rsquo;ve only been talking about what resources we are <strong>requesting</strong>, and it&rsquo;s clear that we can quickly run out of capacity in the cluster if we request too many resources. But, how closely does what we request match what we use?</p>
+<p>We have created <a href="https://github.com/ministryofjustice/cloud-platform-environments/blob/master/bin/namespace-reporter.rb">this script</a> that you can run to see how your namespace is doing.</p>
+<p>Here is the current result (25/07/19) from running the script against the <code>monitoring</code> namespace (where things like <a href="https://prometheus.io/">prometheus</a> and <a href="https://prometheus.io/docs/alerting/alertmanager/">alert-manager</a> run)</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ ./bin/namespace-reporter.rb monitoring</p>
+<p>Namespace: monitoring</p>
+<p>Request limit:        CPU: 10000,     Memory: 24000
+Requested:            CPU: 2215,      Memory: 13115</p>
+<p>Num. containers:      58
+Req. per-container:   CPU: 125,       Memory: 250</p>
+<p>Resources in-use:     CPU: 363,       Memory: 6795</p>
+<p>CPU values are in millicores (m). Memory values are in mebibytes (Mi).
+</code></pre></div><p>As you can see, we&rsquo;re doing quite badly in terms of efficient usage of cluster resources. Inside the namespace, we&rsquo;re requesting 2215 millicores of CPU, but only using 363, and we&rsquo;re requesting 13115Mi of memory, but only using 6795Mi.</p>
+<p><a href="../images/requested-versus-used.png" target="_blank" rel="noopener noreferrer"><img src="/images/requested-versus-used.png" alt="Requested versus used" /></a></p>
+<p>Worse still, we have a request limit of 10000m CPU and 24000Mi of memory (i.e. 10 CPU cores, and 25G of memory). Those resources have been set aside for the monitoring namespace, and are not available to run any other workloads.</p>
+<p>This pattern is repeated across all the namespaces in the cluster, and it&rsquo;s a problem. We can make the cluster bigger to get more capacity, and we have done so several times, but there are knock-on effects. The more cluster nodes we have, the harder the cluster control software has to work, and some functions get slower, or even stop working altogether, so more work has to be done to scale <em>those</em> up, and so on.</p>
+<p>For this reason, we&rsquo;re going to do ongoing work to <strong>right-size</strong> both new and existing namespaces and their limit ranges, so that everyone benefits by having the cluster run their workloads efficiently.</p></p>
 
 
             
