@@ -191,6 +191,15 @@ i.e. if you need namespaces 'myapp-dev', 'myapp-staging' and 'myapp-prod',
 please raise a separate PR for each one. This makes it a lot easier for the
 cloud platform team to review your PRs.
 
+### Namespace resource limits
+
+The amount of resources (i.e. CPU and memory) we allocate to new namespaces, by
+default, is deliberately low. When you have worked out how much resource your
+application actually needs, please raise a PR to adjust the limits on your
+namespace accordingly.
+
+For more information, please see this article on [namespace limits].
+
 ### Accessing your environments
 
 Once the pipeline has completed you will be able to check that your environment
@@ -310,11 +319,11 @@ metadata:
 spec:
   limits:
   - default:
-      cpu: 1000m
-      memory: 2Gi
+      cpu: 50m
+      memory: 500Mi
     defaultRequest:
-      cpu: 100m
-      memory: 128Mi
+      cpu: 10m
+      memory: 100Mi
     type: Container
 ```
 
@@ -322,10 +331,9 @@ spec:
 
 The
 [ResourceQuota](https://kubernetes.io/docs/concepts/policy/resource-quotas/)
-object allows us to set a total limit on the resources used in a namespace. As
-with the LimitRange, the `requests.cpu` and `requests.memory` limits set how
-much the namespace will request on creation. The `limits.cpu` and
-`limits.memory` define the overall hard limits for the namespace.
+object allows us to set a total limit on the resources reserved for a
+namespace. As with the LimitRange, the `requests.cpu` and `requests.memory`
+limits set how much the namespace will request on creation.
 
 In `03-resourcequota.yaml` you need to change the value of the `namespace` key
 to match the name of your namespace in the form `<service-env>`. We have set
@@ -333,6 +341,7 @@ default values for the limits in the templates. As you learn more about the
 behaviour of your applications on Kubernetes you can change them.
 
 ```YAML
+
 apiVersion: v1
 kind: ResourceQuota
 metadata:
@@ -340,10 +349,8 @@ metadata:
   namespace: myapp-dev ### Your namespace `<servicename-env>`
 spec:
   hard:
-    requests.cpu: 4000m
-    requests.memory: 8Gi
-    limits.cpu: 6000m
-    limits.memory: 12Gi
+    requests.cpu: 100m
+    requests.memory: 1000Mi
 ```
 
 #### `04-networkpolicy.yaml`
@@ -393,3 +400,4 @@ spec:
 [deploy-helm]: tasks.html#deploying-an-application-to-the-cloud-platform-with-helm
 [ecr-setup]: tasks.html#creating-an-ecr-repository
 [create-rds]: tasks.html#create-an-rds-instance
+[namespace limits]: concepts.html#namespace-container-resource-limits
