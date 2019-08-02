@@ -319,11 +319,11 @@ metadata:
 spec:
   limits:
   - default:
-      cpu: 1000m
-      memory: 2Gi
+      cpu: 50m
+      memory: 500Mi
     defaultRequest:
-      cpu: 100m
-      memory: 128Mi
+      cpu: 10m
+      memory: 100Mi
     type: Container
 ```
 
@@ -331,10 +331,9 @@ spec:
 
 The
 [ResourceQuota](https://kubernetes.io/docs/concepts/policy/resource-quotas/)
-object allows us to set a total limit on the resources used in a namespace. As
-with the LimitRange, the `requests.cpu` and `requests.memory` limits set how
-much the namespace will request on creation. The `limits.cpu` and
-`limits.memory` define the overall hard limits for the namespace.
+object allows us to set a total limit on the resources reserved for a
+namespace. As with the LimitRange, the `requests.cpu` and `requests.memory`
+limits set how much the namespace will request on creation.
 
 In `03-resourcequota.yaml` you need to change the value of the `namespace` key
 to match the name of your namespace in the form `<service-env>`. We have set
@@ -342,6 +341,7 @@ default values for the limits in the templates. As you learn more about the
 behaviour of your applications on Kubernetes you can change them.
 
 ```YAML
+
 apiVersion: v1
 kind: ResourceQuota
 metadata:
@@ -349,10 +349,8 @@ metadata:
   namespace: myapp-dev ### Your namespace `<servicename-env>`
 spec:
   hard:
-    requests.cpu: 4000m
-    requests.memory: 8Gi
-    limits.cpu: 6000m
-    limits.memory: 12Gi
+    requests.cpu: 100m
+    requests.memory: 1000Mi
 ```
 
 #### `04-networkpolicy.yaml`
