@@ -177,6 +177,9 @@
             <a href="/tasks.html#create-an-environment">Create an environment</a>
           </li>
           <li>
+            <a href="/tasks.html#namespace-resource-limits">Namespace resource limits</a>
+          </li>
+          <li>
             <a href="/tasks.html#accessing-your-environments">Accessing your environments</a>
           </li>
           <li>
@@ -777,6 +780,11 @@ slack channel. This can take about 5 minutes.</p>
 <p>i.e. if you need namespaces &#39;myapp-dev&rsquo;, &#39;myapp-staging&rsquo; and &#39;myapp-prod&rsquo;,
 please raise a separate PR for each one. This makes it a lot easier for the
 cloud platform team to review your PRs.</p>
+<h3 id="namespace-resource-limits">Namespace resource limits</h3><p>The amount of resources (i.e. CPU and memory) we allocate to new namespaces, by
+default, is deliberately low. When you have worked out how much resource your
+application actually needs, please raise a PR to adjust the limits on your
+namespace accordingly.</p>
+<p>For more information, please see this article on <a href="/concepts.html#namespace-container-resource-limits">namespace limits</a>.</p>
 <h3 id="accessing-your-environments">Accessing your environments</h3><p>Once the pipeline has completed you will be able to check that your environment
 is available by running:</p>
 <p><code>$ kubectl get namespaces</code></p>
@@ -861,33 +869,31 @@ metadata:
 spec:
   limits:
   - default:
-      cpu: 1000m
-      memory: 2Gi
+      cpu: 50m
+      memory: 500Mi
     defaultRequest:
-      cpu: 100m
-      memory: 128Mi
+      cpu: 10m
+      memory: 100Mi
     type: Container
 </code></pre></div><h4 id="03-resourcequota-yaml"><code>03-resourcequota.yaml</code></h4><p>The
 <a href="https://kubernetes.io/docs/concepts/policy/resource-quotas/">ResourceQuota</a>
-object allows us to set a total limit on the resources used in a namespace. As
-with the LimitRange, the <code>requests.cpu</code> and <code>requests.memory</code> limits set how
-much the namespace will request on creation. The <code>limits.cpu</code> and
-<code>limits.memory</code> define the overall hard limits for the namespace.</p>
+object allows us to set a total limit on the resources reserved for a
+namespace. As with the LimitRange, the <code>requests.cpu</code> and <code>requests.memory</code>
+limits set how much the namespace will request on creation.</p>
 <p>In <code>03-resourcequota.yaml</code> you need to change the value of the <code>namespace</code> key
 to match the name of your namespace in the form <code>&lt;service-env&gt;</code>. We have set
 default values for the limits in the templates. As you learn more about the
 behaviour of your applications on Kubernetes you can change them.</p>
-<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: v1
+<div class="highlight"><pre class="highlight plaintext"><code>
+apiVersion: v1
 kind: ResourceQuota
 metadata:
   name: namespace-quota
   namespace: myapp-dev ### Your namespace `&lt;servicename-env&gt;`
 spec:
   hard:
-    requests.cpu: 4000m
-    requests.memory: 8Gi
-    limits.cpu: 6000m
-    limits.memory: 12Gi
+    requests.cpu: 100m
+    requests.memory: 1000Mi
 </code></pre></div><h4 id="04-networkpolicy-yaml"><code>04-networkpolicy.yaml</code></h4><p>The
 <a href="https://kubernetes.io/docs/concepts/services-networking/network-policies/">NetworkPolicy</a>
 object defines how groups of pods are allowed to communicate with each other
