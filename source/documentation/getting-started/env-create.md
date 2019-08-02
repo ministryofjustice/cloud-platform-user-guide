@@ -191,6 +191,15 @@ i.e. if you need namespaces 'myapp-dev', 'myapp-staging' and 'myapp-prod',
 please raise a separate PR for each one. This makes it a lot easier for the
 cloud platform team to review your PRs.
 
+### Namespace resource limits
+
+The amount of resources (i.e. CPU and memory) we allocate to new namespaces, by
+default, is deliberately low. When you have worked out how much resource your
+application actually needs, please raise a PR to adjust the limits on your
+namespace accordingly.
+
+For more information, please see this article on [namespace limits].
+
 ### Accessing your environments
 
 Once the pipeline has completed you will be able to check that your environment
@@ -393,3 +402,4 @@ spec:
 [deploy-helm]: tasks.html#deploying-an-application-to-the-cloud-platform-with-helm
 [ecr-setup]: tasks.html#creating-an-ecr-repository
 [create-rds]: tasks.html#create-an-rds-instance
+[namespace limits]: concepts.html#namespace-container-resource-limits
