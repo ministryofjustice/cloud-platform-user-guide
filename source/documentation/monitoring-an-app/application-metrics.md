@@ -18,7 +18,6 @@ gem `prometheus-client`
 
 Next we need to amend the `config.ru` file and inclued the two `rack` middlewares required by the `prometheus-client`. 
 ```
-# config.ru
 require_relative 'config/environment'
 require 'prometheus/middleware/collector'
 require 'prometheus/middleware/exporter'
