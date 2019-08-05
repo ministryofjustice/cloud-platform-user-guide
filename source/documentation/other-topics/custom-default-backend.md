@@ -60,7 +60,7 @@ annotations:
 
 #### Use platform-level error page
 
-Some users want application's serve their own error's `example 404's`, but want to serve cloud platforms custom error page from default backend at ingress controller for timeouts errors like 502,503 and 504, this can be done by using [custom-http-errors][custom-http-error-annotation] annotation at your ingress.
+Some teams want application's serve their own error's `example 404's`, but want to serve cloud platforms custom error page from default backend at ingress controller for timeouts errors like 502,503 and 504, this can be done by using [custom-http-errors][custom-http-error-annotation] annotation in your ingress for error codes teams want to serve the cloud platforms custom error page.
 
 Example Usage:
 
