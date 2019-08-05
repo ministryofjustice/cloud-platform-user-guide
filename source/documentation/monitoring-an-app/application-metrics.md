@@ -11,12 +11,14 @@ To keep this document short we will assume you already have an application up an
 #### Changing the application code
 The [application](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app) we're using in this example is a simple (by its own definition) rails application, which we'll have installed in our own namespace. As we're using Ruby we'll need to install the `prometheus-client `gem that will eventually give us a `/metric` endpoint. 
 
-Simply add the gem to your Gemfile and install with bundler (if your following on with your own application, you may need to install the `rack` middleware gem). 
+First, simply add the gem to your Gemfile and install with bundler (if your following on with your own application, you may need to install the `rack` middleware gem). 
+
 ```
 gem `prometheus-client`
 ```
 
 Next we need to amend the `config.ru` file and inclued the two `rack` middlewares required by the `prometheus-client`. 
+
 ```
 require_relative 'config/environment'
 require 'prometheus/middleware/collector'
@@ -29,6 +31,7 @@ run Rails.application
 ```
 
 If you're running this locally, you'll now be able to query your `/metrics` endpoint and display an output. 
+
 ```
 curl localhost:3000/metrics
 ```
@@ -43,6 +46,7 @@ curl https://myapp.cloud-platform/metrics
 We need to expose the metrics endpoint with a `Service` and tell the Cloud Platform Prometheus to scrape the endpoint with `ServiceMonitor` object in Kubernetes. In this example, we're using the same port to expose both our application and metrics endpoint so we'll need to query our existing `Service` for the current port name and number. However, if you're exposing a different port you'll need to either amend your current `Service` or create a new one. 
 
 Let's find out our current port name and number by running:
+
 ```
 kubectl get svc -n <namespace>
 ```
@@ -94,7 +98,8 @@ Create and apply a new resource `<application>-networkPolicy.yaml`, as below:
 
 Now we've exposed our metrics and asked Prometheus to scrape application latency, we can head over to the UI and see our service appear in Prometheus [targets](https://prometheus.cloud-platform.service.justice.gov.uk/targets).
 
-Head to https://prometheus.cloud-platform.service.justice.gov.uk/graph and use the following promql query to view the application latency (remembering to change the namespace value):
+Head to [Cloud Platform Prometheus](https://prometheus.cloud-platform.service.justice.gov.uk/graph) and use the following promql query to view the application latency (remembering to change the namespace value):
+
 ```
 http_server_request_duration_seconds_sum{namespace="my-namespace"}
 ```
