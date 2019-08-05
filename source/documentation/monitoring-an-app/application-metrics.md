@@ -112,5 +112,5 @@ If you'd like to see the changes I've made to the [cloud-platform-multi-containe
 
 #### Advisory note: Applications configured to use multiple processes
 
-If you're using a pre-forking web server (like unicorn or puma for Ruby, or gunicorn for Python) and have it configured to use multiple processes, then you need to use a Prometheus client library which supports exporting metrics from multiple processes. Not all the official clients do that. If you don't use a library which supports this, then requests to `/metrics` could be served by any of the processes, which would mean Prometheus sees inconsistent data on each scrape
-Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. There are two ways to create a metrics endpoint. The first is when the metrics endpoint is embedded within the application referred to as `instrumentation`. The second is when the metrics endpoint is part of a deployed process that bridges the gap between Prometheus and systems that do not export metrics in the prometheus format, this is called an `exporter`.
+If you're using a pre-forking web server (like unicorn or puma for Ruby, or gunicorn for Python) and have it configured to use multiple processes, then you need to use a Prometheus client library which supports exporting metrics from multiple processes. Not all the official clients do that. If you don't use a library which supports this, then requests to `/metrics` could be served by any of the processes, which would mean Prometheus sees inconsistent data on each scrape.
+
