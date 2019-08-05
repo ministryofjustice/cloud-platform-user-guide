@@ -37,6 +37,7 @@ curl localhost:3000/metrics
 ```
 
 Build, tag and push your application changes to your code repository and deploy the latest version into your Cloud Platform namespace. Confirm your `/metrics` endpoint is now accessible from your url. 
+
 ```
 curl https://myapp.cloud-platform/metrics
 ```
