@@ -41,7 +41,8 @@ Final step is to to use an [Default Backend][default-backend-annotation] annotat
 
 This service will handle the response when the service in the Ingress rule does not have active endpoints. If a default backend annotation is specified on the ingress, the errors will be routed to that annotation's default backend service (instead of the global default backend).
 
-Example Ingress file with default-backend-annotation:
+Example Ingress file with default-backend annotation:
+
 ```
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -68,7 +69,7 @@ This default-backend service also handle the error responses if both [default-ba
 
 If custom-http-errors is also specified globally, the custom-http-error values specified in this annotation along with custom default backend will override the global value for the given ingress' hostname and path.
 
-In the example below, custom error pages from `custom-default-backend: nginx-errors` will be served for `"404,415"` errors which is set as `custom-http-errors` annotation.
+In the example below, custom error pages from `custom-default-backend: nginx-errors` service will be served for `"404,415"` errors which is set as `custom-http-errors` annotation.
 
 Example Ingress with default-backend and custom-http-errors annotations:
 
@@ -123,7 +124,7 @@ spec:
           servicePort: 4567
 ```
 
-Note: At the moment cloud-platform configured this [custom-http-errors][cp-config-custom-http-errors] to serve cloud platforms [custom error page][cp-custom-errors] from default backend at ingress controller, this will be removed soon to allow services to serve their own error pages or opt-in to the generic platform-level error page (which is done by adding an annotation at your ingress).
+Note: At the moment cloud-platform configured [this][cp-config-custom-http-errors] custom-http-errors to serve cloud platforms [custom error page][cp-custom-errors] from default backend at ingress controller, this will be removed soon to allow services to serve their own error pages or opt-in to the generic platform-level error page (which is done by adding an annotation at your ingress).
 
 [cloud-platform-custom-error-pages]: https://github.com/ministryofjustice/cloud-platform-custom-error-pages
 [customized-default-backend]: https://github.com/kubernetes/ingress-nginx/blob/master/docs/examples/customization/custom-errors/custom-default-backend.yaml
