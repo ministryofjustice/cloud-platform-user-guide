@@ -28,6 +28,13 @@ to the following repository, hosted on GitHub:
 Adding your environment definition kicks off a pipeline which builds your
 environment on the appropriate cluster.
 
+> #### Naming
+> When creating your environment, please ensure that you comply with our
+[guidance on naming things][naming-things-guidance].
+
+> This is particularly important for domain names, but since these often closely
+match the namespace name, it's worth choosing a good name at this stage.
+
 #### Set up
 
 First we need to clone the repository, change directory and create a new branch:
@@ -401,3 +408,4 @@ spec:
 [ecr-setup]: tasks.html#creating-an-ecr-repository
 [create-rds]: tasks.html#create-an-rds-instance
 [namespace limits]: concepts.html#namespace-container-resource-limits
+[naming-things-guidance]: https://ministryofjustice.github.io/technical-guidance/standards/naming-things/#naming-things
