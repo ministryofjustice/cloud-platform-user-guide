@@ -1,9 +1,9 @@
 ### Getting application metrics into Prometheus
 
 #### Overview
-This guide will walk you through the steps to export metrics from your application into the [Cloud Platform Prometheus](https://https://prometheus.cloud-platform.service.justice.gov.uk/). By exporting theses metrics into Prometheus you can create useful observability tools like Grafana dashboards and triggered alerts on things like crashing pods and failed deployments. To do that, Prometheus needs to be able to scrape data from a `/metrics` endpoint, which is created by a [Prometheus client library](https://prometheus.io/docs/instrumenting/clientlibs/). Once you have a `/metrics` endpoint you can create a `ServiceMonitor` to connect the Cloud Platform Prometheus to your endpoint and store data for querying.
+This guide will walk you through the steps to export metrics from your application into the [Cloud Platform Prometheus](https://https://prometheus.cloud-platform.service.justice.gov.uk/). By exporting these metrics into Prometheus you can create useful observability tools like Grafana dashboards and triggered alerts on things like crashing pods and failed deployments. To do that, Prometheus needs to be able to scrape data from a `/metrics` endpoint, which is created by a [Prometheus client library](https://prometheus.io/docs/instrumenting/clientlibs/). Once you have a `/metrics` endpoint you can create a `ServiceMonitor` to connect the Cloud Platform Prometheus to your endpoint and store data for querying.
 
-The example application in this document will be the [Ruby reference app](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/), utilising the Ruby [prometheus-client](https://github.com/prometheus/client_ruby) gem. If you're following along in another language, Prometheus offers a number of [client libraries](https://prometheus.io/docs/instrumenting/clientlibs/) to get you started. At the end you should have a working `/metrics` endpoint that displays your sites response time, which we can use to query the application latency in the Cloud Platform Prometheus.
+The example application in this document will be the [Ruby reference app](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/), utilising the Ruby [prometheus-client](https://github.com/prometheus/client_ruby) gem. If you're following along in another language, Prometheus offers a several [client libraries](https://prometheus.io/docs/instrumenting/clientlibs/) to get you started. At the end you should have a working `/metrics` endpoint that displays your site's response time, which we can use to query the application latency in the Cloud Platform Prometheus.
 
 The application latency [metric](https://prometheus.io/docs/concepts/metric_types/) is quite basic but our intention is to get you started.
 
@@ -46,7 +46,7 @@ curl https://myapp.cloud-platform/metrics
 
 #### Add Service endpoint and ServiceMonitor
 
-We need to expose the metrics endpoint with a `Service` and tell the Cloud Platform Prometheus to scrape the endpoint with `ServiceMonitor` object in Kubernetes. A `ServiceMonitor`is a custom resource definition ([CRD](https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions/)) that allows you to automatically generate Prometheus scrape configuration based on a specified resource.
+We need to expose the metrics endpoint with a `Service` and tell the Cloud Platform Prometheus to scrape the endpoint with `ServiceMonitor` object in Kubernetes. A `ServiceMonitor` is a custom resource definition ([CRD](https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions/)) that allows you to automatically generate Prometheus scrape configuration based on a specified resource.
 
 In this example, we're using the same port to expose both our application and metrics endpoint so we'll need to query our existing `Service` for the current port name. However, if you're exposing a different port you'll need to either amend your current `Service` or create a new one. 
 
@@ -119,10 +119,12 @@ If you'd like to see the changes I've made to the [cloud-platform-multi-containe
 
 #### Applications configured to use multiple processes
 
-If you're using a pre-forking web server (like unicorn or puma for Ruby, or gunicorn for Python) and have it configured to use multiple processes, then you need to use a Prometheus client library which supports exporting metrics from multiple processes. Not all the official clients do that. If you don't use a library which supports this, then requests to `/metrics` could be served by any of the processes, which would mean Prometheus sees inconsistent data on each scrape. The `prometheus-client` library we used in the example above supports multi-process metrics so will need to be aggregated, to report coherent total numbers. For more information on this please read [this](https://github.com/prometheus/client_ruby#aggregation-settings-for-multi-process-stores) article.
+If you're using a pre-forking web server (like unicorn or puma for Ruby, or gunicorn for Python) and have it configured to use multiple processes, then you need to use a Prometheus client library that supports exporting metrics from multiple processes. Not all the official clients do that. If you don't use a library which supports this, then requests to `/metrics` could be served by any of the processes, which would mean Prometheus sees inconsistent data on each scrape. The `prometheus-client` library we used in the example above supports multi-process metrics so will need to be aggregated, to report coherent total numbers. For more information on this please read [this](https://github.com/prometheus/client_ruby#aggregation-settings-for-multi-process-stores) article.
 
 #### More information on Service Monitors
 
 [CoreOS Blog on Prometheus Operator and ServiceMonitor](https://coreos.com/blog/the-prometheus-operator.html)
+
 [CoreOS README on Custom Resource Definitions](https://github.com/coreos/prometheus-operator#customresourcedefinitions)
+
 [Example ServiceMonitors](https://coreos.com/operators/prometheus/docs/latest/user-guides/running-exporters.html)
