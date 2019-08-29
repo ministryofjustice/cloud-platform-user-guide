@@ -4,8 +4,7 @@
 
 This is a guide to creating a environment in one of our Kubernetes clusters.
 
-We define an environment as a Kubernetes
-[namespace](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/)
+We define an environment as a Kubernetes [namespace]
 with some key resources deployed in it. Each Kubernetes namespace creates a
 logical separation within our cluster that provides isolation from any other
 namespace.
@@ -23,7 +22,7 @@ you to [deploy an application][deploy-hello-world] into.
 You create an environment by adding the definition of the environment in YAML
 to the following repository, hosted on GitHub:
 
-[cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments)
+[cloud-platform-environments][env-repo]
 
 Adding your environment definition kicks off a pipeline which builds your
 environment on the appropriate cluster.
@@ -301,9 +300,8 @@ limits on the resources that each namespace, pod and container can use. This
 helps to stop us accidentally entering a situation where one service impacts
 the performance of another through using more resources than are available.
 
-The first Kubernetes limit we can use is a
-[LimitRange](https://kubernetes.io/docs/tasks/administer-cluster/manage-resources/memory-default-namespace/)
-which we define in `02-limitrange.yaml`.
+The first Kubernetes limit we can use is a [LimitRange] which we define in
+`02-limitrange.yaml`.
 
 The LimitRange object specifies two key resource limits on containers,
 `defaultRequest` and `default`. `defaultRequest` is the memory and cpu a
@@ -336,11 +334,9 @@ spec:
 
 #### `03-resourcequota.yaml`
 
-The
-[ResourceQuota](https://kubernetes.io/docs/concepts/policy/resource-quotas/)
-object allows us to set a total limit on the resources reserved for a
-namespace. As with the LimitRange, the `requests.cpu` and `requests.memory`
-limits set how much the namespace will request on creation.
+The [ResourceQuota] object allows us to set a total limit on the resources
+reserved for a namespace. As with the LimitRange, the `requests.cpu` and
+`requests.memory` limits set how much the namespace will request on creation.
 
 In `03-resourcequota.yaml` you need to change the value of the `namespace` key
 to match the name of your namespace in the form `<service-env>`. We have set
@@ -362,14 +358,11 @@ spec:
 
 #### `04-networkpolicy.yaml`
 
-The
-[NetworkPolicy](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
-object defines how groups of pods are allowed to communicate with each other
-and other network endpoints. By default pods are non-isolated, they accept
-traffic from any source. We apply a network policy to restrict where traffic
-can come from, allowing traffic only from the [ingress
-controller](https://kubernetes.io/docs/concepts/services-networking/ingress/)
-and other pods in your namespace.
+The [NetworkPolicy] object defines how groups of pods are allowed to
+communicate with each other and other network endpoints. By default pods are
+non-isolated, they accept traffic from any source. We apply a network policy to
+restrict where traffic can come from, allowing traffic only from the [ingress
+controller] and other pods in your namespace.
 
 In `04-networkpolicy.yaml` you need to change the value of the `namespace` key
 to match the name of your namespace in the form `<service-env>`.
@@ -409,3 +402,10 @@ spec:
 [create-rds]: tasks.html#create-an-rds-instance
 [namespace limits]: concepts.html#namespace-container-resource-limits
 [naming-things-guidance]: https://ministryofjustice.github.io/technical-guidance/standards/naming-things/#naming-things
+[namespace]: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
+[env-repo]: https://github.com/ministryofjustice/cloud-platform-environments
+[NetworkPolicy]: https://kubernetes.io/docs/concepts/services-networking/network-policies/
+[ingress controller]: https://kubernetes.io/docs/concepts/services-networking/ingress/
+[access policies]: https://kubernetes.io/docs/admin/authorization/rbac/
+[LimitRange]: https://kubernetes.io/docs/tasks/administer-cluster/manage-resources/memory-default-namespace/
+[ResourceQuota]: https://kubernetes.io/docs/concepts/policy/resource-quotas/
