@@ -8,7 +8,7 @@ The example application in this document will be the [Ruby reference app](https:
 The application latency [metric](https://prometheus.io/docs/concepts/metric_types/) is quite basic but our intention is to get you started.
 
 #### Assumptions
-To keep this document short we will assume you already have an application up and running in a namespace on the Cloud Platform, if not, please see [Deploying a multi-container to the Cloud Platform](https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#deploying-a-multi-container-application-to-the-cloud-platform).
+To keep this document short we will assume you already have an application up and running in a namespace on the Cloud Platform, if not, please see [Deploying a multi-container application to the Cloud Platform](https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#deploying-a-multi-container-application-to-the-cloud-platform).
 
 #### Changing the application code
 We need to add the Prometheus Ruby client library via a gem to give us our `/metrics` endpoint.
@@ -32,7 +32,7 @@ use Prometheus::Middleware::Exporter
 run Rails.application
 ```
 
-If you're running this locally, you'll now be able to query your `/metrics` endpoint and display an output. If nothing appears, or metrics cannot be found, this hasn't worked.
+If you're running this locally, you'll now be able to query your `/metrics` endpoint and see some metrics data. If nothing appears, or metrics cannot be found, this hasn't worked.
 
 ```
 curl localhost:3000/metrics
@@ -46,7 +46,7 @@ curl https://myapp.cloud-platform/metrics
 
 #### Add Service endpoint and ServiceMonitor
 
-We need to expose the metrics endpoint with a `Service` and tell the Cloud Platform Prometheus to scrape the endpoint with `ServiceMonitor` object in Kubernetes. A `ServiceMonitor` is a custom resource definition ([CRD](https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions/)) that allows you to automatically generate Prometheus scrape configuration based on a specified resource.
+We need to expose the metrics endpoint with a `Service` and tell the Cloud Platform Prometheus to scrape the endpoint with a `ServiceMonitor` object in Kubernetes. A `ServiceMonitor` is a custom resource definition ([CRD](https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions/)) that allows you to automatically generate Prometheus scrape configuration based on a specified resource.
 
 In this example, we're using the same port to expose both our application and metrics endpoint so we'll need to query our existing `Service` for the current port name. However, if you're exposing a different port you'll need to either amend your current `Service` or create a new one. 
 
@@ -103,7 +103,7 @@ Create and apply a new resource `<application>-networkPolicy.yaml`, as below:
 
 #### Querying metrics
 
-We can now query out `/metric` endpoint using the Cloud Platform Prometheus.
+We can now query our `/metric` endpoint using the Cloud Platform Prometheus.
 
 Head to [Cloud Platform Prometheus](https://prometheus.cloud-platform.service.justice.gov.uk/graph) and use the following promql query to view the application latency (remembering to change the namespace value):
 
@@ -112,7 +112,7 @@ http_server_request_duration_seconds_sum{namespace="my-namespace"}
 ```
 
 The output will be something like:
-![Image of prometheus output](https://raw.githubusercontent.com/ministryofjustice/cloud-platform-user-docs/master/images/prometheus.png)
+![Image of prometheus output](../images/prometheus.png)
 
 #### Example in full
 If you'd like to see the changes I've made to the [cloud-platform-multi-container-demo-app](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app), please see this [PR](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/pull/7).
