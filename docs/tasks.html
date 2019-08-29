@@ -177,16 +177,19 @@
             <a href="/tasks.html#create-an-environment">Create an environment</a>
           </li>
           <li>
-            <a href="/tasks.html#namespace-resource-limits">Namespace resource limits</a>
-          </li>
-          <li>
             <a href="/tasks.html#accessing-your-environments">Accessing your environments</a>
           </li>
           <li>
             <a href="/tasks.html#next-steps">Next steps</a>
           </li>
           <li>
-            <a href="/tasks.html#more-information-on-environment-definition">More information on environment definition</a>
+            <a href="/tasks.html#environment-definition-files">Environment definition files</a>
+          </li>
+          <li>
+            <a href="/tasks.html#namespace-resource-limits">Namespace resource limits</a>
+          </li>
+          <li>
+            <a href="/tasks.html#namespace-yaml-files">Namespace YAML files</a>
           </li>
         </ul>
       </li>
@@ -214,7 +217,7 @@
             <a href="/tasks.html#overview">Overview</a>
           </li>
           <li>
-            <a href="/tasks.html#pre-requisites">Pre-Requisites</a>
+            <a href="/tasks.html#creating-a-route-53-hosted-zone-pre-requisites">Pre-Requisites</a>
           </li>
           <li>
             <a href="/tasks.html#terraform-files">Terraform files</a>
@@ -379,7 +382,7 @@
             <a href="/tasks.html#creating-your-own-custom-alerts">Creating your own custom alerts</a>
           </li>
           <li>
-            <a href="/tasks.html#getting-application-metrics-into-prometheus">Getting Application Metrics into Prometheus</a>
+            <a href="/tasks.html#getting-application-metrics-into-prometheus">Getting application metrics into Prometheus</a>
           </li>
         </ul>
       </li>
@@ -583,8 +586,7 @@ check that your &ldquo;current&rdquo; context is set.</p>
 <p>Once you are ready to deploy applications you will need to create an environment first.</p>
 
 <h2 id="creating-a-cloud-platform-environment">Creating a Cloud Platform Environment</h2><h3 id="introduction">Introduction</h3><p>This is a guide to creating a environment in one of our Kubernetes clusters.</p>
-<p>We define an environment as a Kubernetes
-<a href="https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/">namespace</a>
+<p>We define an environment as a Kubernetes <a href="https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/">namespace</a>
 with some key resources deployed in it. Each Kubernetes namespace creates a
 logical separation within our cluster that provides isolation from any other
 namespace.</p>
@@ -592,11 +594,30 @@ namespace.</p>
 the <code>kubectl</code> tool in the namespace you have created.</p>
 <h3 id="objective">Objective</h3><p>By the end of this guide you&rsquo;ll have created a Kubernetes namespace ready for
 you to <a href="/tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">deploy an application</a> into.</p>
-<h3 id="create-an-environment">Create an environment</h3><p>You create an environment by adding the definition of the environment in YAML
-to the following repository, hosted on GitHub:</p>
+<h3 id="create-an-environment">Create an environment</h3><h4 id="pre-requisites">Pre-requisites</h4>
+<ul>
+<li>Docker</li>
+<li>Git</li>
+<li>You must be a member of the <code>ministryofjustice</code> organisation on GitHub</li>
+</ul>
+<p>You create an environment by adding the definition of the environment as YAML
+files in the following GitHub repository:</p>
 <p><a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud-platform-environments</a></p>
-<p>Adding your environment definition kicks off a pipeline which builds your
-environment on the appropriate cluster.</p>
+<p>To create a namespace, clone the repository:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ git clone git@github.com:ministryofjustice/cloud-platform-environments.git
+$ cd cloud-platform-environments
+</code></pre></div><p>Then, run the script to create your namespace:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ make namespace
+</code></pre></div><p>You will be prompted to provide information about the new namespace, and the
+script will create the necessary YAML and Terraform files in the correct
+location in the repository.</p>
+<p>Please create a new branch, add the new files and raise a pull request. The
+cloud platform team need to approve your pull request before you can merge it.
+Once you have done this, a build pipeline will create your namespace on the
+cluster.</p>
+<p>Please create <strong>one PR per namespace</strong> i.e. if you need namespaces <code>myapp-dev</code>,
+<code>myapp-staging</code> and <code>myapp-prod</code>, please raise a separate PR for each one. This
+makes it a lot easier for the cloud platform team to review your PRs.</p>
 
 <blockquote>
 <h4 id="naming">Naming</h4><p>When creating your environment, please ensure that you comply with our
@@ -604,197 +625,7 @@ environment on the appropriate cluster.</p>
 <p>This is particularly important for domain names, but since these often closely
 match the namespace name, it&rsquo;s worth choosing a good name at this stage.</p>
 </blockquote>
-<h4 id="set-up">Set up</h4><p>First we need to clone the repository, change directory and create a new branch:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>$ git clone git@github.com:ministryofjustice/cloud-platform-environments.git
-$ cd cloud-platform-environments
-$ git checkout -b &lt;yourBranch&gt;
-</code></pre></div><h4 id="the-directory-structure">The directory structure</h4><p>We build new environments by creating a new directory for our environment and
-putting the YAML files that define the environment into that directory. To
-understand where to create the directory it is useful to understand the overall
-structure of the repo:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>cloud-platform-environments
-├── namespace-resources
-└── namespaces
-    └── live-1.cloud-platform.service.justice.gov.uk
-        ├── kube-system
-        ├── user-roles.yaml
-
-        └── ... NAMESPACE FOLDERS ...
-
-</code></pre></div><p><strong>cloud-platform-environments</strong></p>
-<p>This is the root of the repo, containing <code>namespaces</code> directory</p>
-<p><strong>/namespaces</strong></p>
-<p>The namespaces directory contains a directory for each of the clusters that you
-can build environments on. Create your environment in the
-<code>live-1.cloud-platform.service.justice.gov.uk</code> directory.</p>
-<p><strong>/namespaces/live-1.cloud-platform.service.justice.gov.uk/</strong></p>
-<p>Within the cluster directory you will generate a directory for your environment
-in the format <code>&lt;servicename-env&gt;</code>, for example <code>myapp-dev</code>.</p>
-<p><strong>/namespaces/live-1.cloud-platform.service.justice.gov.uk/servicename-env/</strong></p>
-<p>The <code>&lt;servicename-env&gt;</code> directory for your environment defines the specific
-resources we will create in your namespace. We describe these resources in more
-detail in <a href="#how-we-set-up-an-environment">how we set up an environment</a>.</p>
-<h4 id="how-we-set-up-an-environment">How we set up an environment</h4><p>To set up an environment we create 5 Kubernetes YAML files in the directory for your namespace:</p>
-
-<ul>
-<li><a href="#00-namespace-yaml"><code>00-namespace.yaml</code></a></li>
-<li><a href="#01-rbac-yaml"><code>01-rbac.yaml</code></a></li>
-<li><a href="#02-limitrange-yaml"><code>02-limitrange.yaml</code></a></li>
-<li><a href="#03-resourcequota-yaml"><code>03-resourcequota.yaml</code></a></li>
-<li><a href="#04-networkpolicy-yaml"><code>04-networkpolicy.yaml</code></a></li>
-</ul>
-<p>These files define key elements of the namespace and restrictions we want to
-place on it so that we have security and resource allocation properties. We
-will use terraform to create these files from templates. We also describe each
-of these files <a href="#00-namespace-yaml">in more detail below</a> in case you want to
-make future changes.</p>
-<p>In addition to the Kubernetes configuration files, we create a terraform config file:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>resources/main.tf
-</code></pre></div><p>This file defines the standard terraform backend and providers which you will
-need when you add terraform modules to create the AWS resources your service
-will use (e.g. an <a href="/tasks.html#creating-an-ecr-repository">ECR</a> for your docker images, <a href="/tasks.html#create-an-rds-instance">RDS
-databases</a>, and S3 buckets).</p>
-<h4 id="create-your-namespace-and-namespace-resources">Create your namespace and namespace resources</h4><p>We automate the creation of the namespace resource files using terraform. You will need to install terraform locally:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>$ brew install terraform@0.11
-</code></pre></div>
-<blockquote>
-<p>Note: You must specify version 0.11 of terraform. 0.12 (the latest, at the time of writing) introduces breaking changes, and the cluster has not yet been upgraded to work with Terraform 0.12. If you try to use terraform 0.12, you will get errors about formatting and other problems. Please stick to version 0.11, for now.</p>
-</blockquote>
-<p>In each of the template files you need to replace some example values with
-information about your namespace, team or app. We do this by running terraform
-commands and filling in the values.</p>
-<p>These are the inputs for the terraform module, that you will need to fill:</p>
-
-<div style="height:1px;font-size:1px;">&nbsp;</div>
-<div class="table-container">
-        <table>
-          <tr>
-<th>Name</th>
-<th>Description</th>
-<th style="text-align: center">Type</th>
-<th style="text-align: center">Default</th>
-<th style="text-align: center">Required</th>
-</tr>
-<tr>
-<td>application</td>
-<td>The name of your application</td>
-<td style="text-align: center">string</td>
-<td style="text-align: center">-</td>
-<td style="text-align: center">yes</td>
-</tr>
-<tr>
-<td>business-unit</td>
-<td>Area of the MOJ responsible for the service</td>
-<td style="text-align: center">string</td>
-<td style="text-align: center">-</td>
-<td style="text-align: center">yes</td>
-</tr>
-<tr>
-<td>cluster</td>
-<td>What cluster are you deploying your namespace. i.e cloud-platform-test-1</td>
-<td style="text-align: center">string</td>
-<td style="text-align: center"><code>cloud-platform-live-1</code></td>
-<td style="text-align: center">no</td>
-</tr>
-<tr>
-<td>contact_email</td>
-<td>Contact email address for owner of the application</td>
-<td style="text-align: center">string</td>
-<td style="text-align: center">-</td>
-<td style="text-align: center">yes</td>
-</tr>
-<tr>
-<td>environment</td>
-<td>A label for your environment (e.g. dev/staging/&hellip;)</td>
-<td style="text-align: center">string</td>
-<td style="text-align: center">-</td>
-<td style="text-align: center">yes</td>
-</tr>
-<tr>
-<td>github_team</td>
-<td>This is your team name as defined by the GITHUB api. This has to match the team name on the Github API</td>
-<td style="text-align: center">string</td>
-<td style="text-align: center">-</td>
-<td style="text-align: center">yes</td>
-</tr>
-<tr>
-<td>is-production</td>
-<td></td>
-<td style="text-align: center">string</td>
-<td style="text-align: center"><code>false</code></td>
-<td style="text-align: center">no</td>
-</tr>
-<tr>
-<td>namespace</td>
-<td>Namespace you would like to create on cluster <application>-<environment>. i.e myapp-dev</td>
-<td style="text-align: center">string</td>
-<td style="text-align: center">-</td>
-<td style="text-align: center">yes</td>
-</tr>
-<tr>
-<td>owner</td>
-<td>Who is the owner/Who is responsible for this application</td>
-<td style="text-align: center">string</td>
-<td style="text-align: center">-</td>
-<td style="text-align: center">yes</td>
-</tr>
-<tr>
-<td>source_code_url</td>
-<td>Url of the source code for your application</td>
-<td style="text-align: center">string</td>
-<td style="text-align: center">-</td>
-<td style="text-align: center">yes</td>
-</tr>
-
-        </table>
-      </div>
-<div style="height:1px;font-size:1px;">&nbsp;</div>
-<p>Run the following commands to create your namespace and these resources files:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>$ cd cloud-platform-environments/namespace-resources/
-$ terraform init
-$ terraform apply
-</code></pre></div><p>Fill in your values in response to the prompts.</p>
-<p>For <code>var.namespace</code>, this is the name of your (team&rsquo;s) &lsquo;private&rsquo; part of the
-cluster. The name of your namespace must be unique across the whole of the
-cluster. If you try to create a new namespace using the name of one which
-already exists, you will get an error when you try to apply the generated
-kubernetes config files (or when our build pipeline applies them on your
-behalf).</p>
-<p>For &lsquo;real&rsquo; services, this is very unlikely to be a problem - most services have
-distinct names, so namespace name conflicts are unlikely. But, if you are
-creating a test/dummy namespace in order to learn how the platform works, it&rsquo;s
-better to avoid generic names like &#39;dummy&rsquo;, &#39;test&rsquo; or &#39;example&rsquo;. Add something
-unique (e.g. your name) to minimise the risk of trying to re-use a name by
-mistake.</p>
-<p>For <code>var.source_code_url</code>, this should be the URL of an application which is
-&#39;cluster-ready&rsquo; to be deployed. If you do not have such an application ready to
-go, you can use the reference application which the Cloud Platform team have
-prepared <code>git@github.com:ministryofjustice/cloud-platform-reference-app.git</code></p>
-<p>Note: The <code>source_code_url</code> is a descriptive label, used by the Cloud Platform
-team in supporting your namespace. It does not set up an explicit link between
-your namespace and your application&rsquo;s code repository.</p>
-<p>At the final prompt &ldquo;Do you want to perform these actions?&rdquo;, enter &ldquo;yes&rdquo;</p>
-<p>You can then access your namespace files under
-<code>cloud-platform-environments/namespaces/live-1.cloud-platform.service.justice.gov.uk/&lt;your-namespace&gt;</code>,
-if satisfied you can then push the changes to your branch and create a pull
-request against the
-<a href="https://github.com/ministryofjustice/cloud-platform-environments"><code>cloud-platform-environments</code></a>
-master repo.</p>
-<p>The cloud platform team will review the pull request when it gets opened.  As
-soon as the pull request has been approved by the cloud platform team you can
-then merge it into the master branch which will kick off the pipeline that
-builds the environment. You can check whether the build succeeded or failed in
-the <a href="https://mojdt.slack.com/messages/CA5MDLM34/"><code>#cp-build-notification</code></a>
-slack channel. This can take about 5 minutes.</p>
-<p>Please create <strong>one PR per namespace</strong></p>
-<p>i.e. if you need namespaces &#39;myapp-dev&rsquo;, &#39;myapp-staging&rsquo; and &#39;myapp-prod&rsquo;,
-please raise a separate PR for each one. This makes it a lot easier for the
-cloud platform team to review your PRs.</p>
-<h3 id="namespace-resource-limits">Namespace resource limits</h3><p>The amount of resources (i.e. CPU and memory) we allocate to new namespaces, by
-default, is deliberately low. When you have worked out how much resource your
-application actually needs, please raise a PR to adjust the limits on your
-namespace accordingly.</p>
-<p>For more information, please see this article on <a href="/concepts.html#namespace-container-resource-limits">namespace limits</a>.</p>
+<p>This is all you need to do in order to create your namespace.</p>
 <h3 id="accessing-your-environments">Accessing your environments</h3><p>Once the pipeline has completed you will be able to check that your environment
 is available by running:</p>
 <p><code>$ kubectl get namespaces</code></p>
@@ -809,7 +640,10 @@ our <code>myenv-dev</code> namespace, we would run:</p>
 <p>Then you can try <a href="/tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">deploying an app to Kubernetes manually</a>
 by writing some custom YAML files or <a href="/tasks.html#deploying-an-application-to-the-cloud-platform-with-helm">deploying an app with Helm</a>,
 a Kubernetes <a href="https://helm.sh/">package manager</a>.</p>
-<h3 id="more-information-on-environment-definition">More information on environment definition</h3><p>To set up an environment we create 5 files in that directory:</p>
+<p>The remainder of this section we describe in detail the YAML files which define
+your namespace, in case you need to alter any values.</p>
+<h3 id="environment-definition-files">Environment definition files</h3><p>To set up an environment we create 5 Kubernetes YAML files in the directory for
+your namespace:</p>
 
 <ul>
 <li><a href="#00-namespace-yaml"><code>00-namespace.yaml</code></a></li>
@@ -821,19 +655,44 @@ a Kubernetes <a href="https://helm.sh/">package manager</a>.</p>
 <p>These files define key elements of the namespace and restrictions we want to
 place on it so that we have security and resource allocation properties. We
 will use terraform to create these files from templates. We also describe each
-of these files in more detail below in case you want to make changes.</p>
-<h4 id="00-namespace-yaml"><code>00-namespace.yaml</code></h4><p>The <code>00-namespace.yaml</code> file defines the namespace so that the cluster
-Kubernetes knows to create a namespace and what to call it.</p>
+of these files <a href="#00-namespace-yaml">in more detail below</a> in case you want to
+make future changes.</p>
+<p>In addition to the Kubernetes configuration files, we create a terraform config
+file:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>resources/main.tf
+</code></pre></div><p>This file defines the standard terraform backend and providers which you will
+need when you add terraform modules to create the AWS resources your service
+will use (e.g. an <a href="/tasks.html#creating-an-ecr-repository">ECR</a> for your docker images, <a href="/tasks.html#create-an-rds-instance">RDS
+databases</a>, and S3 buckets).</p>
+<h3 id="namespace-resource-limits">Namespace resource limits</h3><p>The amount of resources (i.e. CPU and memory) we allocate to new namespaces, by
+default, is deliberately low. When you have worked out how much resource your
+application actually needs, please raise a PR to adjust the limits on your
+namespace accordingly.</p>
+<p>For more information, please see this article on <a href="/concepts.html#namespace-container-resource-limits">namespace limits</a>.</p>
+<h3 id="namespace-yaml-files">Namespace YAML files</h3><p>These files define key elements of the namespace and restrictions we want to
+place on it so that we have security and resource allocation properties.</p>
+<h4 id="00-namespace-yaml"><code>00-namespace.yaml</code></h4><p>The <code>00-namespace.yaml</code> file defines the namespace so that the Kubernetes
+cluster knows to create the namespace and what to call it.</p>
 <div class="highlight"><pre class="highlight plaintext"><code>apiVersion: v1
 kind: Namespace
 metadata:
   name: myapp-dev ### This is where you will define your &lt;servicename-env&gt;
   labels:
     name: myapp-dev ### Also your &lt;servicename-env&gt;
-</code></pre></div><h4 id="01-rbac-yaml"><code>01-rbac.yaml</code></h4><p>We will also create a <code>RoleBinding</code> resource by adding the <code>01-rbac.yaml</code> file.
-This will provide us with <a href="https://kubernetes.io/docs/admin/authorization/rbac/">access
-policies</a> on the
-namespace we have created in the cluster.</p>
+</code></pre></div><p>The namespace is the your (team&rsquo;s) &lsquo;private&rsquo; part of the cluster. The name of
+your namespace must be unique across the whole of the cluster. If you try to
+create a new namespace using the name of one which already exists, you will get
+an error when you try to apply the generated kubernetes config files (or when
+our build pipeline applies them on your behalf).</p>
+<p>For &lsquo;real&rsquo; services, this is very unlikely to be a problem - most services have
+distinct names, so namespace name conflicts are unlikely. But, if you are
+creating a test/dummy namespace in order to learn how the platform works, it&rsquo;s
+better to avoid generic names like &#39;dummy&rsquo;, &#39;test&rsquo; or &#39;example&rsquo;. Add something
+unique (e.g. your name) to minimise the risk of trying to re-use a name by
+mistake.</p>
+<h4 id="01-rbac-yaml"><code>01-rbac.yaml</code></h4><p>We will also create a <code>RoleBinding</code> resource by adding the <code>01-rbac.yaml</code> file.
+This will provide us with <a href="https://kubernetes.io/docs/admin/authorization/rbac/">access policies</a> on the namespace we have created in
+the cluster.</p>
 <p>A role binding resource grants the permissions defined in a role to a user or
 set of users. A role can be another resource we can create but in this instance
 we will reference a Kubernetes default role <code>ClusterRole - admin</code>.</p>
@@ -858,19 +717,14 @@ roleRef:
 limits on the resources that each namespace, pod and container can use. This
 helps to stop us accidentally entering a situation where one service impacts
 the performance of another through using more resources than are available.</p>
-<p>The first Kubernetes limit we can use is a
-<a href="https://kubernetes.io/docs/tasks/administer-cluster/manage-resources/memory-default-namespace/">LimitRange</a>
-which we define in <code>02-limitrange.yaml</code>.</p>
+<p>The first Kubernetes limit we can use is a <a href="https://kubernetes.io/docs/tasks/administer-cluster/manage-resources/memory-default-namespace/">LimitRange</a> which we define in
+<code>02-limitrange.yaml</code>.</p>
 <p>The LimitRange object specifies two key resource limits on containers,
 <code>defaultRequest</code> and <code>default</code>. <code>defaultRequest</code> is the memory and cpu a
 container will request on startup. This is what the Kubernetes scheduler uses
 to determine whether there is enough space on the cluster to run your
 application and what your application will start up with when it is created.
 <code>default</code> is the limit at which your application will be killed or throttled.</p>
-<p>In <code>02-limitrange.yaml</code> you need to change the value of the <code>namespace</code> key to
-match the name of your namespace in the form <code>&lt;service-env&gt;</code>. We have set
-default values for the limits in the templates. As you learn more about the
-behaviour of your applications on Kubernetes you can change them.</p>
 <div class="highlight"><pre class="highlight plaintext"><code>apiVersion: v1
 kind: LimitRange
 metadata:
@@ -885,15 +739,11 @@ spec:
       cpu: 10m
       memory: 100Mi
     type: Container
-</code></pre></div><h4 id="03-resourcequota-yaml"><code>03-resourcequota.yaml</code></h4><p>The
-<a href="https://kubernetes.io/docs/concepts/policy/resource-quotas/">ResourceQuota</a>
-object allows us to set a total limit on the resources reserved for a
-namespace. As with the LimitRange, the <code>requests.cpu</code> and <code>requests.memory</code>
-limits set how much the namespace will request on creation.</p>
-<p>In <code>03-resourcequota.yaml</code> you need to change the value of the <code>namespace</code> key
-to match the name of your namespace in the form <code>&lt;service-env&gt;</code>. We have set
-default values for the limits in the templates. As you learn more about the
-behaviour of your applications on Kubernetes you can change them.</p>
+</code></pre></div><h4 id="03-resourcequota-yaml"><code>03-resourcequota.yaml</code></h4><p>The <a href="https://kubernetes.io/docs/concepts/policy/resource-quotas/">ResourceQuota</a> object allows us to set a total limit on the resources
+reserved for a namespace. As with the LimitRange, the <code>requests.cpu</code> and
+<code>requests.memory</code> limits set how much the namespace will request on creation.</p>
+<p>As you learn more about the behaviour of your applications on Kubernetes you
+can change the limits on your namespace.</p>
 <div class="highlight"><pre class="highlight plaintext"><code>
 apiVersion: v1
 kind: ResourceQuota
@@ -904,16 +754,11 @@ spec:
   hard:
     requests.cpu: 100m
     requests.memory: 1000Mi
-</code></pre></div><h4 id="04-networkpolicy-yaml"><code>04-networkpolicy.yaml</code></h4><p>The
-<a href="https://kubernetes.io/docs/concepts/services-networking/network-policies/">NetworkPolicy</a>
-object defines how groups of pods are allowed to communicate with each other
-and other network endpoints. By default pods are non-isolated, they accept
-traffic from any source. We apply a network policy to restrict where traffic
-can come from, allowing traffic only from the <a href="https://kubernetes.io/docs/concepts/services-networking/ingress/">ingress
-controller</a>
-and other pods in your namespace.</p>
-<p>In <code>04-networkpolicy.yaml</code> you need to change the value of the <code>namespace</code> key
-to match the name of your namespace in the form <code>&lt;service-env&gt;</code>.</p>
+</code></pre></div><h4 id="04-networkpolicy-yaml"><code>04-networkpolicy.yaml</code></h4><p>The <a href="https://kubernetes.io/docs/concepts/services-networking/network-policies/">NetworkPolicy</a> object defines how groups of pods are allowed to
+communicate with each other and other network endpoints. By default pods are
+non-isolated, they accept traffic from any source. We apply a network policy to
+restrict where traffic can come from, allowing traffic only from the <a href="https://kubernetes.io/docs/concepts/services-networking/ingress/">ingress
+controller</a> and other pods in your namespace.</p>
 <div class="highlight"><pre class="highlight plaintext"><code>apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -992,7 +837,7 @@ echo QWxhZGRpbjpvcGVuIHNlc2FtZQ== | base64 --decode; echo
 <h3 id="creating-an-ecr-repository-next-steps">Next steps</h3><p>Try <a href="/tasks.html#deploying-an-application-to-the-cloud-platform-with-helm">deploying an app</a> with <a href="https://helm.sh/">Helm</a>, a Kubernetes package manager, or <a href="/tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">deploying manually</a> by writing some custom YAML files.</p>
 
 <h2 id="creating-a-route-53-hosted-zone">Creating a Route 53 Hosted Zone</h2><h3 id="overview">Overview</h3><p>This short guide will run through the process of creating a <a href="https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/AboutHZWorkingWith.html">Route 53 Hosted Zone</a> through Terraform for your environment.</p>
-<h3 id="pre-requisites">Pre-Requisites</h3><p>This guide assumes you have an environment already created in the <code>Live-1</code> cluster and defined in the <a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud-platform-environments repository</a>.</p>
+<h3 id="creating-a-route-53-hosted-zone-pre-requisites">Pre-Requisites</h3><p>This guide assumes you have an environment already created in the <code>Live-1</code> cluster and defined in the <a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud-platform-environments repository</a>.</p>
 <h3 id="terraform-files">Terraform files</h3><p>Copy the Terraform resource code below and save it into the respective 2 files in the <code>[your namespace]/resources</code> directory in the <a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud-platform-environments repository</a>:</p>
 
 <ul>
@@ -1392,7 +1237,7 @@ out to the cloud-platform team for help : <a href="/getting-help.html">Getting H
 <p>Note: Even though we are going to install a database within the Kubernetes cluster, it is recommended to use a database as a service offering such as <a href="https://aws.amazon.com/rds/">AWS RDS</a> if running in production.</p>
 </blockquote>
 <p>The Helm deployment manifests have been pre-written for this exercise. But if you wish to know more about these files and what they do have a quick browse of the <a href="https://github.com/ministryofjustice/cloud-platform-reference-app/tree/master/helm_deploy/django-app/README.md">README</a>.</p>
-<h5 id="deploy-the-app-set-up">Set up</h5><p>First we need to clone our reference application and change directory:</p>
+<h5 id="set-up">Set up</h5><p>First we need to clone our reference application and change directory:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>$ git clone https://github.com/ministryofjustice/cloud-platform-reference-app.git
 $ cd cloud-platform-reference-app
 </code></pre></div><p>You now have a functioning git repository that contains a simple Django application. Have a browse around and get familiar with the directory structure.</p>
@@ -1974,77 +1819,72 @@ data:
 <li><a href="https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/alerting.md">Alerting</a></li>
 </ul>
 
-<h3 id="getting-application-metrics-into-prometheus">Getting Application Metrics into Prometheus</h3><p>Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. There are two ways to create a metrics endpoint. The first is when the metrics endpoint is embedded within the application referred to as <code>instrumentation</code>. The second is when the metrics endpoint is part of a deployed process that bridges the gap between Prometheus and systems that do not export metrics in the prometheus format, this is called an <code>exporter</code>.</p>
-<p>The following exporters are installed as part of the Cloud Platform cluster build:</p>
+<h3 id="getting-application-metrics-into-prometheus">Getting application metrics into Prometheus</h3><h4 id="getting-application-metrics-into-prometheus-overview">Overview</h4><p>This guide will walk you through the steps to export metrics from your application into the <a href="https://https//prometheus.cloud-platform.service.justice.gov.uk/">Cloud Platform Prometheus</a>. By exporting these metrics into Prometheus you can create useful observability tools like Grafana dashboards and triggered alerts on things like crashing pods and failed deployments. To do that, Prometheus needs to be able to scrape data from a <code>/metrics</code> endpoint, which is created by a <a href="https://prometheus.io/docs/instrumenting/clientlibs/">Prometheus client library</a>. Once you have a <code>/metrics</code> endpoint you can create a <code>ServiceMonitor</code> to connect the Cloud Platform Prometheus to your endpoint and store data for querying.</p>
+<p>The example application in this document will be the <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/">Ruby reference app</a>, utilising the Ruby <a href="https://github.com/prometheus/client_ruby">prometheus-client</a> gem. If you&rsquo;re following along in another language, Prometheus offers a several <a href="https://prometheus.io/docs/instrumenting/clientlibs/">client libraries</a> to get you started. At the end you should have a working <code>/metrics</code> endpoint that displays your site&rsquo;s response time, which we can use to query the application latency in the Cloud Platform Prometheus.</p>
+<p>The application latency <a href="https://prometheus.io/docs/concepts/metric_types/">metric</a> is quite basic but our intention is to get you started.</p>
+<h4 id="assumptions">Assumptions</h4><p>To keep this document short we will assume you already have an application up and running in a namespace on the Cloud Platform, if not, please see <a href="https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#deploying-a-multi-container-application-to-the-cloud-platform">Deploying a multi-container application to the Cloud Platform</a>.</p>
+<h4 id="changing-the-application-code">Changing the application code</h4><p>We need to add the Prometheus Ruby client library via a gem to give us our <code>/metrics</code> endpoint.</p>
+<p>First, add the gem to your Gemfile and install with bundler.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>gem `prometheus-client`
+</code></pre></div><p>Next, we need to amend the <code>config.ru</code> file and include the two <code>rack</code> middlewares required by the <code>prometheus-client</code>.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>require_relative 'config/environment'
+require 'prometheus/middleware/collector'
+require 'prometheus/middleware/exporter'
 
-<ul>
-<li>kubeEtcd</li>
-<li>kubeApiServer</li>
-<li>kubeDns</li>
-<li>kubeControllerManager</li>
-<li>kubeScheduler</li>
-<li>kube-state-metrics</li>
-<li>nodeExporter</li>
-<li>kubelet</li>
-</ul>
-<p>Click <a href="https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exporters.md">here</a> for a list of exporters and client libraries listed on the official Prometheus Github repo.</p>
-<h4 id="instrumentation-of-the-cloud-platform-reference-application">Instrumentation of The Cloud-Platform Reference Application</h4><p>The <a href="https://github.com/ministryofjustice/cloud-platform-reference-app">Cloud Platform Reference Application</a> has <code>instrumentation</code> setup using <a href="https://github.com/korfuri/django-prometheus">django-prometheus</a>. The default install steps were followed which created a metrics endpoint.</p>
-<p>See screenshot below of how the metrics endpoint looks on a browser:
-<a href="https://raw.githubusercontent.com/ministryofjustice/cloud-platform-user-docs/master/images/metrics-endpoint.png" target="_blank" rel="noopener noreferrer"><img src="https://raw.githubusercontent.com/ministryofjustice/cloud-platform-user-docs/master/images/metrics-endpoint.png" alt="Image of metrics" /></a></p>
-<h4 id="create-a-service-to-expose-pods">Create a Service to expose Pods</h4><p>Scraping an exporter or separate metrics port requires a service that targets the Pod(s) of the exporter or application.</p>
-<p>Example:</p>
-<div class="highlight"><pre class="highlight yaml"><code><span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
-<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
-<span class="na">metadata</span><span class="pi">:</span>
-  <span class="na">name</span><span class="pi">:</span> <span class="s">my-app-service</span>
-  <span class="na">labels</span><span class="pi">:</span>
-    <span class="na">app</span><span class="pi">:</span> <span class="s">my-app</span>
-<span class="na">spec</span><span class="pi">:</span>
-  <span class="na">selector</span><span class="pi">:</span>
-    <span class="na">app</span><span class="pi">:</span> <span class="s">my-app</span>
-  <span class="na">ports</span><span class="pi">:</span>
-  <span class="pi">-</span> <span class="na">protocol</span><span class="pi">:</span> <span class="s">TCP</span>
-    <span class="na">port</span><span class="pi">:</span> <span class="s">8000</span>
-    <span class="na">targetPort</span><span class="pi">:</span> <span class="s">8000</span>
-    <span class="na">name</span><span class="pi">:</span> <span class="s">metrics</span>
-  <span class="na">type</span><span class="pi">:</span> <span class="s">NodePort</span>
-</code></pre></div><h4 id="create-a-service-monitor">Create a Service-Monitor</h4><p>A <code>ServiceMonitor</code> is a resource the Prometheus Operator introduces for Kubernetes that describes the set of targets to be monitored by Prometheus</p>
-<p>Service Monitor Architecture
-<a href="https://raw.githubusercontent.com/ministryofjustice/cloud-platform-user-docs/master/images/service-monitor-arch.png" target="_blank" rel="noopener noreferrer"><img src="https://raw.githubusercontent.com/ministryofjustice/cloud-platform-user-docs/master/images/service-monitor-arch.png" alt="Image of Service-Monitor Architecture" /></a></p>
-<p>Example:</p>
-<div class="highlight"><pre class="highlight yaml"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">monitoring.coreos.com/v1</span>
-<span class="na">kind</span><span class="pi">:</span> <span class="s">ServiceMonitor</span>
-<span class="na">metadata</span><span class="pi">:</span>
-  <span class="na">name</span><span class="pi">:</span> <span class="s">my-app</span>
-<span class="na">spec</span><span class="pi">:</span>
-  <span class="na">selector</span><span class="pi">:</span>
-    <span class="na">matchLabels</span><span class="pi">:</span>
-      <span class="na">app</span><span class="pi">:</span> <span class="s">my-app</span>
-  <span class="na">endpoints</span><span class="pi">:</span>
-  <span class="pi">-</span> <span class="na">port</span><span class="pi">:</span> <span class="s">metrics</span>
-    <span class="na">interval</span><span class="pi">:</span> <span class="s">15s</span>
-</code></pre></div><p>More detailed information about service-monitors can be found <a href="https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/running-exporters.md">here</a></p>
-<h4 id="networkpolicy-for-monitoring-namespace">NetworkPolicy for Monitoring Namespace</h4><p>By default, all connections from outside a namespace are blocked, therefore a network policy is required for the <code>monitoring</code> namespace to be able to connect into an application namespace to scrape the metrics endpoint.</p>
-<p>Example:</p>
-<div class="highlight"><pre class="highlight yaml"><code><span class="na">kind</span><span class="pi">:</span> <span class="s">NetworkPolicy</span>
-<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">networking.k8s.io/v1</span>
-<span class="na">metadata</span><span class="pi">:</span>
-  <span class="na">name</span><span class="pi">:</span> <span class="s">allow-prometheus-scraping</span>
-  <span class="na">namespace</span><span class="pi">:</span> <span class="s">my-app-namespace</span>
-<span class="na">spec</span><span class="pi">:</span>
-  <span class="na">podSelector</span><span class="pi">:</span>
-    <span class="na">matchLabels</span><span class="pi">:</span>
-      <span class="na">app</span><span class="pi">:</span> <span class="s">my-app</span>
-  <span class="na">policyTypes</span><span class="pi">:</span>
-  <span class="pi">-</span> <span class="s">Ingress</span>
-  <span class="na">ingress</span><span class="pi">:</span>
-  <span class="pi">-</span> <span class="na">from</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="na">namespaceSelector</span><span class="pi">:</span>
-        <span class="na">matchLabels</span><span class="pi">:</span>
-          <span class="na">component</span><span class="pi">:</span> <span class="s">monitoring</span>
-</code></pre></div><p>You can view your current NetworkPolices with the following command:</p>
-<div class="highlight"><pre class="highlight shell"><code>kubectl <span class="nt">-n</span> &lt;namespace&gt; get networkpolicies
-</code></pre></div><h4 id="advisory-note-applications-configured-to-use-multiple-processes">Advisory note: Applications configured to use multiple processes</h4><p>If you&rsquo;re using a pre-forking web server (like unicorn or puma for Ruby, or gunicorn for Python) and have it configured to use multiple processes, then you need to use a Prometheus client library which supports exporting metrics from multiple processes. Not all the official clients do that. If you don&rsquo;t use a library which supports this, then requests to <code>/metrics</code> could be served by any of the processes, which would mean Prometheus sees inconsistent data on each scrape</p>
+use Prometheus::Middleware::Collector
+use Prometheus::Middleware::Exporter
+
+run Rails.application
+</code></pre></div><p>If you&rsquo;re running this locally, you&rsquo;ll now be able to query your <code>/metrics</code> endpoint and see some metrics data. If nothing appears, or metrics cannot be found, this hasn&rsquo;t worked.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>curl localhost:3000/metrics
+</code></pre></div><p>Build, tag and push your application changes to your code repository and deploy the latest version into your Cloud Platform namespace. Confirm your <code>/metrics</code> endpoint is now accessible from your url.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>curl https://myapp.cloud-platform/metrics
+</code></pre></div><h4 id="add-service-endpoint-and-servicemonitor">Add Service endpoint and ServiceMonitor</h4><p>We need to expose the metrics endpoint with a <code>Service</code> and tell the Cloud Platform Prometheus to scrape the endpoint with a <code>ServiceMonitor</code> object in Kubernetes. A <code>ServiceMonitor</code> is a custom resource definition (<a href="https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions/">CRD</a>) that allows you to automatically generate Prometheus scrape configuration based on a specified resource.</p>
+<p>In this example, we&rsquo;re using the same port to expose both our application and metrics endpoint so we&rsquo;ll need to query our existing <code>Service</code> for the current port name. However, if you&rsquo;re exposing a different port you&rsquo;ll need to either amend your current <code>Service</code> or create a new one.</p>
+<p>Let&rsquo;s find out our current port name and number by running:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>kubectl -n &lt;namespace&gt; get svc rails-app-service -o=jsonpath={.spec.ports[0].name}
+</code></pre></div><p>As you can see, the name of the port we&rsquo;re exposing is <code>http</code>.</p>
+<p>Create and apply your service monitor <code>&lt;application&gt;-serviceMonitor.yaml</code>, as below:</p>
+<div class="highlight"><pre class="highlight yaml"><code>   <span class="na">apiVersion</span><span class="pi">:</span> <span class="s">monitoring.coreos.com/v1</span>
+   <span class="na">kind</span><span class="pi">:</span> <span class="s">ServiceMonitor</span>
+   <span class="na">metadata</span><span class="pi">:</span>
+     <span class="na">name</span><span class="pi">:</span> <span class="s">rails-app-service</span>
+   <span class="na">spec</span><span class="pi">:</span>
+     <span class="na">selector</span><span class="pi">:</span>
+       <span class="na">matchLabels</span><span class="pi">:</span>
+         <span class="na">app</span><span class="pi">:</span> <span class="s">rails-app-service</span>
+     <span class="na">endpoints</span><span class="pi">:</span>
+     <span class="pi">-</span> <span class="na">port</span><span class="pi">:</span> <span class="s">http</span> <span class="c1"># this is the port name you grabbed from your running service</span>
+       <span class="na">interval</span><span class="pi">:</span> <span class="s">15s</span>
+</code></pre></div><p>This will tell Prometheus to go and scrape that endpoint every 15 seconds and store any exposed metrics.</p>
+<h4 id="add-a-networkpolicy-resource">Add a NetworkPolicy resource</h4><p>The Prometheus server is in the &lsquo;monitoring&rsquo; namespace, but by default, any network connections from outside your application&rsquo;s namespace will be blocked. So, to allow prometheus to scrape your application&rsquo;s <code>/metrics</code> endpoint, we need to add a network policy to allow connections from the monitoring namespace.</p>
+<p>Create and apply a new resource <code>&lt;application&gt;-networkPolicy.yaml</code>, as below:</p>
+<div class="highlight"><pre class="highlight yaml"><code>   <span class="na">kind</span><span class="pi">:</span> <span class="s">NetworkPolicy</span>
+   <span class="na">apiVersion</span><span class="pi">:</span> <span class="s">networking.k8s.io/v1</span>
+   <span class="na">metadata</span><span class="pi">:</span>
+     <span class="na">name</span><span class="pi">:</span> <span class="s">allow-prometheus-scraping</span>
+     <span class="na">namespace</span><span class="pi">:</span> <span class="s">my-app-namespace</span>
+   <span class="na">spec</span><span class="pi">:</span>
+     <span class="na">podSelector</span><span class="pi">:</span>
+       <span class="na">matchLabels</span><span class="pi">:</span>
+         <span class="na">app</span><span class="pi">:</span> <span class="s">rails-app</span>
+     <span class="na">policyTypes</span><span class="pi">:</span>                                                                                                                                                         
+     <span class="pi">-</span> <span class="s">Ingress</span>
+     <span class="na">ingress</span><span class="pi">:</span>
+     <span class="pi">-</span> <span class="na">from</span><span class="pi">:</span>
+       <span class="pi">-</span> <span class="na">namespaceSelector</span><span class="pi">:</span>
+           <span class="na">matchLabels</span><span class="pi">:</span>
+             <span class="na">component</span><span class="pi">:</span> <span class="s">monitoring</span>
+</code></pre></div><h4 id="querying-metrics">Querying metrics</h4><p>We can now query our <code>/metric</code> endpoint using the Cloud Platform Prometheus.</p>
+<p>Head to <a href="https://prometheus.cloud-platform.service.justice.gov.uk/graph">Cloud Platform Prometheus</a> and use the following promql query to view the application latency (remembering to change the namespace value):</p>
+<div class="highlight"><pre class="highlight plaintext"><code>http_server_request_duration_seconds_sum{namespace="my-namespace"}
+</code></pre></div><p>The output will be something like:
+<a href="../images/prometheus.png" target="_blank" rel="noopener noreferrer"><img src="/images/prometheus.png" alt="Image of prometheus output" /></a></p>
+<h4 id="example-in-full">Example in full</h4><p>If you&rsquo;d like to see the changes I&rsquo;ve made to the <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app">cloud-platform-multi-container-demo-app</a>, please see this <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/pull/7">PR</a>.</p>
+<h4 id="applications-configured-to-use-multiple-processes">Applications configured to use multiple processes</h4><p>If you&rsquo;re using a pre-forking web server (like unicorn or puma for Ruby, or gunicorn for Python) and have it configured to use multiple processes, then you need to use a Prometheus client library that supports exporting metrics from multiple processes. Not all the official clients do that. If you don&rsquo;t use a library which supports this, then requests to <code>/metrics</code> could be served by any of the processes, which would mean Prometheus sees inconsistent data on each scrape. The <code>prometheus-client</code> library we used in the example above supports multi-process metrics so will need to be aggregated, to report coherent total numbers. For more information on this please read <a href="https://github.com/prometheus/client_ruby#aggregation-settings-for-multi-process-stores">this</a> article.</p>
+<h4 id="more-information-on-service-monitors">More information on Service Monitors</h4><p><a href="https://coreos.com/blog/the-prometheus-operator.html">CoreOS Blog on Prometheus Operator and ServiceMonitor</a></p>
+<p><a href="https://github.com/coreos/prometheus-operator#customresourcedefinitions">CoreOS README on Custom Resource Definitions</a></p>
+<p><a href="https://coreos.com/operators/prometheus/docs/latest/user-guides/running-exporters.html">Example ServiceMonitors</a></p>
 
 
 
