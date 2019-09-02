@@ -2,42 +2,15 @@
 
 #### Introduction
 
+##### What is a Web Application Firewall (WAF)?
+
+A Web Application Firewall or WAF helps protect web applications by filtering and monitoring HTTP traffic between a web application and the Internet. A WAF is a [layer 7](https://en.wikipedia.org/wiki/OSI_model) defense and is one of the most common means of protecting against malicious web application security flaws at the application layer. However, it must be noted that a WAF is not designed and does not protect against all types of attacks. 
+
+##### ModSecurity
+
 [ModSecurity](http://www.modsecurity.org/about.html) is an open source, cross platform web application firewall (WAF) developed by Trustwave's SpiderLabs. It has a robust event-based programming language which provides protection from a range of attacks against web applications and allows for HTTP traffic monitoring and logging. 
 
-ModSecurity is a normally third party add-on for nginx, however this is included within the [nginx ingress-controller](https://github.com/kubernetes/ingress-nginx) package for Kubernetes. 
-
-There are two ways to implement ModSecurity:
-  
- - It can be enabled on a cluster level using ConfigMaps - this will enable ModSecurity for all paths, and each path must be disabled manually.
- - It can be enabled on an Ingress level (individually) using `annotations`.
-
 For the Cloud Platform, ModSecurity has been configured as an opt-in feature. New and current applications will require a specific set of annotations to be added to their ingress manifest file.
-
-#### OWASP Rules
-
-The [OWASP ModSecurity Core Rule Set (CRS)](https://coreruleset.org/faq/) is a set of generic attack detection rules for use with ModSecurity. The CRS aims to protect web applications from a wide range of attacks, including the OWASP Top Ten, with a minimum of false alerts. The CRS provides protection against many common attack categories, including:
-
- - SQL Injection (SQLi)
- - Cross Site Scripting (XSS)
- - Local File Inclusion (LFI)
- - Remote File Inclusion (RFI)
- - PHP Code Injection
- - Shellshock
- - Unix/Windows Shell Injection
- - Session Fixation
- - Scripting/Scanner/Bot Detection
- - Metadata/Error Leakages
-
-##### Paranoia Level
-
-The Paranoia Level (PL) setting allows you to choose the desired level of rule checks. For the Cloud Platform implementation, this has been set to PL1. For more information on Paranoia Levels, please go to the `What are paranoia levels, and which level should I choose?` section [here](https://coreruleset.org/faq/)
-
-##### Anomaly Scoring Mode
-
-Traditional Detection or Passive Mode is the most basic operating mode where all of the rules are run as individual entities. In this mode no intelligence is shared between rules and each rule has no information about any previous rule matches. That is to say, in this mode, if a rule triggers, it will execute any disruptive/logging actions specified on the current rule.
-
-Anomaly scoring mode implements the concept of Collaborative Detection and Delayed Blocking. Rule logic has been set to decouple the inspection/detection from the blocking functionality. The individual rules can be run so that the detection remains, however instead of applying any disruptive action at that point, the rules will contribute to a transactional anomaly score collection. In addition, each rule will also store meta-data about each rule match (such as the Rule ID, Attack Category, Matched Location and Matched Data) for later logging. 
-For more information in anomaly scoring, click [here](https://www.modsecurity.org/CRS/Documentation/anomaly.html#anomaly-scoring-mode)
 
 #### Ingress Annotations
 
@@ -106,3 +79,30 @@ Error Log Example:
  "attack-generic"] [hostname "12.123.1.12"] [uri "/"] [unique_id "12345678.12345"] [ref ""],
 client: 12.123.1.12, server: test-ingress.url, request: "GET /?exec=/bin/bash HTTP/2.0", host: "test-ingress.url"
 ```
+
+#### OWASP Rules
+
+The [OWASP ModSecurity Core Rule Set (CRS)](https://coreruleset.org/faq/) is a set of generic attack detection rules for use with ModSecurity. The CRS aims to protect web applications from a wide range of attacks, including the OWASP Top Ten, with a minimum of false alerts. The CRS provides protection against many common attack categories, including:
+
+ - SQL Injection (SQLi)
+ - Cross Site Scripting (XSS)
+ - Local File Inclusion (LFI)
+ - Remote File Inclusion (RFI)
+ - PHP Code Injection
+ - Shellshock
+ - Unix/Windows Shell Injection
+ - Session Fixation
+ - Scripting/Scanner/Bot Detection
+ - Metadata/Error Leakages
+
+##### Paranoia Level
+
+The Paranoia Level (PL) setting allows you to choose the desired level of rule checks. For the Cloud Platform implementation, this has been set to PL1. For more information on Paranoia Levels, please go to the `What are paranoia levels, and which level should I choose?` section [here](https://coreruleset.org/faq/)
+
+##### Anomaly Scoring Mode
+
+Traditional Detection or Passive Mode is the most basic operating mode where all of the rules are run as individual entities. In this mode no intelligence is shared between rules and each rule has no information about any previous rule matches. That is to say, in this mode, if a rule triggers, it will execute any disruptive/logging actions specified on the current rule.
+
+Anomaly scoring mode implements the concept of Collaborative Detection and Delayed Blocking. Rule logic has been set to decouple the inspection/detection from the blocking functionality. The individual rules can be run so that the detection remains, however instead of applying any disruptive action at that point, the rules will contribute to a transactional anomaly score collection. In addition, each rule will also store meta-data about each rule match (such as the Rule ID, Attack Category, Matched Location and Matched Data) for later logging. 
+For more information in anomaly scoring, click [here](https://www.modsecurity.org/CRS/Documentation/anomaly.html#anomaly-scoring-mode)
+
