@@ -475,6 +475,9 @@
             <a href="/tasks.html#time-zone-cronjobs">Time Zone Cronjobs</a>
           </li>
           <li>
+            <a href="/tasks.html#modsecurity-web-application-firewall">ModSecurity - Web Application Firewall</a>
+          </li>
+          <li>
             <a href="/tasks.html#custom-default-backend">Custom default-backend</a>
           </li>
         </ul>
@@ -2758,7 +2761,72 @@ spec:
   kubectl get tzcronjob --namespace [your namespace]
 </code>
 </code></pre></div>
-<h3 id="custom-default-backend">Custom default-backend</h3><h4 id="custom-default-backend-background">Background</h4><p>Cloud-Platform created <a href="https://github.com/ministryofjustice/cloud-platform-custom-error-pages">custom error pages</a> to be used by the default backend for Nginx ingress-controller. The default backend is the default service that Nginx falls backs to if it cannot route a request successfully. Globally when the service in the Ingress rule does not have active endpoints, this default-backend service will handle the response by serving the cloud-platform custom default error page.</p>
+<h3 id="modsecurity-web-application-firewall">ModSecurity - Web Application Firewall</h3><h4 id="modsecurity-web-application-firewall-introduction">Introduction</h4><h5 id="what-is-a-web-application-firewall-waf">What is a Web Application Firewall (WAF)?</h5><p>A Web Application Firewall or WAF helps protect web applications by filtering and monitoring HTTP traffic between a web application and the Internet. A WAF is a <a href="https://en.wikipedia.org/wiki/OSI_model">layer 7</a> defense and is one of the most common means of protecting against malicious web application security flaws at the application layer. However, it must be noted that a WAF is not designed and does not protect against all types of attacks.</p>
+<h5 id="modsecurity">ModSecurity</h5><p><a href="http://www.modsecurity.org/about.html">ModSecurity</a> is an open source, cross platform web application firewall (WAF) developed by Trustwave&rsquo;s SpiderLabs. It has a robust event-based programming language which provides protection from a range of attacks against web applications and allows for HTTP traffic monitoring and logging.</p>
+<p>For the Cloud Platform, ModSecurity has been configured as an opt-in feature. New and current applications will require a specific set of annotations to be added to their ingress manifest file.</p>
+<h4 id="ingress-annotations">Ingress Annotations</h4><p>To enable ModSecurity for your application, for following an annotations need to be added to the ingress manifest file:</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="s">nginx.ingress.kubernetes.io/enable-modsecurity</span><span class="pi">:</span> <span class="s2">&quot;</span><span class="s">true&quot;</span>
+</code></pre></div><p>This annotation enables ModSecurity for the ingress on the nginx ingress-controller in detection only mode. There is no disruptive action if a critical rule triggers, but it is logged in the nginx-ingress.log file. The <code>SecRuleEngine</code> is set to <code>Detection Only Mode</code>.</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="s">nginx.ingress.kubernetes.io/modsecurity-snippet</span><span class="pi">:</span> <span class="pi">|</span>
+      <span class="no">Include /etc/nginx/modsecurity/modsecurity.conf</span>
+      <span class="no">Include /etc/nginx/owasp-modsecurity-crs/nginx-modsecurity.conf</span>
+      <span class="no">SecRuleEngine On</span>
+</code></pre></div><p>This configures the nginx ingress-controller to use the <code>modsecurity.conf</code> file for the default ModSecurity settings and the <code>nginx-modsecurity.conf</code> file for the CRS settings.
+The <code>SecRuleEngine On</code> configures ModSecurity to actively block traffic classed as malicious using Anomaly Scoring.</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="s">nginx.ingress.kubernetes.io/modsecurity-transaction-id</span><span class="pi">:</span> <span class="s2">&quot;</span><span class="s">$request_id&quot;</span>
+</code></pre></div><p>The above annotation is optional, but it can be used to pass transactionIDs from nginx.</p>
+<p>Example:</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">extensions/v1beta1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Ingress</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">app-ingress</span>
+  <span class="na">annotations</span><span class="pi">:</span>
+    <span class="s">kubernetes.io/ingress.class</span><span class="pi">:</span> <span class="s2">&quot;</span><span class="s">nginx&quot;</span>
+    <span class="s">nginx.ingress.kubernetes.io/enable-modsecurity</span><span class="pi">:</span> <span class="s2">&quot;</span><span class="s">true&quot;</span>
+    <span class="s">nginx.ingress.kubernetes.io/modsecurity-snippet</span><span class="pi">:</span> <span class="pi">|</span>
+      <span class="no">Include /etc/nginx/modsecurity/modsecurity.conf</span>
+      <span class="no">Include /etc/nginx/owasp-modsecurity-crs/nginx-modsecurity.conf</span>
+      <span class="no">SecRuleEngine On</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">tls</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">hosts</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="s">&lt;application_url&gt;</span> 
+  <span class="na">rules</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">host</span><span class="pi">:</span> <span class="s">&lt;application_url&gt;</span> 
+    <span class="na">http</span><span class="pi">:</span>
+      <span class="na">paths</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">path</span><span class="pi">:</span> <span class="s">/</span>
+        <span class="na">backend</span><span class="pi">:</span>
+          <span class="na">serviceName</span><span class="pi">:</span> <span class="s">app-service</span>
+          <span class="na">servicePort</span><span class="pi">:</span> <span class="s">8080</span>
+</code></pre></div><h4 id="logging">Logging</h4><p>All disruptive actions are logged in the ModSecurity audit log file and the error log for for nginx ingress-controller. 
+Fluentd is used to ship error logs into the Cloud Platform ELK stack. To view any possible logs, log into <a href="https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/">Kibana</a> and search for <code>ModSecurity</code>. You can filter down to a particular host using <code>nginx-ingress.log is &quot;host: &quot;test-ingress.url&quot;&quot;</code></p>
+<p>Error Log Example:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>2019/01/01 11:00:00 [warn] 12647#12647: *1158975 [client 12.123.1.12] ModSecurity: Access denied with code 403 (phase 2). Matched &quot;Operator <code>Ge&#39;
+ with parameter</code>5&#39; against variable <code>TX:ANOMALY_SCORE&#39; (Value:</code>5&#39; ) [file &quot;/etc/nginx/owasp-modsecurity-crs/rules/
+ REQUEST-949-BLOCKING-EVALUATION.conf&quot;] [line &quot;01&quot;] [id &quot;00001&quot;] [rev &quot;&quot;] [msg &quot;Inbound Anomaly Score Exceeded (Total Score: 5)&quot;] [data &quot;&quot;] 
+ [severity &quot;2&quot;] [ver &quot;&quot;] [maturity &quot;0&quot;] [accuracy &quot;0&quot;] [tag &quot;application-multi&quot;] [tag &quot;language-multi&quot;] [tag &quot;platform-multi&quot;] [tag 
+ &quot;attack-generic&quot;] [hostname &quot;12.123.1.12&quot;] [uri &quot;/&quot;] [unique_id &quot;12345678.12345&quot;] [ref &quot;&quot;],
+client: 12.123.1.12, server: test-ingress.url, request: &quot;GET /?exec=/bin/bash HTTP/2.0&quot;, host: &quot;test-ingress.url&quot;
+</code></pre></div><h4 id="owasp-rules">OWASP Rules</h4><p>The <a href="https://coreruleset.org/faq/">OWASP ModSecurity Core Rule Set (CRS)</a> is a set of generic attack detection rules for use with ModSecurity. The CRS aims to protect web applications from a wide range of attacks, including the OWASP Top Ten, with a minimum of false alerts. The CRS provides protection against many common attack categories, including:</p></p>
+
+<ul>
+<li>SQL Injection (SQLi)</li>
+<li>Cross Site Scripting (XSS)</li>
+<li>Local File Inclusion (LFI)</li>
+<li>Remote File Inclusion (RFI)</li>
+<li>PHP Code Injection</li>
+<li>Shellshock</li>
+<li>Unix/Windows Shell Injection</li>
+<li>Session Fixation</li>
+<li>Scripting/Scanner/Bot Detection</li>
+<li>Metadata/Error Leakages</li>
+</ul>
+<p><h5 id="paranoia-level">Paranoia Level</h5><p>The Paranoia Level (PL) setting allows you to choose the desired level of rule checks. For the Cloud Platform implementation, this has been set to PL1. For more information on Paranoia Levels, please go to the <code>What are paranoia levels, and which level should I choose?</code> section <a href="https://coreruleset.org/faq/">here</a></p>
+<h5 id="anomaly-scoring-mode">Anomaly Scoring Mode</h5><p>Traditional Detection or Passive Mode is the most basic operating mode where all of the rules are run as individual entities. In this mode no intelligence is shared between rules and each rule has no information about any previous rule matches. That is to say, in this mode, if a rule triggers, it will execute any disruptive/logging actions specified on the current rule.</p>
+<p>Anomaly scoring mode implements the concept of Collaborative Detection and Delayed Blocking. Rule logic has been set to decouple the inspection/detection from the blocking functionality. The individual rules can be run so that the detection remains, however instead of applying any disruptive action at that point, the rules will contribute to a transactional anomaly score collection. In addition, each rule will also store meta-data about each rule match (such as the Rule ID, Attack Category, Matched Location and Matched Data) for later logging. 
+For more information in anomaly scoring, click <a href="https://www.modsecurity.org/CRS/Documentation/anomaly.html#anomaly-scoring-mode">here</a></p></p>
+<p><h3 id="custom-default-backend">Custom default-backend</h3><h4 id="custom-default-backend-background">Background</h4><p>Cloud-Platform created <a href="https://github.com/ministryofjustice/cloud-platform-custom-error-pages">custom error pages</a> to be used by the default backend for Nginx ingress-controller. The default backend is the default service that Nginx falls backs to if it cannot route a request successfully. Globally when the service in the Ingress rule does not have active endpoints, this default-backend service will handle the response by serving the cloud-platform custom default error page.</p>
 <p>However, some applications don’t want to use the cloud-platform custom default error pages from the Nginx ingress controller but need to be served their own custom error pages. This can be achieved by implementing own <a href="https://github.com/kubernetes/ingress-nginx/blob/master/docs/examples/customization/custom-errors/custom-default-backend.yaml">custom default backend</a> in a namespace.</p>
 <h4 id="custom-default-backend-setup">Setup</h4><p>Custom default-backend can be managed inside a namespace by creating a <a href="https://github.com/kubernetes/ingress-nginx/blob/master/docs/examples/customization/custom-errors/custom-default-backend.yaml">custom default-backend</a> service and deployment of the custom error pages container in your namespace. Configure the name of the service resource created that Nginx should use as the default backend for requests that don’t match any configured ingress rules (hostname and path combinations) using the annotation in your Ingress.</p>
 <h5 id="create-custom-error-page">Create custom error page</h5><p>First create a docker image containing custom HTTP error pages using the <a href="https://github.com/kubernetes/ingress-nginx/tree/master/images/custom-error-pages#custom-error-pages">example</a> from the ingress-nginx, or <a href="https://github.com/ministryofjustice/cloud-platform-custom-error-pages">simplified version</a> of that created by the cloud platform team.</p>
