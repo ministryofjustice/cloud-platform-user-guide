@@ -45,6 +45,10 @@ Services generally retain the same features and providers; with differences and 
    i. Connections **to** resources outside the cluster are allowed, and pods will be NATed to the IPs of the VPC gateways (addresses pinned to the #ask-cloud-platform channel).
    i. UDP is not implemented.
 
+1. Matching the TD configuration, services that are deemed more sensitive are bound to the VPC:
+   i. ElastiCache, MQ, RDS are bound to VPC private subnets; access from outside the cluster requires `kubectl port-forward`.
+   i. DynamoDB, ECR, S3, SNS, SQS can be reached globally.
+
 1. Applications must log their entire output to STDOUT/STDERR. 
    i. A cluster-shared service (fluentd) automatically collects all the outputs and sends them to [ElasticSearch][kibana] with no explicit configuration needed.
    i. Services that capture the output to re-format or send to a different destination can be run as multi-container pods, but may be superfluous.
@@ -65,6 +69,8 @@ Services generally retain the same features and providers; with differences and 
 
 1. Communication bounderies between applications and to AWS APIs are enforced using in-cluster [network policies][ingress], [OPA](opa) and [Kiam][kiam].
 
+1. Authentication to almost all management resources is based on Github OIDC, with roles mapped to GH team membership.
+
 1. DNS and SSL are managed by cluster-shared services (cert-manager and external-dns)
    i. Validation and deployment are managed by a single pipeline.
    i. Renewals are automatic.
@@ -72,6 +78,7 @@ Services generally retain the same features and providers; with differences and 
    i. Services might also be used in Quantum, work with the Quantum team (Atos? Vodafone?) to ensure DNS propagation.
 
 1. A shared, highly-available deployment of reverse-proxy instances based on AWS ELB and Nginx runs in front of all application instances and offers features like [WAF][waf], custom [error pages][error-pages] or [IP-based ACLs][ip-whitelist] user-configurable per application but independent from its running state.
+   i. Basic auth can be quickly turned on/off at ingress level, useful when deploying dev services.
 
 1. Several AWS resource types are tested and documented as [Terraform modules][terraform-modules]; they simplify deployment and propose best-practices options.
    i. Correct sizing and access control rules may still greatly vary for each project and must be carefully considered, not all resources scale up automatically.
