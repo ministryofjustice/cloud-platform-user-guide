@@ -40,6 +40,11 @@ Services generally retain the same features and providers; with differences and 
 
 1. There are no addditional restrictions on the programming languages or framework used; the same MoJ-wide [technical guidance](https://ministryofjustice.github.io/technical-guidance/) applies.
 
+1. Application endpoints can only be reached over HTTPS, with the TLS part terminated at the Ingress.
+   i. Direct TCP connections initiated **from** outside the cluster are not allowed.
+   i. Connections **to** resources outside the cluster are allowed, and pods will be NATed to the IPs of the VPC gateways (addresses pinned to the #ask-cloud-platform channel).
+   i. UDP is not implemented.
+
 1. Applications must log their entire output to STDOUT/STDERR. 
    i. A cluster-shared service (fluentd) automatically collects all the outputs and sends them to [ElasticSearch][kibana] with no explicit configuration needed.
    i. Services that capture the output to re-format or send to a different destination can be run as multi-container pods, but may be superfluous.
