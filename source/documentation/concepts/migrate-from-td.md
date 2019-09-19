@@ -1,90 +1,89 @@
-### Migrade from Template Deploy
+## Migrate from Template Deploy
 
-#### Overview
+### Overview
 
 Template Deploy (TD) is the deployment mechanism described in this [Confluence page][template-deploy] with operational details and inventory in the [DSD Operationa Manual][ops-manual]; this mechanism is obsoleted by the new [Cloud Platform][cloud-platform] (CP), the transition to which is details in this document.
 
-#### Service equivalence
+### Service equivalence
 
-##### Infrastructure
+#### Infrastructure
 
 Services generally retain the same features and providers; with differences and enhancements outlined below:
 
-1. The underlying platform remains AWS
-
-   i. A new and generally more locked-down AWS account is used, accessible generally via Terraform and role-specific IAM credentials; admin-level and console access is discouraged and generally reserved for the CP team.
-   i. All new deployments are started in the region `eu-west-2`(London) while TD uses `eu-west-1`(Ireland). For features not available in the region (eg SES), cross-region links can be created and will be evaluated on request.
-   i. AWS resources are not immediately available but must be requested via a Terraform-based [pipeline][pipeline] that serves both as validator and approval mechanism. Supported features are exposed via Terraform modules, listed in the [User Guide](terraform-modules).
+1. The underlying platform remains AWS.
+   * A new and generally more locked-down AWS account is used, accessible generally via Terraform and role-specific IAM credentials; admin-level and console access is discouraged and generally reserved for the CP team.
+   * All new deployments are started in the region `eu-west-2`(London) while TD uses `eu-west-1`(Ireland). For features not available in the region (eg SES), cross-region links can be created and will be evaluated on request.
+   * AWS resources are not immediately available but must be requested via a Terraform-based [pipeline][pipeline] that serves both as validator and approval mechanism. Supported features are exposed via Terraform modules, listed in the [User Guide](terraform-modules).
 
 1. While TD deployments could be characterized as "AWS+Docker", CP transitions many resources to Kubernetes concepts:
-   i. VPC -> namespace
-   i. EC2 instance -> pod
-   i. Docker container -> Kubernetes container, which may or not be based on Docker, so 100% feature parity must not be assumed (networking code is different, docker-compose does not apply).
-   i. ELB -> Nginx Ingress
-   i. SG -> Ingress annotations
-   i. EBS -> Persistent Volume Claim
-   i. SSH -> `kubectl exec`
+   * VPC -> namespace
+   * EC2 instance -> pod
+   * Docker container -> Kubernetes container, which may or not be based on Docker, so 100% feature parity must not be assumed (networking code is different, docker-compose does not apply).
+   * ELB -> Nginx Ingress
+   * SG -> Ingress annotations
+   * EBS -> Persistent Volume Claim
+   * SSH -> `kubectl exec`
 
 1. Single shared Docker registry is replaced by as many ECR instances as needed, based on team requests.
 
 1. Pagerduty [accounts][pagerduty] and configuration remain unchanged.
-   i. Alert sources can now be CloudWatch, Sentry (e-mail) and [Alertmanager][monitoring].
+   * Alert sources can now be CloudWatch, Sentry (e-mail) and [Alertmanager][monitoring].
 
 1. Pingdom [accounts](https://pingdom.com) and configuration remain unchanged.
 
 1. While the CP platform is meant to be much more self-service than TD, support is still offered by the CP team, with similar [communication channels and service levels][service-levels].
 
-##### Application-level considerations
+#### Application-level considerations
 
 1. Docker remains the preferred execution engine, upgraded to match the supported [Kubernetes release][kubernetes-release] (v1.13 at the time of this writing).
 
 1. There are no addditional restrictions on the programming languages or framework used; the same MoJ-wide [technical guidance](https://ministryofjustice.github.io/technical-guidance/) applies.
 
 1. Application endpoints can only be reached over HTTPS, with the TLS part terminated at the Ingress.
-   i. Direct TCP connections initiated **from** outside the cluster are not allowed.
-   i. Connections **to** resources outside the cluster are allowed, and pods will be NATed to the IPs of the VPC gateways (addresses pinned to the #ask-cloud-platform channel).
-   i. UDP is not implemented.
+   * Direct TCP connections initiated **from** outside the cluster are not allowed.
+   * Connections **to** resources outside the cluster are allowed, and pods will be NATed to the IPs of the VPC gateways (addresses pinned to the #ask-cloud-platform channel).
+   * UDP is not implemented.
 
 1. Matching the TD configuration, services that are deemed more sensitive are bound to the VPC:
-   i. ElastiCache, MQ, RDS are bound to VPC private subnets; access from outside the cluster requires `kubectl port-forward`.
-   i. DynamoDB, ECR, S3, SNS, SQS can be reached globally.
+   * ElastiCache, MQ, RDS are bound to VPC private subnets; access from outside the cluster requires `kubectl port-forward`.
+   * DynamoDB, ECR, S3, SNS, SQS can be reached globally.
 
 1. Applications must log their entire output to STDOUT/STDERR. 
-   i. A cluster-shared service (fluentd) automatically collects all the outputs and sends them to [ElasticSearch][kibana] with no explicit configuration needed.
-   i. Services that capture the output to re-format or send to a different destination can be run as multi-container pods, but may be superfluous.
+   * A cluster-shared service (fluentd) automatically collects all the outputs and sends them to [ElasticSearch][kibana] with no explicit configuration needed.
+   * Services that capture the output to re-format or send to a different destination can be run as multi-container pods, but may be superfluous.
 
 1. Init-type services within containers are discouraged. Kubernetes offers featureful service manager natively.
 
 1. Cron-type services within containers are discouraged. Kubernetes offers a featureful scheduler natively.
 
 1. Resource limits
-   i. CPU/RAM limits in TD reflect the configuration of the EC2 instance; for CP they are defined as [ResourceQuote / LimitRange][resources].
-   i. Disk space limit in TD is the EBS volume; for CP storage is highly restricted and volatile, persistent volumes must be requested via [StatefulSets][statefulset].
+   * CPU/RAM limits in TD reflect the configuration of the EC2 instance; for CP they are defined as [ResourceQuote / LimitRange][resources].
+   * Disk space limit in TD is the EBS volume; for CP storage is highly restricted and volatile, persistent volumes must be requested via [StatefulSets][statefulset].
 
 1. Monitoring
-   i. Recommended solution is the combination of [Prometheus/AlertManager/Grafana](monitoring).
-   i. [Sentry][sentry] usage is unchanged.
+   * Recommended solution is the combination of [Prometheus/AlertManager/Grafana](monitoring).
+   * [Sentry][sentry] usage is unchanged.
 
-#### Additional features
+### Additional features
 
 1. Communication bounderies between applications and to AWS APIs are enforced using in-cluster [network policies][ingress], [OPA](opa) and [Kiam][kiam].
 
 1. Authentication to almost all management resources is based on Github OIDC, with roles mapped to GH team membership.
 
 1. DNS and SSL are managed by cluster-shared services (cert-manager and external-dns)
-   i. Validation and deployment are managed by a single pipeline.
-   i. Renewals are automatic.
-   i. Initial configuration might require delegation from GDS.
-   i. Services might also be used in Quantum, work with the Quantum team (Atos? Vodafone?) to ensure DNS propagation.
+   * Validation and deployment are managed by a single pipeline.
+   * Renewals are automatic.
+   * Initial configuration might require delegation from GDS.
+   * Services might also be used in Quantum, work with the Quantum team (Atos? Vodafone?) to ensure DNS propagation.
 
 1. A shared, highly-available deployment of reverse-proxy instances based on AWS ELB and Nginx runs in front of all application instances and offers features like [WAF][waf], custom [error pages][error-pages] or [IP-based ACLs][ip-whitelist] user-configurable per application but independent from its running state.
-   i. Basic auth can be quickly turned on/off at ingress level, useful when deploying dev services.
+   * Basic auth can be quickly turned on/off at ingress level, useful when deploying dev services.
 
 1. Several AWS resource types are tested and documented as [Terraform modules][terraform-modules]; they simplify deployment and propose best-practices options.
-   i. Correct sizing and access control rules may still greatly vary for each project and must be carefully considered, not all resources scale up automatically.
-   i. Small test/ephemeral instances are easy to create (and destroy), be they `db.t2.micro` RDS or `helm install stable/postgresql`.
+   * Correct sizing and access control rules may still greatly vary for each project and must be carefully considered, not all resources scale up automatically.
+   * Small test/ephemeral instances are easy to create (and destroy), be they `db.t2.micro` RDS or `helm install stable/postgresql`.
 
-#### Obsoleted features
+### Obsoleted features
 
 1. Salt and CloudFormation are no longer used to define a deployment, replaced by any of Helm or Kubectl (see several [reference app][examples] examples).
 
