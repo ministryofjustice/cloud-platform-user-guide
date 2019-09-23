@@ -39,8 +39,8 @@ resource "kubernetes_secret" "example_route53_zone_sec" {
   }
 }
 
-</code></pre></div><h3 id="creating-the-resource">Creating the resource</h3><p>Make sure to replace the placeholders and example values above with relevant ones, commit your changes to a branch and raise a pull request.<br>
-Once approved, you can merge and the changes will be applied.<br>
+</code></pre></div><h3 id="creating-the-resource">Creating the resource</h3><p>Make sure to replace the placeholders and example values above with relevant ones, commit your changes to a branch and raise a pull request.
+Once approved, you can merge and the changes will be applied.
 Shortly after, to confirm the zone has been created, you should be able to access the <code>Zone_ID</code> as Secret on kubernetes in your namespace.</p>
-<p>Please raise a <a href="goo.gl/msfGiS">support ticket</a> with the Cloud Platform.</p>
+<p>Please raise a <a href="http://goo.gl/msfGiS">support ticket</a> with the Cloud Platform.</p>
 <p>Provide them with the domain name, the Cloud Platform team will finalize the process <strong>by creating a a matching NS record in the DSD account.</strong></p>
