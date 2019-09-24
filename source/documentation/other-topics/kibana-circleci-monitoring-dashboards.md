@@ -1,0 +1,47 @@
+### Kibana Circleci Monitoring Dashboards
+
+The following Kibana reports show which projects/teams are consuming most of the Circleci running time. Please check your project to see whether your job may be adversely affecting overall Circleci job runtimes for everyone.
+
+#### Circleci job summary reports		
+[Circleci-projects-jobs-summary-table-(today-and-yesterday)]	(https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/goto/d7a0acc5cd06b83d6d3265aa8cf89a07)
+
+  - A summary table report of Circleci jobs today and yesterday (duration, time_in queue - total, longest and average) per project. ** Note only displays where there is a total of over 2 run jobs per project
+
+[Circleci-projects-summary-today]	(https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/goto/c08ab3f8f5b3ec035536ffc91bcf5baa)
+
+  - A summary report of Circleci jobs (today) - (duration, time_in queue - total, longest and average) per project. ** Note only displays where there is a total of over 2 run jobs per project
+
+[Circleci-projects-summary-yesterday]	(https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/goto/6a36ea8adffb7596c9a0cd64726716ad)
+
+  - A summary report of Circleci jobs (yesterday) - (duration, time_in queue - total, longest and average) per project. ** Note only displays where there is a total of over 2 run jobs per project
+		
+#### Circleci job duration reports		
+[Circleci-projects-total-duration-(today-and-yesterday)]	(https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/goto/eb71a9ed4810338364d6eaeb7665a93e)
+
+  - Circleci jobs today and yesterday - showing the overall total (sum) job duration time per project . ** Note only displays where there is a total of over 2 run jobs per project
+
+[Circleci-projects-longest-duration-(today-and-yesterday)]	(https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/goto/e1e47e5cf533761d0e48e77fb4d91331)
+
+  - Circleci jobs (today and yesterday) - showing the longest (max) job duration time per project . ** Note only displays where there is a total of over 2 run jobs per project
+
+[Circleci-projects-average-duration-(today-and-yesterday)]	(https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/goto/475f61d8bcb7a89b20fc3911e9e09b8e)
+
+  - Circleci jobs (today and yesterday) - showing the average job duration time per project . ** Note only displays where there is a total of over 2 run jobs per project
+		
+#### Circleci waiting time in the queue reports		
+[Circleci-projects-total-time-in-queue-(today-and-yesterday)]	(https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/goto/e4498b0a79206b68f8699bbc0ba91d09)
+
+  - Circleci jobs (today and yesterday) - showing the overall (sum) time spent in the queue (waiting) per project . ** Note only displays where there is a total of over 2 run jobs per project
+
+[Circleci-projects-longest-job-time-in-queue-(today-and-yesterday)]	(https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/goto/9623c2f20995a4d5c7c5804e10887b1d)
+
+  - Circleci jobs (today and yesterday) - showing the longest (max) job time spent in the queue (waiting) per project . ** Note only displays where there is a total of over 2 run jobs per project
+
+[Circleci-projects-average-time-in-queue-(today-and-yesterday)]	(https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/goto/a9029c81d06bd9d4994a8fbecff565e5)
+
+  - Circleci jobs (today and yesterday) - showing the average time spent in the queue (waiting) per project . ** Note only displays where there is a total of over 2 run jobs per project
+		
+#### Circleci job count reports		
+[Circleci-projects-jobs-count-(today-and-yesterday)]	(https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/goto/53a446ae0a5b12b369c4958d734d2eb8)	
+
+  - Circleci jobs today and yesterday - showing a count of the number of jobs per project . ** Note only displays where there is a total of over 2 run jobs per project
