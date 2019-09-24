@@ -7,8 +7,8 @@ VERSION := 1.2
 	touch .built-docker-image
 
 docker-push: .built-docker-image
-	docker tag $(IMAGE) ministryofjustice/$(IMAGE)
-	docker push ministryofjustice/$(IMAGE)
+	docker tag $(IMAGE) ministryofjustice/$(IMAGE):$(VERSION)
+	docker push ministryofjustice/$(IMAGE):$(VERSION)
 
 server:
 	docker run \
