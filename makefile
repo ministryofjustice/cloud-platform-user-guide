@@ -6,6 +6,14 @@ VERSION := 1.2
 	docker build -t $(IMAGE) .
 	touch .built-docker-image
 
+Gemfile.lock: Dockerfile.gemfile-lock
+	docker build -t temp -f Dockerfile.gemfile-lock .
+	docker run \
+		-v $$(pwd):/app \
+		-w /app \
+		-it \
+		temp bundle install
+
 docker-push: .built-docker-image
 	docker tag $(IMAGE) ministryofjustice/$(IMAGE):$(VERSION)
 	docker push ministryofjustice/$(IMAGE):$(VERSION)

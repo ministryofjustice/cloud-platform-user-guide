@@ -1,0 +1,5 @@
+FROM ruby:2.6.2-alpine
+
+RUN apk --update add --virtual build_deps build-base
+COPY Gemfile ./
+RUN gem install bundler
