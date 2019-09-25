@@ -7,7 +7,7 @@ jobs:
     docker:
       # This docker image is created from the Dockerfile in
       # this repository.
-      - image: ministryofjustice/cloud-platform-user-guide
+      - image: ministryofjustice/cloud-platform-user-guide:1.2
         environment:
           # This is the domain on which the user guide is served
           DOMAIN: user-guide.cloud-platform.service.justice.gov.uk
