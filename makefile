@@ -2,7 +2,7 @@ IMAGE := cloud-platform-user-guide
 DOMAIN := user-guide.cloud-platform.service.justice.gov.uk
 VERSION := 1.2
 
-.built-docker-image: Dockerfile Gemfile
+.built-docker-image: Dockerfile Gemfile Gemfile.lock
 	docker build -t $(IMAGE) .
 	touch .built-docker-image
 
