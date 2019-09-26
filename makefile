@@ -1,10 +1,18 @@
 IMAGE := cloud-platform-user-guide
 DOMAIN := user-guide.cloud-platform.service.justice.gov.uk
-VERSION := 1.2
+VERSION := 1.4  # Change this in .circleci/config.yml if you update it here
 
-.built-docker-image: Dockerfile Gemfile
+.built-docker-image: Dockerfile Gemfile Gemfile.lock
 	docker build -t $(IMAGE) .
 	touch .built-docker-image
+
+Gemfile.lock: Dockerfile.gemfile-lock
+	docker build -t temp -f Dockerfile.gemfile-lock .
+	docker run \
+		-v $$(pwd):/app \
+		-w /app \
+		-it \
+		temp bundle install
 
 docker-push: .built-docker-image
 	docker tag $(IMAGE) ministryofjustice/$(IMAGE):$(VERSION)
