@@ -14,7 +14,7 @@
 <p>otherwise,</p>
 
 <ul>
-<li>Share your <code>PUBKEYID</code> with an existing member of the CloudPlatforms team. They will need to trust your key and add you to the repository (see git-crypt documentation above).</li>
+<li>Share your <code>PUBKEYID</code> with an existing member of your team. They will need to trust your key and add you to the repository (see git-crypt documentation above).</li>
 </ul>
 <h4 id="usage">Usage</h4><p>Once the above has been setup, update your local repository clone and unlock the secrets:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>$ git pull
