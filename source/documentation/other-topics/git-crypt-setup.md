@@ -16,7 +16,7 @@ We use `git-crypt` to ensure that application secrets are encrypted at rest in g
 
 otherwise,
 
-- Share your `PUBKEYID` with an existing member of the CloudPlatforms team. They will need to trust your key and add you to the repository (see git-crypt documentation above).
+- Share your `PUBKEYID` with an existing member of your team. They will need to trust your key and add you to the repository (see git-crypt documentation above).
 
 #### Usage
 
