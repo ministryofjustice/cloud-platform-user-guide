@@ -477,6 +477,9 @@
             <a href="/tasks.html#migrating-an-rds-instance">Migrating an RDS instance</a>
           </li>
           <li>
+            <a href="/tasks.html#migrating-an-s3-bucket">Migrating an S3 bucket</a>
+          </li>
+          <li>
             <a href="/tasks.html#ssl-connections-with-rds">SSL connections with RDS</a>
           </li>
           <li>
@@ -2198,6 +2201,10 @@ All of data is contained within the <code>post-data</code> section.</p>
 <li>Remove the DMS stack (if applicable)</li>
 <li>Revoke the temporary credentials created for the migration</li>
 </ul>
+
+<h3 id="migrating-an-s3-bucket">Migrating an S3 bucket</h3><p>If you have an S3 bucket in a different AWS account, you will need to migrate its contents
+to a new S3 bucket, which you can <a href="/tasks.html#adding-aws-resources-to-your-environment">create via the environments repository</a></p>
+<p>Here are <a href="https://github.com/ministryofjustice/cloud-platform-terraform-s3-bucket#migrate-from-existing-buckets">instructions</a> on how to migrate your bucket contents.</p>
 
 <h3 id="ssl-connections-with-rds">SSL connections with RDS</h3><p>RDS instances are configured to allow SSL connections by default and also the latest versions of the client (<code>psql</code>) and
 libraries (eg.: the <code>pg</code> ruby gem which builds on <code>libpq</code>) will establish an SSL connection by default.</p>
