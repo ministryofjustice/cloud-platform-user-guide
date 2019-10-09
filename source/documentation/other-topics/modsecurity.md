@@ -23,11 +23,10 @@ This annotation enables ModSecurity for the ingress on the nginx ingress-control
 
 ```yaml
 nginx.ingress.kubernetes.io/modsecurity-snippet: |
-      Include /etc/nginx/modsecurity/modsecurity.conf
       Include /etc/nginx/owasp-modsecurity-crs/nginx-modsecurity.conf
       SecRuleEngine On
 ```  
-This configures the nginx ingress-controller to use the `modsecurity.conf` file for the default ModSecurity settings and the `nginx-modsecurity.conf` file for the CRS settings.
+This configures the nginx ingress-controller to use the `nginx-modsecurity.conf` file for the CRS settings.
 The `SecRuleEngine On` configures ModSecurity to actively block traffic classed as malicious using Anomaly Scoring.  
 
 ```yaml
@@ -47,7 +46,6 @@ metadata:
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/enable-modsecurity: "true"
     nginx.ingress.kubernetes.io/modsecurity-snippet: |
-      Include /etc/nginx/modsecurity/modsecurity.conf
       Include /etc/nginx/owasp-modsecurity-crs/nginx-modsecurity.conf
       SecRuleEngine On
 spec:
