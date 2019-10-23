@@ -2690,6 +2690,7 @@ iv.  The deploy repository will then be archived (confirmatory message will appe
 <li><a href="#my-pod-shows-crashloopbackoff-after-deployment">My pod shows &#39;CrashLoopBackOff&rsquo; after deployment</a></li>
 <li><a href="#my-pod-shows-imagepullbackoff-after-deployment">My pod shows &#39;ImagePullBackOff&rsquo; after deployment</a></li>
 <li><a href="#i-get-the-error-39-container-is-unhealthy-it-will-be-killed-and-re-created-39">I get the error &#39;container is unhealthy, it will be killed and re-created’</a></li>
+<li><a href="#i-get-the-error-39-error-from-server-forbidden-39-when-trying-to-run-kubectl-commands">I get the error &#39;Error from server (Forbidden)&rsquo; when trying to run kubectl commands</a></li>
 </ul>
 <h4 id="my-pod-shows-39-createcontainerconfigerror-39-after-deployment">My pod shows &#39;CreateContainerConfigError&rsquo; after deployment</h4><h5 id="scenario">Scenario</h5><p>You have deployed an application to the Cloud Platform and its status shows <code>CreateContainerConfigError</code> (you can get the status by running <code>kubect get pods -n &lt;namespace&gt;</code>).</p>
 <h5 id="cause">Cause</h5><p>There are a number of reasons why this error will appear but the most probable cause is a missing secret or environment variable.</p>
@@ -2751,7 +2752,22 @@ spec:
 <li> Your Probes are too sensitive - Does your application take a while to start or respond?</li>
 <li> Your application is no longer responding correctly to the Probe - Is your database misconfigured?</li>
 </ul>
-<p><h5 id="i-get-the-error-39-container-is-unhealthy-it-will-be-killed-and-re-created-39-solution">Solution</h5><p>Once a change has been made to either your application or Probe, a fresh deployment should succeed.</p></p>
+<p><h5 id="i-get-the-error-39-container-is-unhealthy-it-will-be-killed-and-re-created-39-solution">Solution</h5><p>Once a change has been made to either your application or Probe, a fresh deployment should succeed.</p>
+<h4 id="i-get-the-error-39-error-from-server-forbidden-39-when-trying-to-run-kubectl-commands">I get the error &#39;Error from server (Forbidden)&rsquo; when trying to run kubectl commands</h4><h5 id="i-get-the-error-39-error-from-server-forbidden-39-when-trying-to-run-kubectl-commands-situation">Situation</h5><p>When attempting to use a command such as <code>kubectl get pods -n &lt;namespace&gt;</code> the following error occurs:</p>
+<p><code>Error from server (Forbidden): pods is forbidden: User &quot;https://justice-cloud-platform.eu.auth0.com/#&lt;username&gt;&quot; cannot list resource &quot;pods&quot; in API group &quot;&quot; in the namespace &quot;&lt;namespace&gt;&quot;</code></p>
+<h5 id="i-get-the-error-39-error-from-server-forbidden-39-when-trying-to-run-kubectl-commands-cause">Cause</h5><p>This is usually one of two things:</p></p>
+
+<ul>
+<li>Your token has expired and you need to re-authenticate.</li>
+<li>You don&rsquo;t belong to the GitHub team assigned to the namespace you&rsquo;re attempting to communicate with.</li>
+</ul>
+<p><h5 id="i-get-the-error-39-error-from-server-forbidden-39-when-trying-to-run-kubectl-commands-troubleshooting">Troubleshooting</h5><p>First check if you&rsquo;re a member of the GitHub team assigned in your <a href="https://github.com/ministryofjustice/cloud-platform-environments/blob/master/namespaces/live-1.cloud-platform.service.justice.gov.uk/hmpps-book-secure-move-api-production/01-rbac.yaml#L8">rbac.yaml</a> file, which is located in the <a href="https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces">cloud-platform-environments</a> repository.</p>
+<h5 id="i-get-the-error-39-error-from-server-forbidden-39-when-trying-to-run-kubectl-commands-solution">Solution</h5><p>Depending on the cause of your issue you&rsquo;ll need to do one of the following:</p></p>
+
+<ul>
+<li>Re-authenticate to the cluster using the <a href="https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#authentication">cloud-platform user-guide</a>.</li>
+<li>Ask a team member to <a href="https://help.github.com/en/github/setting-up-and-managing-organizations-and-teams/adding-organization-members-to-a-team">add your GitHub user account</a> to the correct team (please note, the Cloud Platform team cannot do this for you).</li>
+</ul>
 <p><h3 id="kubernetes-cronjobs">Kubernetes Cronjobs</h3><h4 id="kubernetes-cronjobs-overview">Overview</h4><p>Kubernetes has the concept of <a href="https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/">Cronjobs</a> which creates Jobs on a time-based schedule, you can use CronJobs to run tasks at a specific time or interval. CronJobs are a good choice for automatic tasks, such as backups, reporting, sending emails, or cleanup tasks.</p>
 <h4 id="kubernetes-cronjobs-usage">Usage</h4><p>CronJobs use <a href="https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/">Job</a> objects to complete their tasks. A CronJob creates a Job object each time it runs. CronJobs are created, managed, scaled, and deleted in the same way as Jobs. Cron jobs require a config file, follow the <a href="https://kubernetes.io/docs/tasks/job/automated-tasks-with-cron-jobs/#creating-a-cron-job">guide</a> on creating a Cronjob.</p>
 <p>This example cron job below prints the current time and a hello message every first minute of every hour from 0200 to 1400 UTC on Sunday, Monday, Friday, and Saturday</p>
