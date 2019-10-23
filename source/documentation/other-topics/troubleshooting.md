@@ -11,6 +11,7 @@ Throughout this document we will refer to terms such as `<pod_name>` and `<names
   - [My pod shows 'CrashLoopBackOff' after deployment](#my-pod-shows-crashloopbackoff-after-deployment)
   - [My pod shows 'ImagePullBackOff' after deployment](#my-pod-shows-imagepullbackoff-after-deployment)
   - [I get the error 'container is unhealthy, it will be killed and re-created’](#i-get-the-error-39-container-is-unhealthy-it-will-be-killed-and-re-created-39)
+  - [I get the error 'Error from server (Forbidden)' when trying to run kubectl commands](#i-get-the-error-39-error-from-server-forbidden-39-when-trying-to-run-kubectl-commands)
 
 #### My pod shows 'CreateContainerConfigError' after deployment
 
@@ -113,3 +114,26 @@ There are likely three possibilities:
 
 ##### Solution
 Once a change has been made to either your application or Probe, a fresh deployment should succeed.
+
+#### I get the error 'Error from server (Forbidden)' when trying to run kubectl commands
+
+##### Situation
+When attempting to use a command such as `kubectl get pods -n <namespace>` the following error occurs:
+
+`Error from server (Forbidden): pods is forbidden: User "https://justice-cloud-platform.eu.auth0.com/#<username>" cannot list resource "pods" in API group "" in the namespace "<namespace>"`
+
+
+##### Cause
+This is usually one of two things:
+
+  - Your token has expired and you need to re-authenticate.
+  - You don't belong to the GitHub team assigned to the namespace you're attempting to communicate with.
+
+##### Troubleshooting
+First check if you're a member of the GitHub team assigned in your [rbac.yaml](https://github.com/ministryofjustice/cloud-platform-environments/blob/master/namespaces/live-1.cloud-platform.service.justice.gov.uk/hmpps-book-secure-move-api-production/01-rbac.yaml#L8) file, which is located in the [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces) repository.
+
+##### Solution
+Depending on the cause of your issue you'll need to do one of the following:
+
+  - Re-authenticate to the cluster using the [cloud-platform user-guide](https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#authentication).
+  - Ask a team member to [add your GitHub user account](https://help.github.com/en/github/setting-up-and-managing-organizations-and-teams/adding-organization-members-to-a-team) to the correct team (please note, the Cloud Platform team cannot do this for you).
