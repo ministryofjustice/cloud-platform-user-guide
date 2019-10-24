@@ -65,7 +65,7 @@ spec:
           servicePort: 4567
 ```
 
-This default-backend service also handle the error responses if both [default-backend][default-backend-annotation] annotation and the [custom-http-errors][custom-http-error-annotation] annotation is set. `Custom-http-errors` annotation configure which HTTP status codes Nginx should be forwarding to the [default-backend][default-backend-annotation].
+This default-backend service handle the error responses if both [default-backend][default-backend-annotation] annotation and the [custom-http-errors][custom-http-error-annotation] annotation is set. `Custom-http-errors` annotation configure which HTTP status codes Nginx should be forwarding to the [default-backend][default-backend-annotation].
 
 If custom-http-errors is also specified globally, the custom-http-error values specified in this annotation along with custom default backend will override the global value for the given ingress' hostname and path.
 
@@ -113,7 +113,7 @@ spec:
   tls:
   - hosts:
     - helloworld.rubyapp.cloud-platform.service.justice.gov.uk
-    secretName: live0-to-live1-cert
+    secretName: secret-cert
   rules:
   - host: helloworld.rubyapp.cloud-platform.service.justice.gov.uk
     http:
@@ -124,7 +124,34 @@ spec:
           servicePort: 4567
 ```
 
-Note: At the moment cloud-platform configured [this][cp-config-custom-http-errors] custom-http-errors to serve cloud platforms [custom error page][cp-custom-errors] from default backend at ingress controller, this will be removed soon to allow services to serve their own error pages or opt-in to the generic platform-level error page (which is done by adding an annotation at your ingress).
+#### Not use platform-level error page
+
+Some teams want application's to serve all error's. It is possible as there is a [hack/fix][[fix-from-nginx-ingress]] from Nginx-Ingress to cancel out the [global-custom-http-errors][cp-config-custom-http-errors] set to serve cloud platforms custom error page from default backend at ingress controller, by adding the Ingress annotation and setting an error not used in [global-custom-http-errors][cp-config-custom-http-errors].
+
+
+Example Ingress file to set `custom-http-errors: "418"` as annotation, which is not used at [global-custom-http-errors][cp-config-custom-http-errors]:
+
+```
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: helloworld-rubyapp-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/custom-http-errors: "418"
+spec:
+  tls:
+  - hosts:
+    - helloworld.rubyapp.cloud-platform.service.justice.gov.uk
+    secretName: secret-cert
+  rules:
+  - host: helloworld.rubyapp.cloud-platform.service.justice.gov.uk
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: rubyapp-service
+          servicePort: 4567
+```
 
 [cloud-platform-custom-error-pages]: https://github.com/ministryofjustice/cloud-platform-custom-error-pages
 [customized-default-backend]: https://github.com/kubernetes/ingress-nginx/blob/master/docs/examples/customization/custom-errors/custom-default-backend.yaml
@@ -133,3 +160,4 @@ Note: At the moment cloud-platform configured [this][cp-config-custom-http-error
 [custom-http-error-annotation]: https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#custom-http-errors
 [cp-custom-errors]: https://github.com/ministryofjustice/cloud-platform-custom-error-pages/tree/master/rootfs/www/
 [cp-config-custom-http-errors]: https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/nginx-ingress-acme.tf#L35
+[fix-from-nginx-ingress]: https://github.com/kubernetes/ingress-nginx/pull/3344
