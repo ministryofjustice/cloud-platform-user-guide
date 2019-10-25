@@ -2923,7 +2923,7 @@ spec:
   tls:
   - hosts:
     - helloworld.rubyapp.cloud-platform.service.justice.gov.uk
-    secretName: live0-to-live1-cert
+    secretName: secret-cert
   rules:
   - host: helloworld.rubyapp.cloud-platform.service.justice.gov.uk
     http:
@@ -2932,7 +2932,7 @@ spec:
         backend:
           serviceName: rubyapp-service
           servicePort: 4567
-</code></pre></div><p>This default-backend service also handle the error responses if both <a href="https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#default-backend">default-backend</a> annotation and the <a href="https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#custom-http-errors">custom-http-errors</a> annotation is set. <code>Custom-http-errors</code> annotation configure which HTTP status codes Nginx should be forwarding to the <a href="https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#default-backend">default-backend</a>.</p>
+</code></pre></div><p>This default-backend service handle the error responses if both <a href="https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#default-backend">default-backend</a> annotation and the <a href="https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#custom-http-errors">custom-http-errors</a> annotation is set. <code>Custom-http-errors</code> annotation configure which HTTP status codes Nginx should be forwarding to the <a href="https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#default-backend">default-backend</a>.</p>
 <p>If custom-http-errors is also specified globally, the custom-http-error values specified in this annotation along with custom default backend will override the global value for the given ingress&rsquo; hostname and path.</p>
 <p>In the example below, custom error pages from <code>custom-default-backend: nginx-errors</code> service will be served for <code>&quot;404,415&quot;</code> errors which is set as <code>custom-http-errors</code> annotation.</p>
 <p>Example Ingress with default-backend and custom-http-errors annotations:</p>
@@ -2947,7 +2947,7 @@ spec:
   tls:
   - hosts:
     - helloworld.rubyapp.cloud-platform.service.justice.gov.uk
-    secretName: live0-to-live1-cert
+    secretName: secret-cert
   rules:
   - host: helloworld.rubyapp.cloud-platform.service.justice.gov.uk
     http:
@@ -2957,7 +2957,7 @@ spec:
           serviceName: rubyapp-service
           servicePort: 4567
 </code></pre></div><h4 id="use-platform-level-error-page">Use platform-level error page</h4><p>Some teams want application&rsquo;s serve their own error&rsquo;s <code>example 404&#39;s</code>, but want to serve cloud platforms custom error page from default backend at ingress controller for other error codes like 502,503 and 504, this can be done by using <a href="https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#custom-http-errors">custom-http-errors</a> annotation in your ingress for error codes teams want to serve the cloud platforms custom error page.</p>
-<p>Example Ingress file to use platform-level error page for custom-http-errors: &ldquo;502,503,504&rdquo;:</p>
+<p>Example Ingress file to use platform-level error page for custom-http-errors: &ldquo;502,503,504&rdquo;. All other errors except <code>502,503,504</code> will be served from application error page.</p>
 <div class="highlight"><pre class="highlight plaintext"><code>apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -2968,7 +2968,7 @@ spec:
   tls:
   - hosts:
     - helloworld.rubyapp.cloud-platform.service.justice.gov.uk
-    secretName: live0-to-live1-cert
+    secretName: secret-cert
   rules:
   - host: helloworld.rubyapp.cloud-platform.service.justice.gov.uk
     http:
@@ -2977,8 +2977,30 @@ spec:
         backend:
           serviceName: rubyapp-service
           servicePort: 4567
-</code></pre></div><p>Note: At the moment cloud-platform configured <a href="https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/nginx-ingress-acme.tf#L35">this</a> custom-http-errors to serve cloud platforms <a href="https://github.com/ministryofjustice/cloud-platform-custom-error-pages/tree/master/rootfs/www/">custom error page</a> from default backend at ingress controller, this will be removed soon to allow services to serve their own error pages or opt-in to the generic platform-level error page (which is done by adding an annotation at your ingress).</p></p>
-<p><h3 id="kibana-circleci-monitoring-dashboards">Kibana Circleci Monitoring Dashboards</h3><p>The following Kibana reports show which projects/teams are consuming most of the Circleci running time. Please check your project to see whether your job may be adversely affecting overall Circleci job runtimes for everyone.</p>
+</code></pre></div><h4 id="not-use-platform-level-error-page">Not use platform-level error page</h4><p>Some teams want application&rsquo;s to serve all errors. It is possible as there is a <a href="https://github.com/kubernetes/ingress-nginx/pull/3344">fix</a> from Nginx-Ingress to cancel out the <a href="https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/nginx-ingress-acme.tf#L35">global-custom-http-errors</a> set to serve cloud platforms custom error page from default backend at ingress controller, by adding the Ingress annotation and setting an error not used in <a href="https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/nginx-ingress-acme.tf#L35">global-custom-http-errors</a>.</p>
+<p>If you have <a href="https://github.com/kubernetes/ingress-nginx/blob/master/docs/examples/customization/custom-errors/custom-default-backend.yaml">custom-default-backend</a> set up in your namespace. Adding the Ingress annotation and setting an unused status code will serve custom error page from namespace default-backend service, when the service in the Ingress rule does not have active endpoints.</p>
+<p>Example Ingress file to set <code>custom-http-errors: &quot;418&quot;</code> as annotation, which is not used at <a href="https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/nginx-ingress-acme.tf#L35">global-custom-http-errors</a>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: helloworld-rubyapp-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/custom-http-errors: &quot;418&quot;
+spec:
+  tls:
+  - hosts:
+    - helloworld.rubyapp.cloud-platform.service.justice.gov.uk
+    secretName: secret-cert
+  rules:
+  - host: helloworld.rubyapp.cloud-platform.service.justice.gov.uk
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: rubyapp-service
+          servicePort: 4567
+</code></pre></div>
+<h3 id="kibana-circleci-monitoring-dashboards">Kibana Circleci Monitoring Dashboards</h3><p>The following Kibana reports show which projects/teams are consuming most of the Circleci running time. Please check your project to see whether your job may be adversely affecting overall Circleci job runtimes for everyone.</p>
 <h4 id="circleci-job-summary-reports">Circleci job summary reports</h4><p><a href="https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/goto/d7a0acc5cd06b83d6d3265aa8cf89a07">Circleci-projects-jobs-summary-table-(today-and-yesterday)</a></p></p>
 
 <ul>
