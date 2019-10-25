@@ -54,7 +54,7 @@ spec:
   tls:
   - hosts:
     - helloworld.rubyapp.cloud-platform.service.justice.gov.uk
-    secretName: live0-to-live1-cert
+    secretName: secret-cert
   rules:
   - host: helloworld.rubyapp.cloud-platform.service.justice.gov.uk
     http:
@@ -85,7 +85,7 @@ spec:
   tls:
   - hosts:
     - helloworld.rubyapp.cloud-platform.service.justice.gov.uk
-    secretName: live0-to-live1-cert
+    secretName: secret-cert
   rules:
   - host: helloworld.rubyapp.cloud-platform.service.justice.gov.uk
     http:
@@ -98,9 +98,9 @@ spec:
 
 #### Use platform-level error page
 
-Some teams want application's serve their own error's `example 404's`, but want to serve cloud platforms custom error page from default backend at ingress controller for other error codes like 502,503 and 504, this can be done by using [custom-http-errors][custom-http-error-annotation] annotation in your ingress for error codes teams want to serve the cloud platforms custom error page.
+Some teams want application's serve their own error's `example 404's`, but want to serve cloud platforms custom error page from default backend at ingress controller for other error codes like 502,503 and 504, this can be done by using [custom-http-errors][custom-http-error-annotation] annotation in your ingress for error codes teams want to serve the cloud platforms custom error page. 
 
-Example Ingress file to use platform-level error page for custom-http-errors: "502,503,504":
+Example Ingress file to use platform-level error page for custom-http-errors: "502,503,504". All other errors except `502,503,504` will be served from application error page.
 
 ```
 apiVersion: extensions/v1beta1
@@ -126,8 +126,9 @@ spec:
 
 #### Not use platform-level error page
 
-Some teams want application's to serve all error's. It is possible as there is a [hack/fix][[fix-from-nginx-ingress]] from Nginx-Ingress to cancel out the [global-custom-http-errors][cp-config-custom-http-errors] set to serve cloud platforms custom error page from default backend at ingress controller, by adding the Ingress annotation and setting an error not used in [global-custom-http-errors][cp-config-custom-http-errors].
+Some teams want application's to serve all errors. It is possible as there is a [fix][fix-from-nginx-ingress] from Nginx-Ingress to cancel out the [global-custom-http-errors][cp-config-custom-http-errors] set to serve cloud platforms custom error page from default backend at ingress controller, by adding the Ingress annotation and setting an error not used in [global-custom-http-errors][cp-config-custom-http-errors].
 
+If you have [custom-default-backend][customized-default-backend] set up in your namespace. Adding the Ingress annotation and setting an unused status code will serve custom error page from namespace default-backend service, when the service in the Ingress rule does not have active endpoints.
 
 Example Ingress file to set `custom-http-errors: "418"` as annotation, which is not used at [global-custom-http-errors][cp-config-custom-http-errors]:
 
