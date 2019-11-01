@@ -60,15 +60,16 @@ resource "kubernetes_secret" "example_route53_zone_sec" {
 
 ### Creating the resource
 
-Make sure to replace the placeholders and example values above with relevant ones, commit your changes to a branch and raise a pull request.    
-Once approved, you can merge and the changes will be applied.   
+Make sure to replace the placeholders and example values above with relevant ones, commit your changes to a branch and raise a pull request.
+Once approved, you can merge and the changes will be applied.
 Shortly after, to confirm the zone has been created, you should be able to access the `Zone_ID` as Secret on kubernetes in your namespace.
 
-Please raise a [support ticket](goo.gl/msfGiS) with the Cloud Platform.
+Please raise a [support ticket] with the Cloud Platform.
 
 Provide them with the domain name, the Cloud Platform team will finalize the process **by creating a a matching NS record in the DSD account.**
 
 [env-repo]: https://github.com/ministryofjustice/cloud-platform-environments
 [aws-hosted-zone]: https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/AboutHZWorkingWith.html
+[support ticket]: http://goo.gl/msfGiS
 
 

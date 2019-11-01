@@ -32,7 +32,7 @@ This guide assumes the following:
 * Clone the [demo application](https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app)
 
 ```bash
-git clone https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app  
+git clone https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app
 cd cloud-platform-helloworld-ruby-app
 ```
 
@@ -159,7 +159,7 @@ metadata:
 spec:
   ports:
   - port: 4567
-    name: http
+    name: https
     targetPort: 4567
   selector:
     app: helloworld-rubyapp

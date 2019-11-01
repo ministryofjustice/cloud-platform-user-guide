@@ -1,0 +1,1 @@
+<h3 id="accessing-your-rds-database">Accessing your RDS database</h3><p>If you need to connect from your development machine to your RDS instance, you can find instructions on how to do so <a href="https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance#access-outside-the-cluster">here</a></p>

@@ -1,0 +1,63 @@
+<h3 id="modsecurity-web-application-firewall">ModSecurity - Web Application Firewall</h3><h4 id="introduction">Introduction</h4><h5 id="what-is-a-web-application-firewall-waf">What is a Web Application Firewall (WAF)?</h5><p>A Web Application Firewall or WAF helps protect web applications by filtering and monitoring HTTP traffic between a web application and the Internet. A WAF is a <a href="https://en.wikipedia.org/wiki/OSI_model">layer 7</a> defense and is one of the most common means of protecting against malicious web application security flaws at the application layer. However, it must be noted that a WAF is not designed and does not protect against all types of attacks.</p>
+<h5 id="modsecurity">ModSecurity</h5><p><a href="http://www.modsecurity.org/about.html">ModSecurity</a> is an open source, cross platform web application firewall (WAF) developed by Trustwave&rsquo;s SpiderLabs. It has a robust event-based programming language which provides protection from a range of attacks against web applications and allows for HTTP traffic monitoring and logging.</p>
+<p>For the Cloud Platform, ModSecurity has been configured as an opt-in feature. New and current applications will require a specific set of annotations to be added to their ingress manifest file.</p>
+<h4 id="ingress-annotations">Ingress Annotations</h4><p>To enable ModSecurity for your application, for following an annotations need to be added to the ingress manifest file:</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="s">nginx.ingress.kubernetes.io/enable-modsecurity</span><span class="pi">:</span> <span class="s2">"</span><span class="s">true"</span>
+</code></pre></div><p>This annotation enables ModSecurity for the ingress on the nginx ingress-controller in detection only mode. There is no disruptive action if a critical rule triggers, but it is logged in the nginx-ingress.log file. The <code>SecRuleEngine</code> is set to <code>Detection Only Mode</code>.</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="s">nginx.ingress.kubernetes.io/modsecurity-snippet</span><span class="pi">:</span> <span class="pi">|</span>
+      <span class="no">Include /etc/nginx/owasp-modsecurity-crs/nginx-modsecurity.conf</span>
+      <span class="no">SecRuleEngine On</span>
+</code></pre></div><p>This configures the nginx ingress-controller to use the <code>nginx-modsecurity.conf</code> file for the CRS settings.
+The <code>SecRuleEngine On</code> configures ModSecurity to actively block traffic classed as malicious using Anomaly Scoring.</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="s">nginx.ingress.kubernetes.io/modsecurity-transaction-id</span><span class="pi">:</span> <span class="s2">"</span><span class="s">$request_id"</span>
+</code></pre></div><p>The above annotation is optional, but it can be used to pass transactionIDs from nginx.</p>
+<p>Example:</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">extensions/v1beta1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Ingress</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">app-ingress</span>
+  <span class="na">annotations</span><span class="pi">:</span>
+    <span class="s">kubernetes.io/ingress.class</span><span class="pi">:</span> <span class="s2">"</span><span class="s">nginx"</span>
+    <span class="s">nginx.ingress.kubernetes.io/enable-modsecurity</span><span class="pi">:</span> <span class="s2">"</span><span class="s">true"</span>
+    <span class="s">nginx.ingress.kubernetes.io/modsecurity-snippet</span><span class="pi">:</span> <span class="pi">|</span>
+      <span class="no">Include /etc/nginx/owasp-modsecurity-crs/nginx-modsecurity.conf</span>
+      <span class="no">SecRuleEngine On</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">tls</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">hosts</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="s">&lt;application_url&gt;</span> 
+  <span class="na">rules</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">host</span><span class="pi">:</span> <span class="s">&lt;application_url&gt;</span> 
+    <span class="na">http</span><span class="pi">:</span>
+      <span class="na">paths</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">path</span><span class="pi">:</span> <span class="s">/</span>
+        <span class="na">backend</span><span class="pi">:</span>
+          <span class="na">serviceName</span><span class="pi">:</span> <span class="s">app-service</span>
+          <span class="na">servicePort</span><span class="pi">:</span> <span class="s">8080</span>
+</code></pre></div><h4 id="logging">Logging</h4><p>All disruptive actions are logged in the ModSecurity audit log file and the error log for for nginx ingress-controller. 
+Fluentd is used to ship error logs into the Cloud Platform ELK stack. To view any possible logs, log into <a href="https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/">Kibana</a> and search for <code>ModSecurity</code>. You can filter down to a particular host using <code>nginx-ingress.log is &quot;host: &quot;test-ingress.url&quot;&quot;</code></p>
+<p>Error Log Example:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>2019/01/01 11:00:00 [warn] 12647#12647: *1158975 [client 12.123.1.12] ModSecurity: Access denied with code 403 (phase 2). Matched "Operator `Ge'
+ with parameter `5' against variable `TX:ANOMALY_SCORE' (Value: `5' ) [file "/etc/nginx/owasp-modsecurity-crs/rules/
+ REQUEST-949-BLOCKING-EVALUATION.conf"] [line "01"] [id "00001"] [rev ""] [msg "Inbound Anomaly Score Exceeded (Total Score: 5)"] [data ""] 
+ [severity "2"] [ver ""] [maturity "0"] [accuracy "0"] [tag "application-multi"] [tag "language-multi"] [tag "platform-multi"] [tag 
+ "attack-generic"] [hostname "12.123.1.12"] [uri "/"] [unique_id "12345678.12345"] [ref ""],
+client: 12.123.1.12, server: test-ingress.url, request: "GET /?exec=/bin/bash HTTP/2.0", host: "test-ingress.url"
+</code></pre></div><h4 id="owasp-rules">OWASP Rules</h4><p>The <a href="https://coreruleset.org/faq/">OWASP ModSecurity Core Rule Set (CRS)</a> is a set of generic attack detection rules for use with ModSecurity. The CRS aims to protect web applications from a wide range of attacks, including the OWASP Top Ten, with a minimum of false alerts. The CRS provides protection against many common attack categories, including:</p>
+
+<ul>
+<li>SQL Injection (SQLi)</li>
+<li>Cross Site Scripting (XSS)</li>
+<li>Local File Inclusion (LFI)</li>
+<li>Remote File Inclusion (RFI)</li>
+<li>PHP Code Injection</li>
+<li>Shellshock</li>
+<li>Unix/Windows Shell Injection</li>
+<li>Session Fixation</li>
+<li>Scripting/Scanner/Bot Detection</li>
+<li>Metadata/Error Leakages</li>
+</ul>
+<h5 id="paranoia-level">Paranoia Level</h5><p>The Paranoia Level (PL) setting allows you to choose the desired level of rule checks. For the Cloud Platform implementation, this has been set to PL1. For more information on Paranoia Levels, please go to the <code>What are paranoia levels, and which level should I choose?</code> section <a href="https://coreruleset.org/faq/">here</a></p>
+<h5 id="anomaly-scoring-mode">Anomaly Scoring Mode</h5><p>Traditional Detection or Passive Mode is the most basic operating mode where all of the rules are run as individual entities. In this mode no intelligence is shared between rules and each rule has no information about any previous rule matches. That is to say, in this mode, if a rule triggers, it will execute any disruptive/logging actions specified on the current rule.</p>
+<p>Anomaly scoring mode implements the concept of Collaborative Detection and Delayed Blocking. Rule logic has been set to decouple the inspection/detection from the blocking functionality. The individual rules can be run so that the detection remains, however instead of applying any disruptive action at that point, the rules will contribute to a transactional anomaly score collection. In addition, each rule will also store meta-data about each rule match (such as the Rule ID, Attack Category, Matched Location and Matched Data) for later logging. 
+For more information in anomaly scoring, click <a href="https://www.modsecurity.org/CRS/Documentation/anomaly.html#anomaly-scoring-mode">here</a></p>
