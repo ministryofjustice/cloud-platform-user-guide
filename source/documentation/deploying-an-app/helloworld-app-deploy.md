@@ -126,7 +126,7 @@ kind: Deployment
 metadata:
   name: helloworld-rubyapp
 spec:
-  replicas: 1
+  replicas: 4
   template:
     metadata:
       labels:
@@ -139,9 +139,11 @@ spec:
         - containerPort: 4567
 ```
 
-This file tells Kubernetes to run a single pod (`replicas: 1`) containing a single container based on a specific docker image from your ECR.
-
 Change the image value to refer to the image you pushed to your ECR in the earlier step.
+
+This file tells Kubernetes to run four pods (`replicas: 4`) containing a single container based on a specific docker image from your ECR. We recommend 4 replicas for most components of production services. Your application will be restarted when kubernetes moves workloads from one worker node to another, and having multiple replicas helps to ensure that your service doesn't have any downtime when this happens.
+
+NB: This guidance about replicas doesn't apply for things where you must only have a single instance running (e.g. a background job processor where you must process jobs in FIFO order - if you were to run mutiple instances of that, you might have problems, so a Recreate strategy, with a single replica, might be better).
 
 The `service.yaml` and `ingress.yaml` files make it possible to access your application from the outside world.
 
