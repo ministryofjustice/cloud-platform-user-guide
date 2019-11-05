@@ -186,7 +186,7 @@ Ingress files are to use to define external access to the application.
 
 This creates an [ingress controller](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/) to enable network connections from outside of the cluster.
 
-Note: Because we are specifying `http`, this ingress controller will expose port 80, and will redirect connections to port 4567 of the named service.
+Note: Because we are specifying `http`, and we have a `tls` section, this ingress controller will expose port 443, and will redirect connections to port 4567 of the named service.
 
 ```Yaml
 apiVersion: extensions/v1beta1
