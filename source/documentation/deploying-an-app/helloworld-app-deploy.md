@@ -66,6 +66,8 @@ To authenticate to your ECR, you will need the `access_key_id` and `secret_acces
 
 Don't forget to base64 decode the `access_key_id` and `secret_access_key` values before using them.
 
+You can pipe the yaml through [this script][decode-script] in order to decode the values, or you can do the following:
+
       echo 'your_access_key_id_value' | base64 --decode
 
 Once you have your `access_key_id` and `secret_access_key`, set up an AWS profile using the AWS cli tool.
@@ -124,7 +126,12 @@ kind: Deployment
 metadata:
   name: helloworld-rubyapp
 spec:
-  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 100%
+      maxUnavailable: 50%
+    type: RollingUpdate
+  replicas: 4
   template:
     metadata:
       labels:
@@ -132,14 +139,18 @@ spec:
     spec:
       containers:
       - name: rubyapp
-        image: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/davids-dummy-team/davids-dummy-app:latest
+        image: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/[team_name]/[repo_name]:latest
         ports:
         - containerPort: 4567
 ```
 
-This file tells Kubernetes to run a single pod (`replicas: 1`) containing a single container based on a specific docker image from your ECR.
-
 Change the image value to refer to the image you pushed to your ECR in the earlier step.
+
+This file tells Kubernetes to run four pods (`replicas: 4`) containing a single container based on a specific docker image from your ECR. We recommend 4 replicas for most components of production services. Your application will be restarted when kubernetes moves workloads from one worker node to another, and having multiple replicas helps to ensure that your service doesn't have any downtime when this happens.
+
+The `strategy` section means that, when it is moved, the cluster will create a complete new copy of your application first, before it starts killing the pods on the node you're being migrated away from. More information about deployment strategies is available [here][deployment-strategies]
+
+NB: This guidance about replicas doesn't apply for things where you must only have a single instance running (e.g. a background job processor where you must process jobs in FIFO order - if you were to run mutiple instances of that, you might have problems, so a Recreate strategy, with a single replica, might be better).
 
 The `service.yaml` and `ingress.yaml` files make it possible to access your application from the outside world.
 
@@ -175,7 +186,7 @@ Ingress files are to use to define external access to the application.
 
 This creates an [ingress controller](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/) to enable network connections from outside of the cluster.
 
-Note: Because we are specifying `http`, this ingress controller will expose port 80, and will redirect connections to port 4567 of the named service.
+Note: Because we are specifying `http`, and we have a `tls` section, this ingress controller will expose port 443, and will redirect connections to port 4567 of the named service.
 
 ```Yaml
 apiVersion: extensions/v1beta1
@@ -201,7 +212,7 @@ The value of `serviceName` and `servicePort` must be the same as those specified
 Change the `helloworld-rubyapp` prefix of the `host` string to the value you want to use as the hostname part of the URL on which your application will be available to the world (do not change the `.apps.live-1.cloud-platform...` part).
 
 
-*Tip:* You can find more info on ingress in the [kubernetes docs](https://kubernetes.io/docs/concepts/services-networking/ingress/)
+*Tip:* You can find more info on ingress in the [kubernetes docs][ingress-docs]
 
 ### Step 4 - Deploy the application
 
@@ -215,7 +226,7 @@ The list that gets returned should include the one you [created earlier][env-cre
 
 To deploy your application run the following command. This command assumes that the current directory is the root directory of your working copy of the [demo application][rubyapp-github]. i.e. `kubectl_deploy` points to the directory where the deployment files are stored.
 
-      kubectl create --filename kubectl_deploy --namespace davids-dummy-dev
+      kubectl apply --filename kubectl_deploy --namespace davids-dummy-dev
 
 You have to specify the namespace you want to deploy to, this should be the namespace of the environment you created.
 
@@ -361,3 +372,6 @@ Now, if you reload the browser page showing the 'Hello world' message from the a
 [ecr-setup]: tasks.html#creating-an-ecr-repository
 [access-ecr-credentials]: tasks.html#accessing-the-credentials
 [env-create]: tasks.html#creating-a-cloud-platform-environment
+[decode-script]: https://github.com/ministryofjustice/cloud-platform-environments/blob/master/bin/decode.rb
+[deployment-strategies]: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+[ingress-docs]: https://kubernetes.io/docs/concepts/services-networking/ingress/
