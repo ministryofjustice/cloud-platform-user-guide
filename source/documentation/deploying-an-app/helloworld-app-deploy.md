@@ -203,7 +203,7 @@ The value of `serviceName` and `servicePort` must be the same as those specified
 Change the `helloworld-rubyapp` prefix of the `host` string to the value you want to use as the hostname part of the URL on which your application will be available to the world (do not change the `.apps.live-1.cloud-platform...` part).
 
 
-*Tip:* You can find more info on ingress in the [kubernetes docs](https://kubernetes.io/docs/concepts/services-networking/ingress/)
+*Tip:* You can find more info on ingress in the [kubernetes docs][ingress-docs]
 
 ### Step 4 - Deploy the application
 
@@ -364,3 +364,4 @@ Now, if you reload the browser page showing the 'Hello world' message from the a
 [access-ecr-credentials]: tasks.html#accessing-the-credentials
 [env-create]: tasks.html#creating-a-cloud-platform-environment
 [decode-script]: https://github.com/ministryofjustice/cloud-platform-environments/blob/master/bin/decode.rb
+[ingress-docs]: https://kubernetes.io/docs/concepts/services-networking/ingress/
