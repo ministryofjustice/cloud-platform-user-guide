@@ -217,7 +217,7 @@ The list that gets returned should include the one you [created earlier][env-cre
 
 To deploy your application run the following command. This command assumes that the current directory is the root directory of your working copy of the [demo application][rubyapp-github]. i.e. `kubectl_deploy` points to the directory where the deployment files are stored.
 
-      kubectl create --filename kubectl_deploy --namespace davids-dummy-dev
+      kubectl apply --filename kubectl_deploy --namespace davids-dummy-dev
 
 You have to specify the namespace you want to deploy to, this should be the namespace of the environment you created.
 
