@@ -1011,6 +1011,7 @@ variable "cluster_state_bucket" {}
 <p><em>tl;dr</em> use this command:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>  kubectl -n [namespace_name] get secret [name of your secret] -o yaml
 </code></pre></div><p>Don&rsquo;t forget to base64 decode the <code>access_key_id</code> and <code>secret_access_key</code> values before using them.</p>
+<p>You can pipe the yaml through <a href="https://github.com/ministryofjustice/cloud-platform-environments/blob/master/bin/decode.rb">this script</a> in order to decode the values, or you can do the following:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>  echo 'your_access_key_id_value' | base64 --decode
 </code></pre></div><p>Once you have your <code>access_key_id</code> and <code>secret_access_key</code>, set up an AWS profile using the AWS cli tool.</p>
 <div class="highlight"><pre class="highlight plaintext"><code>  aws configure
@@ -1038,7 +1039,12 @@ kind: Deployment
 metadata:
   name: helloworld-rubyapp
 spec:
-  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 100%
+      maxUnavailable: 50%
+    type: RollingUpdate
+  replicas: 4
   template:
     metadata:
       labels:
@@ -1046,11 +1052,13 @@ spec:
     spec:
       containers:
       - name: rubyapp
-        image: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/davids-dummy-team/davids-dummy-app:latest
+        image: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/[team_name]/[repo_name]:latest
         ports:
         - containerPort: 4567
-</code></pre></div><p>This file tells Kubernetes to run a single pod (<code>replicas: 1</code>) containing a single container based on a specific docker image from your ECR.</p>
-<p>Change the image value to refer to the image you pushed to your ECR in the earlier step.</p>
+</code></pre></div><p>Change the image value to refer to the image you pushed to your ECR in the earlier step.</p>
+<p>This file tells Kubernetes to run four pods (<code>replicas: 4</code>) containing a single container based on a specific docker image from your ECR. We recommend 4 replicas for most components of production services. Your application will be restarted when kubernetes moves workloads from one worker node to another, and having multiple replicas helps to ensure that your service doesn&rsquo;t have any downtime when this happens.</p>
+<p>The <code>strategy</code> section means that, when it is moved, the cluster will create a complete new copy of your application first, before it starts killing the pods on the node you&rsquo;re being migrated away from. More information about deployment strategies is available <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy">here</a></p>
+<p>NB: This guidance about replicas doesn&rsquo;t apply for things where you must only have a single instance running (e.g. a background job processor where you must process jobs in FIFO order - if you were to run mutiple instances of that, you might have problems, so a Recreate strategy, with a single replica, might be better).</p>
 <p>The <code>service.yaml</code> and <code>ingress.yaml</code> files make it possible to access your application from the outside world.</p>
 <h4 id="service-yaml">service.yaml</h4><p>Service files are used to specify port and protocol information for your application and are also used to bundle together the set of pods created by the deployment.</p>
 <p>This exposes port 4567 internally to your namespace. i.e. it enables pods and other objects within your namespace to connect to port 4567 of your container.</p>
@@ -1071,7 +1079,7 @@ spec:
 <p><em>Tip:</em> You can find more info on service definition in the <a href="https://kubernetes.io/docs/tasks/access-application-cluster/service-access-application-cluster/">kubernetes docs</a>.</p>
 <h4 id="ingress-yaml">ingress.yaml</h4><p>Ingress files are to use to define external access to the application.</p>
 <p>This creates an <a href="https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/">ingress controller</a> to enable network connections from outside of the cluster.</p>
-<p>Note: Because we are specifying <code>http</code>, this ingress controller will expose port 80, and will redirect connections to port 4567 of the named service.</p>
+<p>Note: Because we are specifying <code>http</code>, and we have a <code>tls</code> section, this ingress controller will expose port 443, and will redirect connections to port 4567 of the named service.</p>
 <div class="highlight"><pre class="highlight plaintext"><code>apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -1096,7 +1104,7 @@ spec:
 <div class="highlight"><pre class="highlight plaintext"><code>  kubectl get namespaces
 </code></pre></div><p>The list that gets returned should include the one you <a href="/tasks.html#creating-a-cloud-platform-environment">created earlier</a>, here we assume it is called <code>davids-dummy-dev</code>. Please change that to whatever your namespace (environment) is called, in all of the following commands.</p>
 <p>To deploy your application run the following command. This command assumes that the current directory is the root directory of your working copy of the <a href="https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app">demo application</a>. i.e. <code>kubectl_deploy</code> points to the directory where the deployment files are stored.</p>
-<div class="highlight"><pre class="highlight plaintext"><code>  kubectl create --filename kubectl_deploy --namespace davids-dummy-dev
+<div class="highlight"><pre class="highlight plaintext"><code>  kubectl apply --filename kubectl_deploy --namespace davids-dummy-dev
 </code></pre></div><p>You have to specify the namespace you want to deploy to, this should be the namespace of the environment you created.</p>
 <p>Confirm the deployment with:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>  kubectl get pods --namespace davids-dummy-dev
