@@ -513,6 +513,12 @@
             <a href="/tasks.html#troubleshooting-guide">Troubleshooting guide</a>
           </li>
           <li>
+            <a href="/tasks.html#other-topics-ssl-connections-with-rds">SSL connections with RDS</a>
+          </li>
+          <li>
+            <a href="/tasks.html#creating-alerts-for-rds">Creating alerts for RDS</a>
+          </li>
+          <li>
             <a href="/tasks.html#kubernetes-cronjobs">Kubernetes Cronjobs</a>
           </li>
           <li>
@@ -2776,6 +2782,97 @@ spec:
 <li>Re-authenticate to the cluster using the <a href="https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#authentication">cloud-platform user-guide</a>.</li>
 <li>Ask a team member to <a href="https://help.github.com/en/github/setting-up-and-managing-organizations-and-teams/adding-organization-members-to-a-team">add your GitHub user account</a> to the correct team (please note, the Cloud Platform team cannot do this for you).</li>
 </ul>
+<p><h3 id="other-topics-ssl-connections-with-rds">SSL connections with RDS</h3><p>RDS instances are configured to allow SSL connections by default and also the latest versions of the client (<code>psql</code>) and
+libraries (eg.: the <code>pg</code> ruby gem which builds on <code>libpq</code>) will establish an SSL connection by default.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ psql &quot;$url&quot;
+psql (9.6.13, server 10.6)
+WARNING: psql major version 9.6, server major version 10.
+         Some psql features might not work.
+SSL connection (protocol: TLSv1.2, cipher: ECDHE-RSA-AES256-GCM-SHA384, bits: 256, compression: off)
+Type &quot;help&quot; for help.</p>
+<p>dba02192a049ed7ce8=&gt; ^D\q
+</code></pre></div><p>Where <code>$url</code> is of the form <code>postgres://user:pass@host:port/db</code>.</p>
+<p>Additionally, AWS <a href="https://d1.awsstatic.com/whitepapers/aws-security-whitepaper.pdf">offer strong assurances</a> that a malicious actor cannot spoof their traffic or sniff
+another tenant&rsquo;s traffic, even if they operate inside the same VPC.</p>
+<p>However, best practices dictate that an SSL connection should be explicitly forced. PostgreSQL implements various
+<a href="https://www.postgresql.org/docs/current/libpq-ssl.html">modes of operation</a>, each one offering a different level of security. Without any additional setup, we can
+establish an encrypted connection with <code>sslmode=require</code>, which forces an SSL connection but does not verify the server
+certificate.</p>
+<h4 id="other-topics-ssl-connections-with-rds-full-verification-of-certificates">Full verification of certificates</h4><p>In order to establish a connection with <code>sslmode=verify-full</code>, which offers <a href="https://en.wikipedia.org/wiki/Man-in-the-middle_attack">MITM</a> protection, we have to provide
+the client with the root CA certificate before it is able to verify the chain of trust. AWS offers <a href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html#PostgreSQL.Concepts.General.SSL">detailed instructions</a>
+on how to exactly that.</p>
+<p>As you can see below, unless provided with the root CA certificate, the client cannot fully verify the endpoint:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ psql &quot;$url?sslmode=verify-full&quot;
+psql: could not get home directory to locate root certificate file
+Either provide the file or change sslmode to disable server certificate verification.
+</code></pre></div><div class="highlight"><pre class="highlight plaintext"><code>$ psql &quot;$url?sslmode=verify-full&amp;sslrootcert=/tmp/rds-combined-ca-bundle.pem&quot;
+psql (9.6.13, server 10.6)
+WARNING: psql major version 9.6, server major version 10.
+         Some psql features might not work.
+SSL connection (protocol: TLSv1.2, cipher: ECDHE-RSA-AES256-GCM-SHA384, bits: 256, compression: off)
+Type &quot;help&quot; for help.</p>
+<p>dba02192a049ed7ce8=&gt; ^D\q
+</code></pre></div><p>This CA bundle can be added into your application&rsquo;s docker image. You can simply add the following directive in your
+<code>Dockerfile</code>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>ADD https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem /path/to/rds-combined-ca-bundle.pem
+</code></pre></div><p>If you&rsquo;re developing a Ruby on Rails application, you can configure this by adding the following two options in your
+<code>config/database.yml</code>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  sslmode: verify-full
+  sslrootcert: /path/to/rds-combined-ca-bundle.pem
+</code></pre></div><p>For other frameworks, you should consult their documentation on how to configure the database client to use SSL
+connections.</p>
+<h4 id="other-topics-ssl-connections-with-rds-force-ssl-connections">Force SSL connections</h4><p>Ideally, we also want to completely disable unencrypted connections (by using the RDS <code>force_ssl</code> parameter) and always
+perform a full verification when connecting to the RDS endpoint.</p>
+<p>In order to force using secure connections for your RDS instance, you&rsquo;ll need to set <code>force_ssl = true</code> in your module
+definition. See the <a href="https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance/#inputs">documentation</a> for details. Once applied, you should no longer be able to establish
+a connection using <code>sslmode=disable</code>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ psql &quot;$url?sslmode=disable&quot;
+psql: FATAL:  no pg_hba.conf entry for host &quot;172.20.32.241&quot;, user &quot;fDsQgBlavX&quot;, database &quot;dba02192a049ed7ce8&quot;, SSL off
+</code></pre></div>
+<h3 id="creating-alerts-for-rds">Creating alerts for RDS</h3><h4 id="creating-alerts-for-rds-overview">Overview</h4><p>Alertmanager allows you define your own alert conditions based on <a href="https://prometheus.io/docs/prometheus/latest/querying/basics">Prometheus expression language</a> expressions.</p>
+<p>The aim of this document is cover the specifics of alerting for RDS</p>
+<h4 id="creating-alerts-for-rds-prerequisites">Prerequisites</h4><p>This guide assumes the following:</p></p>
+
+<ul>
+<li>You have created a namespace for your application</li>
+<li>You have an RDS instance defined in that namespace</li>
+<li>You are already familiar with creating custom alerts explained <a href="https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#creating-your-own-custom-alerts">here</a></li>
+<li>You know the RDS database identifier you want to monitor. It can be found in the RDS kubernetes secret in your namespace.</li>
+</ul>
+<p><h4 id="rds-metrics">RDS metrics</h4><p>Prometheus gathers and exposes a few RDS metrics. Here is the full lists :</p>
+<div class="highlight"><pre class="highlight plaintext"><code>aws_rds_cpuutilization_average
+aws_rds_database_connections_average
+aws_rds_free_storage_space_average
+aws_rds_free_storage_space_minimum
+aws_rds_free_storage_space_maximum
+aws_rds_freeable_memory_average
+aws_rds_read_iops_average
+aws_rds_read_latency_average
+aws_rds_write_iops_average
+aws_rds_write_latency_average
+</code></pre></div><h4 id="an-example">An example</h4><p>Below a an example of a PrometheusRule, that triggers an alert if the amount of free space of an RDS instance drops below 1Gb.</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">monitoring.coreos.com/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">PrometheusRule</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">&lt;namespace&gt;</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">role</span><span class="pi">:</span> <span class="s">alert-rules</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">prometheus-custom-rules-&lt;application_name&gt;</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">groups</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">application-rules</span>
+    <span class="na">rules</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">alert</span><span class="pi">:</span> <span class="s">RDSLowStorage</span>
+        <span class="s">expr</span><span class="pi">:</span> <span class="s">aws_rds_free_storage_space_average{dbinstance_identifier=&quot;&lt;YOUR_DB_ID&quot;} offset 10m &lt; 1000000000</span>
+        <span class="s">for</span><span class="pi">:</span> <span class="s">5m</span>
+        <span class="s">labels</span><span class="pi">:</span>
+          <span class="na">severity</span><span class="pi">:</span> <span class="s">&lt;SEVERITY&gt;</span>
+        <span class="na">annotations</span><span class="pi">:</span>
+          <span class="na">message</span><span class="pi">:</span> <span class="s2">&quot;</span><span class="s">[{{</span><span class="nv"> </span><span class="s">environment|upper</span><span class="nv"> </span><span class="s">}}]</span><span class="nv"> </span><span class="s">RDS</span><span class="nv"> </span><span class="s">free</span><span class="nv"> </span><span class="s">storage</span><span class="nv"> </span><span class="s">space</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">less</span><span class="nv"> </span><span class="s">than</span><span class="nv"> </span><span class="s">1GB&quot;</span>
+</code></pre></div>
+<ul>
+<li>Run <code>kubectl apply -f prometheus-custom-rules-&lt;application_name&gt;.yaml -n &lt;namespace&gt;</code></li>
+</ul></p>
 <p><h3 id="kubernetes-cronjobs">Kubernetes Cronjobs</h3><h4 id="kubernetes-cronjobs-overview">Overview</h4><p>Kubernetes has the concept of <a href="https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/">Cronjobs</a> which creates Jobs on a time-based schedule, you can use CronJobs to run tasks at a specific time or interval. CronJobs are a good choice for automatic tasks, such as backups, reporting, sending emails, or cleanup tasks.</p>
 <h4 id="kubernetes-cronjobs-usage">Usage</h4><p>CronJobs use <a href="https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/">Job</a> objects to complete their tasks. A CronJob creates a Job object each time it runs. CronJobs are created, managed, scaled, and deleted in the same way as Jobs. Cron jobs require a config file, follow the <a href="https://kubernetes.io/docs/tasks/job/automated-tasks-with-cron-jobs/#creating-a-cron-job">guide</a> on creating a Cronjob.</p>
 <p>This example cron job below prints the current time and a hello message every first minute of every hour from 0200 to 1400 UTC on Sunday, Monday, Friday, and Saturday</p>
