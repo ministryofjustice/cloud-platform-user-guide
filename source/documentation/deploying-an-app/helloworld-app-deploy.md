@@ -66,6 +66,8 @@ To authenticate to your ECR, you will need the `access_key_id` and `secret_acces
 
 Don't forget to base64 decode the `access_key_id` and `secret_access_key` values before using them.
 
+You can pipe the yaml through [this script][decode-script] in order to decode the values, or you can do the following:
+
       echo 'your_access_key_id_value' | base64 --decode
 
 Once you have your `access_key_id` and `secret_access_key`, set up an AWS profile using the AWS cli tool.
@@ -361,3 +363,4 @@ Now, if you reload the browser page showing the 'Hello world' message from the a
 [ecr-setup]: tasks.html#creating-an-ecr-repository
 [access-ecr-credentials]: tasks.html#accessing-the-credentials
 [env-create]: tasks.html#creating-a-cloud-platform-environment
+[decode-script]: https://github.com/ministryofjustice/cloud-platform-environments/blob/master/bin/decode.rb
