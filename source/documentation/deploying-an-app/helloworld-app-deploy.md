@@ -126,6 +126,11 @@ kind: Deployment
 metadata:
   name: helloworld-rubyapp
 spec:
+  strategy:
+    rollingUpdate:
+      maxSurge: 100%
+      maxUnavailable: 50%
+    type: RollingUpdate
   replicas: 4
   template:
     metadata:
@@ -142,6 +147,8 @@ spec:
 Change the image value to refer to the image you pushed to your ECR in the earlier step.
 
 This file tells Kubernetes to run four pods (`replicas: 4`) containing a single container based on a specific docker image from your ECR. We recommend 4 replicas for most components of production services. Your application will be restarted when kubernetes moves workloads from one worker node to another, and having multiple replicas helps to ensure that your service doesn't have any downtime when this happens.
+
+The `strategy` section means that, when it is moved, the cluster will create a complete new copy of your application first, before it starts killing the pods on the node you're being migrated away from. More information about deployment strategies is available [here][deployment-strategies]
 
 NB: This guidance about replicas doesn't apply for things where you must only have a single instance running (e.g. a background job processor where you must process jobs in FIFO order - if you were to run mutiple instances of that, you might have problems, so a Recreate strategy, with a single replica, might be better).
 
@@ -366,4 +373,5 @@ Now, if you reload the browser page showing the 'Hello world' message from the a
 [access-ecr-credentials]: tasks.html#accessing-the-credentials
 [env-create]: tasks.html#creating-a-cloud-platform-environment
 [decode-script]: https://github.com/ministryofjustice/cloud-platform-environments/blob/master/bin/decode.rb
+[deployment-strategies]: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
 [ingress-docs]: https://kubernetes.io/docs/concepts/services-networking/ingress/
