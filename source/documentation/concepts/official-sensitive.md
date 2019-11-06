@@ -1,0 +1,12 @@
+## "OFFICIAL SENSITIVE" - can my service be hosted on the Cloud Platform?
+
+Please see [this guidance][official-sensitive] for information on what the OFFICIAL asset classification, with the SENSITIVE handling caveat means.
+
+Most services operated by the MoJ, including those hosted on the Cloud Platform, handle information classified as OFFICIAL.  There are also services running on the platform managing data for which the SENSITIVE handling caveat applies (e.g. because they identify prisoners/prison staff).
+
+So, in principle, there is no objection to such services being hosted on the Cloud Platform.
+
+If you need more formal assurance that your service can be hosted on the Cloud Platform, or you have concerns about the handling of specific kinds of data, please contact the security team via `#security` on Slack, or by emailing `cyberconsultancy@digital.justice.gov.uk`
+
+[official-sensitive]: https://ministryofjustice.github.io/security-guidance/mythbusting/official-official-sensitive/#official-official-sensitive
+
