@@ -48,7 +48,7 @@ cloud platform build pipeline will run, and your AWS resources will be deleted.
 
 ### 3. Remove your namespace code from the cloud-platform-environments repository
 
-After your change to delete all the `\*.tf` files except `main.tf` has been
+After your change to delete all the `*.tf` files except `main.tf` has been
 merged, please raise an additional [PR] removing the whole of your namespace code
 from the [cloud-platform-environments][envrepo] repository.
 
