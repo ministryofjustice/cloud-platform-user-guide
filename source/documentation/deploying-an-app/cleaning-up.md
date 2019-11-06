@@ -43,20 +43,20 @@ it should manage resources for this namespace, but that there should be no
 resources, so terraform will delete any resources that do exist.
 
 Once you have deleted the other `*.tf` files from your namespace's resources
-folder, raise a [PR][] to get your changes merged. As soon as this happens, the
+folder, raise a [PR] to get your changes merged. As soon as this happens, the
 cloud platform build pipeline will run, and your AWS resources will be deleted.
 
 ### 3. Remove your namespace code from the cloud-platform-environments repository
 
 After your change to delete all the `\*.tf` files except `main.tf` has been
-merged, please raise an additional [PR][] removing the whole of your namespace code
+merged, please raise an additional [PR] removing the whole of your namespace code
 from the [cloud-platform-environments][envrepo] repository.
 
 i.e. deleting the whole of the directory:
 
      cloud-platform-environments/namespaces/live-1.cloud-platform.service.justice.gov.uk/[your namespace]
 
-Merging this [PR][] will prevent the cloud platform build pipeline from recreating
+Merging this [PR] will prevent the cloud platform build pipeline from recreating
 your namespace, after it is deleted.
 
 ### 4. Delete all of the kubernetes resources inside your namespace.
@@ -83,7 +83,7 @@ If you are using [Helm][], the equivalent command is:
 
 Deleting a namespace requires admin access to the cluster.
 
-Please raise a [PR][] against the [cloud-platform-environments][envrepo] repository,
+Please raise a [PR] against the [cloud-platform-environments][envrepo] repository,
 specifying the namespace you would like the team to delete.
 
 ### Summary
