@@ -46,6 +46,9 @@ Once you have deleted the other `*.tf` files from your namespace's resources
 folder, raise a [PR] to get your changes merged. As soon as this happens, the
 cloud platform build pipeline will run, and your AWS resources will be deleted.
 
+NB: In this PR, **do not remove** the yaml files which define your
+namespace. That must be done in a subsequent step.
+
 ### 3. Remove your namespace code from the cloud-platform-environments repository
 
 After your change to delete all the `*.tf` files except `main.tf` has been
