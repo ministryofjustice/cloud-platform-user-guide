@@ -62,8 +62,8 @@ your namespace, after it is deleted.
 ### 4. Delete all of the kubernetes resources inside your namespace.
 
 In your working copy of your application code, you can use the kubernetes
-deployment yaml files to delete your namespace and all the kubernetes resources
-within it.
+deployment yaml files to delete all the kubernetes resources within your
+namespace.
 
 Assuming your current working directory is a working copy of your application,
 and that your kubernetes deployment yaml files are in a directory called
