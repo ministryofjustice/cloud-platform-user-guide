@@ -1732,7 +1732,9 @@ resources, so terraform will delete any resources that do exist.</p>
 <p>Once you have deleted the other <code>*.tf</code> files from your namespace&rsquo;s resources
 folder, raise a <a href="https://help.github.com/en/articles/about-pull-requests">PR</a> to get your changes merged. As soon as this happens, the
 cloud platform build pipeline will run, and your AWS resources will be deleted.</p>
-<h3 id="3-remove-your-namespace-code-from-the-cloud-platform-environments-repository">3. Remove your namespace code from the cloud-platform-environments repository</h3><p>After your change to delete all the <code>\*.tf</code> files except <code>main.tf</code> has been
+<p>NB: In this PR, <strong>do not remove</strong> the yaml files which define your
+namespace. That must be done in a subsequent step.</p>
+<h3 id="3-remove-your-namespace-code-from-the-cloud-platform-environments-repository">3. Remove your namespace code from the cloud-platform-environments repository</h3><p>After your change to delete all the <code>*.tf</code> files except <code>main.tf</code> has been
 merged, please raise an additional <a href="https://help.github.com/en/articles/about-pull-requests">PR</a> removing the whole of your namespace code
 from the <a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud-platform-environments</a> repository.</p>
 <p>i.e. deleting the whole of the directory:</p>
@@ -1740,8 +1742,8 @@ from the <a href="https://github.com/ministryofjustice/cloud-platform-environmen
 </code></pre></div><p>Merging this <a href="https://help.github.com/en/articles/about-pull-requests">PR</a> will prevent the cloud platform build pipeline from recreating
 your namespace, after it is deleted.</p>
 <h3 id="4-delete-all-of-the-kubernetes-resources-inside-your-namespace">4. Delete all of the kubernetes resources inside your namespace.</h3><p>In your working copy of your application code, you can use the kubernetes
-deployment yaml files to delete your namespace and all the kubernetes resources
-within it.</p>
+deployment yaml files to delete all the kubernetes resources within your
+namespace.</p>
 <p>Assuming your current working directory is a working copy of your application,
 and that your kubernetes deployment yaml files are in a directory called
 <code>kubernetes_deploy</code>, immediately below your current working directory, you
