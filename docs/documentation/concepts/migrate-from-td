@@ -57,7 +57,7 @@
 <li><p>A shared, highly-available deployment of reverse-proxy instances based on AWS ELB and Nginx runs in front of all application instances and offers features like <a href="https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#modsecurity-web-application-firewall">WAF</a>, custom <a href="https://github.com/ministryofjustice/cloud-platform-custom-error-pages">error pages</a> or <a href="https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#ip-whitelisting">IP-based ACLs</a> user-configurable per application but independent from its running state.</p>
 
 <ul>
-<li><a href="http://localhost:4567/tasks.html#add-http-basic-authentication">Basic auth</a> can be quickly turned on/off at ingress level, useful when deploying dev services.</li>
+<li><a href="tasks.html#add-http-basic-authentication">Basic auth</a> can be quickly turned on/off at ingress level, useful when deploying dev services.</li>
 </ul></li>
 <li><p>Several AWS resource types are tested and documented as <a href="https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#available-modules">Terraform modules</a>; they simplify deployment and default to best-practices options.</p></li>
 </ol>
