@@ -107,4 +107,4 @@ NB: UDP is not available at all.
 [LetsEncrypt]: https://letsencrypt.org/
 [kubernetes jobs]: https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/
 [kubernetes cron jobs]: https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
-[Basic auth]: http://localhost:4567/tasks.html#add-http-basic-authentication
+[Basic auth]: tasks.html#add-http-basic-authentication
