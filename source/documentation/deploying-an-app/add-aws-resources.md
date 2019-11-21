@@ -68,6 +68,14 @@ Upgrading to a new major version usually means that the configured resource will
 
 Refer to the [terraform documentation on modules][tf-modules-docs] for more information on usage.
 
+#### Monitoring AWS Resources
+
+All resources are monitored by AWS CloudWatch by default. We use [CloudWatch Exporter](https://github.com/prometheus/cloudwatch_exporter) to export a number of the metrics for the [Terraform Modules][tf-modules-list] we provide into Prometheus.
+
+To view the current set of metrics available: log into Prometheus  > Click on 'insert metric at cursor' > type 'aws_'
+
+You can view all metrics AWS make available [here](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/aws-services-cloudwatch-metrics.html)
+
 
 
 [env-repo]: https://github.com/ministryofjustice/cloud-platform-environments/
