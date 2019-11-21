@@ -33,3 +33,6 @@ variable "cluster_state_bucket" {}
 </code></pre></div><p>Please check the version badge for the module you are using (visit the web page of the module&rsquo;s github repository - the version badge will be just below the heading), and make sure you are using the latest version of the module in your configuration.</p>
 <p>Upgrading to a new major version usually means that the configured resource will have to be re-created by terraform.</p>
 <p>Refer to the <a href="http://terraform.io/docs/modules">terraform documentation on modules</a> for more information on usage.</p>
+<h4 id="monitoring-aws-resources">Monitoring AWS Resources</h4><p>All resources are monitored by AWS CloudWatch by default. We use <a href="https://github.com/prometheus/cloudwatch_exporter">CloudWatch Exporter</a> to export a number of the metrics for the <a href="https://github.com/ministryofjustice/cloud-platform#terraform-modules">Terraform Modules</a> we provide into Prometheus.</p>
+<p>To view the current set of metrics available: log into Prometheus  &gt; Click on &lsquo;insert metric at cursor&rsquo; &gt; type &#39;aws_&rsquo;</p>
+<p>You can view all metrics AWS make available <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/aws-services-cloudwatch-metrics.html">here</a></p>
