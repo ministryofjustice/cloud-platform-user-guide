@@ -2712,9 +2712,72 @@ iv.  The deploy repository will then be archived (confirmatory message will appe
 <div class="highlight"><pre class="highlight plaintext"><code>i.   As for archiving -Locate your deploy-repos. Click on the “Settings” button. Then click on the “Delete this repository” button:
 </code></pre></div><h4 id="4-docker-images">4. Docker Images:</h4><p>a.   The docker image repository will be completely decommissioned when we have switched everything over from template-deploy</p>
 
-<h3 id="troubleshooting-guide">Troubleshooting guide</h3><h4 id="troubleshooting-guide-overview">Overview</h4><p>This document intends to give you an idea of potential troubleshooting tips and techniques to investigate and resolve application issues on the Cloud Platform. The Kubernetes project also offers a resource on <a href="https://kubernetes.io/docs/tasks/debug-application-cluster/troubleshooting/">troubleshooting</a> so we will attempt to avoid overlap.</p>
-<p>Throughout this document we will refer to terms such as <code>&lt;pod_name&gt;</code> and <code>&lt;namespace&gt;</code>, it is assumed you&rsquo;ll know how to gather this information using the <code>kubectl get</code> commands.</p>
-<h4 id="contents">Contents</h4>
+<h3 id="troubleshooting-guide">Troubleshooting guide</h3><p>When things are not working correctly, there are several techniques to help you figure out what&rsquo;s going wrong.</p>
+<h4 id="pods-events">Pods / Events</h4><p>Generally, the first step will be:</p>
+<p><code>kubectl -n [your namespace] get pods</code></p>
+
+<blockquote>
+<p>We&rsquo;ve used the namespace <code>dstest</code> as an example, in this guide. Wherever that appears in a command, please use the name of your namespace instead.</p>
+</blockquote>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl -n dstest get pods
+NAME                                 READY   STATUS                       RESTARTS   AGE
+helloworld-rubyapp-8795b9c56-58fbc   1/2     CreateContainerConfigError   0          13s
+helloworld-rubyapp-d58bdf7c4-2xqw7   1/1     Running                      0          21d
+helloworld-rubyapp-d58bdf7c4-x8ln7   1/1     Running                      0          21d
+</code></pre></div><p>Here, the <code>STATUS</code> value shows that there&rsquo;s a problem with one of the pods.</p>
+<p>Running <code>kubectl describe</code> on that pod will give us more information.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl -n dstest describe pod helloworld-rubyapp-8795b9c56-58fbc
+Name:               helloworld-rubyapp-8795b9c56-58fbc
+Namespace:          dstest
+
+...
+
+Events:
+  Type     Reason     Age                From                                                  Message
+  ----     ------     ----               ----                                                  -------
+  Normal   Scheduled  91s                default-scheduler                                     Successfully assigned dstest/helloworld-rubyapp-8795b9c56-58fbc to ip-172-20-60-236.eu-west-2.compute.internal
+  Normal   Pulling    87s                kubelet, ip-172-20-60-236.eu-west-2.compute.internal  pulling image "754256621582.dkr.ecr.eu-west-2.amazonaws.com/webops/dstest:latest"
+  Normal   Started    84s                kubelet, ip-172-20-60-236.eu-west-2.compute.internal  Started container
+  Normal   Pulled     84s                kubelet, ip-172-20-60-236.eu-west-2.compute.internal  Successfully pulled image "754256621582.dkr.ecr.eu-west-2.amazonaws.com/webops/dstest:latest"
+  Normal   Created    84s                kubelet, ip-172-20-60-236.eu-west-2.compute.internal  Created container
+  Normal   Pulling    21s (x7 over 90s)  kubelet, ip-172-20-60-236.eu-west-2.compute.internal  pulling image "nginx"
+  Normal   Pulled     20s (x7 over 87s)  kubelet, ip-172-20-60-236.eu-west-2.compute.internal  Successfully pulled image "nginx"
+  Warning  Failed     20s (x7 over 87s)  kubelet, ip-172-20-60-236.eu-west-2.compute.internal  Error: container has runAsNonRoot and image will run as root
+</code></pre></div><p>We&rsquo;ve omitted a lot of the detail, for clarity. The useful information, in this case, is at the bottom, in the <code>Events</code> section. On the last line:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>Error: container has runAsNonRoot and image will run as root
+</code></pre></div><p>You can also see events across the whole namespace like this:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>kubectl -n dstest get events
+</code></pre></div><p>Be aware that the ordering of events in the output of this command is a bit random.</p>
+<p>Events are only stored in the cluster for around 30 minutes, but all events are also stored in Elasticsearch, and available via <a href="https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/kibana#/home?_g=()">Kibana</a>. To find events in your namespace, click on &ldquo;Discover&rdquo; in the upper-left, and then enter a query like this:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>kubernetes.namespace_name:"logging" AND kubernetes.labels.app:"eventrouter" AND log:"dstest"
+</code></pre></div><p>(replace <code>dstest</code> with the name of your namespace)</p>
+<p>You can adjust the timeframe and other parameters via the Kibana web interface.</p>
+<h4 id="logs">Logs</h4><p>You can view the log output from a pod like this:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl -n dstest log helloworld-rubyapp-8795b9c56-58fbc
+Error from server (BadRequest): a container name must be specified for pod helloworld-rubyapp-8795b9c56-58fbc, choose one of: [nginx rubyapp]
+</code></pre></div><p>As you can see, that pod has two containers, and you need to specify which container&rsquo;s logs you want to see. If your pod only has a single container, you won&rsquo;t be prompted for its name.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl -n dstest log helloworld-rubyapp-8795b9c56-58fbc -c rubyapp
+[2019-11-26 14:12:16] INFO  WEBrick 1.4.2
+[2019-11-26 14:12:16] INFO  ruby 2.5.5 (2019-03-15) [x86_64-linux-musl]
+== Sinatra (v2.0.7) has taken the stage on 4567 for development with backup from WEBrick
+[2019-11-26 14:12:16] INFO  WEBrick::HTTPServer#start: pid=1 port=4567
+</code></pre></div><p>You can tail the logs by appending <code>--follow</code> to that command.</p>
+<p>Logs are also available via Kibana, as described <a href="/tasks.html#accessing-application-log-data">here</a>.</p>
+<h4 id="launching-a-shell">Launching a shell</h4><p>If your container has a shell installed (e.g. <code>bash</code>, <code>zsh</code>, or <code>sh</code>), you can exec onto the running container like this</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl -n dstest exec -it helloworld-rubyapp-8795b9c56-58fbc -c rubyapp sh
+/app $
+</code></pre></div><h4 id="launching-a-new-container">Launching a new container</h4><p>You might want to make network calls from within your namespace, to test different components of your service. If your deployed containers don&rsquo;t have the tools you need (e.g. <code>wget</code>, <code>curl</code>), you can launch a new pod into your namespace like this:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>kubectl -n dstest run --generator=run-pod/v1 shell --rm -i --tty --image ministryofjustice/cloud-platform-tools -- bash
+</code></pre></div><p>You could subtitute another image such as <code>busybox</code> or <code>alpine</code> instead of <code>ministryofjustice/cloud-platform-tools</code> if you prefer.</p>
+<p>Once we have a shell on our new container, we can access the services running in our namespace like this:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>bash-4.4# curl rubyapp-service:4567
+&lt;h1&gt;Hello, World!&lt;/h1&gt;
+</code></pre></div><p>You can get the names and ports of the services running in your namespace, from <strong>outside</strong> the new container, like this:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl -n dstest get service
+NAME              TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+rubyapp-service   ClusterIP   100.65.254.2   &lt;none&gt;        4567/TCP   28d
+</code></pre></div><h4 id="specific-errors">Specific Errors</h4><p>The remainder of this document covers particular errors you might encounter, and give advice on how to deal with them.</p>
+
 <ul>
 <li><a href="#my-pod-shows-createcontainerconfigerror-after-deployment">My pod shows &lsquo;CreateContainerConfigError&rsquo; after deployment</a></li>
 <li><a href="#my-pod-shows-crashloopbackoff-after-deployment">My pod shows &#39;CrashLoopBackOff&rsquo; after deployment</a></li>
