@@ -1,26 +1,37 @@
 # Cloud platform user guide
 
-The Ministry of Justice cloud platform is a platform for hosting services
-developed for the Ministry of Justice. The platform manages the infrastructure
-that your application runs on and provides tooling for teams to deploy and
-manage their applications on that infrastructure.
+## Using this guide
 
-#### Contributing
+To the left, you will see the top-level navigation items.
 
-Contributions to this guide are very welcome. Please fork the [github
-repository][repo] for this guide, and submit your contribution as a pull
-request.
+* **Concepts**: High-level articles, e.g. "What is Kubernetes?"
+* **Tasks**: Articles covering specific "how to" topics, e.g. "How to deploy an
+  application"
+* **Reference**: Information such as Cloud Platform processes, and links to
+  external documentation resources
+* **Getting Help**: How to get help if you can't find what you need in this
+  guide
 
-### Who is the platform for
+Click these to expand the corresponding section of the guide.
 
-The platform is for teams working anywhere in the Ministry of Justice that need
-to run software applications. To get started you need to be part of a team in
-the Ministry of Justice GitHub organisation. Once you are, you can start to
-deploy applications using the guides below.
+Currently, the vast majority of the information in the guide is in the "Tasks" section.
 
-### What do we currently support
+> Because of the way this guide is [published][tech-docs-template], each of the
+> sections ends up as a single HTML page. Because of this, you might find
+> Cmd-F/Ctrl-F on the "Tasks" page more useful than the search box in the upper
+> left corner.
 
-Users can create non-production and production environments and get access to
-the Kubernetes API for those environments.
+## Brand new to Kubernetes/The Cloud Platform?
 
-[repo]: https://github.com/ministryofjustice/cloud-platform-user-guide
+The [Deploying a Hello World application] tutorial is a good place to start.
+
+## Adding to the guide
+
+If there's something missing, please either let us know and we'll add a new
+article, or if you're comfortable writing one yourself, PRs will be gratefully
+received. Details on how to get in touch are in the "Getting Help" section, and
+the "GithHub" link at the top right will take you to the repository for this
+guide.
+
+[tech-docs-template]: https://github.com/alphagov/tech-docs-template
+[Deploying a Hello World application]: tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform
