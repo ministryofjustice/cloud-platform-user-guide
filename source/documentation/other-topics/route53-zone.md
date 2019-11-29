@@ -35,7 +35,7 @@ Fill in the _name_ and the _namespace_ fields below, with your domain name & and
 resource "aws_route53_zone" "example_team_route53_zone" {
   name = "YOUR DOMAIN GOES HERE"
 
-  tags {
+  tags = {
     business-unit          = "example-bu"
     application            = "example-app"
     is-production          = "false"
@@ -51,8 +51,8 @@ resource "kubernetes_secret" "example_route53_zone_sec" {
     namespace = "YOUR KUBERNETES NAMESPACE GOES HERE"
   }
 
-  data {
-    zone_id   = "${aws_route53_zone.example_team_route53_zone.zone_id}"
+  data = {
+    zone_id   = aws_route53_zone.example_team_route53_zone.zone_id
   }
 }
 
@@ -60,7 +60,7 @@ resource "kubernetes_secret" "example_route53_zone_sec" {
 
 ### Creating the resource
 
-Make sure to replace the placeholders and example values above with relevant ones, commit your changes to a branch and raise a pull request.
+Make sure to replace the placeholders and example values above with relevant ones. If you are refering from variables in variables.tf, replace with `var.VARIABLE NAME`. Commit your changes to a branch and raise a pull request.
 Once approved, you can merge and the changes will be applied.
 Shortly after, to confirm the zone has been created, you should be able to access the `Zone_ID` as Secret on kubernetes in your namespace.
 
