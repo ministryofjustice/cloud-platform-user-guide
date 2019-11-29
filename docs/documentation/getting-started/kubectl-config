@@ -16,10 +16,6 @@
 <th>Login page</th>
 </tr>
 <tr>
-<td><code>cloud-platform-live-0</code></td>
-<td><a href="https://login.apps.cloud-platform-live-0.k8s.integration.dsd.io/">https://login.apps.cloud-platform-live-0.k8s.integration.dsd.io/</a></td>
-</tr>
-<tr>
 <td><code>live-1.cloud-platform</code></td>
 <td><a href="https://login.cloud-platform.service.justice.gov.uk/">https://login.cloud-platform.service.justice.gov.uk/</a></td>
 </tr>

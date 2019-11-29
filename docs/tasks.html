@@ -454,9 +454,6 @@
             <a href="/tasks.html#changing-the-circleci-environment-variables">Changing the CircleCI environment variables</a>
           </li>
           <li>
-            <a href="/tasks.html#deleting-your-live-0-deployment">Deleting your Live-0 deployment</a>
-          </li>
-          <li>
             <a href="/tasks.html#other-considerations">Other considerations</a>
           </li>
         </ul>
@@ -607,10 +604,6 @@
           <tr>
 <th>Cluster Name</th>
 <th>Login page</th>
-</tr>
-<tr>
-<td><code>cloud-platform-live-0</code></td>
-<td><a href="https://login.apps.cloud-platform-live-0.k8s.integration.dsd.io/">https://login.apps.cloud-platform-live-0.k8s.integration.dsd.io/</a></td>
 </tr>
 <tr>
 <td><code>live-1.cloud-platform</code></td>
@@ -945,15 +938,7 @@ Shortly after, to confirm the zone has been created, you should be able to acces
 <h2 id="adding-aws-resources-to-your-environment">Adding AWS resources to your environment</h2><p>Through the <a href="https://github.com/ministryofjustice/cloud-platform-environments/">cloud-platform-environments</a> repository, you can provision AWS resources for your environments. This is done using terraform and more specifically, terraform modules we provide for use on the Cloud Platform.</p>
 <p>The documentation for the modules lives in each module&rsquo;s repository and you can find a list of the available ones below.</p>
 <h3 id="available-modules">Available modules</h3><p>The updated list of terraform modules provided by the MoJ are available here: <a href="https://github.com/ministryofjustice/cloud-platform#terraform-modules">Terraform Modules</a></p>
-<div class="highlight"><pre class="highlight plaintext"><code>!!!  WARNING  !!!
-
-Be aware that the latest versions of these modules will only be compatible
-with Live-1.
-
-If you are planing on deploying them against Live-0, please read their
-respective READMEs carefully for instruction.
-
-</code></pre></div><h3 id="usage">Usage</h3><p>In each terraform module repository, you will find a directory named <code>example</code> which includes sample configuration for use in Cloud Platform.</p>
+<h3 id="usage">Usage</h3><p>In each terraform module repository, you will find a directory named <code>example</code> which includes sample configuration for use in Cloud Platform.</p>
 <p>In your namespace&rsquo;s path in the <a href="https://github.com/ministryofjustice/cloud-platform-environments/">cloud-platform-environments</a> repository, create a directory called <code>resources</code> (if you have not created one already) and refer to the module&rsquo;s example to define your resources.</p>
 <p>Each example will have some global configuration defined, however, this should only be declared once, regardless of the number of modules used:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>terraform {
@@ -1972,7 +1957,6 @@ run Rails.application
 <h4 id="accessing-kibana">Accessing Kibana</h4><p>The Cloud Platform collects, indexes and presents your application and system log data enabling you to query using Kibana’s standard query language (based on Lucene query syntax).</p>
 <p>To access Kibana, follow the appropriate link below and authenticate with your GitHub credentials:</p>
 <h5 id="live-1-cluster">Live-1 Cluster</h5><p><a href="https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana">https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana</a></p>
-<h5 id="live-0-cluster">Live-0 Cluster</h5><p><a href="https://kibana.apps.cloud-platform-live-0.k8s.integration.dsd.io/_plugin/kibana/">https://kibana.apps.cloud-platform-live-0.k8s.integration.dsd.io/plugin/kibana/</a></p>
 <h4 id="using-kibana">Using Kibana</h4><p>As a quick example, we will filter down to the logs of a particular environment.</p>
 <p>1) On the Kibana dashboard, select the &lsquo;Discover&rsquo; tab.</p>
 <p>2) Select &#39;Add a filter +&rsquo;</p>
@@ -2060,8 +2044,6 @@ The environment variables you will need to replace are as follows:</p>
       </div>
 <div style="height:1px;font-size:1px;">&nbsp;</div>
 <p>After triggering the CircleCI pipeline, your application should now deploy into your new environment.</p>
-<h3 id="deleting-your-live-0-deployment">Deleting your Live-0 deployment</h3><p>The last thing you will need to do is to delete your application from the <code>live-0</code> cluster.</p>
-<p>Please see the documentation on <a href="/tasks.html#cleaning-up">cleaning up within the Cloud Platform</a>.</p>
 <h3 id="other-considerations">Other considerations</h3><h4 id="podsecuritypolicy">PodSecurityPolicy</h4><p>In the <code>live-1</code> cluster we are introducing a restrictive <a href="https://kubernetes.io/docs/concepts/policy/pod-security-policy/"><code>PodSecurityPolicy</code></a> as part of our effort to harden the cluster and provide a stable, secure and reliable service.</p>
 <p>The major change this brings is that root containers are not allowed to run. What this means is that the containers that run on the platform need to run as a non-root user. The <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/9ad6caf101cc21117742e5ab2cbe5507efd54efd/rails-app/Dockerfile">solution</a> is straightforward for images we build: by using the <code>USER</code> directive in the <code>Dockerfile</code> with a <strong>numeric uid</strong>.</p>
 <p>Sometimes we use images built by third parties which may or may not have taken the steps to build them as non-root images. One such very common example is nginx from the dockerhub library. If you need to run an nginx container we recommend that you use the <a href="https://github.com/bitnami/bitnami-docker-nginx"><code>bitnami/nginx</code></a> image.</p>
@@ -2504,10 +2486,7 @@ status:
 <h4 id="outbound-ip-whitelisting">Outbound IP Whitelisting</h4><h5 id="nat-gateways">NAT Gateways</h5><p>Many applications use third-party tools for a variety of reasons, and many of these tools require IP Whitelisting.</p>
 <p>The Cloud Platform uses NAT Gateways as its external IP Endpoints.</p>
 <p>The IP addresses for the clusters are as follows:</p>
-<h6 id="nat-gateways-live-0-cluster">Live-0 Cluster</h6><div class="highlight"><pre class="highlight plaintext"><code>52.17.133.167
-34.251.93.81
-34.247.134.240
-</code></pre></div><h6 id="nat-gateways-live-1-cluster">Live-1 Cluster</h6><div class="highlight"><pre class="highlight plaintext"><code>35.178.209.113
+<h6 id="nat-gateways-live-1-cluster">Live-1 Cluster</h6><div class="highlight"><pre class="highlight plaintext"><code>35.178.209.113
 3.8.51.207
 35.177.252.54
 </code></pre></div>
