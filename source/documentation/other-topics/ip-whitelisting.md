@@ -45,7 +45,7 @@ Testing with the annotation set:
 ```
 curl -v -H "Host: my-app.apps.live-1.cloud-platform.service.justice.gov.uk" <HOST-IP>
 ```
-Will return a "403 forbidden" status 
+Will return a "403 forbidden" status
 
 #### Outbound IP Whitelisting
 
@@ -56,13 +56,6 @@ Many applications use third-party tools for a variety of reasons, and many of th
 The Cloud Platform uses NAT Gateways as its external IP Endpoints.
 
 The IP addresses for the clusters are as follows:
-
-###### Live-0 Cluster
-```
-52.17.133.167
-34.251.93.81
-34.247.134.240
-```
 
 ###### Live-1 Cluster
 ```

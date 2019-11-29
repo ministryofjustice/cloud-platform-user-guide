@@ -32,7 +32,6 @@ Live clusters are those available to users:
 
 | Cluster Name | Login page |
 | ------------ | ---------- |
-| `cloud-platform-live-0` | [https://login.apps.cloud-platform-live-0.k8s.integration.dsd.io/](https://login.apps.cloud-platform-live-0.k8s.integration.dsd.io/) |
 | `live-1.cloud-platform` | [https://login.cloud-platform.service.justice.gov.uk/](https://login.cloud-platform.service.justice.gov.uk/) |
 
 <div style="height:1px;font-size:1px;">&nbsp;</div>
@@ -88,6 +87,5 @@ Once you are ready to deploy applications you will need to create an environment
 [Kuberos]: https://github.com/negz/kuberos
 [kubeconfig]: https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/
 [multiple-clusters]: https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/
-[live-0-login]: https://login.apps.cloud-platform-live-0.k8s.integration.dsd.io/
 [live-1-login]: https://login.apps.live-1.cloud-platform.service.justice.gov.uk/
 [kubectl-cheatsheet]: https://kubernetes.io/docs/reference/kubectl/cheatsheet/

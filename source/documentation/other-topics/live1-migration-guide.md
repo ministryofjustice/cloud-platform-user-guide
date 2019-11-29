@@ -72,12 +72,6 @@ The environment variables you will need to replace are as follows:
 
 After triggering the CircleCI pipeline, your application should now deploy into your new environment.
 
-### Deleting your Live-0 deployment
-
-The last thing you will need to do is to delete your application from the `live-0` cluster.
-
-Please see the documentation on [cleaning up within the Cloud Platform][ug-cleaning-up].
-
 ### Other considerations
 
 #### PodSecurityPolicy

@@ -13,9 +13,6 @@ To access Kibana, follow the appropriate link below and authenticate with your G
 ##### Live-1 Cluster
 [https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana](https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana)
 
-##### Live-0 Cluster
-[https://kibana.apps.cloud-platform-live-0.k8s.integration.dsd.io/plugin/kibana/](https://kibana.apps.cloud-platform-live-0.k8s.integration.dsd.io/_plugin/kibana/)
-
 #### Using Kibana
 
 As a quick example, we will filter down to the logs of a particular environment.
