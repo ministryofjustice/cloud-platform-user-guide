@@ -60,7 +60,7 @@ resource "kubernetes_secret" "example_route53_zone_sec" {
 
 ### Creating the resource
 
-Make sure to replace the placeholders and example values above with relevant ones. If you are refering from variables in variables.tf, replace with `var.VARIABLE NAME`. Commit your changes to a branch and raise a pull request.
+Make sure to replace the placeholders and example values above with relevant ones. If you are referring from variables in variables.tf, replace with `var.VARIABLE NAME`. Commit your changes to a branch and raise a pull request.
 Once approved, you can merge and the changes will be applied.
 Shortly after, to confirm the zone has been created, you should be able to access the `Zone_ID` as Secret on kubernetes in your namespace.
 
