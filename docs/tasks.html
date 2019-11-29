@@ -915,7 +915,7 @@ provider "aws" {
 <div class="highlight"><pre class="highlight plaintext"><code>resource "aws_route53_zone" "example_team_route53_zone" {
   name = "YOUR DOMAIN GOES HERE"
 
-  tags {
+  tags = {
     business-unit          = "example-bu"
     application            = "example-app"
     is-production          = "false"
@@ -931,12 +931,12 @@ resource "kubernetes_secret" "example_route53_zone_sec" {
     namespace = "YOUR KUBERNETES NAMESPACE GOES HERE"
   }
 
-  data {
-    zone_id   = "${aws_route53_zone.example_team_route53_zone.zone_id}"
+  data = {
+    zone_id   = aws_route53_zone.example_team_route53_zone.zone_id
   }
 }
 
-</code></pre></div><h3 id="creating-the-resource">Creating the resource</h3><p>Make sure to replace the placeholders and example values above with relevant ones, commit your changes to a branch and raise a pull request.
+</code></pre></div><h3 id="creating-the-resource">Creating the resource</h3><p>Make sure to replace the placeholders and example values above with relevant ones. If you are referring from variables in variables.tf, replace with <code>var.VARIABLE NAME</code>. Commit your changes to a branch and raise a pull request.
 Once approved, you can merge and the changes will be applied.
 Shortly after, to confirm the zone has been created, you should be able to access the <code>Zone_ID</code> as Secret on kubernetes in your namespace.</p>
 <p>Please raise a <a href="http://goo.gl/msfGiS">support ticket</a> with the Cloud Platform.</p>
