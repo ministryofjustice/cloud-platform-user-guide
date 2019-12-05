@@ -172,7 +172,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  govuk_tech_docs (= 1.8.3)
+  govuk_tech_docs
 
 RUBY VERSION
    ruby 2.6.2p47

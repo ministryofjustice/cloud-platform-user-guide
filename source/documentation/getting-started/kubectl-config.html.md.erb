@@ -1,8 +1,10 @@
 ---
-category: Setup
-expires: 2018-01-31
+title: How to use `kubectl` to connect to the cluster
+last_reviewed_on: 2019-10-28
+review_in: 3 months
 ---
-## How to use `kubectl` to connect to the cluster
+
+# <%= current_page.data.title %>
 
 The aim of this guide is to provide a walkthrough of the installation of the `kubectl` command-line tool, the official command-line tool for Kubernetes, as well as setting it up by authenticating with the Cloud Platform cluster.
 
@@ -79,7 +81,7 @@ When setting up multiple clusters, this will generate conflicts so you should re
 
 Now that you've setup `kubectl`, you might want to look at this handy [cheatsheet][kubectl-cheatsheet].
 
-Once you are ready to deploy applications you will need to create an environment first.
+Once you are ready to deploy applications you will need to [create an environment](env-create.html) first.
 
 [kubectl-install]: https://kubernetes.io/docs/tasks/tools/install-kubectl
 [OIDC]: https://kubernetes.io/docs/reference/access-authn-authz/authentication/#openid-connect-tokens

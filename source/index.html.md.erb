@@ -3,4 +3,50 @@ title: Cloud Platform User Guide
 weight: 10
 ---
 
-<%= partial 'documentation/index' %>
+# <%= current_page.data.title %>
+Write something about this user guide
+
+## Learn concepts
+
+- [Kubernetes](documentation/concepts/kubernetes.html)
+- [Migrate from Template Deploy](documentation/concepts/migrate-from-td.html)
+- [Namespace/Container Resource Limits](documentation/concepts/namespace-limits.html)
+- [OFFICIAL SENSITIVE - can my service be hosted on the Cloud Platform?](documentation/concepts/official-sensitive.html)
+
+
+
+### Brand new to Kubernetes/The Cloud Platform?
+
+The [Deploying a Hello World application](documentation/deploying-an-app/helloworld-app-deploy.html) tutorial is a good place to start.
+
+## "How to" guides
+- [How to use kubectl to connect to the cluster](documentation/getting-started/kubectl-config.html)
+- [Creating a Cloud Platform Environment](documentation/getting-started/env-create.html)
+- [Creating an ECR repository](documentation/getting-started/ecr-setup.html)
+- [Creating a Route 53 Hosted Zone](documentation/other-topics/route53-zone.html)
+- [Adding AWS resources to your environment](documentation/deploying-an-app/add-aws-resources.html)
+- [Deploying a ‘Hello World’ application to the Cloud Platform]()
+- [Deploying a multi-container application to the Cloud Platform](documentation/deploying-an-app/multicontainer-app-deploy.html)
+- [Deploying with Helm and CircleCI](documentation/deploying-an-app/deploying-helm-ci.html)
+    * [Deploying an application to the Cloud Platform with Helm](documentation/deploying-an-app/deploying-heml-ci.html)
+    * [Continuous Deployment of an application using CircleCI and Helm](documentation/deploying-an-app/use-circleci-to-upgrade-app.html)
+- [How do I run Rails database migrations?](documentation/deploying-an-app/running-rails-migrations.html)
+- [Adding a secret to an application]
+- [Creating Pingdom checks]
+- [Cleaning up your namespace and aws resources]
+- [Monitoring Applications using the Cloud Platform Prometheus, AlertManager and Grafana]
+- [Application Log Collection and Storage]
+
+## Getting help
+- [Ask Cloud Platform](documentation/reference/getting-help.html)
+
+## Adding to the guide
+
+If there's something missing, please either let us know and we'll add a new
+article, or if you're comfortable writing one yourself, PRs will be gratefully
+received. Details on how to get in touch are in the "Getting Help" section, and
+the "GithHub" link at the top right will take you to the repository for this
+guide.
+
+[tech-docs-template]: https://github.com/alphagov/tech-docs-template
+
