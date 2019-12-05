@@ -78,7 +78,7 @@ echo QWxhZGRpbjpvcGVuIHNlc2FtZQ== | base64 --decode; echo
 
 ### Managing ECR Repository
 
-Maximum number of images per repository is default to 1000 images for Amazon Elastic Container Registry. If a new image is created and pushed to ECR on every code change. As a result, repositories tend to quickly fill up with new revisions. It is important to discover and delete the stale images. In this way, repositories can be kept clean and manageable.
+Maximum number of images per repository is default to 10,000 images for Amazon Elastic Container Registry. If a new image is created and pushed to ECR on every code change. As a result, repositories tend to quickly fill up with new revisions. It is important to discover and delete the stale images. In this way, repositories can be kept clean and manageable.
 
 You can delete an image with the AWS CLI using this [guide][delete-ecr-image].
 
