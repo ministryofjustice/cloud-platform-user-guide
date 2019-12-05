@@ -2,6 +2,8 @@
 
 When things are not working correctly, there are several techniques to help you figure out what's going wrong.
 
+> You might find this [visual guide] to troubleshooting kubernetes deployments useful.
+
 #### Pods / Events
 
 Generally, the first step will be:
@@ -262,3 +264,4 @@ Depending on the cause of your issue you'll need to do one of the following:
 
 [Kibana]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/kibana#/home?_g=()
 [application logging]: tasks.html#accessing-application-log-data
+[visual guide]: https://learnk8s.io/troubleshooting-deployments
