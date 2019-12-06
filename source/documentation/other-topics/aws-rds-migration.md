@@ -1,15 +1,13 @@
 ### Migrating an RDS instance
 
 This guide covers one way of migrating an RDS instance from one AWS account to another.
-This is a standard approach using`pg_dump` and `psql`.
+This is a standard approach using`pg_dump` and `psql`.  
 
-**The only difference between the processes is at Step 3**
 
 This guide assumes the migration comply with the following :
 
  - The migration happens from a _source_ postresql RDS instance to a _target_ postresql RDS instance
  - Elevated & short-lived sets of postgres credentials are available for both _source_ and _target_
-
 
 
 #### Overview 
