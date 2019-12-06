@@ -1,18 +1,14 @@
 ### Migrating an RDS instance
 
-This guide covers different ways of migrating RDS instances from one AWS account to another:
-
- - AWS Database Migration Service (DMS)   
- - Pure `pg_dump` & `psql`     
+This guide covers one way of migrating an RDS instance from one AWS account to another.
+This is a standard approach using`pg_dump` and `psql`.
 
 **The only difference between the processes is at Step 3**
 
 This guide assumes the migration comply with the following :
 
  - The migration happens from a _source_ postresql RDS instance to a _target_ postresql RDS instance
- - [DMS only] The _source_ RDS is running postgresql 9.4.9 or above
  - Elevated & short-lived sets of postgres credentials are available for both _source_ and _target_
-
 
 
 
@@ -29,15 +25,6 @@ Using `pg_dump` and `psql`, this documents describes the migration process.
 **Using this tooling implies having a _source_ database downtime**. (As you don't want data being written to it while migrating it.)
 
 The steps including those tools will always be the same; on one side we export from source, on the target side we restore.
-
-##### DMS 
-
-AWS Database Migration Service (DMS) is useful to migrate data from a database to another, and *keep them unidirectionally in sync*.
-
-In  other words, DMS can only migrate data, but it ensures that any changes on _source_ will be replicated to _target_
-Note: any change to _target_ will not be replicated to _source_.
-
-Even if DMS is used to migrate the data, the postgres utilities are still needed to migrate the meta-data. (FK, sequences, etc.).
 
 ##### Pre-Data, Data, Post-Data
 
@@ -128,25 +115,7 @@ psql -U target_username \
 
 If using a local file is problematic, those two commands can be piped together (`|`)  
 
-
-
-#### Step 3 [ DMS ONLY ]  
-
-This step has to be done with the assistance of the Cloud Platform.
-
-The DMS stack is build using a terraform module. 
-
-Please refer to [this](https://github.com/ministryofjustice/cloud-platform-terraform-dms)
- repository to see the DMS module instructions:  
- [https://github.com/ministryofjustice/cloud-platform-terraform-dms](https://github.com/ministryofjustice/cloud-platform-terraform-dms)
-
-
-IF YOU HAVE FOLLOWED THAT STEP, GO STRAIGHT TO STEP 4
-
 #### Step 3 [ PURE PG_DUMP ]
-
-IF YOU HAVE FOLLOWED THE DMS STEP ABOVE (DMS), SKIP THIS ONE.
-
 
 Sequences are essential for your database to know what the latest increment of the primary keys is. Sequences are held in special tables that will not be migrated from step 1.
 
@@ -224,5 +193,4 @@ After a successful migration, we can clean up by :
 
  - Deleting the pod from STEP 1 
  - Disabling the network access from the live-1 cluster to the _source_ RDS
- - Remove the DMS stack (if applicable)
  - Revoke the temporary credentials created for the migration
