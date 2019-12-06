@@ -1,4 +1,8 @@
 <h3 id="troubleshooting-guide">Troubleshooting guide</h3><p>When things are not working correctly, there are several techniques to help you figure out what&rsquo;s going wrong.</p>
+
+<blockquote>
+<p>You might find this <a href="https://learnk8s.io/troubleshooting-deployments">visual guide</a> to troubleshooting kubernetes deployments useful.</p>
+</blockquote>
 <h4 id="pods-events">Pods / Events</h4><p>Generally, the first step will be:</p>
 <p><code>kubectl -n [your namespace] get pods</code></p>
 
