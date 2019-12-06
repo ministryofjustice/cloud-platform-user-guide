@@ -2092,18 +2092,12 @@ $ git-crypt unlock
 
 <h3 id="accessing-your-rds-database">Accessing your RDS database</h3><p>If you need to connect from your development machine to your RDS instance, you can find instructions on how to do so <a href="https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance#access-outside-the-cluster">here</a></p>
 
-<h3 id="migrating-an-rds-instance">Migrating an RDS instance</h3><p>This guide covers different ways of migrating RDS instances from one AWS account to another:</p>
-
-<ul>
-<li>AWS Database Migration Service (DMS)<br></li>
-<li>Pure <code>pg_dump</code> &amp; <code>psql</code><br></li>
-</ul>
-<p><strong>The only difference between the processes is at Step 3</strong></p>
+<h3 id="migrating-an-rds-instance">Migrating an RDS instance</h3><p>This guide covers one way of migrating an RDS instance from one AWS account to another.
+This is a standard approach using<code>pg_dump</code> and <code>psql</code>.</p>
 <p>This guide assumes the migration comply with the following :</p>
 
 <ul>
 <li>The migration happens from a <em>source</em> postresql RDS instance to a <em>target</em> postresql RDS instance</li>
-<li>[DMS only] The <em>source</em> RDS is running postgresql 9.4.9 or above</li>
 <li>Elevated &amp; short-lived sets of postgres credentials are available for both <em>source</em> and <em>target</em></li>
 </ul>
 <h4 id="migrating-an-rds-instance-overview">Overview</h4><h5 id="postgres-utilities">Postgres utilities</h5><p>It is possible to do a full database migration using only official CLI tools, provided by Postgres. 
@@ -2111,10 +2105,6 @@ Using <code>pg_dump</code> and <code>psql</code>, this documents describes the m
 <p><a href="https://www.postgresql.org/docs/9.4/app-pgdump.html">pg_dump</a></p>
 <p><strong>Using this tooling implies having a <em>source</em> database downtime</strong>. (As you don&rsquo;t want data being written to it while migrating it.)</p>
 <p>The steps including those tools will always be the same; on one side we export from source, on the target side we restore.</p>
-<h5 id="dms">DMS</h5><p>AWS Database Migration Service (DMS) is useful to migrate data from a database to another, and <em>keep them unidirectionally in sync</em>.</p>
-<p>In  other words, DMS can only migrate data, but it ensures that any changes on <em>source</em> will be replicated to <em>target</em>
-Note: any change to <em>target</em> will not be replicated to <em>source</em>.</p>
-<p>Even if DMS is used to migrate the data, the postgres utilities are still needed to migrate the meta-data. (FK, sequences, etc.).</p>
 <h5 id="pre-data-data-post-data">Pre-Data, Data, Post-Data</h5><p><code>pg_dump</code> can be used to export one big archive that can then be restored with <code>pg_restore</code>.
 One issue with that approach is the difficulty of troubleshooting migration issues.</p>
 <p>Since we are trying to make this process as clear as possible, the following guide is decomposing <code>pg_dump</code> into its three components :</p>
@@ -2164,14 +2154,7 @@ The command above stores the data in a local file.</p>
      -f sequences.sql
 
 </code></pre></div><p>If using a local file is problematic, those two commands can be piped together (<code>|</code>)</p>
-<h4 id="step-3-dms-only">Step 3 [ DMS ONLY ]</h4><p>This step has to be done with the assistance of the Cloud Platform.</p>
-<p>The DMS stack is build using a terraform module.</p>
-<p>Please refer to <a href="https://github.com/ministryofjustice/cloud-platform-terraform-dms">this</a>
- repository to see the DMS module instructions:<br>
- <a href="https://github.com/ministryofjustice/cloud-platform-terraform-dms">https://github.com/ministryofjustice/cloud-platform-terraform-dms</a></p>
-<p>IF YOU HAVE FOLLOWED THAT STEP, GO STRAIGHT TO STEP 4</p>
-<h4 id="step-3-pure-pg-dump">Step 3 [ PURE PG_DUMP ]</h4><p>IF YOU HAVE FOLLOWED THE DMS STEP ABOVE (DMS), SKIP THIS ONE.</p>
-<p>Sequences are essential for your database to know what the latest increment of the primary keys is. Sequences are held in special tables that will not be migrated from step 1.</p>
+<h4 id="step-3">Step 3</h4><p>Sequences are essential for your database to know what the latest increment of the primary keys is. Sequences are held in special tables that will not be migrated from step 1.</p>
 <p>First, to export,  we run :</p>
 <div class="highlight"><pre class="highlight plaintext"><code>pg_dump -U source_username \
      -h source_endpoint \
@@ -2210,7 +2193,6 @@ All of data is contained within the <code>post-data</code> section.</p>
 <ul>
 <li>Deleting the pod from STEP 1 </li>
 <li>Disabling the network access from the live-1 cluster to the <em>source</em> RDS</li>
-<li>Remove the DMS stack (if applicable)</li>
 <li>Revoke the temporary credentials created for the migration</li>
 </ul>
 
