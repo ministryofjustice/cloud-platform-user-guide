@@ -113,7 +113,7 @@ psql -U target_username \
 
 If using a local file is problematic, those two commands can be piped together (`|`)  
 
-#### Step 3 [ PURE PG_DUMP ]
+#### Step 3 
 
 Sequences are essential for your database to know what the latest increment of the primary keys is. Sequences are held in special tables that will not be migrated from step 1.
 
