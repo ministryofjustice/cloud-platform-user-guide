@@ -50,3 +50,7 @@ convert:
 	rm source/concepts.html.md.erb
 	rm source/reference.html.md.erb
 	rm source/tasks.html.md.erb
+	echo >> source/index.html.md.erb
+	echo >> source/index.html.md.erb
+	find source/documentation -name '*.html.md.erb' | xargs -n 1 bin/add-to-index.rb
+
