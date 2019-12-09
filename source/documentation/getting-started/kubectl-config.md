@@ -1,7 +1,3 @@
----
-category: Setup
-expires: 2018-01-31
----
 ## How to use `kubectl` to connect to the cluster
 
 The aim of this guide is to provide a walkthrough of the installation of the `kubectl` command-line tool, the official command-line tool for Kubernetes, as well as setting it up by authenticating with the Cloud Platform cluster.
