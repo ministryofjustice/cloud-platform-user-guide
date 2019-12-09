@@ -40,3 +40,8 @@ build: .built-docker-image
 		$(IMAGE) bundle exec middleman build --build-dir docs
 	touch docs/.nojekyll
 	echo $(DOMAIN) > docs/CNAME
+
+# Convert the user guide to a folder-based structure
+convert:
+	find source/documentation/ -name '*.md' | xargs -n 1 bin/convert-files-for-new-structure.rb
+	find source/documentation/ -name '*.md' | xargs rm
