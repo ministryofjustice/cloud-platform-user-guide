@@ -14,7 +14,7 @@ end
 def convert_header_to_block(content)
   lines = content.strip.split("\n")
 
-  title = lines.shift.sub(/^# /, '')
+  title = lines.shift.sub(/^#+ /, '')
 
   header = <<EOF
 ---
