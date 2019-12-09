@@ -1,104 +1,28 @@
 ## Cleaning up
 
-When you have finished with a namespace, please clean it up, along with any
-additional AWS resources you created. This helps to keep the cloud platform
-repositories well-organised, and speeds up deployments and changes to the
-cluster (because the build process doesn't have to spend time managing
-unnecessary resources). It also helps to keep our hosting costs down.
+When you have finished with a namespace, please clean it up (i.e. remove it).
 
-The resources to be removed are:
+This helps to keep the cloud platform repositories well-organised, and speeds
+up deployments and changes to the cluster (because the build process doesn't
+have to spend time managing unnecessary resources). It also deletes the
+associated AWS resources, and helps to keep our hosting costs down.
 
-* The AWS ECR which stores your docker images
-* Your namespace in the cluster. This contains all of the pods, containers and
-  other cluster resources for your application.
-* Any other AWS resources (e.g. RDS/Elasticache instances, S3 buckets, etc.)
+To delete a namespace and all its associated AWS resources, simply raise a
+[PR] which deletes the associated folder from the [cloud-platform-environments][envrepo].
 
-Cleaning up a namespace is a multi-stage process, as follows:
+So, if your namespace is called `mynamespace`, then you need to raise a [PR]
+deleting the folder:
 
- 1. Delete any CI/CD pipeline you have created, which deploys into your
-   namespace. This should be done first, so that anything you delete is not
+     namespaces/live-1.cloud-platform.service.justice.gov.uk/mynamespace
+
+...and all its contents, from the [cloud-platform-environments][envrepo].
+
+Merging this [PR] will trigger an automated pipeline which will delete all of
+your namespace's AWS resources, followed by the namespace itself.
+
+> NB: If you have set up a CI/CD pipeline, which deploys into your namespace,
+then this should be deleted first, so that anything you delete later is not
 immediately recreated by your build pipeline.
- 2. Tell terraform to delete the AWS resources it created for you.
- 3. Remove your namespace code from the [cloud-platform-environments][envrepo] repository.
- 4. Delete all of the kubernetes resources inside your namespace.
- 5. Delete your namespace from the cluster.
-
-The first step depends on how you have set up your CI/CD pipeline, and is not
-covered here.
-
-### 2. Tell terraform to delete your AWS resources
-
-AWS resources are created by adding terraform code to the `resources` directory
-in your namespace's folder in the [cloud-platform-environments][envrepo] repository:
-
-     cloud-platform-environments/namespaces/live-1.cloud-platform.service.justice.gov.uk/[your namespace]/resources/
-
-To get terraform to delete the resources it created, you need to delete all the
-`\*.tf` files in this directory **except `main.tf`**
-
-If you delete `main.tf` at this point, terraform has no way of knowing it is
-responsible for managing any resources in the namespace, so it will not delete
-anything. By leaving `main.tf` but nothing else, you are telling terraform that
-it should manage resources for this namespace, but that there should be no
-resources, so terraform will delete any resources that do exist.
-
-Once you have deleted the other `*.tf` files from your namespace's resources
-folder, raise a [PR] to get your changes merged. As soon as this happens, the
-cloud platform build pipeline will run, and your AWS resources will be deleted.
-
-NB: In this PR, **do not remove** the yaml files which define your
-namespace. That must be done in a subsequent step.
-
-### 3. Remove your namespace code from the cloud-platform-environments repository
-
-After your change to delete all the `*.tf` files except `main.tf` has been
-merged, please raise an additional [PR] removing the whole of your namespace code
-from the [cloud-platform-environments][envrepo] repository.
-
-i.e. deleting the whole of the directory:
-
-     cloud-platform-environments/namespaces/live-1.cloud-platform.service.justice.gov.uk/[your namespace]
-
-Merging this [PR] will prevent the cloud platform build pipeline from recreating
-your namespace, after it is deleted.
-
-### 4. Delete all of the kubernetes resources inside your namespace.
-
-In your working copy of your application code, you can use the kubernetes
-deployment yaml files to delete all the kubernetes resources within your
-namespace.
-
-Assuming your current working directory is a working copy of your application,
-and that your kubernetes deployment yaml files are in a directory called
-`kubernetes_deploy`, immediately below your current working directory, you
-would run the following command to delete everything within your namespace.
-
-    kubectl delete --filename kubernetes_deploy --namespace [your namespace]
-
-This is analogous to using `kubectl apply` to create the resources from your
-YAML files, but it will delete all the named resources.
-
-If you are using [Helm][], the equivalent command is:
-
-    helm delete --purge
-
-### 5. Delete your namespace from the cluster.
-
-Deleting a namespace requires admin access to the cluster.
-
-Please raise a [PR] against the [cloud-platform-environments][envrepo] repository,
-specifying the namespace you would like the team to delete.
-
-### Summary
-
-Removing your namespace and associated resources is a multi-stage process:
-
-1. Stop any CI/CD process from recreating everything
-2. Get terraform to delete AWS resources
-3. Remove the code that defines your namespace
-4. Remove everything inside the namespace
-5. Tell the cloud platform team to delete the namespace
 
 [envrepo]: https://github.com/ministryofjustice/cloud-platform-environments
 [PR]: https://help.github.com/en/articles/about-pull-requests
-[Helm]: https://helm.sh
