@@ -7,11 +7,8 @@ review_in: 3 months
 # <%= current_page.data.title %>
 
 ## Who is this user guide for?
-This user guide is for the teams who are using the Minsitry of Justice Cloud platform or 
-wanted to deploy and manage containerized applications 
-on the cloud platform. The platform manages the infrastructure	
-that your application runs on and provides tooling for teams to deploy and	
-manage their applications on that infrastructure.
+This user guide is for the teams who deployed their applications in Minsitry of Justice Cloud platform or 
+want/migrate to deploy and manage their applications on the cloud platform. The platform manages the infrastructure that your application runs on and provides tooling for teams to deploy and manage their applications on that infrastructure.
 
 ##Quickstart
 [Deploy your first Hello World application](documentation/deploying-an-app/helloworld-app-deploy.html) 
@@ -23,7 +20,7 @@ manage their applications on that infrastructure.
 - [Creating a Route 53 Hosted Zone](documentation/other-topics/route53-zone.html)
 - [Adding AWS resources to your environment](documentation/deploying-an-app/add-aws-resources.html)
 - [How do I run Rails database migrations?](documentation/deploying-an-app/running-rails-migrations.html)
-- [Cleaning up](documentation/deploying-an-app/cleaning-up.html)
+- [Cleaning up your namespace](documentation/deploying-an-app/cleaning-up.html)
 
 ## Learn concepts
 
@@ -34,16 +31,26 @@ manage their applications on that infrastructure.
 
 ## Tutorials
  - [Deploying a multi-container application to the Cloud Platform](documentation/deploying-an-app/multicontainer-app-deploy.html)
- ### Deploying with Helm and CircleCI
+
+### Deploying with Helm and CircleCI
  - [Prerequisite for Live-1 deployment](documentation/deploying-an-app/prerequisite.html)
  - [Continuous Deployment of an application using CircleCI and Helm](documentation/deploying-an-app/use-circleci-to-upgrade-app.html)
  - [Deploying an application to the Cloud Platform with Helm](documentation/deploying-an-app/app-deploy-helm.html)
+
 ### Monitoring applications
 - [Getting application metrics into Prometheus](documentation/monitoring-an-app/application-metrics.html)
 - [Using the Cloud Platform Prometheus, AlertManager and Grafana](documentation/monitoring-an-app/prometheus.html)
 - [Creating your own custom alerts](documentation/monitoring-an-app/how-to-create-alarms.html)
 - [Creating Pingdom checks](documentation/monitoring-an-app/how-to-create-pingdom-checks.html)
 
+### Application logging
+- [Application Log Collection and Storage](documentation/logging-an-app/log-collection-and-storage.html)
+- [Accessing Application Log Data](documentation/logging-an-app/access-logs.html)
+
+### Migrating from Live-0 to Live-1
+ - [Live-1 migration guide](documentation/other-topics/live1-migration-guide.html)
+
+### Other topics
  - [Adding a secret to an application](documentation/deploying-an-app/add-secrets-to-deployment.html)
  - [Cloud Platform Support](documentation/other-topics/cloud-platform-support.html)
  - [Zero Downtime Deployments](documentation/other-topics/zero-downtime-deployment.html)
@@ -60,7 +67,6 @@ manage their applications on that infrastructure.
  - [Applying a Maintenance Page](documentation/other-topics/maintenance-page.html)
  - [Kubectl quick reference](documentation/other-topics/quick-reference.html)
  - [StatefulSets (Pods with Persistent Volumes)](documentation/other-topics/statefulsets.html)
- - [Migrating from Live-0 to Live-1](documentation/other-topics/live1-migration-guide.html)
  - [Troubleshooting guide](documentation/other-topics/troubleshooting.html)
  - [Creating a Route 53 Hosted Zone](documentation/other-topics/route53-zone.html)
  - [Migrating an RDS instance](documentation/other-topics/aws-rds-migration.html)
@@ -70,6 +76,10 @@ manage their applications on that infrastructure.
  - [Migrating an S3 bucket](documentation/other-topics/s3-bucket-migration.html)
  - [Kibana Circleci Monitoring Dashboards](documentation/other-topics/kibana-circleci-monitoring-dashboards.html)
  
+## Reference
+- [Cloud Platform Operational Processes](documentation/reference/operational-processes.html)
+- [Cloud Platform Support](documentation/reference/cloud-platform-support.html)
+- [Kubernetes resources](documentation/reference/kubernetes.html)
 
 ## Getting help
 - [Ask Cloud Platform](documentation/reference/getting-help.html)
@@ -84,13 +94,3 @@ guide.
 
 [tech-docs-template]: https://github.com/alphagov/tech-docs-template
 
-
- 
-
-
-
- - [Cloud Platform Support](documentation/reference/cloud-platform-support.html)
- - [Getting Help](documentation/reference/getting-help.html)
- - [Kubernetes resources](documentation/reference/kubernetes.html)
- - [Cloud Platform Operational Processes](documentation/reference/operational-processes.html)
- - [Cloud platform user guide](documentation/index.html)
