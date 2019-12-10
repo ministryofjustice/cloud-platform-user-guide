@@ -6,7 +6,7 @@
     <meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
       <meta name="robots" content="noindex">
 
-    <title>Cloud Platform User Guide</title>
+    <title>Cloud platform user guide | Cloud Platform User Guide</title>
 
     <!--[if gt IE 8]><!--><link href="/stylesheets/screen.css" rel="stylesheet" media="screen" /><!--<![endif]-->
     <!--[if lte IE 8]><link href="/stylesheets/screen-old-ie.css" rel="stylesheet" media="screen" /><![endif]-->
@@ -19,13 +19,13 @@
 
       <meta property="og:image" content="https://user-guide.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
       <meta property="og:site_name" content="Cloud Platform User Guide" />
-      <meta property="og:title" content="Cloud Platform User Guide" />
+      <meta property="og:title" content="Cloud platform user guide" />
       <meta property="og:type" content="object" />
       <meta property="og:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/" />
       <meta property="twitter:card" content="summary" />
       <meta property="twitter:domain" content="user-guide.cloud-platform.service.justice.gov.uk" />
       <meta property="twitter:image" content="https://user-guide.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
-      <meta property="twitter:title" content="Cloud Platform User Guide" />
+      <meta property="twitter:title" content="Cloud platform user guide | Cloud Platform User Guide" />
       <meta property="twitter:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/" />
 
     
@@ -94,470 +94,51 @@
 </div>
 
               <a href="#" class="toc__close js-toc-close" aria-controls="toc" aria-label="Hide table of contents"></a>
-              <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading" data-module="collapsible-navigation">
+              <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading">
                       <ul>
   <li>
-    <a href="/#cloud-platform-user-guide">Cloud platform user guide</a>
+    <a href="#cloud-platform-user-guide">Cloud platform user guide</a>
     <ul>
       <li>
-        <a href="/#using-this-guide">Using this guide</a>
+        <a href="#who-is-this-user-guide-for">Who is this user guide for?</a>
       </li>
       <li>
-        <a href="/#brand-new-to-kubernetes-the-cloud-platform">Brand new to Kubernetes/The Cloud Platform?</a>
+        <a href="#quickstart">Quickstart</a>
       </li>
       <li>
-        <a href="/#adding-to-the-guide">Adding to the guide</a>
+        <a href="#how-to-guides">How-to guides</a>
       </li>
-    </ul>
-  </li>
-</ul>
-<ul>
-  <li>
-    <a href="/concepts.html#concepts">Concepts</a>
-    <ul>
       <li>
-        <a href="/concepts.html#kubernetes">Kubernetes</a>
+        <a href="#learn-concepts">Learn concepts</a>
+      </li>
+      <li>
+        <a href="#tutorials">Tutorials</a>
         <ul>
           <li>
-            <a href="/concepts.html#resources">Resources</a>
+            <a href="#deploying-with-helm-and-circleci">Deploying with Helm and CircleCI</a>
+          </li>
+          <li>
+            <a href="#monitoring-applications">Monitoring applications</a>
+          </li>
+          <li>
+            <a href="#application-logging">Application logging</a>
+          </li>
+          <li>
+            <a href="#migrating-from-live-0-to-live-1">Migrating from Live-0 to Live-1</a>
+          </li>
+          <li>
+            <a href="#other-topics">Other topics</a>
           </li>
         </ul>
       </li>
       <li>
-        <a href="/concepts.html#namespace-container-resource-limits">Namespace/Container Resource Limits</a>
-        <ul>
-          <li>
-            <a href="/concepts.html#memory-versus-cpu">Memory versus CPU</a>
-          </li>
-          <li>
-            <a href="/concepts.html#namespace-request-limits">Namespace request limits</a>
-          </li>
-          <li>
-            <a href="/concepts.html#namespace-usage-report">Namespace Usage Report</a>
-          </li>
-          <li>
-            <a href="/concepts.html#container-request-limits">Container request limits</a>
-          </li>
-          <li>
-            <a href="/concepts.html#resources-requested-versus-resources-used">Resources Requested versus Resources Used</a>
-          </li>
-        </ul>
+        <a href="#reference">Reference</a>
       </li>
       <li>
-        <a href="/concepts.html#migrating-to-the-cloud-platform-from-template-deploy">Migrating to the Cloud Platform from Template Deploy</a>
-        <ul>
-          <li>
-            <a href="/concepts.html#production-infrastructure">Production infrastructure</a>
-          </li>
-          <li>
-            <a href="/concepts.html#network-traffic-whitelisting">Network traffic whitelisting</a>
-          </li>
-          <li>
-            <a href="/concepts.html#dns-changes">DNS changes</a>
-          </li>
-          <li>
-            <a href="/concepts.html#aws-access">AWS access</a>
-          </li>
-          <li>
-            <a href="/concepts.html#aws-region">AWS region</a>
-          </li>
-          <li>
-            <a href="/concepts.html#ssl">SSL</a>
-          </li>
-          <li>
-            <a href="/concepts.html#connections-to-from-service-ips">Connections to/from service IPs</a>
-          </li>
-          <li>
-            <a href="/concepts.html#application-architecture">Application Architecture</a>
-          </li>
-          <li>
-            <a href="/concepts.html#additional-features">Additional features</a>
-          </li>
-          <li>
-            <a href="/concepts.html#obsoleted-features">Obsoleted features</a>
-          </li>
-        </ul>
+        <a href="#getting-help">Getting help</a>
       </li>
       <li>
-        <a href="/concepts.html#quot-official-sensitive-quot-can-my-service-be-hosted-on-the-cloud-platform">“OFFICIAL SENSITIVE” - can my service be hosted on the Cloud Platform?</a>
-      </li>
-    </ul>
-  </li>
-</ul>
-<ul>
-  <li>
-    <a href="/tasks.html#tasks">Tasks</a>
-    <ul>
-      <li>
-        <a href="/tasks.html#how-to-use-kubectl-to-connect-to-the-cluster">How to use kubectl to connect to the cluster</a>
-        <ul>
-          <li>
-            <a href="/tasks.html#installation">Installation</a>
-          </li>
-          <li>
-            <a href="/tasks.html#authentication">Authentication</a>
-          </li>
-          <li>
-            <a href="/tasks.html#where-to-go-from-here">Where to go from here?</a>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <a href="/tasks.html#creating-a-cloud-platform-environment">Creating a Cloud Platform Environment</a>
-        <ul>
-          <li>
-            <a href="/tasks.html#introduction">Introduction</a>
-          </li>
-          <li>
-            <a href="/tasks.html#objective">Objective</a>
-          </li>
-          <li>
-            <a href="/tasks.html#create-an-environment">Create an environment</a>
-          </li>
-          <li>
-            <a href="/tasks.html#accessing-your-environments">Accessing your environments</a>
-          </li>
-          <li>
-            <a href="/tasks.html#next-steps">Next steps</a>
-          </li>
-          <li>
-            <a href="/tasks.html#environment-definition-files">Environment definition files</a>
-          </li>
-          <li>
-            <a href="/tasks.html#namespace-resource-limits">Namespace resource limits</a>
-          </li>
-          <li>
-            <a href="/tasks.html#namespace-yaml-files">Namespace YAML files</a>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <a href="/tasks.html#creating-an-ecr-repository">Creating an ECR repository</a>
-        <ul>
-          <li>
-            <a href="/tasks.html#creating-an-ecr-repository-introduction">Introduction</a>
-          </li>
-          <li>
-            <a href="/tasks.html#accessing-the-credentials">Accessing the credentials</a>
-          </li>
-          <li>
-            <a href="/tasks.html#managing-ecr-repository">Managing ECR Repository</a>
-          </li>
-          <li>
-            <a href="/tasks.html#creating-an-ecr-repository-next-steps">Next steps</a>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <a href="/tasks.html#creating-a-route-53-hosted-zone">Creating a Route 53 Hosted Zone</a>
-        <ul>
-          <li>
-            <a href="/tasks.html#overview">Overview</a>
-          </li>
-          <li>
-            <a href="/tasks.html#creating-a-route-53-hosted-zone-pre-requisites">Pre-Requisites</a>
-          </li>
-          <li>
-            <a href="/tasks.html#terraform-files">Terraform files</a>
-          </li>
-          <li>
-            <a href="/tasks.html#creating-the-resource">Creating the resource</a>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <a href="/tasks.html#adding-aws-resources-to-your-environment">Adding AWS resources to your environment</a>
-        <ul>
-          <li>
-            <a href="/tasks.html#available-modules">Available modules</a>
-          </li>
-          <li>
-            <a href="/tasks.html#usage">Usage</a>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <a href="/tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">Deploying a ‘Hello World’ application to the Cloud Platform</a>
-        <ul>
-          <li>
-            <a href="/tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform-overview">Overview</a>
-          </li>
-          <li>
-            <a href="/tasks.html#prerequisites">Prerequisites</a>
-          </li>
-          <li>
-            <a href="/tasks.html#step-1-build-your-docker-image">Step 1 - Build your docker image</a>
-          </li>
-          <li>
-            <a href="/tasks.html#step-2-push-the-image-to-your-ecr">Step 2 - Push the image to your ECR</a>
-          </li>
-          <li>
-            <a href="/tasks.html#step-3-configure-your-namespace-in-the-kubernetes-cluster">Step 3 - Configure your namespace in the Kubernetes Cluster</a>
-          </li>
-          <li>
-            <a href="/tasks.html#step-4-deploy-the-application">Step 4 - Deploy the application</a>
-          </li>
-          <li>
-            <a href="/tasks.html#interacting-with-the-application">Interacting with the application</a>
-          </li>
-          <li>
-            <a href="/tasks.html#add-http-basic-authentication">Add HTTP Basic Authentication</a>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <a href="/tasks.html#deploying-a-multi-container-application-to-the-cloud-platform">Deploying a multi-container application to the Cloud Platform</a>
-        <ul>
-          <li>
-            <a href="/tasks.html#deploying-a-multi-container-application-to-the-cloud-platform-overview">Overview</a>
-          </li>
-          <li>
-            <a href="/tasks.html#running-in-the-kubernetes-cluster">Running in the Kubernetes Cluster</a>
-          </li>
-          <li>
-            <a href="/tasks.html#create-an-rds-instance">Create an RDS instance</a>
-          </li>
-          <li>
-            <a href="/tasks.html#build-docker-images-and-pushing-to-ecr">Build docker images and pushing to ECR</a>
-          </li>
-          <li>
-            <a href="/tasks.html#kubernetes-configuration">Kubernetes configuration</a>
-          </li>
-          <li>
-            <a href="/tasks.html#deploying-to-the-cluster">Deploying to the cluster</a>
-          </li>
-          <li>
-            <a href="/tasks.html#deploying-a-multi-container-application-to-the-cloud-platform-interacting-with-the-application">Interacting with the application</a>
-          </li>
-          <li>
-            <a href="/tasks.html#further-development">Further Development</a>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <a href="/tasks.html#deploying-with-helm-and-circleci">Deploying with Helm and CircleCI</a>
-        <ul>
-          <li>
-            <a href="/tasks.html#prerequisite-for-live-1-deployment">Prerequisite for Live-1 deployment</a>
-          </li>
-          <li>
-            <a href="/tasks.html#deploying-an-application-to-the-cloud-platform-with-helm">Deploying an application to the Cloud Platform with Helm</a>
-          </li>
-          <li>
-            <a href="/tasks.html#continuous-deployment-of-an-application-using-circleci-and-helm">Continuous Deployment of an application using CircleCI and Helm</a>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <a href="/tasks.html#how-do-i-run-rails-database-migrations">How do I run Rails database migrations?</a>
-        <ul>
-          <li>
-            <a href="/tasks.html#do-not-run-migrations-on-container-startup">Do not run migrations on container startup</a>
-          </li>
-          <li>
-            <a href="/tasks.html#further-reading">Further reading</a>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <a href="/tasks.html#adding-a-secret-to-an-application">Adding a secret to an application</a>
-        <ul>
-          <li>
-            <a href="/tasks.html#adding-a-secret-to-an-application-overview">Overview</a>
-          </li>
-          <li>
-            <a href="/tasks.html#adding-a-secret-to-an-application-prerequisites">Prerequisites</a>
-          </li>
-          <li>
-            <a href="/tasks.html#configuring-secrets">Configuring secrets</a>
-          </li>
-          <li>
-            <a href="/tasks.html#creating-the-secret">Creating the secret</a>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <a href="/tasks.html#creating-pingdom-checks">Creating Pingdom checks</a>
-        <ul>
-          <li>
-            <a href="/tasks.html#creating-pingdom-checks-overview">Overview</a>
-          </li>
-          <li>
-            <a href="/tasks.html#creating-pingdom-checks-prerequisites">Prerequisites</a>
-          </li>
-          <li>
-            <a href="/tasks.html#create-a-pingdom-check">Create a Pingdom check</a>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <a href="/tasks.html#cleaning-up">Cleaning up</a>
-      </li>
-      <li>
-        <a href="/tasks.html#monitoring-applications">Monitoring Applications</a>
-        <ul>
-          <li>
-            <a href="/tasks.html#using-the-cloud-platform-prometheus-alertmanager-and-grafana">Using the Cloud Platform Prometheus, AlertManager and Grafana</a>
-          </li>
-          <li>
-            <a href="/tasks.html#creating-your-own-custom-alerts">Creating your own custom alerts</a>
-          </li>
-          <li>
-            <a href="/tasks.html#getting-application-metrics-into-prometheus">Getting application metrics into Prometheus</a>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <a href="/tasks.html#application-logging">Application Logging</a>
-        <ul>
-          <li>
-            <a href="/tasks.html#application-log-collection-and-storage">Application Log Collection and Storage</a>
-          </li>
-          <li>
-            <a href="/tasks.html#accessing-application-log-data">Accessing Application Log Data</a>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <a href="/tasks.html#migrating-from-live-0-to-live-1">Migrating from Live-0 to Live-1</a>
-        <ul>
-          <li>
-            <a href="/tasks.html#migrating-from-live-0-to-live-1-overview">Overview</a>
-          </li>
-          <li>
-            <a href="/tasks.html#accessing-the-live-1-cluster">Accessing the Live-1 cluster</a>
-          </li>
-          <li>
-            <a href="/tasks.html#generating-a-new-environment">Generating a new environment</a>
-          </li>
-          <li>
-            <a href="/tasks.html#generating-a-new-ecr-repository">Generating a new ECR repository</a>
-          </li>
-          <li>
-            <a href="/tasks.html#changing-the-circleci-environment-variables">Changing the CircleCI environment variables</a>
-          </li>
-          <li>
-            <a href="/tasks.html#other-considerations">Other considerations</a>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <a href="/tasks.html#other-topics">Other Topics</a>
-        <ul>
-          <li>
-            <a href="/tasks.html#git-crypt">Git-Crypt</a>
-          </li>
-          <li>
-            <a href="/tasks.html#secrets-overview">Secrets overview</a>
-          </li>
-          <li>
-            <a href="/tasks.html#accessing-your-rds-database">Accessing your RDS database</a>
-          </li>
-          <li>
-            <a href="/tasks.html#migrating-an-rds-instance">Migrating an RDS instance</a>
-          </li>
-          <li>
-            <a href="/tasks.html#migrating-an-s3-bucket">Migrating an S3 bucket</a>
-          </li>
-          <li>
-            <a href="/tasks.html#ssl-connections-with-rds">SSL connections with RDS</a>
-          </li>
-          <li>
-            <a href="/tasks.html#kubectl-quick-reference">Kubectl quick reference</a>
-          </li>
-          <li>
-            <a href="/tasks.html#cloud-platform-support">Cloud Platform Support</a>
-          </li>
-          <li>
-            <a href="/tasks.html#zero-downtime-deployments">Zero Downtime Deployments</a>
-          </li>
-          <li>
-            <a href="/tasks.html#using-a-custom-domain">Using a custom domain</a>
-          </li>
-          <li>
-            <a href="/tasks.html#ip-whitelisting">IP Whitelisting</a>
-          </li>
-          <li>
-            <a href="/tasks.html#setup-postgres-container">Setup Postgres container</a>
-          </li>
-          <li>
-            <a href="/tasks.html#applying-a-maintenance-page">Applying a Maintenance Page</a>
-          </li>
-          <li>
-            <a href="/tasks.html#statefulsets-pods-with-persistent-volumes">StatefulSets (Pods with Persistent Volumes)</a>
-          </li>
-          <li>
-            <a href="/tasks.html#how-to-decommission-unused-template-deploy-services">How to decommission unused template deploy services</a>
-          </li>
-          <li>
-            <a href="/tasks.html#troubleshooting-guide">Troubleshooting guide</a>
-          </li>
-          <li>
-            <a href="/tasks.html#other-topics-ssl-connections-with-rds">SSL connections with RDS</a>
-          </li>
-          <li>
-            <a href="/tasks.html#creating-alerts-for-rds">Creating alerts for RDS</a>
-          </li>
-          <li>
-            <a href="/tasks.html#kubernetes-cronjobs">Kubernetes Cronjobs</a>
-          </li>
-          <li>
-            <a href="/tasks.html#time-zone-cronjobs">Time Zone Cronjobs</a>
-          </li>
-          <li>
-            <a href="/tasks.html#modsecurity-web-application-firewall">ModSecurity - Web Application Firewall</a>
-          </li>
-          <li>
-            <a href="/tasks.html#custom-default-backend">Custom default-backend</a>
-          </li>
-          <li>
-            <a href="/tasks.html#kibana-circleci-monitoring-dashboards">Kibana Circleci Monitoring Dashboards</a>
-          </li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-</ul>
-<ul>
-  <li>
-    <a href="/reference.html#reference">Reference</a>
-    <ul>
-      <li>
-        <a href="/reference.html#cloud-platform-operational-processes">Cloud Platform Operational Processes</a>
-        <ul>
-          <li>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <a href="/reference.html#tasks-cloud-platform-support">Cloud Platform Support</a>
-        <ul>
-          <li>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <a href="/reference.html#kubernetes-resources">Kubernetes resources</a>
-        <ul>
-          <li>
-          </li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-</ul>
-<ul>
-  <li>
-    <a href="/getting-help.html#getting-help">Getting Help</a>
-    <ul>
-      <li>
-        <a href="/getting-help.html#slack-channel">Slack Channel</a>
-      </li>
-      <li>
-        <a href="/getting-help.html#raise-a-support-ticket">Raise a support ticket</a>
-      </li>
-      <li>
-        <a href="/getting-help.html#open-hours">Open Hours</a>
+        <a href="#adding-to-the-guide">Adding to the guide</a>
       </li>
     </ul>
   </li>
@@ -570,42 +151,116 @@
 
         <div class="app-pane__content toc-open-disabled">
           <main id="content" class="technical-documentation" data-module="anchored-headings">
-              <p><h1 id="cloud-platform-user-guide">Cloud platform user guide</h1><h2 id="using-this-guide">Using this guide</h2><p>To the left, you will see the top-level navigation items.</p></p>
-
+              <h1 id="cloud-platform-user-guide">Cloud platform user guide</h1><h2 id="who-is-this-user-guide-for">Who is this user guide for?</h2><p>This user guide is for the teams who deployed their applications in Minsitry of Justice Cloud platform or 
+want/migrate to deploy and manage their applications on the cloud platform. The platform manages the infrastructure that your application runs on and provides tooling for teams to deploy and manage their applications on that infrastructure.</p>
+<h2 id="quickstart">Quickstart</h2><p><a href="/documentation/deploying-an-app/helloworld-app-deploy.html">Deploy your first Hello World application</a></p>
+<h2 id="how-to-guides">How-to guides</h2>
 <ul>
-<li><strong>Concepts</strong>: High-level articles, e.g. &ldquo;What is Kubernetes?&rdquo;</li>
-<li><strong>Tasks</strong>: Articles covering specific &ldquo;how to&rdquo; topics, e.g. &ldquo;How to deploy an
-application&rdquo;</li>
-<li><strong>Reference</strong>: Information such as Cloud Platform processes, and links to
-external documentation resources</li>
-<li><strong>Getting Help</strong>: How to get help if you can&rsquo;t find what you need in this
-guide</li>
+<li><a href="/documentation/getting-started/kubectl-config.html">How to use <code>kubectl</code> to connect to the cluster</a></li>
+<li><a href="/documentation/getting-started/env-create.html">Creating a Cloud Platform Environment</a></li>
+<li><a href="/documentation/getting-started/ecr-setup.html">Creating an ECR repository</a></li>
+<li><a href="/documentation/other-topics/route53-zone.html">Creating a Route 53 Hosted Zone</a></li>
+<li><a href="/documentation/deploying-an-app/add-aws-resources.html">Adding AWS resources to your environment</a></li>
+<li><a href="/documentation/deploying-an-app/running-rails-migrations.html">How do I run Rails database migrations?</a></li>
+<li><a href="/documentation/deploying-an-app/cleaning-up.html">Cleaning up your namespace</a></li>
 </ul>
-
-<p>Click these to expand the corresponding section of the guide.</p>
-
-<p>Currently, the vast majority of the information in the guide is in the &ldquo;Tasks&rdquo; section.</p>
-
-<blockquote>
-<p>Because of the way this guide is <a href="https://github.com/alphagov/tech-docs-template">published</a>, each of the
-sections ends up as a single HTML page. Because of this, you might find
-Cmd-F/Ctrl-F on the &ldquo;Tasks&rdquo; page more useful than the search box in the upper
-left corner.</p>
-</blockquote>
-<p><h2 id="brand-new-to-kubernetes-the-cloud-platform">Brand new to Kubernetes/The Cloud Platform?</h2><p>The <a href="/tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">Deploying a Hello World application</a> tutorial is a good place to start.</p>
+<h2 id="learn-concepts">Learn concepts</h2>
+<ul>
+<li><a href="/documentation/concepts/kubernetes.html">Kubernetes</a></li>
+<li><a href="/documentation/concepts/migrate-from-td.html">Migrate from Template Deploy</a></li>
+<li><a href="/documentation/concepts/namespace-limits.html">Namespace/Container Resource Limits</a></li>
+<li><a href="/documentation/concepts/official-sensitive.html">OFFICIAL SENSITIVE - can my service be hosted on the Cloud Platform?</a></li>
+</ul>
+<h2 id="tutorials">Tutorials</h2>
+<ul>
+<li><a href="/documentation/deploying-an-app/helloworld-app-deploy.html">Deploying a <code>Hello World</code> application</a> </li>
+<li><a href="/documentation/deploying-an-app/multicontainer-app-deploy.html">Deploying a multi-container application to the Cloud Platform</a></li>
+</ul>
+<h3 id="deploying-with-helm-and-circleci">Deploying with Helm and CircleCI</h3>
+<ul>
+<li><a href="/documentation/deploying-an-app/prerequisite.html">Prerequisite for Live-1 deployment</a></li>
+<li><a href="/documentation/deploying-an-app/use-circleci-to-upgrade-app.html">Continuous Deployment of an application using CircleCI and Helm</a></li>
+<li><a href="/documentation/deploying-an-app/app-deploy-helm.html">Deploying an application to the Cloud Platform with Helm</a></li>
+</ul>
+<h3 id="monitoring-applications">Monitoring applications</h3>
+<ul>
+<li><a href="/documentation/monitoring-an-app/application-metrics.html">Getting application metrics into Prometheus</a></li>
+<li><a href="/documentation/monitoring-an-app/prometheus.html">Using the Cloud Platform Prometheus, AlertManager and Grafana</a></li>
+<li><a href="/documentation/monitoring-an-app/how-to-create-alarms.html">Creating your own custom alerts</a></li>
+<li><a href="/documentation/monitoring-an-app/how-to-create-pingdom-checks.html">Creating Pingdom checks</a></li>
+</ul>
+<h3 id="application-logging">Application logging</h3>
+<ul>
+<li><a href="/documentation/logging-an-app/log-collection-and-storage.html">Application Log Collection and Storage</a></li>
+<li><a href="/documentation/logging-an-app/access-logs.html">Accessing Application Log Data</a></li>
+</ul>
+<h3 id="migrating-from-live-0-to-live-1">Migrating from Live-0 to Live-1</h3>
+<ul>
+<li><a href="/documentation/other-topics/live1-migration-guide.html">Live-1 migration guide</a></li>
+</ul>
+<h3 id="other-topics">Other topics</h3>
+<ul>
+<li><a href="/documentation/deploying-an-app/add-secrets-to-deployment.html">Adding a secret to an application</a></li>
+<li><a href="/documentation/other-topics/cloud-platform-support.html">Cloud Platform Support</a></li>
+<li><a href="/documentation/other-topics/zero-downtime-deployment.html">Zero Downtime Deployments</a></li>
+<li><a href="/documentation/other-topics/custom-domain-cert.html">Using a custom domain</a></li>
+<li><a href="/documentation/other-topics/alert-rds.html">Creating alerts for RDS</a></li>
+<li><a href="/documentation/other-topics/rds-external-access.html">Accessing your RDS database</a></li>
+<li><a href="/documentation/other-topics/Setup-postgres-container.html">Setup Postgres container</a></li>
+<li><a href="/documentation/other-topics/TZ-Cronjobs.html">Time Zone Cronjobs</a></li>
+<li><a href="/documentation/other-topics/decommission-unused-template-deploy-services.html">How to decommission unused template deploy services</a></li>
+<li><a href="/documentation/other-topics/git-crypt-setup.html">Git-Crypt</a></li>
+<li><a href="/documentation/other-topics/custom-default-backend.html">Custom default-backend</a></li>
+<li><a href="/documentation/other-topics/Cronjobs.html">Kubernetes Cronjobs</a></li>
+<li><a href="/documentation/other-topics/ip-whitelisting.html">IP Whitelisting</a></li>
+<li><a href="/documentation/other-topics/maintenance-page.html">Applying a Maintenance Page</a></li>
+<li><a href="/documentation/other-topics/quick-reference.html">Kubectl quick reference</a></li>
+<li><a href="/documentation/other-topics/statefulsets.html">StatefulSets (Pods with Persistent Volumes)</a></li>
+<li><a href="/documentation/other-topics/troubleshooting.html">Troubleshooting guide</a></li>
+<li><a href="/documentation/other-topics/route53-zone.html">Creating a Route 53 Hosted Zone</a></li>
+<li><a href="/documentation/other-topics/aws-rds-migration.html">Migrating an RDS instance</a></li>
+<li><a href="/documentation/other-topics/rds-ssl.html">SSL connections with RDS</a></li>
+<li><a href="/documentation/other-topics/secrets.html">Secrets overview</a></li>
+<li><a href="/documentation/other-topics/modsecurity.html">ModSecurity - Web Application Firewall</a></li>
+<li><a href="/documentation/other-topics/s3-bucket-migration.html">Migrating an S3 bucket</a></li>
+<li><a href="/documentation/other-topics/kibana-circleci-monitoring-dashboards.html">Kibana Circleci Monitoring Dashboards</a></li>
+</ul>
+<h2 id="reference">Reference</h2>
+<ul>
+<li><a href="/documentation/reference/operational-processes.html">Cloud Platform Operational Processes</a></li>
+<li><a href="/documentation/reference/cloud-platform-support.html">Cloud Platform Support</a></li>
+<li><a href="/documentation/reference/kubernetes.html">Kubernetes resources</a></li>
+</ul>
+<h2 id="getting-help">Getting help</h2>
+<ul>
+<li><a href="/documentation/reference/getting-help.html">Ask Cloud Platform</a></li>
+</ul>
 <h2 id="adding-to-the-guide">Adding to the guide</h2><p>If there&rsquo;s something missing, please either let us know and we&rsquo;ll add a new
 article, or if you&rsquo;re comfortable writing one yourself, PRs will be gratefully
 received. Details on how to get in touch are in the &ldquo;Getting Help&rdquo; section, and
 the &ldquo;GithHub&rdquo; link at the top right will take you to the repository for this
-guide.</p></p>
+guide.</p>
 
 
-            
+              <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
+    <div class='page-expiry--not-expired'>
+      This page was last reviewed on 9 December 2019.
+
+        It needs to be reviewed again on 9 March 2020
+.
+    </div>
+
+    <div class='page-expiry--expired'>
+      This page was set to be reviewed before 9 March 2020.
+      This might mean the content is out of date.
+    </div>
+  </div>
+
           </main>
 
             <ul class="contribution-banner">
               <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/index.html.md.erb">View source</a></li>
-              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'Cloud%20Platform%20User%20Guide'&amp;body=Problem%20with%20'Cloud%20Platform%20User%20Guide'%20(https://user-guide.cloud-platform.service.justice.gov.uk/)">Report problem</a></li>
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'Cloud%20platform%20user%20guide'&amp;body=Problem%20with%20'Cloud%20platform%20user%20guide'%20(https://user-guide.cloud-platform.service.justice.gov.uk/)">Report problem</a></li>
               <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub Repo</a></li>
             </ul>
 

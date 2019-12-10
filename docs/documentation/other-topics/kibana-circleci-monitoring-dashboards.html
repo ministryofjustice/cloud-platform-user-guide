@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta charset="utf-8">
+    <meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
+      <meta name="robots" content="noindex">
+
+    <title>Kibana Circleci Monitoring Dashboards | Cloud Platform User Guide</title>
+
+    <!--[if gt IE 8]><!--><link href="/stylesheets/screen.css" rel="stylesheet" media="screen" /><!--<![endif]-->
+    <!--[if lte IE 8]><link href="/stylesheets/screen-old-ie.css" rel="stylesheet" media="screen" /><![endif]-->
+
+    <link rel="canonical" href="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/kibana-circleci-monitoring-dashboards.html">
+
+
+    <link href="/stylesheets/print.css" rel="stylesheet" media="print" />
+    <script src="/javascripts/application.js"></script>
+
+      <meta property="og:image" content="https://user-guide.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="og:site_name" content="Cloud Platform User Guide" />
+      <meta property="og:title" content="Kibana Circleci Monitoring Dashboards" />
+      <meta property="og:type" content="object" />
+      <meta property="og:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/kibana-circleci-monitoring-dashboards.html" />
+      <meta property="twitter:card" content="summary" />
+      <meta property="twitter:domain" content="user-guide.cloud-platform.service.justice.gov.uk" />
+      <meta property="twitter:image" content="https://user-guide.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="twitter:title" content="Kibana Circleci Monitoring Dashboards | Cloud Platform User Guide" />
+      <meta property="twitter:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/kibana-circleci-monitoring-dashboards.html" />
+
+    
+  </head>
+
+  <body>
+    <div class="app-pane">
+      <div class="app-pane__header toc-open-disabled">
+        <a href="#content" class="skip-link">Skip to main content</a>
+
+        <header class="header header--full-width">
+  <div class="header__container">
+    <div class="header__brand">
+        <a href="/">
+        <span class="header__title">
+          Cloud Platform User Guide
+            <span class="phase-banner">INTERNAL</span>
+        </span>
+        </a>
+    </div>
+
+      <div data-module="navigation">
+        <button type="button" class="header__navigation-toggle js-nav-toggle" aria-controls="navigation" aria-label="Show or hide top level navigation">Menu</button>
+
+        <nav id="navigation" class="header__navigation js-nav" aria-label="Top Level Navigation" aria-hidden="true">
+          <ul>
+              <li>
+                <a href="mailto:platforms+user-guide@digital.justice.gov.uk?subject=User+guide+feedback">Feedback / Report a problem</a>
+              </li>
+              <li>
+                <a href="/">Documentation</a>
+              </li>
+              <li>
+                <a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub</a>
+              </li>
+          </ul>
+        </nav>
+      </div>
+  </div>
+</header>
+
+      </div>
+
+        <div id="toc-heading" class="toc-show fixedsticky">
+          <a href="#toc" class="toc-show__label js-toc-show" aria-controls="toc">
+            Table of contents <span class="toc-show__icon"></span>
+          </a>
+        </div>
+
+      <div class="app-pane__body" data-module="in-page-navigation">
+          <div class="app-pane__toc">
+            <div class="toc" data-module="table-of-contents">
+              <div class="search" data-module="search">
+  <form action="https://www.google.co.uk/search" method="get" role="search">
+    <input type="hidden" name="as_sitesearch" value="https://user-guide.cloud-platform.service.justice.gov.uk"/>
+    <label for="search"  class="search__label">Search (via Google)</label>
+    <input type="text" id="search" name="q" placeholder="Search" aria-controls="search-results" class="form-control" />
+  </form>
+  <div id="search-results" class="search-results" aria-hidden="true" role="dialog" aria-labelledby="search-results-title">
+    <div class="search-results__inner">
+      <button class="search-results__close">Close<span class="search-results__close-label"> search results</span></button>
+      <h2 id="search-results-title" class="search-results__title" aria-live="polite">Results</h2>
+      <div class="search-results__content"></div>
+    </div>
+  </div>
+</div>
+
+              <a href="#" class="toc__close js-toc-close" aria-controls="toc" aria-label="Hide table of contents"></a>
+              <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading">
+                      <ul>
+  <li>
+    <a href="#kibana-circleci-monitoring-dashboards">Kibana Circleci Monitoring Dashboards</a>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <a href="#circleci-job-summary-reports">Circleci job summary reports</a>
+          </li>
+          <li>
+            <a href="#circleci-job-duration-reports">Circleci job duration reports</a>
+          </li>
+          <li>
+            <a href="#circleci-waiting-time-in-the-queue-reports">Circleci waiting time in the queue reports</a>
+          </li>
+          <li>
+            <a href="#circleci-job-count-reports">Circleci job count reports</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
+              </nav>
+            </div>
+          </div>
+
+        <div class="app-pane__content toc-open-disabled">
+          <main id="content" class="technical-documentation" data-module="anchored-headings">
+              <h1 id="kibana-circleci-monitoring-dashboards">Kibana Circleci Monitoring Dashboards</h1><p>The following Kibana reports show which projects/teams are consuming most of the Circleci running time. Please check your project to see whether your job may be adversely affecting overall Circleci job runtimes for everyone.</p>
+<h3 id="circleci-job-summary-reports">Circleci job summary reports</h3><p><a href="https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/goto/d7a0acc5cd06b83d6d3265aa8cf89a07">Circleci-projects-jobs-summary-table-(today-and-yesterday)</a></p>
+
+<ul>
+<li>A summary table report of Circleci jobs today and yesterday (duration, time_in queue - total, longest and average) per project. ** Note only displays where there is a total of over 2 run jobs per project</li>
+</ul>
+<p><a href="https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/goto/c08ab3f8f5b3ec035536ffc91bcf5baa">Circleci-projects-summary-today</a></p>
+
+<ul>
+<li>A summary report of Circleci jobs (today) - (duration, time_in queue - total, longest and average) per project. ** Note only displays where there is a total of over 2 run jobs per project</li>
+</ul>
+<p><a href="https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/goto/6a36ea8adffb7596c9a0cd64726716ad">Circleci-projects-summary-yesterday</a></p>
+
+<ul>
+<li>A summary report of Circleci jobs (yesterday) - (duration, time_in queue - total, longest and average) per project. ** Note only displays where there is a total of over 2 run jobs per project</li>
+</ul>
+<h3 id="circleci-job-duration-reports">Circleci job duration reports</h3><p><a href="https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/goto/eb71a9ed4810338364d6eaeb7665a93e">Circleci-projects-total-duration-(today-and-yesterday)</a></p>
+
+<ul>
+<li>Circleci jobs today and yesterday - showing the overall total (sum) job duration time per project . ** Note only displays where there is a total of over 2 run jobs per project</li>
+</ul>
+<p><a href="https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/goto/e1e47e5cf533761d0e48e77fb4d91331">Circleci-projects-longest-duration-(today-and-yesterday)</a></p>
+
+<ul>
+<li>Circleci jobs (today and yesterday) - showing the longest (max) job duration time per project . ** Note only displays where there is a total of over 2 run jobs per project</li>
+</ul>
+<p><a href="https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/goto/475f61d8bcb7a89b20fc3911e9e09b8e">Circleci-projects-average-duration-(today-and-yesterday)</a></p>
+
+<ul>
+<li>Circleci jobs (today and yesterday) - showing the average job duration time per project . ** Note only displays where there is a total of over 2 run jobs per project</li>
+</ul>
+<h3 id="circleci-waiting-time-in-the-queue-reports">Circleci waiting time in the queue reports</h3><p><a href="https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/goto/e4498b0a79206b68f8699bbc0ba91d09">Circleci-projects-total-time-in-queue-(today-and-yesterday)</a></p>
+
+<ul>
+<li>Circleci jobs (today and yesterday) - showing the overall (sum) time spent in the queue (waiting) per project . ** Note only displays where there is a total of over 2 run jobs per project</li>
+</ul>
+<p><a href="https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/goto/9623c2f20995a4d5c7c5804e10887b1d">Circleci-projects-longest-job-time-in-queue-(today-and-yesterday)</a></p>
+
+<ul>
+<li>Circleci jobs (today and yesterday) - showing the longest (max) job time spent in the queue (waiting) per project . ** Note only displays where there is a total of over 2 run jobs per project</li>
+</ul>
+<p><a href="https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/goto/a9029c81d06bd9d4994a8fbecff565e5">Circleci-projects-average-time-in-queue-(today-and-yesterday)</a></p>
+
+<ul>
+<li>Circleci jobs (today and yesterday) - showing the average time spent in the queue (waiting) per project . ** Note only displays where there is a total of over 2 run jobs per project</li>
+</ul>
+<h3 id="circleci-job-count-reports">Circleci job count reports</h3><p><a href="https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/goto/53a446ae0a5b12b369c4958d734d2eb8">Circleci-projects-jobs-count-(today-and-yesterday)</a></p>
+
+<ul>
+<li>Circleci jobs today and yesterday - showing a count of the number of jobs per project . ** Note only displays where there is a total of over 2 run jobs per project</li>
+</ul>
+
+
+              <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
+    <div class='page-expiry--not-expired'>
+      This page was last reviewed on 9 December 2019.
+
+        It needs to be reviewed again on 9 March 2020
+.
+    </div>
+
+    <div class='page-expiry--expired'>
+      This page was set to be reviewed before 9 March 2020.
+      This might mean the content is out of date.
+    </div>
+  </div>
+
+          </main>
+
+            <ul class="contribution-banner">
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/documentation/other-topics/kibana-circleci-monitoring-dashboards.html.md.erb">View source</a></li>
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'Kibana%20Circleci%20Monitoring%20Dashboards'&amp;body=Problem%20with%20'Kibana%20Circleci%20Monitoring%20Dashboards'%20(https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/kibana-circleci-monitoring-dashboards.html)">Report problem</a></li>
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub Repo</a></li>
+            </ul>
+
+          <footer class="footer">
+  <div class="footer__licence">
+    <a class="footer__licence-logo" href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" rel="license">Open Government Licence</a>
+    <p class="footer__licence-description">All content is available under the <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" rel="license">Open Government Licence v3.0</a>, except where otherwise stated</p>
+  </div>
+
+  <div class="footer__copyright">
+    <a class="footer__copyright-logo" href="http://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/copyright-and-re-use/crown-copyright/">© Crown copyright</a>
+  </div>
+</footer>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </body>
+</html>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138188246-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-138188246-1');
+</script>
+
+<script>
+  // Add the current window.location to the body of the
+  // feedback email message.
+  function sendFeedback(mailto, event) {
+    event.preventDefault();
+
+    var body = "Feedback/Problem on page: " + window.location + "\n";
+    var href = mailto + '&body=' + encodeURIComponent(body);
+
+    window.location = href;
+  }
+
+  $(document).ready(function() {
+    var feedbackLink = $('a[href^="mailto:"]:contains("Feedback")')[0];
+    var mailto = feedbackLink.href;
+    $(feedbackLink).on('click', function(event) { sendFeedback(mailto, event); });
+  });
+</script>

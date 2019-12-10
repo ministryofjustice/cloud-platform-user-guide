@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta charset="utf-8">
+    <meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
+      <meta name="robots" content="noindex">
+
+    <title>Migrating to the Cloud Platform from Template Deploy | Cloud Platform User Guide</title>
+
+    <!--[if gt IE 8]><!--><link href="/stylesheets/screen.css" rel="stylesheet" media="screen" /><!--<![endif]-->
+    <!--[if lte IE 8]><link href="/stylesheets/screen-old-ie.css" rel="stylesheet" media="screen" /><![endif]-->
+
+    <link rel="canonical" href="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/concepts/migrate-from-td.html">
+
+
+    <link href="/stylesheets/print.css" rel="stylesheet" media="print" />
+    <script src="/javascripts/application.js"></script>
+
+      <meta property="og:image" content="https://user-guide.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="og:site_name" content="Cloud Platform User Guide" />
+      <meta property="og:title" content="Migrating to the Cloud Platform from Template Deploy" />
+      <meta property="og:type" content="object" />
+      <meta property="og:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/concepts/migrate-from-td.html" />
+      <meta property="twitter:card" content="summary" />
+      <meta property="twitter:domain" content="user-guide.cloud-platform.service.justice.gov.uk" />
+      <meta property="twitter:image" content="https://user-guide.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="twitter:title" content="Migrating to the Cloud Platform from Template Deploy | Cloud Platform User Guide" />
+      <meta property="twitter:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/concepts/migrate-from-td.html" />
+
+    
+  </head>
+
+  <body>
+    <div class="app-pane">
+      <div class="app-pane__header toc-open-disabled">
+        <a href="#content" class="skip-link">Skip to main content</a>
+
+        <header class="header header--full-width">
+  <div class="header__container">
+    <div class="header__brand">
+        <a href="/">
+        <span class="header__title">
+          Cloud Platform User Guide
+            <span class="phase-banner">INTERNAL</span>
+        </span>
+        </a>
+    </div>
+
+      <div data-module="navigation">
+        <button type="button" class="header__navigation-toggle js-nav-toggle" aria-controls="navigation" aria-label="Show or hide top level navigation">Menu</button>
+
+        <nav id="navigation" class="header__navigation js-nav" aria-label="Top Level Navigation" aria-hidden="true">
+          <ul>
+              <li>
+                <a href="mailto:platforms+user-guide@digital.justice.gov.uk?subject=User+guide+feedback">Feedback / Report a problem</a>
+              </li>
+              <li>
+                <a href="/">Documentation</a>
+              </li>
+              <li>
+                <a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub</a>
+              </li>
+          </ul>
+        </nav>
+      </div>
+  </div>
+</header>
+
+      </div>
+
+        <div id="toc-heading" class="toc-show fixedsticky">
+          <a href="#toc" class="toc-show__label js-toc-show" aria-controls="toc">
+            Table of contents <span class="toc-show__icon"></span>
+          </a>
+        </div>
+
+      <div class="app-pane__body" data-module="in-page-navigation">
+          <div class="app-pane__toc">
+            <div class="toc" data-module="table-of-contents">
+              <div class="search" data-module="search">
+  <form action="https://www.google.co.uk/search" method="get" role="search">
+    <input type="hidden" name="as_sitesearch" value="https://user-guide.cloud-platform.service.justice.gov.uk"/>
+    <label for="search"  class="search__label">Search (via Google)</label>
+    <input type="text" id="search" name="q" placeholder="Search" aria-controls="search-results" class="form-control" />
+  </form>
+  <div id="search-results" class="search-results" aria-hidden="true" role="dialog" aria-labelledby="search-results-title">
+    <div class="search-results__inner">
+      <button class="search-results__close">Close<span class="search-results__close-label"> search results</span></button>
+      <h2 id="search-results-title" class="search-results__title" aria-live="polite">Results</h2>
+      <div class="search-results__content"></div>
+    </div>
+  </div>
+</div>
+
+              <a href="#" class="toc__close js-toc-close" aria-controls="toc" aria-label="Hide table of contents"></a>
+              <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading">
+                      <ul>
+  <li>
+    <a href="#migrating-to-the-cloud-platform-from-template-deploy">Migrating to the Cloud Platform from Template Deploy</a>
+    <ul>
+      <li>
+        <a href="#production-infrastructure">Production infrastructure</a>
+      </li>
+      <li>
+        <a href="#network-traffic-whitelisting">Network traffic whitelisting</a>
+      </li>
+      <li>
+        <a href="#dns-changes">DNS changes</a>
+      </li>
+      <li>
+        <a href="#aws-access">AWS access</a>
+      </li>
+      <li>
+        <a href="#aws-region">AWS region</a>
+      </li>
+      <li>
+        <a href="#ssl">SSL</a>
+      </li>
+      <li>
+        <a href="#connections-to-from-service-ips">Connections to/from service IPs</a>
+      </li>
+      <li>
+        <a href="#application-architecture">Application Architecture</a>
+      </li>
+      <li>
+        <a href="#additional-features">Additional features</a>
+      </li>
+      <li>
+        <a href="#obsoleted-features">Obsoleted features</a>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
+              </nav>
+            </div>
+          </div>
+
+        <div class="app-pane__content toc-open-disabled">
+          <main id="content" class="technical-documentation" data-module="anchored-headings">
+              <h1 id="migrating-to-the-cloud-platform-from-template-deploy">Migrating to the Cloud Platform from Template Deploy</h1><p>These are some of the things to think about when migrating your application from <a href="https://dsdmoj.atlassian.net/wiki/spaces/PLAT/pages/86310992/Template+Deploy">Template Deploy</a> (TD) to the <a href="https://github.com/ministryofjustice/cloud-platform">Cloud Platform</a> (CP).</p>
+<h2 id="production-infrastructure">Production infrastructure</h2><p>Any infrastructure resources, such as databases or cache servers, should be of the same size, and running the same software (e.g. postgres) version, for the CP version of your app. as for the TD version.</p>
+<h2 id="network-traffic-whitelisting">Network traffic whitelisting</h2><p>The IP numbers from which your app&rsquo;s traffic originates will change. If your app. talks to any external services which care about its source IP addresses, you may need to arrange for those services to whitelist the cluster IPs.</p>
+<p>If you have whitelisted any IPs for inbound traffic, you will need to add the corresponding config to your kubernetes deploymnent files.</p>
+<p>This section of the user guide describes both of these procedures: <a href="https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#ip-whitelisting">IP whitelisting</a>.</p>
+<h2 id="dns-changes">DNS changes</h2><p>When you are ready to switch from the TD version of your app. to the production version deployed in CP, the last step will be to change the <a href="https://en.wikipedia.org/wiki/Domain_Name_System">DNS</a> entries such that visitors to your app&rsquo;s domain are sent to the new CP version.</p>
+<p>It&rsquo;s important to plan this step carefully. Some things to think about include:</p>
+
+<ul>
+<li>Who controls DNS for your app&rsquo;s domain (MoJ? GDS?). For <code>*.service.gov.uk</code> domains, changing the DNS requires action from GDS, and you will need to plan for this.</li>
+<li>Do you have users on private networks (e.g. DOM1, Quantum)? How confident are you that they will get the correct address after the DNS change? Some networks (e.g. Quantum), are known to have problems with DNS changes, so you may need to engage with the network operator (e.g. Atos, Vodafone) ahead of time.</li>
+</ul>
+<h2 id="aws-access">AWS access</h2><p>All AWS resources in the Cloud Platform are in a separate, <code>moj-cp</code> AWS account. Access to this account is tightly restricted, so if you are accustomed to e.g. using the AWS web console to help operate your service, you will need to do things differently in the Cloud Platform.</p>
+<h2 id="aws-region">AWS region</h2><p>Everything for the Cloud Platform is in the <code>eu-west-2</code> (London) region.  TD generally uses <code>eu-west-1</code> (Ireland). For features not available in the London region (eg SES, at time of writing), cross-region links can be created and will be evaluated on request.</p>
+<h2 id="ssl">SSL</h2><p>DNS and SSL are managed by cluster-shared services (cert-manager and external-dns)</p>
+
+<ul>
+<li>Validation and deployment are managed by a single pipeline.</li>
+<li>Renewals are automatic.</li>
+</ul>
+<p>Does your service have users who are stuck with very old browsers? If so, consider the following:</p>
+
+<ul>
+<li>CP SSL certificates are generated by <a href="https://letsencrypt.org/">LetsEncrypt</a>. If the user&rsquo;s browser does not recognise LetsEncrypt as a valid certificate authority, they may get security warnings when accessing your service, or they may not be permitted to access it at all.</li>
+<li>TLS version: Kubernetes supports a minimum TLS version of 1.2 If you have users with browsers that do not support TLS 1.2, they will not be able to access your service.</li>
+</ul>
+<h2 id="connections-to-from-service-ips">Connections to/from service IPs</h2><p>Inbound connections to service IPs are not possible, on the Cloud Platform. Access to your service must go via https to a URL, not by inbound access to an IP number.</p>
+<p>Connections <strong>to</strong> resources outside the cluster are allowed, and pods will be NATed to the IPs of the VPC gateways (the IP addresses are pinned int the #ask-cloud-platform channel).</p>
+<p>NB: UDP is not available at all.</p>
+<h2 id="application-architecture">Application Architecture</h2>
+<ol>
+<li><p>Applications must log their entire output to STDOUT/STDERR.</p>
+
+<ul>
+<li>A cluster-shared service (fluentd) automatically collects all the outputs and sends them to <a href="https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana">ElasticSearch</a> with no explicit configuration needed.</li>
+<li>Services that capture the output to re-format or send to a different destination can be run as multi-container pods, but may be superfluous.</li>
+</ul></li>
+<li><p>You don&rsquo;t need to run an <code>init</code> service (e.g. <code>runit</code>, or <code>systemd</code>) in your containers. Kubernetes will keep your services running, by itself.</p></li>
+<li><p>You don&rsquo;t need to run <code>cron</code> in your containers. Use <a href="https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/">kubernetes cron jobs</a>.</p></li>
+<li><p>Keep startup as quick as possible</p>
+
+<ul>
+<li>Initialisation tasks such as database migrations or loading seed data should be configured as separate <a href="https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/">kubernetes jobs</a>, not run as part of the initialisation of your main application. This is because, if your container takes too long to enter <code>ready</code> state, kubernetes will assume there&rsquo;s a problem and kill it.</li>
+</ul></li>
+<li><p>Don&rsquo;t use local disk storage. If you need to write to the filesystem, use a persistent volume or, better still, an S3 bucket.</p></li>
+<li><p>Monitoring is included with the Cloud Platform</p>
+
+<ul>
+<li>The recommended solution is the combination of <a href="https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#monitoring-applications">Prometheus/AlertManager/Grafana</a></li>
+<li>You can still use <a href="https://sentry.service.dsd.io/mojds">Sentry</a></li>
+</ul></li>
+<li><p>Your application will be moved around, by kubernetes, from one worker node to another. i.e. your application should tolerate individual pods being killed and replaced.</p></li>
+<li><p>Always run at least 3 replicas of your core, user-facing services, to ensure users do not experience downtime when kubernetes moves your pods to another node</p></li>
+</ol>
+<h2 id="additional-features">Additional features</h2>
+<ol>
+<li><p>A shared, highly-available deployment of reverse-proxy instances based on AWS ELB and Nginx runs in front of all application instances and offers features like <a href="https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#modsecurity-web-application-firewall">WAF</a>, custom <a href="https://github.com/ministryofjustice/cloud-platform-custom-error-pages">error pages</a> or <a href="https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#ip-whitelisting">IP-based ACLs</a> user-configurable per application but independent from its running state.</p>
+
+<ul>
+<li><a href="tasks.html#add-http-basic-authentication">Basic auth</a> can be quickly turned on/off at ingress level, useful when deploying dev services.</li>
+</ul></li>
+<li><p>Several AWS resource types are tested and documented as <a href="https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#available-modules">Terraform modules</a>; they simplify deployment and default to best-practices options.</p></li>
+</ol>
+<h2 id="obsoleted-features">Obsoleted features</h2>
+<ol>
+<li><p>Salt and CloudFormation are no longer used to define a deployment, replaced by any of Helm or Kubectl (see several <a href="https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">reference app</a> examples).</p></li>
+<li><p>Jenkins is no longer used to trigger deployments, teams are encouraged to <a href="https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#deploying-with-helm-and-circleci">configure CircleCI</a> directly from their repositories.</p></li>
+<li><p>For application logs, the path <code>awslogs</code> + CloudWatch + Lambda is replaced by <code>fluentd</code>.</p></li>
+<li><p>Gandi and AWS ACM SSL certs are replaced by <a href="https://letsencrypt.org">Let&rsquo;s Encrypt</a></p></li>
+</ol>
+
+
+              <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
+    <div class='page-expiry--not-expired'>
+      This page was last reviewed on 9 December 2019.
+
+        It needs to be reviewed again on 9 March 2020
+.
+    </div>
+
+    <div class='page-expiry--expired'>
+      This page was set to be reviewed before 9 March 2020.
+      This might mean the content is out of date.
+    </div>
+  </div>
+
+          </main>
+
+            <ul class="contribution-banner">
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/documentation/concepts/migrate-from-td.html.md.erb">View source</a></li>
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'Migrating%20to%20the%20Cloud%20Platform%20from%20Template%20Deploy'&amp;body=Problem%20with%20'Migrating%20to%20the%20Cloud%20Platform%20from%20Template%20Deploy'%20(https://user-guide.cloud-platform.service.justice.gov.uk/documentation/concepts/migrate-from-td.html)">Report problem</a></li>
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub Repo</a></li>
+            </ul>
+
+          <footer class="footer">
+  <div class="footer__licence">
+    <a class="footer__licence-logo" href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" rel="license">Open Government Licence</a>
+    <p class="footer__licence-description">All content is available under the <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" rel="license">Open Government Licence v3.0</a>, except where otherwise stated</p>
+  </div>
+
+  <div class="footer__copyright">
+    <a class="footer__copyright-logo" href="http://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/copyright-and-re-use/crown-copyright/">© Crown copyright</a>
+  </div>
+</footer>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </body>
+</html>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138188246-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-138188246-1');
+</script>
+
+<script>
+  // Add the current window.location to the body of the
+  // feedback email message.
+  function sendFeedback(mailto, event) {
+    event.preventDefault();
+
+    var body = "Feedback/Problem on page: " + window.location + "\n";
+    var href = mailto + '&body=' + encodeURIComponent(body);
+
+    window.location = href;
+  }
+
+  $(document).ready(function() {
+    var feedbackLink = $('a[href^="mailto:"]:contains("Feedback")')[0];
+    var mailto = feedbackLink.href;
+    $(feedbackLink).on('click', function(event) { sendFeedback(mailto, event); });
+  });
+</script>

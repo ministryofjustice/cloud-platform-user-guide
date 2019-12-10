@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta charset="utf-8">
+    <meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
+      <meta name="robots" content="noindex">
+
+    <title>Creating Pingdom checks | Cloud Platform User Guide</title>
+
+    <!--[if gt IE 8]><!--><link href="/stylesheets/screen.css" rel="stylesheet" media="screen" /><!--<![endif]-->
+    <!--[if lte IE 8]><link href="/stylesheets/screen-old-ie.css" rel="stylesheet" media="screen" /><![endif]-->
+
+    <link rel="canonical" href="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-pingdom-checks.html">
+
+
+    <link href="/stylesheets/print.css" rel="stylesheet" media="print" />
+    <script src="/javascripts/application.js"></script>
+
+      <meta property="og:image" content="https://user-guide.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="og:site_name" content="Cloud Platform User Guide" />
+      <meta property="og:title" content="Creating Pingdom checks" />
+      <meta property="og:type" content="object" />
+      <meta property="og:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-pingdom-checks.html" />
+      <meta property="twitter:card" content="summary" />
+      <meta property="twitter:domain" content="user-guide.cloud-platform.service.justice.gov.uk" />
+      <meta property="twitter:image" content="https://user-guide.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="twitter:title" content="Creating Pingdom checks | Cloud Platform User Guide" />
+      <meta property="twitter:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-pingdom-checks.html" />
+
+    
+  </head>
+
+  <body>
+    <div class="app-pane">
+      <div class="app-pane__header toc-open-disabled">
+        <a href="#content" class="skip-link">Skip to main content</a>
+
+        <header class="header header--full-width">
+  <div class="header__container">
+    <div class="header__brand">
+        <a href="/">
+        <span class="header__title">
+          Cloud Platform User Guide
+            <span class="phase-banner">INTERNAL</span>
+        </span>
+        </a>
+    </div>
+
+      <div data-module="navigation">
+        <button type="button" class="header__navigation-toggle js-nav-toggle" aria-controls="navigation" aria-label="Show or hide top level navigation">Menu</button>
+
+        <nav id="navigation" class="header__navigation js-nav" aria-label="Top Level Navigation" aria-hidden="true">
+          <ul>
+              <li>
+                <a href="mailto:platforms+user-guide@digital.justice.gov.uk?subject=User+guide+feedback">Feedback / Report a problem</a>
+              </li>
+              <li>
+                <a href="/">Documentation</a>
+              </li>
+              <li>
+                <a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub</a>
+              </li>
+          </ul>
+        </nav>
+      </div>
+  </div>
+</header>
+
+      </div>
+
+        <div id="toc-heading" class="toc-show fixedsticky">
+          <a href="#toc" class="toc-show__label js-toc-show" aria-controls="toc">
+            Table of contents <span class="toc-show__icon"></span>
+          </a>
+        </div>
+
+      <div class="app-pane__body" data-module="in-page-navigation">
+          <div class="app-pane__toc">
+            <div class="toc" data-module="table-of-contents">
+              <div class="search" data-module="search">
+  <form action="https://www.google.co.uk/search" method="get" role="search">
+    <input type="hidden" name="as_sitesearch" value="https://user-guide.cloud-platform.service.justice.gov.uk"/>
+    <label for="search"  class="search__label">Search (via Google)</label>
+    <input type="text" id="search" name="q" placeholder="Search" aria-controls="search-results" class="form-control" />
+  </form>
+  <div id="search-results" class="search-results" aria-hidden="true" role="dialog" aria-labelledby="search-results-title">
+    <div class="search-results__inner">
+      <button class="search-results__close">Close<span class="search-results__close-label"> search results</span></button>
+      <h2 id="search-results-title" class="search-results__title" aria-live="polite">Results</h2>
+      <div class="search-results__content"></div>
+    </div>
+  </div>
+</div>
+
+              <a href="#" class="toc__close js-toc-close" aria-controls="toc" aria-label="Hide table of contents"></a>
+              <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading">
+                      <ul>
+  <li>
+    <a href="#creating-pingdom-checks">Creating Pingdom checks</a>
+    <ul>
+      <li>
+        <a href="#overview">Overview</a>
+      </li>
+      <li>
+        <a href="#prerequisites">Prerequisites</a>
+      </li>
+      <li>
+        <a href="#create-a-pingdom-check">Create a Pingdom check</a>
+        <ul>
+          <li>
+            <a href="#adding-slack-notification">Adding Slack notification</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
+              </nav>
+            </div>
+          </div>
+
+        <div class="app-pane__content toc-open-disabled">
+          <main id="content" class="technical-documentation" data-module="anchored-headings">
+              <h1 id="creating-pingdom-checks">Creating Pingdom checks</h1><h2 id="overview">Overview</h2><p><a href="https://my.pingdom.com">Pingdom</a> is a global performance and availability monitor for your web application. The aim of this document is to provide you with the necessary information to create Pingom checks via the <a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud-platform-environments</a> pipeline, and then send failing checks to a Slack channel of your choosing.</p>
+<h2 id="prerequisites">Prerequisites</h2><p>This guide assumes the following:</p>
+
+<ul>
+<li>You have <a href="tasks.html#creating-a-cloud-platform-environment">created a namespace for your application</a></li>
+<li>You have a slack channel to send alerts to</li>
+</ul>
+<h2 id="create-a-pingdom-check">Create a Pingdom check</h2><p>To create a Pingdom check simply add a <code>pingdom.tf</code> file in the resources directory of your namespace in your <a href="https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces/live-1.cloud-platform.service.justice.gov.uk">cloud-platform-environments</a> repository. You can define the conditions of your check using the resources outlined in the <a href="https://github.com/russellcardullo/terraform-provider-pingdom">Terraform community provider</a>. Here&rsquo;s a working example of a <a href="https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/monitoring/resources">basic check</a>.</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="s">terraform {</span>
+  <span class="s">backend "s3" {}</span>
+<span class="err">}</span>
+
+<span class="s">provider "pingdom" {}</span>
+
+<span class="s">resource "pingdom_check" "cloud-platform-prometheus-live-0-healthcheck" {</span>
+   <span class="s">type                     = "http"</span>
+   <span class="s">name                     = "Prometheus - live-0 - cloud-platform - Healthcheck"</span>
+   <span class="s">host                     = "prometheus.apps.cloud-platform-live-0.k8s.integration.dsd.io"</span>
+   <span class="s">resolution               = 1</span>
+   <span class="s">notifywhenbackup         = </span><span class="no">true</span>
+   <span class="s">sendnotificationwhendown = 6</span>
+   <span class="s">notifyagainevery         = 0</span>
+   <span class="s">url                      = "/-/healthy"</span>
+   <span class="s">encryption               = </span><span class="no">true</span>
+   <span class="s">port                     = 443</span>
+   <span class="s">tags                     = "businessunit_platforms,application_prometheus,component_healthcheck,isproduction_true,environment_prod,infrastructuresupport_platforms"</span>
+   <span class="s">probefilters             = "region:EU"</span>
+   <span class="s">publicreport             = "true"</span>
+ <span class="s">}</span>
+</code></pre></div><p><strong>Note</strong>: You&rsquo;ll need to include the <code>provider &quot;pingdom&quot;</code> and <code>terraform</code> blocks either in this file or in a <code>main.tf</code> file.</p>
+<p>This basic check simply checks that the host/url (in this case; https://prometheus.apps.cloud-platform-live-0.k8s.integration.dsd.io/-/healthy) returns a 200 every minute (resolution = 1 minute). When six (sendnotificationwhendown = 6) consecutive checks fail it triggers an alarm. As publicreport is set to true, you can view the status of your check by visiting the <a href="http://pingdom.service.dsd.io">public status page</a>, where this check would appear with the name &ldquo;Prometheus - live-0 - cloud-platform - Healthcheck&rdquo;.</p>
+<p><a href="https://github.com/russellcardullo/terraform-provider-pingdom#pingdom-check">This</a> page explains all the attributes used in the check.</p>
+<p>All resources, including Pingdom checks <strong>must</strong> be tagged and adhere to the technical guidance outlined <a href="https://github.com/ministryofjustice/technical-guidance/blob/master/standards/documenting-infrastructure-owners.md">here</a>. Ensure your check has appropriate tags before submitting a pull request.</p>
+<p>Once reviewed and merged to master, the pipeline will create your check in the MoJ Pingdom account.</p>
+<h3 id="adding-slack-notification">Adding Slack notification</h3><p>You can enable the option to send a failing alert to Slack via a webhook by simply adding Pingdom integration id. You need administrator permissions to manage the mojdt <a href="https://mojdt.slack.com/apps/A0F814AV7-pingdom?next_id=0">Pingdom Slack</a> webhook and then <a href="https://my.pingdom.com">Pingdom</a> to create the integration id.</p>
+<p>The Cloud Platform team can do this on your behalf. Create a ticket requesting a Pingdom integration id with the following information:</p>
+
+<ul>
+<li>team name</li>
+<li>application name</li>
+<li>slack channel</li>
+</ul>
+<p>The team will provide you with an integration id, following the steps outlined <a href="https://github.com/ministryofjustice/cloud-platform-environments/blob/master/docs/creating-pingdom-webhook.md">here</a>.</p>
+<p>You can now add <code>integrationids</code> to your <code>pingdom.tf</code>. Appending the example above, your check will now appear as follows (assuming you were given 1000 as the integration id):</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="s">terraform {</span>
+   <span class="s">backend "s3" {}</span>
+ <span class="s">}</span>
+
+ <span class="s">provider "pingdom" {}</span>
+
+ <span class="s">resource "pingdom_check" "cloud-platform-prometheus-live-0-healthcheck" {</span>
+    <span class="s">type                     = "http"</span>
+    <span class="s">name                     = "Prometheus - live-0 - cloud-platform - Healthcheck"</span>
+    <span class="s">host                     = "prometheus.apps.cloud-platform-live-0.k8s.integration.dsd.io"</span>
+    <span class="s">resolution               = 1</span>
+    <span class="s">notifywhenbackup         = </span><span class="no">true</span>
+    <span class="s">sendnotificationwhendown = 6</span>
+    <span class="s">notifyagainevery         = 0</span>
+    <span class="s">url                      = "/-/healthy"</span>
+    <span class="s">encryption               = </span><span class="no">true</span>
+    <span class="s">port                     = 443</span>
+    <span class="s">tags                     = "businessunit_platforms,application_prometheus,component_healthcheck,isproduction_true,environment_prod,infrastructuresupport_platforms"</span>
+    <span class="s">probefilters             = "region:EU"</span>
+    <span class="s">publicreport             = "true"</span>
+    <span class="s">integrationids           = [1000]</span>
+  <span class="s">}</span>
+
+</code></pre></div>
+
+              <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
+    <div class='page-expiry--not-expired'>
+      This page was last reviewed on 9 December 2019.
+
+        It needs to be reviewed again on 9 March 2020
+.
+    </div>
+
+    <div class='page-expiry--expired'>
+      This page was set to be reviewed before 9 March 2020.
+      This might mean the content is out of date.
+    </div>
+  </div>
+
+          </main>
+
+            <ul class="contribution-banner">
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/documentation/monitoring-an-app/how-to-create-pingdom-checks.html.md.erb">View source</a></li>
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'Creating%20Pingdom%20checks'&amp;body=Problem%20with%20'Creating%20Pingdom%20checks'%20(https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-pingdom-checks.html)">Report problem</a></li>
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub Repo</a></li>
+            </ul>
+
+          <footer class="footer">
+  <div class="footer__licence">
+    <a class="footer__licence-logo" href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" rel="license">Open Government Licence</a>
+    <p class="footer__licence-description">All content is available under the <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" rel="license">Open Government Licence v3.0</a>, except where otherwise stated</p>
+  </div>
+
+  <div class="footer__copyright">
+    <a class="footer__copyright-logo" href="http://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/copyright-and-re-use/crown-copyright/">© Crown copyright</a>
+  </div>
+</footer>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </body>
+</html>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138188246-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-138188246-1');
+</script>
+
+<script>
+  // Add the current window.location to the body of the
+  // feedback email message.
+  function sendFeedback(mailto, event) {
+    event.preventDefault();
+
+    var body = "Feedback/Problem on page: " + window.location + "\n";
+    var href = mailto + '&body=' + encodeURIComponent(body);
+
+    window.location = href;
+  }
+
+  $(document).ready(function() {
+    var feedbackLink = $('a[href^="mailto:"]:contains("Feedback")')[0];
+    var mailto = feedbackLink.href;
+    $(feedbackLink).on('click', function(event) { sendFeedback(mailto, event); });
+  });
+</script>

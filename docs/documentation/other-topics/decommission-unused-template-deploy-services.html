@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta charset="utf-8">
+    <meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
+      <meta name="robots" content="noindex">
+
+    <title>How to decommission unused template deploy services | Cloud Platform User Guide</title>
+
+    <!--[if gt IE 8]><!--><link href="/stylesheets/screen.css" rel="stylesheet" media="screen" /><!--<![endif]-->
+    <!--[if lte IE 8]><link href="/stylesheets/screen-old-ie.css" rel="stylesheet" media="screen" /><![endif]-->
+
+    <link rel="canonical" href="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/decommission-unused-template-deploy-services.html">
+
+
+    <link href="/stylesheets/print.css" rel="stylesheet" media="print" />
+    <script src="/javascripts/application.js"></script>
+
+      <meta property="og:image" content="https://user-guide.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="og:site_name" content="Cloud Platform User Guide" />
+      <meta property="og:title" content="How to decommission unused template deploy services" />
+      <meta property="og:type" content="object" />
+      <meta property="og:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/decommission-unused-template-deploy-services.html" />
+      <meta property="twitter:card" content="summary" />
+      <meta property="twitter:domain" content="user-guide.cloud-platform.service.justice.gov.uk" />
+      <meta property="twitter:image" content="https://user-guide.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="twitter:title" content="How to decommission unused template deploy services | Cloud Platform User Guide" />
+      <meta property="twitter:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/decommission-unused-template-deploy-services.html" />
+
+    
+  </head>
+
+  <body>
+    <div class="app-pane">
+      <div class="app-pane__header toc-open-disabled">
+        <a href="#content" class="skip-link">Skip to main content</a>
+
+        <header class="header header--full-width">
+  <div class="header__container">
+    <div class="header__brand">
+        <a href="/">
+        <span class="header__title">
+          Cloud Platform User Guide
+            <span class="phase-banner">INTERNAL</span>
+        </span>
+        </a>
+    </div>
+
+      <div data-module="navigation">
+        <button type="button" class="header__navigation-toggle js-nav-toggle" aria-controls="navigation" aria-label="Show or hide top level navigation">Menu</button>
+
+        <nav id="navigation" class="header__navigation js-nav" aria-label="Top Level Navigation" aria-hidden="true">
+          <ul>
+              <li>
+                <a href="mailto:platforms+user-guide@digital.justice.gov.uk?subject=User+guide+feedback">Feedback / Report a problem</a>
+              </li>
+              <li>
+                <a href="/">Documentation</a>
+              </li>
+              <li>
+                <a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub</a>
+              </li>
+          </ul>
+        </nav>
+      </div>
+  </div>
+</header>
+
+      </div>
+
+        <div id="toc-heading" class="toc-show fixedsticky">
+          <a href="#toc" class="toc-show__label js-toc-show" aria-controls="toc">
+            Table of contents <span class="toc-show__icon"></span>
+          </a>
+        </div>
+
+      <div class="app-pane__body" data-module="in-page-navigation">
+          <div class="app-pane__toc">
+            <div class="toc" data-module="table-of-contents">
+              <div class="search" data-module="search">
+  <form action="https://www.google.co.uk/search" method="get" role="search">
+    <input type="hidden" name="as_sitesearch" value="https://user-guide.cloud-platform.service.justice.gov.uk"/>
+    <label for="search"  class="search__label">Search (via Google)</label>
+    <input type="text" id="search" name="q" placeholder="Search" aria-controls="search-results" class="form-control" />
+  </form>
+  <div id="search-results" class="search-results" aria-hidden="true" role="dialog" aria-labelledby="search-results-title">
+    <div class="search-results__inner">
+      <button class="search-results__close">Close<span class="search-results__close-label"> search results</span></button>
+      <h2 id="search-results-title" class="search-results__title" aria-live="polite">Results</h2>
+      <div class="search-results__content"></div>
+    </div>
+  </div>
+</div>
+
+              <a href="#" class="toc__close js-toc-close" aria-controls="toc" aria-label="Hide table of contents"></a>
+              <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading">
+                      <ul>
+  <li>
+    <a href="#how-to-decommission-unused-template-deploy-services">How to decommission unused template deploy services</a>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <a href="#1-stack-deletion-will-also-delete-related-instances-vpu-s-security-groups-network-gateways-etc">1.  Stack Deletion (will also delete related instances, vpu’s, security groups, network gateways etc).</a>
+          </li>
+          <li>
+            <a href="#2-jenkins-projects">2.  Jenkins Projects:</a>
+          </li>
+          <li>
+            <a href="#3-github-deploy-repos-this-should-take-place-after-you-have-deleted-the-aws-resources">3.  Github deploy repos (this should take place after you have deleted the AWS resources)</a>
+          </li>
+          <li>
+            <a href="#4-docker-images">4.  Docker Images:</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
+              </nav>
+            </div>
+          </div>
+
+        <div class="app-pane__content toc-open-disabled">
+          <main id="content" class="technical-documentation" data-module="anchored-headings">
+              <h1 id="how-to-decommission-unused-template-deploy-services">How to decommission unused template deploy services</h1><h3 id="1-stack-deletion-will-also-delete-related-instances-vpu-s-security-groups-network-gateways-etc">1.  Stack Deletion (will also delete related instances, vpu’s, security groups, network gateways etc).</h3><p>NOTE As a first port of call we would recommend raising a support ticket in <a href="https://mojdt.slack.com/messages/C57UPMZLY/team/U58MLFA0M/">#ask-cloud-platform</a> requesting that cloud-platform delete your AWS stack.</p>
+<p>In most cases cloud-platform’s will have the necessary credentials to delete the stack for you (most template-deploy stacks will have been created within the mojdsd AWS account).</p>
+<p>NOTE Caution should also be taken as AWS Route53 dns configuration may be deleted (and this could be referenced in new AWS account Kubernetes setups). We would recommend making a copy of any such configuration so that it can be reinstated if necessary. 
+Should you wish to go ahead yourselves, whilst it is possible to delete from the AWS stack dashboard, for a cleaner operation (the deleting of related AWS resources) the following fabric command should be carried out:</p>
+<p>in order to proceed, you need to have :</p>
+
+<ul>
+<li>installed the prerequisite tools</li>
+<li>configured your AWS credentials</li>
+<li>configured your github access</li>
+<li>create your own GPG key</li>
+</ul>
+<p>a.   Run <a href="https://dsdmoj.atlassian.net/wiki/spaces/PLAT/pages/82640903/Quickstart+-+Template+Deploy">mkvirtualenv</a> to create your local environment.</p>
+<p>b.   Run the fabric command to delete your stack</p>
+<p>The Fabric command to delete an AWS stack:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ fab aws:&lt;awsaccountname&gt; environment:&lt;environmentname&gt; application:&lt;projectname&gt; config:cloudformation/&lt;projectname&gt;.yaml  passwords:cloudformation/&lt;projectname&gt;-secrets.yaml -u &lt;githubsshkey&gt; cfn_delete
+</code></pre></div><h3 id="2-jenkins-projects">2.  Jenkins Projects:</h3><p>NOTE If you do not have the necessary permissions to carry out the following actions, raise a support ticket in [#ask-cloud-platform](https://mojdt.slack.com/messages/C57UPMZLY/team/U58MLFA0M/</p>
+<p>a.   Disable the project (if you wish to retain the configuration for reference):</p>
+<div class="highlight"><pre class="highlight plaintext"><code>i.   Locate your project’s job:
+
+ii.  Click on the “Disable Project” button:
+</code></pre></div><p><a href="https://i.stack.imgur.com/n77nl.png" target="_blank" rel="noopener noreferrer"><img src="https://i.stack.imgur.com/n77nl.png" alt="Image description" /></a></p>
+<div class="highlight"><pre class="highlight plaintext"><code>iii. If you wish to resurrect your project job, click on “Enable” button: 
+</code></pre></div><p>b.   Delete the project (if you no longer require the Jenkins deploy config):</p>
+<div class="highlight"><pre class="highlight plaintext"><code>i.   Click on “Delete Project”:
+</code></pre></div><p><a href="https://issues.jenkins-ci.org/secure/attachment/31690/upload.png" target="_blank" rel="noopener noreferrer"><img src="https://issues.jenkins-ci.org/secure/attachment/31690/upload.png" alt="Image description" /></a></p>
+<h3 id="3-github-deploy-repos-this-should-take-place-after-you-have-deleted-the-aws-resources">3.  Github deploy repos (this should take place after you have deleted the AWS resources)</h3><p>NOTE If you do not have the necessary permissions to carry out the following actions, raise a support ticket in [#ask-cloud-platform](https://mojdt.slack.com/messages/C57UPMZLY/team/U58MLFA0M/</p>
+<p>a.   <a href="https://help.github.com/en/articles/archiving-repositories">Archive the Github deploy repos</a>  (if you still require the deploy configuration for reference)</p>
+<div class="highlight"><pre class="highlight plaintext"><code>i.   Locate your deploy-repos. Click on the “Settings” button:
+
+ii.  Click on the “Archive this repository” button:
+
+iii. Type in the name of the repository and then click “I understand the consequences, archive this repository”:
+
+iv.  The deploy repository will then be archived (confirmatory message will appear):
+</code></pre></div><p>b.   <a href="https://help.github.com/en/articles/deleting-a-repository">Delete the Github deploy repos</a>  (if you no longer require the deploy configuration for reference)</p>
+<div class="highlight"><pre class="highlight plaintext"><code>i.   As for archiving -Locate your deploy-repos. Click on the “Settings” button. Then click on the “Delete this repository” button:
+</code></pre></div><h3 id="4-docker-images">4.  Docker Images:</h3><p>a.   The docker image repository will be completely decommissioned when we have switched everything over from template-deploy</p>
+
+
+              <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
+    <div class='page-expiry--not-expired'>
+      This page was last reviewed on 9 December 2019.
+
+        It needs to be reviewed again on 9 March 2020
+.
+    </div>
+
+    <div class='page-expiry--expired'>
+      This page was set to be reviewed before 9 March 2020.
+      This might mean the content is out of date.
+    </div>
+  </div>
+
+          </main>
+
+            <ul class="contribution-banner">
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/documentation/other-topics/decommission-unused-template-deploy-services.html.md.erb">View source</a></li>
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'How%20to%20decommission%20unused%20template%20deploy%20services'&amp;body=Problem%20with%20'How%20to%20decommission%20unused%20template%20deploy%20services'%20(https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/decommission-unused-template-deploy-services.html)">Report problem</a></li>
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub Repo</a></li>
+            </ul>
+
+          <footer class="footer">
+  <div class="footer__licence">
+    <a class="footer__licence-logo" href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" rel="license">Open Government Licence</a>
+    <p class="footer__licence-description">All content is available under the <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" rel="license">Open Government Licence v3.0</a>, except where otherwise stated</p>
+  </div>
+
+  <div class="footer__copyright">
+    <a class="footer__copyright-logo" href="http://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/copyright-and-re-use/crown-copyright/">© Crown copyright</a>
+  </div>
+</footer>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </body>
+</html>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138188246-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-138188246-1');
+</script>
+
+<script>
+  // Add the current window.location to the body of the
+  // feedback email message.
+  function sendFeedback(mailto, event) {
+    event.preventDefault();
+
+    var body = "Feedback/Problem on page: " + window.location + "\n";
+    var href = mailto + '&body=' + encodeURIComponent(body);
+
+    window.location = href;
+  }
+
+  $(document).ready(function() {
+    var feedbackLink = $('a[href^="mailto:"]:contains("Feedback")')[0];
+    var mailto = feedbackLink.href;
+    $(feedbackLink).on('click', function(event) { sendFeedback(mailto, event); });
+  });
+</script>
