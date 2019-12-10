@@ -24,10 +24,10 @@ enable_search: true
 ga_tracking_id:
 
 # Enable multipage navigation in the sidebar
-multipage_nav: true
+multipage_nav: false
 
 # Enable collapsible navigation in the sidebar
-collapsible_nav: true
+collapsible_nav: false
 
 # Table of contents depth – how many levels to include in the table of contents.
 # If your ToC is too long, reduce this number and we'll only show higher-level

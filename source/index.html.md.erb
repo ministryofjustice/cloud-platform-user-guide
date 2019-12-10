@@ -1,6 +1,96 @@
 ---
-title: Cloud Platform User Guide
-weight: 10
+title: Cloud platform user guide
+last_reviewed_on: 2019-12-09
+review_in: 3 months
 ---
 
-<%= partial 'documentation/index' %>
+# <%= current_page.data.title %>
+
+## Who is this user guide for?
+This user guide is for the teams who are using the Minsitry of Justice Cloud platform or 
+wanted to deploy and manage containerized applications 
+on the cloud platform. The platform manages the infrastructure	
+that your application runs on and provides tooling for teams to deploy and	
+manage their applications on that infrastructure.
+
+##Quickstart
+[Deploy your first Hello World application](documentation/deploying-an-app/helloworld-app-deploy.html) 
+
+## How-to guides
+- [How to use `kubectl` to connect to the cluster](documentation/getting-started/kubectl-config.html)
+- [Creating a Cloud Platform Environment](documentation/getting-started/env-create.html)
+- [Creating an ECR repository](documentation/getting-started/ecr-setup.html)
+- [Creating a Route 53 Hosted Zone](documentation/other-topics/route53-zone.html)
+- [Adding AWS resources to your environment](documentation/deploying-an-app/add-aws-resources.html)
+- [How do I run Rails database migrations?](documentation/deploying-an-app/running-rails-migrations.html)
+- [Cleaning up](documentation/deploying-an-app/cleaning-up.html)
+
+## Learn concepts
+
+- [Kubernetes](documentation/concepts/kubernetes.html)
+- [Migrate from Template Deploy](documentation/concepts/migrate-from-td.html)
+- [Namespace/Container Resource Limits](documentation/concepts/namespace-limits.html)
+- [OFFICIAL SENSITIVE - can my service be hosted on the Cloud Platform?](documentation/concepts/official-sensitive.html)
+
+## Tutorials
+ - [Deploying a multi-container application to the Cloud Platform](documentation/deploying-an-app/multicontainer-app-deploy.html)
+ ### Deploying with Helm and CircleCI
+ - [Prerequisite for Live-1 deployment](documentation/deploying-an-app/prerequisite.html)
+ - [Continuous Deployment of an application using CircleCI and Helm](documentation/deploying-an-app/use-circleci-to-upgrade-app.html)
+ - [Deploying an application to the Cloud Platform with Helm](documentation/deploying-an-app/app-deploy-helm.html)
+### Monitoring applications
+- [Getting application metrics into Prometheus](documentation/monitoring-an-app/application-metrics.html)
+- [Using the Cloud Platform Prometheus, AlertManager and Grafana](documentation/monitoring-an-app/prometheus.html)
+- [Creating your own custom alerts](documentation/monitoring-an-app/how-to-create-alarms.html)
+- [Creating Pingdom checks](documentation/monitoring-an-app/how-to-create-pingdom-checks.html)
+
+ - [Adding a secret to an application](documentation/deploying-an-app/add-secrets-to-deployment.html)
+ - [Cloud Platform Support](documentation/other-topics/cloud-platform-support.html)
+ - [Zero Downtime Deployments](documentation/other-topics/zero-downtime-deployment.html)
+ - [Using a custom domain](documentation/other-topics/custom-domain-cert.html)
+ - [Creating alerts for RDS](documentation/other-topics/alert-rds.html)
+ - [Accessing your RDS database](documentation/other-topics/rds-external-access.html)
+ - [Setup Postgres container](documentation/other-topics/Setup-postgres-container.html)
+ - [Time Zone Cronjobs](documentation/other-topics/TZ-Cronjobs.html)
+ - [How to decommission unused template deploy services](documentation/other-topics/decommission-unused-template-deploy-services.html)
+ - [Git-Crypt](documentation/other-topics/git-crypt-setup.html)
+ - [Custom default-backend](documentation/other-topics/custom-default-backend.html)
+ - [Kubernetes Cronjobs](documentation/other-topics/Cronjobs.html)
+ - [IP Whitelisting](documentation/other-topics/ip-whitelisting.html)
+ - [Applying a Maintenance Page](documentation/other-topics/maintenance-page.html)
+ - [Kubectl quick reference](documentation/other-topics/quick-reference.html)
+ - [StatefulSets (Pods with Persistent Volumes)](documentation/other-topics/statefulsets.html)
+ - [Migrating from Live-0 to Live-1](documentation/other-topics/live1-migration-guide.html)
+ - [Troubleshooting guide](documentation/other-topics/troubleshooting.html)
+ - [Creating a Route 53 Hosted Zone](documentation/other-topics/route53-zone.html)
+ - [Migrating an RDS instance](documentation/other-topics/aws-rds-migration.html)
+ - [SSL connections with RDS](documentation/other-topics/rds-ssl.html)
+ - [Secrets overview](documentation/other-topics/secrets.html)
+ - [ModSecurity - Web Application Firewall](documentation/other-topics/modsecurity.html)
+ - [Migrating an S3 bucket](documentation/other-topics/s3-bucket-migration.html)
+ - [Kibana Circleci Monitoring Dashboards](documentation/other-topics/kibana-circleci-monitoring-dashboards.html)
+ 
+
+## Getting help
+- [Ask Cloud Platform](documentation/reference/getting-help.html)
+
+## Adding to the guide
+
+If there's something missing, please either let us know and we'll add a new
+article, or if you're comfortable writing one yourself, PRs will be gratefully
+received. Details on how to get in touch are in the "Getting Help" section, and
+the "GithHub" link at the top right will take you to the repository for this
+guide.
+
+[tech-docs-template]: https://github.com/alphagov/tech-docs-template
+
+
+ 
+
+
+
+ - [Cloud Platform Support](documentation/reference/cloud-platform-support.html)
+ - [Getting Help](documentation/reference/getting-help.html)
+ - [Kubernetes resources](documentation/reference/kubernetes.html)
+ - [Cloud Platform Operational Processes](documentation/reference/operational-processes.html)
+ - [Cloud platform user guide](documentation/index.html)
