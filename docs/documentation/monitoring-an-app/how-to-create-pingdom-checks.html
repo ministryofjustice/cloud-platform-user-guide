@@ -132,11 +132,7 @@
 <li>You have a slack channel to send alerts to</li>
 </ul>
 <h2 id="create-a-pingdom-check">Create a Pingdom check</h2><p>To create a Pingdom check simply add a <code>pingdom.tf</code> file in the resources directory of your namespace in your <a href="https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces/live-1.cloud-platform.service.justice.gov.uk">cloud-platform-environments</a> repository. You can define the conditions of your check using the resources outlined in the <a href="https://github.com/russellcardullo/terraform-provider-pingdom">Terraform community provider</a>. Here&rsquo;s a working example of a <a href="https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/monitoring/resources">basic check</a>.</p>
-<div class="highlight"><pre class="highlight yaml"><code><span class="s">terraform {</span>
-  <span class="s">backend "s3" {}</span>
-<span class="err">}</span>
-
-<span class="s">provider "pingdom" {}</span>
+<div class="highlight"><pre class="highlight yaml"><code><span class="s">provider "pingdom" {}</span>
 
 <span class="s">resource "pingdom_check" "cloud-platform-prometheus-live-0-healthcheck" {</span>
    <span class="s">type                     = "http"</span>
