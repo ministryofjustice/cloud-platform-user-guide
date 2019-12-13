@@ -1,0 +1,274 @@
+---
+title: Troubleshooting guide
+last_reviewed_on: 2019-12-09
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+
+When things are not working correctly, there are several techniques to help you figure out what's going wrong.
+
+> You might find this [visual guide] to troubleshooting kubernetes deployments useful.
+
+### Pods / Events
+
+Generally, the first step will be:
+
+`kubectl -n [your namespace] get pods`
+
+> We've used the namespace `dstest` as an example, in this guide. Wherever that appears in a command, please use the name of your namespace instead.
+
+```
+$ kubectl -n dstest get pods
+NAME                                 READY   STATUS                       RESTARTS   AGE
+helloworld-rubyapp-8795b9c56-58fbc   1/2     CreateContainerConfigError   0          13s
+helloworld-rubyapp-d58bdf7c4-2xqw7   1/1     Running                      0          21d
+helloworld-rubyapp-d58bdf7c4-x8ln7   1/1     Running                      0          21d
+```
+
+Here, the `STATUS` value shows that there's a problem with one of the pods.
+
+Running `kubectl describe` on that pod will give us more information.
+
+```
+$ kubectl -n dstest describe pod helloworld-rubyapp-8795b9c56-58fbc
+Name:               helloworld-rubyapp-8795b9c56-58fbc
+Namespace:          dstest
+
+...
+
+Events:
+  Type     Reason     Age                From                                                  Message
+  ----     ------     ----               ----                                                  -------
+  Normal   Scheduled  91s                default-scheduler                                     Successfully assigned dstest/helloworld-rubyapp-8795b9c56-58fbc to ip-172-20-60-236.eu-west-2.compute.internal
+  Normal   Pulling    87s                kubelet, ip-172-20-60-236.eu-west-2.compute.internal  pulling image "754256621582.dkr.ecr.eu-west-2.amazonaws.com/webops/dstest:latest"
+  Normal   Started    84s                kubelet, ip-172-20-60-236.eu-west-2.compute.internal  Started container
+  Normal   Pulled     84s                kubelet, ip-172-20-60-236.eu-west-2.compute.internal  Successfully pulled image "754256621582.dkr.ecr.eu-west-2.amazonaws.com/webops/dstest:latest"
+  Normal   Created    84s                kubelet, ip-172-20-60-236.eu-west-2.compute.internal  Created container
+  Normal   Pulling    21s (x7 over 90s)  kubelet, ip-172-20-60-236.eu-west-2.compute.internal  pulling image "nginx"
+  Normal   Pulled     20s (x7 over 87s)  kubelet, ip-172-20-60-236.eu-west-2.compute.internal  Successfully pulled image "nginx"
+  Warning  Failed     20s (x7 over 87s)  kubelet, ip-172-20-60-236.eu-west-2.compute.internal  Error: container has runAsNonRoot and image will run as root
+```
+
+We've omitted a lot of the detail, for clarity. The useful information, in this case, is at the bottom, in the `Events` section. On the last line:
+
+```
+Error: container has runAsNonRoot and image will run as root
+```
+
+You can also see events across the whole namespace like this:
+
+```
+kubectl -n dstest get events
+```
+
+Be aware that the ordering of events in the output of this command is a bit random.
+
+Events are only stored in the cluster for around 30 minutes, but all events are also stored in Elasticsearch, and available via [Kibana]. To find events in your namespace, click on "Discover" in the upper-left, and then enter a query like this:
+
+```
+kubernetes.namespace_name:"logging" AND kubernetes.labels.app:"eventrouter" AND log:"dstest"
+```
+
+(replace `dstest` with the name of your namespace)
+
+
+You can adjust the timeframe and other parameters via the Kibana web interface.
+
+### Logs
+
+You can view the log output from a pod like this:
+
+```
+$ kubectl -n dstest log helloworld-rubyapp-8795b9c56-58fbc
+Error from server (BadRequest): a container name must be specified for pod helloworld-rubyapp-8795b9c56-58fbc, choose one of: [nginx rubyapp]
+```
+
+As you can see, that pod has two containers, and you need to specify which container's logs you want to see. If your pod only has a single container, you won't be prompted for its name.
+
+```
+$ kubectl -n dstest log helloworld-rubyapp-8795b9c56-58fbc -c rubyapp
+[2019-11-26 14:12:16] INFO  WEBrick 1.4.2
+[2019-11-26 14:12:16] INFO  ruby 2.5.5 (2019-03-15) [x86_64-linux-musl]
+== Sinatra (v2.0.7) has taken the stage on 4567 for development with backup from WEBrick
+[2019-11-26 14:12:16] INFO  WEBrick::HTTPServer#start: pid=1 port=4567
+```
+
+You can tail the logs by appending `--follow` to that command.
+
+Logs are also available via Kibana, as described [here][application logging].
+
+### Launching a shell
+
+If your container has a shell installed (e.g. `bash`, `zsh`, or `sh`), you can exec onto the running container like this
+
+```
+$ kubectl -n dstest exec -it helloworld-rubyapp-8795b9c56-58fbc -c rubyapp sh
+/app $
+```
+
+### Launching a new container
+
+You might want to make network calls from within your namespace, to test different components of your service. If your deployed containers don't have the tools you need (e.g. `wget`, `curl`), you can launch a new pod into your namespace like this:
+
+```
+kubectl -n dstest run --generator=run-pod/v1 shell --rm -i --tty --image ministryofjustice/cloud-platform-tools -- bash
+```
+
+You could subtitute another image such as `busybox` or `alpine` instead of `ministryofjustice/cloud-platform-tools` if you prefer.
+
+Once we have a shell on our new container, we can access the services running in our namespace like this:
+
+```
+bash-4.4# curl rubyapp-service:4567
+<h1>Hello, World!</h1>
+```
+
+You can get the names and ports of the services running in your namespace, from **outside** the new container, like this:
+
+```
+$ kubectl -n dstest get service
+NAME              TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+rubyapp-service   ClusterIP   100.65.254.2   <none>        4567/TCP   28d
+```
+
+
+### Specific Errors
+
+The remainder of this document covers particular errors you might encounter, and give advice on how to deal with them.
+
+  - [My pod shows 'CreateContainerConfigError' after deployment](#my-pod-shows-createcontainerconfigerror-after-deployment)
+  - [My pod shows 'CrashLoopBackOff' after deployment](#my-pod-shows-crashloopbackoff-after-deployment)
+  - [My pod shows 'ImagePullBackOff' after deployment](#my-pod-shows-imagepullbackoff-after-deployment)
+  - [I get the error 'container is unhealthy, it will be killed and re-created’](#i-get-the-error-39-container-is-unhealthy-it-will-be-killed-and-re-created-39)
+  - [I get the error 'Error from server (Forbidden)' when trying to run kubectl commands](#i-get-the-error-39-error-from-server-forbidden-39-when-trying-to-run-kubectl-commands)
+
+### My pod shows 'CreateContainerConfigError' after deployment
+
+#### Scenario
+You have deployed an application to the Cloud Platform and its status shows `CreateContainerConfigError` (you can get the status by running `kubect get pods -n <namespace>`).
+
+#### Cause
+There are a number of reasons why this error will appear but the most probable cause is a missing secret or environment variable.
+
+#### Troubleshooting
+To investigate this issue you'll want to look at the events of your pod. Run `kubectl -n <namespace> describe <pod_name>`, in the section titled `Events` you'll have something similar to:
+
+```
+Events:
+  Type     Reason     Age                    From                                                   Message
+  ----     ------     ----                   ----                                                   -------
+  Normal   Scheduled  54m                    default-scheduler                                      Successfully assigned myapplication-namespace/myapplication to worker-node
+  Warning  Failed     49m (x8 over 53m)      kubelet, worker-node  Error: Couldn't find key postgresUser in Secret myapplication-dev/myapplication
+```
+
+> Note: you can also find this out using `kubectl -n <namespace> get events`
+
+#### Solution
+Ensure all secrets and environment variables have been defined.
+
+### My pod shows `CrashLoopBackOff` after deployment
+
+#### Scenario
+Following the deployment of your application, you receive a status of `CrashLoopBackOff` when querying the pods in your namespace with `kubectl get pods -n <namespace>`.
+
+#### Cause
+A `CrashloopBackOff` means that you have a pod starting, crashing, starting again, and then crashing again.
+
+A PodSpec has a restartPolicy field with possible values Always, OnFailure, and Never which applies to all containers in a pod. The default value is Always and the restartPolicy only refers to restarts of the containers by the kubelet on the same node (so the restart count will reset if the pod is rescheduled in a different node). Failed containers that are restarted by the kubelet are restarted with an exponential back-off delay (10s, 20s, 40s …) capped at five minutes, and is reset after ten minutes of successful execution. This is an example of a PodSpec with the restartPolicy field:
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dummy-pod
+spec:
+  containers:
+    - name: dummy-pod
+      image: ubuntu
+  restartPolicy: Always
+```
+
+The main causes of `CrashloopBackOff` are:
+
+- The application inside the container keeps crashing.
+- Some parameters of the pod or container have been configured incorrectly.
+- An error has been made when deploying Kubernetes.
+
+#### Troubleshooting
+As this issue is quite vague, you'll want to start by checking what your pod is printing to STDOUT using the command `kubectl -n <namespace> logs <pod_name>`. This should give you a clear understanding of whether the application has crashed. If your application is crashing, you need to identify the reason and try to fix it. Some possibilities are missing environment variables, insufficient resources, missing files or directories, or a lack of required permissions.
+
+#### Solution
+Fix application or misconfiguration errors.
+
+### My pod shows `ImagePullBackOff` after deployment
+
+#### Scenario
+You have deployed an application to the Cloud Platform and its status shows `ImagePullBackOff` (you can get the status by running `kubect get pods -n <namespace>`).
+
+#### Cause
+This error is caused by a misconfiguration in your deployment, there are three primary culprits besides network connectivity issues:
+
+- The image tag is incorrect
+- The image doesn't exist (or is in a different registry)
+- Kubernetes doesn't have permissions to pull that image
+
+#### Troubleshooting
+Again, utilising the `kubectl -n <namespace> describe <pod_name>` command you can see that the pod has failed to pull down the correct image:
+```
+  Normal   Pulling    10m (x4 over 12m)    kubelet, worker-node  pulling image "redis:foobar"
+  Warning  Failed     10m (x4 over 12m)    kubelet, worker-node  Error: ErrImagePull
+```
+
+#### Solution
+This can be corrected by amending the `image` in your deployment.
+
+### I get the error 'container is unhealthy, it will be killed and re-created'
+
+#### Situation
+Your pod appears to be jumping between an `error` and `ready` state. You describe the pod and get an error `container is unhealthy, it will be killed and re-created`
+
+#### Cause
+Kubernetes provides two essential features called [Liveness Probes and Readiness Probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/). Essentially, Liveness/Readiness Probes will periodically perform an action (e.g. make an HTTP request, open a tcp connection, or run a command in your container) to confirm that your application is working as intended.
+
+If the Liveness Probe fails, Kubernetes will kill your container and create a new one. If the Readiness Probe fails, that Pod will not be available as a Service endpoint, meaning no traffic will be sent to that Pod until it becomes Ready.
+
+#### Troubleshooting
+Using the log output (`kubectl -n <namespace> <pod_name>`) you should see the cause of your Probe failure.
+
+There are likely three possibilities:
+
+  -  Your Probes are now incorrect - Did the health URL change?
+  -  Your Probes are too sensitive - Does your application take a while to start or respond?
+  -  Your application is no longer responding correctly to the Probe - Is your database misconfigured?
+
+#### Solution
+Once a change has been made to either your application or Probe, a fresh deployment should succeed.
+
+### I get the error 'Error from server (Forbidden)' when trying to run kubectl commands
+
+#### Situation
+When attempting to use a command such as `kubectl get pods -n <namespace>` the following error occurs:
+
+`Error from server (Forbidden): pods is forbidden: User "https://justice-cloud-platform.eu.auth0.com/#<username>" cannot list resource "pods" in API group "" in the namespace "<namespace>"`
+
+
+#### Cause
+This is usually one of two things:
+
+  - Your token has expired and you need to re-authenticate.
+  - You don't belong to the GitHub team assigned to the namespace you're attempting to communicate with.
+
+#### Troubleshooting
+First check if you're a member of the GitHub team assigned in your [rbac.yaml](https://github.com/ministryofjustice/cloud-platform-environments/blob/master/namespaces/live-1.cloud-platform.service.justice.gov.uk/hmpps-book-secure-move-api-production/01-rbac.yaml#L8) file, which is located in the [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces) repository.
+
+#### Solution
+Depending on the cause of your issue you'll need to do one of the following:
+
+  - Re-authenticate to the cluster using the [cloud-platform user-guide](https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#authentication).
+  - Ask a team member to [add your GitHub user account](https://help.github.com/en/github/setting-up-and-managing-organizations-and-teams/adding-organization-members-to-a-team) to the correct team (please note, the Cloud Platform team cannot do this for you).
+
+[Kibana]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/kibana#/home?_g=()
+[application logging]: tasks.html#accessing-application-log-data
+[visual guide]: https://learnk8s.io/troubleshooting-deployments

@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta charset="utf-8">
+    <meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
+      <meta name="robots" content="noindex">
+
+    <title>Creating a Cloud Platform Environment | Cloud Platform User Guide</title>
+
+    <!--[if gt IE 8]><!--><link href="/stylesheets/screen.css" rel="stylesheet" media="screen" /><!--<![endif]-->
+    <!--[if lte IE 8]><link href="/stylesheets/screen-old-ie.css" rel="stylesheet" media="screen" /><![endif]-->
+
+    <link rel="canonical" href="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/env-create.html">
+
+
+    <link href="/stylesheets/print.css" rel="stylesheet" media="print" />
+    <script src="/javascripts/application.js"></script>
+
+      <meta property="og:image" content="https://user-guide.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="og:site_name" content="Cloud Platform User Guide" />
+      <meta property="og:title" content="Creating a Cloud Platform Environment" />
+      <meta property="og:type" content="object" />
+      <meta property="og:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/env-create.html" />
+      <meta property="twitter:card" content="summary" />
+      <meta property="twitter:domain" content="user-guide.cloud-platform.service.justice.gov.uk" />
+      <meta property="twitter:image" content="https://user-guide.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="twitter:title" content="Creating a Cloud Platform Environment | Cloud Platform User Guide" />
+      <meta property="twitter:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/env-create.html" />
+
+    
+  </head>
+
+  <body>
+    <div class="app-pane">
+      <div class="app-pane__header toc-open-disabled">
+        <a href="#content" class="skip-link">Skip to main content</a>
+
+        <header class="header header--full-width">
+  <div class="header__container">
+    <div class="header__brand">
+        <a href="/">
+        <span class="header__title">
+          Cloud Platform User Guide
+            <span class="phase-banner">INTERNAL</span>
+        </span>
+        </a>
+    </div>
+
+      <div data-module="navigation">
+        <button type="button" class="header__navigation-toggle js-nav-toggle" aria-controls="navigation" aria-label="Show or hide top level navigation">Menu</button>
+
+        <nav id="navigation" class="header__navigation js-nav" aria-label="Top Level Navigation" aria-hidden="true">
+          <ul>
+              <li>
+                <a href="mailto:platforms+user-guide@digital.justice.gov.uk?subject=User+guide+feedback">Feedback / Report a problem</a>
+              </li>
+              <li>
+                <a href="/">Documentation</a>
+              </li>
+              <li>
+                <a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub</a>
+              </li>
+          </ul>
+        </nav>
+      </div>
+  </div>
+</header>
+
+      </div>
+
+        <div id="toc-heading" class="toc-show fixedsticky">
+          <a href="#toc" class="toc-show__label js-toc-show" aria-controls="toc">
+            Table of contents <span class="toc-show__icon"></span>
+          </a>
+        </div>
+
+      <div class="app-pane__body" data-module="in-page-navigation">
+          <div class="app-pane__toc">
+            <div class="toc" data-module="table-of-contents">
+              <div class="search" data-module="search">
+  <form action="https://www.google.co.uk/search" method="get" role="search">
+    <input type="hidden" name="as_sitesearch" value="https://user-guide.cloud-platform.service.justice.gov.uk"/>
+    <label for="search"  class="search__label">Search (via Google)</label>
+    <input type="text" id="search" name="q" placeholder="Search" aria-controls="search-results" class="form-control" />
+  </form>
+  <div id="search-results" class="search-results" aria-hidden="true" role="dialog" aria-labelledby="search-results-title">
+    <div class="search-results__inner">
+      <button class="search-results__close">Close<span class="search-results__close-label"> search results</span></button>
+      <h2 id="search-results-title" class="search-results__title" aria-live="polite">Results</h2>
+      <div class="search-results__content"></div>
+    </div>
+  </div>
+</div>
+
+              <a href="#" class="toc__close js-toc-close" aria-controls="toc" aria-label="Hide table of contents"></a>
+              <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading">
+                      <ul>
+  <li>
+    <a href="#creating-a-cloud-platform-environment">Creating a Cloud Platform Environment</a>
+    <ul>
+      <li>
+        <a href="#introduction">Introduction</a>
+      </li>
+      <li>
+        <a href="#objective">Objective</a>
+      </li>
+      <li>
+        <a href="#create-an-environment">Create an environment</a>
+        <ul>
+          <li>
+            <a href="#pre-requisites">Pre-requisites</a>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="#accessing-your-environments">Accessing your environments</a>
+      </li>
+      <li>
+        <a href="#next-steps">Next steps</a>
+      </li>
+      <li>
+        <a href="#environment-definition-files">Environment definition files</a>
+      </li>
+      <li>
+        <a href="#namespace-resource-limits">Namespace resource limits</a>
+      </li>
+      <li>
+        <a href="#namespace-yaml-files">Namespace YAML files</a>
+        <ul>
+          <li>
+            <a href="#00-namespace-yaml">00-namespace.yaml</a>
+          </li>
+          <li>
+            <a href="#01-rbac-yaml">01-rbac.yaml</a>
+          </li>
+          <li>
+            <a href="#02-limitrange-yaml">02-limitrange.yaml</a>
+          </li>
+          <li>
+            <a href="#03-resourcequota-yaml">03-resourcequota.yaml</a>
+          </li>
+          <li>
+            <a href="#04-networkpolicy-yaml">04-networkpolicy.yaml</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
+              </nav>
+            </div>
+          </div>
+
+        <div class="app-pane__content toc-open-disabled">
+          <main id="content" class="technical-documentation" data-module="anchored-headings">
+              <h1 id="creating-a-cloud-platform-environment">Creating a Cloud Platform Environment</h1><h2 id="introduction">Introduction</h2><p>This is a guide to creating a environment in one of our Kubernetes clusters.</p>
+<p>We define an environment as a Kubernetes <a href="https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/">namespace</a>
+with some key resources deployed in it. Each Kubernetes namespace creates a
+logical separation within our cluster that provides isolation from any other
+namespace.</p>
+<p>Once you have created an environment you will be able to perform actions using
+the <code>kubectl</code> tool in the namespace you have created.</p>
+<h2 id="objective">Objective</h2><p>By the end of this guide you&rsquo;ll have created a Kubernetes namespace ready for
+you to <a href="tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">deploy an application</a> into.</p>
+<h2 id="create-an-environment">Create an environment</h2><h3 id="pre-requisites">Pre-requisites</h3>
+<ul>
+<li>Docker</li>
+<li>Git</li>
+<li>You must be a member of the <code>ministryofjustice</code> organisation on GitHub</li>
+</ul>
+<p>You create an environment by adding the definition of the environment as YAML
+files in the following GitHub repository:</p>
+<p><a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud-platform-environments</a></p>
+<p>To create a namespace, clone the repository:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ git clone git@github.com:ministryofjustice/cloud-platform-environments.git
+$ cd cloud-platform-environments
+</code></pre></div><p>Then, run the script to create your namespace:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ make namespace
+</code></pre></div><p>You will be prompted to provide information about the new namespace, and the
+script will create the necessary YAML and Terraform files in the correct
+location in the repository.</p>
+<p>Please create a new branch, add the new files and raise a pull request. The
+cloud platform team need to approve your pull request before you can merge it.
+Once you have done this, a build pipeline will create your namespace on the
+cluster.</p>
+<p>Please create <strong>one PR per namespace</strong> i.e. if you need namespaces <code>myapp-dev</code>,
+<code>myapp-staging</code> and <code>myapp-prod</code>, please raise a separate PR for each one. This
+makes it a lot easier for the cloud platform team to review your PRs.</p>
+
+<blockquote>
+<h4 id="naming">Naming</h4><p>When creating your environment, please ensure that you comply with our
+<a href="https://ministryofjustice.github.io/technical-guidance/standards/naming-things/#naming-things">guidance on naming things</a>.</p>
+<p>This is particularly important for domain names, but since these often closely
+match the namespace name, it&rsquo;s worth choosing a good name at this stage.</p>
+</blockquote>
+<p>This is all you need to do in order to create your namespace.</p>
+<h2 id="accessing-your-environments">Accessing your environments</h2><p>Once the pipeline has completed you will be able to check that your environment
+is available by running:</p>
+<p><code>$ kubectl get namespaces</code></p>
+<p>This will return a list of the namespaces within the cluster, and you should
+see yours in the list.</p>
+<p>You can now run commands in your namespace by appending the <code>-n</code> or
+<code>--namespace</code> flag to <code>kubectl</code>. So for instance, to see the pods running in
+our <code>myenv-dev</code> namespace, we would run:</p>
+<p><code>$ kubectl get pods -n myenv-dev</code> or</p>
+<p><code>$ kubectl get pods --namespace myenv-dev</code></p>
+<h2 id="next-steps">Next steps</h2><p><a href="tasks.html#creating-an-ecr-repository">Create an ECR repository</a> to push your application docker image to.</p>
+<p>Then you can try <a href="tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">deploying an app to Kubernetes manually</a>
+by writing some custom YAML files or <a href="tasks.html#deploying-an-application-to-the-cloud-platform-with-helm">deploying an app with Helm</a>,
+a Kubernetes <a href="https://helm.sh/">package manager</a>.</p>
+<p>The remainder of this section we describe in detail the YAML files which define
+your namespace, in case you need to alter any values.</p>
+<h2 id="environment-definition-files">Environment definition files</h2><p>To set up an environment we create 5 Kubernetes YAML files in the directory for
+your namespace:</p>
+
+<ul>
+<li><a href="#00-namespace-yaml"><code>00-namespace.yaml</code></a></li>
+<li><a href="#01-rbac-yaml"><code>01-rbac.yaml</code></a></li>
+<li><a href="#02-limitrange-yaml"><code>02-limitrange.yaml</code></a></li>
+<li><a href="#03-resourcequota-yaml"><code>03-resourcequota.yaml</code></a></li>
+<li><a href="#04-networkpolicy-yaml"><code>04-networkpolicy.yaml</code></a></li>
+</ul>
+<p>These files define key elements of the namespace and restrictions we want to
+place on it so that we have security and resource allocation properties. We
+will use terraform to create these files from templates. We also describe each
+of these files <a href="#00-namespace-yaml">in more detail below</a> in case you want to
+make future changes.</p>
+<p>In addition to the Kubernetes configuration files, we create a terraform config
+file:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>resources/main.tf
+</code></pre></div><p>This file defines the standard terraform backend and providers which you will
+need when you add terraform modules to create the AWS resources your service
+will use (e.g. an <a href="tasks.html#creating-an-ecr-repository">ECR</a> for your docker images, <a href="tasks.html#create-an-rds-instance">RDS
+databases</a>, and S3 buckets).</p>
+<h2 id="namespace-resource-limits">Namespace resource limits</h2><p>The amount of resources (i.e. CPU and memory) we allocate to new namespaces, by
+default, is deliberately low. When you have worked out how much resource your
+application actually needs, please raise a PR to adjust the limits on your
+namespace accordingly.</p>
+<p>For more information, please see this article on <a href="concepts.html#namespace-container-resource-limits">namespace limits</a>.</p>
+<h2 id="namespace-yaml-files">Namespace YAML files</h2><p>These files define key elements of the namespace and restrictions we want to
+place on it so that we have security and resource allocation properties.</p>
+<h3 id="00-namespace-yaml"><code>00-namespace.yaml</code></h3><p>The <code>00-namespace.yaml</code> file defines the namespace so that the Kubernetes
+cluster knows to create the namespace and what to call it.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: v1
+kind: Namespace
+metadata:
+  name: myapp-dev ### This is where you will define your &lt;servicename-env&gt;
+  labels:
+    name: myapp-dev ### Also your &lt;servicename-env&gt;
+</code></pre></div><p>The namespace is the your (team&rsquo;s) &lsquo;private&rsquo; part of the cluster. The name of
+your namespace must be unique across the whole of the cluster. If you try to
+create a new namespace using the name of one which already exists, you will get
+an error when you try to apply the generated kubernetes config files (or when
+our build pipeline applies them on your behalf).</p>
+<p>For &#39;real&rsquo; services, this is very unlikely to be a problem - most services have
+distinct names, so namespace name conflicts are unlikely. But, if you are
+creating a test/dummy namespace in order to learn how the platform works, it&rsquo;s
+better to avoid generic names like &#39;dummy&rsquo;, &#39;test&rsquo; or &#39;example&rsquo;. Add something
+unique (e.g. your name) to minimise the risk of trying to re-use a name by
+mistake.</p>
+<h3 id="01-rbac-yaml"><code>01-rbac.yaml</code></h3><p>We will also create a <code>RoleBinding</code> resource by adding the <code>01-rbac.yaml</code> file.
+This will provide us with <a href="https://kubernetes.io/docs/admin/authorization/rbac/">access policies</a> on the namespace we have created in
+the cluster.</p>
+<p>A role binding resource grants the permissions defined in a role to a user or
+set of users. A role can be another resource we can create but in this instance
+we will reference a Kubernetes default role <code>ClusterRole - admin</code>.</p>
+<p>This <code>RoleBinding</code> resource references the <code>ClusterRole - admin</code> to provide
+admin permissions on the namespace to the set of users defined under
+<code>subjects</code>. In this case, the <code>&lt;yourTeam&gt;</code> GitHub group will have admin access
+to any resources within the namespace <code>myapp-dev</code>.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: myapp-dev-admins  ### Your namespace with `-admin` e.g. `&lt;servicename-env&gt;-admin`
+  namespace: myapp-dev ### Your namespace `&lt;servicename-env&gt;`
+subjects:
+  - kind: Group
+    name: "github:&lt;yourTeam&gt;" ### Make this the name of the GitHub team you want to give access to
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: admin
+  apiGroup: rbac.authorization.k8s.io
+</code></pre></div><h3 id="02-limitrange-yaml"><code>02-limitrange.yaml</code></h3><p>As we are working on a shared Kubernetes cluster it is useful to put in place
+limits on the resources that each namespace, pod and container can use. This
+helps to stop us accidentally entering a situation where one service impacts
+the performance of another through using more resources than are available.</p>
+<p>The first Kubernetes limit we can use is a <a href="https://kubernetes.io/docs/tasks/administer-cluster/manage-resources/memory-default-namespace/">LimitRange</a> which we define in
+<code>02-limitrange.yaml</code>.</p>
+<p>The LimitRange object specifies two key resource limits on containers,
+<code>defaultRequest</code> and <code>default</code>. <code>defaultRequest</code> is the memory and cpu a
+container will request on startup. This is what the Kubernetes scheduler uses
+to determine whether there is enough space on the cluster to run your
+application and what your application will start up with when it is created.
+<code>default</code> is the limit at which your application will be killed or throttled.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: v1
+kind: LimitRange
+metadata:
+  name: limitrange
+  namespace: myapp-dev ### Your namespace `&lt;servicename-env&gt;`
+spec:
+  limits:
+  - default:
+      cpu: 50m
+      memory: 500Mi
+    defaultRequest:
+      cpu: 10m
+      memory: 100Mi
+    type: Container
+</code></pre></div><h3 id="03-resourcequota-yaml"><code>03-resourcequota.yaml</code></h3><p>The <a href="https://kubernetes.io/docs/concepts/policy/resource-quotas/">ResourceQuota</a> object allows us to set a total limit on the resources
+reserved for a namespace. As with the LimitRange, the <code>requests.cpu</code> and
+<code>requests.memory</code> limits set how much the namespace will request on creation.</p>
+<p>As you learn more about the behaviour of your applications on Kubernetes you
+can change the limits on your namespace.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: namespace-quota
+  namespace: myapp-dev ### Your namespace `&lt;servicename-env&gt;`
+spec:
+  hard:
+    requests.cpu: 100m
+    requests.memory: 1000Mi
+</code></pre></div><h3 id="04-networkpolicy-yaml"><code>04-networkpolicy.yaml</code></h3><p>The <a href="https://kubernetes.io/docs/concepts/services-networking/network-policies/">NetworkPolicy</a> object defines how groups of pods are allowed to
+communicate with each other and other network endpoints. By default pods are
+non-isolated, they accept traffic from any source. We apply a network policy to
+restrict where traffic can come from, allowing traffic only from the <a href="https://kubernetes.io/docs/concepts/services-networking/ingress/">ingress
+controller</a> and other pods in your namespace.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default
+  namespace: myapp-dev ### Your namespace `&lt;servicename-env&gt;`
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector: {}
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-ingress-controllers
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          component: ingress-controllers
+</code></pre></div>
+
+              <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
+    <div class='page-expiry--not-expired'>
+      This page was last reviewed on 9 December 2019.
+
+        It needs to be reviewed again on 9 March 2020
+.
+    </div>
+
+    <div class='page-expiry--expired'>
+      This page was set to be reviewed before 9 March 2020.
+      This might mean the content is out of date.
+    </div>
+  </div>
+
+          </main>
+
+            <ul class="contribution-banner">
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/documentation/getting-started/env-create.html.md.erb">View source</a></li>
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'Creating%20a%20Cloud%20Platform%20Environment'&amp;body=Problem%20with%20'Creating%20a%20Cloud%20Platform%20Environment'%20(https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/env-create.html)">Report problem</a></li>
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub Repo</a></li>
+            </ul>
+
+          <footer class="footer">
+  <div class="footer__licence">
+    <a class="footer__licence-logo" href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" rel="license">Open Government Licence</a>
+    <p class="footer__licence-description">All content is available under the <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" rel="license">Open Government Licence v3.0</a>, except where otherwise stated</p>
+  </div>
+
+  <div class="footer__copyright">
+    <a class="footer__copyright-logo" href="http://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/copyright-and-re-use/crown-copyright/">© Crown copyright</a>
+  </div>
+</footer>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </body>
+</html>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138188246-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-138188246-1');
+</script>
+
+<script>
+  // Add the current window.location to the body of the
+  // feedback email message.
+  function sendFeedback(mailto, event) {
+    event.preventDefault();
+
+    var body = "Feedback/Problem on page: " + window.location + "\n";
+    var href = mailto + '&body=' + encodeURIComponent(body);
+
+    window.location = href;
+  }
+
+  $(document).ready(function() {
+    var feedbackLink = $('a[href^="mailto:"]:contains("Feedback")')[0];
+    var mailto = feedbackLink.href;
+    $(feedbackLink).on('click', function(event) { sendFeedback(mailto, event); });
+  });
+</script>

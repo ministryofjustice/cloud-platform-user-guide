@@ -1,0 +1,35 @@
+---
+title: Cleaning up
+last_reviewed_on: 2019-12-09
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+
+When you have finished with a namespace, please clean it up (i.e. remove it).
+
+This helps to keep the cloud platform repositories well-organised, and speeds
+up deployments and changes to the cluster (because the build process doesn't
+have to spend time managing unnecessary resources). It also deletes the
+associated AWS resources, and helps to keep our hosting costs down.
+
+To delete a namespace and all its associated AWS resources, simply raise a
+[PR] which deletes the associated folder from the [cloud-platform-environments][envrepo].
+
+So, if your namespace is called `mynamespace`, then you need to raise a [PR]
+deleting the folder:
+
+     namespaces/live-1.cloud-platform.service.justice.gov.uk/mynamespace
+
+...and all its contents, from the [cloud-platform-environments][envrepo].
+
+Merging this [PR] will trigger an automated pipeline which will delete all of
+your namespace's AWS resources, followed by the namespace itself.
+
+> NB: If you have set up a CI/CD pipeline, which deploys into your namespace,
+then this should be deleted first, so that anything you delete later is not
+immediately recreated by your build pipeline.
+
+[envrepo]: https://github.com/ministryofjustice/cloud-platform-environments
+[PR]: https://help.github.com/en/articles/about-pull-requests

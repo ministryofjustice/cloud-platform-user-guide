@@ -1,6 +1,0 @@
-<h3 id="application-log-collection-and-storage">Application Log Collection and Storage</h3><h4 id="overview">Overview</h4><p>The Cloud Platform supports the ability for application logs to be collected, stored, and accessed.</p>
-<p>Logs are collected automatically, via Fluentd, stored in an AWS-Hosted ElasticSearch Cluster, and accessed via AWS-Hosted Kibana dashboard.</p>
-<h4 id="log-collection">Log Collection</h4><p>Fluentd is a cluster-wide log collection service that runs in it&rsquo;s own dedicated environment.</p>
-<p>The Fluentd application is configured with cluster-wide read permissions. The only requirement for Fluentd to start automatically collecting your application&rsquo;s logs is to have your application output logs to <code>stdout</code>.</p>
-<h4 id="log-storage">Log Storage</h4><p>As an application engineer, you won&rsquo;t really need to pay much attention to how the logs are stored, as this is handled by the Cloud Platform team.</p>
-<p>The logs are shipped from Fluentd and stored in an AWS-Hosted ElasticSearch cluster. All application logs are retained for 30 days, before being curated for deletion.</p>
