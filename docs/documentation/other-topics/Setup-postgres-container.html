@@ -117,7 +117,7 @@
         <div class="app-pane__content toc-open-disabled">
           <main id="content" class="technical-documentation" data-module="anchored-headings">
               <h1 id="setup-postgres-container">Setup Postgres container</h1><p>If you need to quickly create DB for test/dev, you can set up a pod in your namespace running postgres in a container. Deploying <a href="https://github.com/helm/charts/tree/master/stable/postgresql">Bitnami PostgreSQL</a> as Helm Chart is the easiest way to get started with PostgreSQL on Kubernetes. This chart bootstraps a PostgreSQL deployment on a Kubernetes cluster using the Helm package manager.</p>
-<p>The <a href="tasks.html#deploying-an-application-to-the-cloud-platform-with-helm">django-reference-application</a> uses Bitnami PostgreSQL Helm Chart to add a postgres instance, you can use the same Chart to setup postgres in your namespace.</p>
+<p>The <a href="/documentation/deploying-an-app/app-deploy-helm.html#deploying-an-application-to-the-cloud-platform-with-helm">django-reference-application</a> uses Bitnami PostgreSQL Helm Chart to add a postgres instance, you can use the same Chart to setup postgres in your namespace.</p>
 
 <blockquote>
 <p>Note: Even though we are going to install a database within the Kubernetes cluster, it is recommended to use a database as a service offering such as <a href="https://aws.amazon.com/rds/">AWS RDS</a> if running in production.</p>
@@ -125,10 +125,10 @@
 <h4 id="requirements">Requirements</h4><p>It is assumed you have the following:</p>
 
 <ul>
-<li>You have <a href="tasks.html#creating-a-cloud-platform-environment">created an environment for your application</a></li>
+<li>You have <a href="/documentation/getting-started/env-create.html#creating-a-cloud-platform-environment">created an environment for your application</a></li>
 <li>You have installed <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/">Kubectl</a> on your local machine.</li>
-<li>You have <a href="tasks.html#authentication">Authenticated</a> to the cloud-platform-live-1 cluster.</li>
-<li>You have configured <a href="tasks.html#using-helm">Helm and Tiller</a>. </li>
+<li>You have <a href="/documentation/getting-started/kubectl-config.html#authentication">Authenticated</a> to the cloud-platform-live-1 cluster.</li>
+<li>You have configured <a href="/documentation/deploying-an-app/use-circleci-to-upgrade-app.html#continuous-deployment-of-an-application-using-circleci-and-helm">Helm and Tiller</a>. </li>
 </ul>
 <h4 id="set-up">Set up</h4><p>First copy <a href="https://github.com/ministryofjustice/cloud-platform-reference-app/blob/master/helm_deploy/django-app/charts/postgresql/values.yaml">values.yaml</a> file in to your working directory. You now have a <a href="https://github.com/helm/charts/tree/master/stable/postgresql">Bitnami PostgreSQL</a> Helm Chart &ldquo;values.yaml&rdquo; file. If you need to create your own values for postgresqlUsername,postgresqlPassword and postgresqlDatabase you can update the <code>values.yaml</code> or provide those as an argument on our installation command, the <code>set postgresql values</code> overwrites the value stored in <code>value.yaml</code> file.</p>
 <p>Run the following (replacing the <code>YourName</code> with your own name and <code>env-name</code> with your environment name:</p>

@@ -143,19 +143,19 @@
 <p>The migration steps that need to be taken may differ for individual applications.</p>
 <p>The following steps are for an application that is considered to be fairly normal and deployed through CircleCI.</p>
 <p>Appending these steps are a few extra consideration points, that are not covered in the example, but may apply to your application.</p>
-<h2 id="accessing-the-live-1-cluster">Accessing the Live-1 cluster</h2><p>To access the <code>live-1</code> cluster, follow the steps in the <a href="tasks.html#authentication">authentication</a> section of this guide, and download your Kube config file.</p>
+<h2 id="accessing-the-live-1-cluster">Accessing the Live-1 cluster</h2><p>To access the <code>live-1</code> cluster, follow the steps in the <a href="/documentation/getting-started/kubectl-config.html#authentication">authentication</a> section of this guide, and download your Kube config file.</p>
 <p>Kubernetes provides a <a href="https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/#set-the-kubeconfig-environment-variable">brief guide</a> on how to set up <code>kubectl</code> to use multiple config files simultaneously.</p>
 <p>You should now be able to switch contexts between the <code>live-0</code> and <code>live-1</code> clusters.</p>
 <h2 id="generating-a-new-environment">Generating a new environment</h2><p>Start by following the guide to generate a new environment, this follows the same process as was followed for <code>live-0</code>, and you should use the same details as you did for your environment then.</p>
-<p><a href="tasks.html#create-an-environment">Environment generation guide.</a></p>
+<p><a href="/documentation/getting-started/env-create.html#creating-a-cloud-platform-environment">Environment generation guide.</a></p>
 <p>Run a <code>kubectl get namespaces</code> to check your environment has been successfully created.</p>
 <h2 id="generating-a-new-ecr-repository">Generating a new ECR repository</h2><p>Once you&rsquo;ve generated a new environment in the <code>live-1</code> cluster, you will need to generate a new ECR repository for your application to be pushed to.</p>
 <p>The reason why the previous ECR repo can&rsquo;t be used is due to the new <code>live-1</code> cluster being hosted in a separate AWS account.</p>
-<p>If you need reminding of the ECR creation process, please see the <a href="tasks.html#creating-an-ecr-repository">user documentation</a>.</p>
+<p>If you need reminding of the ECR creation process, please see the <a href="/documentation/getting-started/ecr-setup.html#creating-an-ecr-repository">user documentation</a>.</p>
 <h2 id="changing-the-circleci-environment-variables">Changing the CircleCI environment variables</h2><p>Now that you have a new empty environment and ECR repository set-up, the next step is to point your existing CircleCI pipeline away from the <code>live-0</code> environment, to your new <code>live-1</code> environment.</p>
 <p>This is done by replacing the CircleCI environment variables with the ones generated for your <code>live-1</code> environment and then rerunning the pipeline.</p>
 <p>Our helper script expects environment variables to be named according to the list below where <code>&lt;ENVIRONMENT&gt;</code> should be replaced by some identifier of your choosing (eg.: <code>STAGING</code>, <code>PRODUCTION</code>).</p>
-<p>Please refer to the instructions <a href="tasks.html#deploy-to-kubernetes">here</a>.
+<p>Please refer to the instructions <a href="/documentation/deploying-an-app/use-circleci-to-upgrade-app.html#continuous-deployment-of-an-application-using-circleci-and-helm">here</a>.
 The environment variables you will need to replace are as follows:</p>
 
 <div style="height:1px;font-size:1px;">&nbsp;</div>

@@ -144,7 +144,7 @@
 <h2 id="production-infrastructure">Production infrastructure</h2><p>Any infrastructure resources, such as databases or cache servers, should be of the same size, and running the same software (e.g. postgres) version, for the CP version of your app. as for the TD version.</p>
 <h2 id="network-traffic-whitelisting">Network traffic whitelisting</h2><p>The IP numbers from which your app&rsquo;s traffic originates will change. If your app. talks to any external services which care about its source IP addresses, you may need to arrange for those services to whitelist the cluster IPs.</p>
 <p>If you have whitelisted any IPs for inbound traffic, you will need to add the corresponding config to your kubernetes deploymnent files.</p>
-<p>This section of the user guide describes both of these procedures: <a href="https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#ip-whitelisting">IP whitelisting</a>.</p>
+<p>This section of the user guide describes both of these procedures: <a href="/documentation/other-topics/ip-whitelisting.html#ip-whitelisting">IP whitelisting</a>.</p>
 <h2 id="dns-changes">DNS changes</h2><p>When you are ready to switch from the TD version of your app. to the production version deployed in CP, the last step will be to change the <a href="https://en.wikipedia.org/wiki/Domain_Name_System">DNS</a> entries such that visitors to your app&rsquo;s domain are sent to the new CP version.</p>
 <p>It&rsquo;s important to plan this step carefully. Some things to think about include:</p>
 
@@ -188,7 +188,7 @@
 <li><p>Monitoring is included with the Cloud Platform</p>
 
 <ul>
-<li>The recommended solution is the combination of <a href="https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#monitoring-applications">Prometheus/AlertManager/Grafana</a></li>
+<li>The recommended solution is the combination of <a href="/#monitoring-applications">Prometheus/AlertManager/Grafana</a></li>
 <li>You can still use <a href="https://sentry.service.dsd.io/mojds">Sentry</a></li>
 </ul></li>
 <li><p>Your application will be moved around, by kubernetes, from one worker node to another. i.e. your application should tolerate individual pods being killed and replaced.</p></li>
@@ -196,17 +196,17 @@
 </ol>
 <h2 id="additional-features">Additional features</h2>
 <ol>
-<li><p>A shared, highly-available deployment of reverse-proxy instances based on AWS ELB and Nginx runs in front of all application instances and offers features like <a href="https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#modsecurity-web-application-firewall">WAF</a>, custom <a href="https://github.com/ministryofjustice/cloud-platform-custom-error-pages">error pages</a> or <a href="https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#ip-whitelisting">IP-based ACLs</a> user-configurable per application but independent from its running state.</p>
+<li><p>A shared, highly-available deployment of reverse-proxy instances based on AWS ELB and Nginx runs in front of all application instances and offers features like <a href="/documentation/other-topics/modsecurity.html#modsecurity-web-application-firewall">WAF</a>, custom <a href="https://github.com/ministryofjustice/cloud-platform-custom-error-pages">error pages</a> or <a href="/documentation/other-topics/ip-whitelisting.html#ip-whitelisting">IP-based ACLs</a> user-configurable per application but independent from its running state.</p>
 
 <ul>
-<li><a href="tasks.html#add-http-basic-authentication">Basic auth</a> can be quickly turned on/off at ingress level, useful when deploying dev services.</li>
+<li><a href="/documentation/deploying-an-app/helloworld-app-deploy.html#add-http-basic-authentication">Basic auth</a> can be quickly turned on/off at ingress level, useful when deploying dev services.</li>
 </ul></li>
-<li><p>Several AWS resource types are tested and documented as <a href="https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#available-modules">Terraform modules</a>; they simplify deployment and default to best-practices options.</p></li>
+<li><p>Several AWS resource types are tested and documented as <a href="/documentation/deploying-an-app/add-aws-resources.html#available-modules">Terraform modules</a>; they simplify deployment and default to best-practices options.</p></li>
 </ol>
 <h2 id="obsoleted-features">Obsoleted features</h2>
 <ol>
-<li><p>Salt and CloudFormation are no longer used to define a deployment, replaced by any of Helm or Kubectl (see several <a href="https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">reference app</a> examples).</p></li>
-<li><p>Jenkins is no longer used to trigger deployments, teams are encouraged to <a href="https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#deploying-with-helm-and-circleci">configure CircleCI</a> directly from their repositories.</p></li>
+<li><p>Salt and CloudFormation are no longer used to define a deployment, replaced by any of Helm or Kubectl (see several <a href="/documentation/deploying-an-app/helloworld-app-deploy.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">reference app</a> examples).</p></li>
+<li><p>Jenkins is no longer used to trigger deployments, teams are encouraged to <a href="/documentation/deploying-an-app/use-circleci-to-upgrade-app.html#continuous-deployment-of-an-application-using-circleci-and-helm">configure CircleCI</a> directly from their repositories.</p></li>
 <li><p>For application logs, the path <code>awslogs</code> + CloudWatch + Lambda is replaced by <code>fluentd</code>.</p></li>
 <li><p>Gandi and AWS ACM SSL certs are replaced by <a href="https://letsencrypt.org">Let&rsquo;s Encrypt</a></p></li>
 </ol>

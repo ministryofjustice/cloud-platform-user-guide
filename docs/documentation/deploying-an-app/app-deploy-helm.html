@@ -130,9 +130,9 @@
 
 <ul>
 <li>You have a basic understanding of what <a href="https://kubernetes.io/">Kubernetes</a> is.</li>
-<li>You have <a href="tasks.html#creating-a-cloud-platform-environment">created an environment for your application</a></li>
+<li>You have <a href="/documentation/getting-started/env-create.html#creating-a-cloud-platform-environment">created an environment for your application</a></li>
 <li>You have installed <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/">Kubectl</a> on your local machine.</li>
-<li>You have <a href="tasks.html#authentication">Authenticated</a> to the cloud-platform-live-1 cluster.</li>
+<li>You have <a href="/documentation/getting-started/kubectl-config.html#authentication">Authenticated</a> to the cloud-platform-live-1 cluster.</li>
 </ul>
 <h3 id="deploy-the-app">Deploy the app</h3><p>The reference application we&rsquo;re going to use is a very simple Django application with an on-cluster Postgresql database.</p>
 
@@ -147,12 +147,12 @@ $ cd cloud-platform-reference-app
 <h4 id="browse-the-cluster">Browse the cluster</h4><p>Let&rsquo;s make use of the command line tool <code>kubectl</code> to browse around the cluster to see what it looks like before we deploy our application:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>$ kubectl get pods --namespace &lt;env-name&gt;
 </code></pre></div><p><em>The <code>&lt;env-name&gt;</code> here is the environment you created, listed in the requirements section at the beginning of the document.</em></p>
-<p>If you receive the below error message then you&rsquo;ve either not typed in your namespace correctly or you don&rsquo;t have permission to perform a <code>get pods</code> command. Either way, you&rsquo;ll need to go back and review the <a href="tasks.html#creating-a-cloud-platform-environment">Creating an Environment</a> document previously mentioned.</p>
+<p>If you receive the below error message then you&rsquo;ve either not typed in your namespace correctly or you don&rsquo;t have permission to perform a <code>get pods</code> command. Either way, you&rsquo;ll need to go back and review the <a href="/documentation/getting-started/env-create.html#creating-a-cloud-platform-environment">Creating an Environment</a> document previously mentioned.</p>
 <div class="highlight"><pre class="highlight plaintext"><code>$ Error from server (Forbidden): pods is forbidden: User "test-user" cannot list pods in the namespace "demo"
 </code></pre></div><h4 id="using-helm">Using Helm</h4><p>Helm allows you to manage application deployment to Kubernetes using Charts. You can read about of some of the many features of <a href="https://docs.helm.sh/developing_charts/">Helm Charts</a>. We&rsquo;ve chosen to use Helm as the default way to deploy applications to the Cloud Platform as it provides useful tooling as an interface to the YAML files that Kubernetes uses to run.</p>
 <h5 id="tiller-rbac-configuration">Tiller RBAC Configuration</h5><p>There are two parts to Helm: The client and the Helm server (Tiller).</p>
 <p>We will create a <code>Service Account</code> resource by adding to your <code>01-rbac.yaml</code> file. This gives Helm the permissions it needs to deploy within your namespace.</p>
-<p>Add the following to the bottom of the <code>01-rbac.yaml</code> file you defined when you <a href="tasks.html#creating-a-cloud-platform-environment">created your environment</a>:</p>
+<p>Add the following to the bottom of the <code>01-rbac.yaml</code> file you defined when you <a href="/documentation/getting-started/env-create.html#creating-a-cloud-platform-environment">created your environment</a>:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>---
 apiVersion: v1
 kind: ServiceAccount
@@ -212,7 +212,7 @@ django-app-&lt;Name&gt;-postgresql-7b4bdff4b8-xdlw2   1/1       Running   0     
 <p>Let&rsquo;s check your host has a URL by running:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>$ kubectl get ingress --namespace &lt;env-name&gt;
 </code></pre></div><p>This will return the URL of your given app. Open it using your favourite browser.</p>
-<p>The application is secured with http basic authentication. The default credentials are user: <code>myuser</code>, password: <code>password123</code>. For more information, see <a href="tasks.html#add-http-basic-authentication">this topic</a>.</p>
+<p>The application is secured with http basic authentication. The default credentials are user: <code>myuser</code>, password: <code>password123</code>. For more information, see <a href="/documentation/deploying-an-app/helloworld-app-deploy.html#add-http-basic-authentication">this topic</a>.</p>
 <p>You should be met with an MoJ reference app with the title, <em>&#39;Cloud Platforms Deployment&rsquo;</em>. As we mentioned before, there is nothing complicated about this application. You can enter your name and job role, calling the on-cluster postgresql database.</p>
 <h4 id="view-the-logs">View the logs</h4><p>Each pod will generate logs that can be viewed via the API. Let&rsquo;s have a browse of our application logs.</p>
 <p>First grab the pod name:</p>

@@ -164,7 +164,7 @@ namespace.</p>
 <p>Once you have created an environment you will be able to perform actions using
 the <code>kubectl</code> tool in the namespace you have created.</p>
 <h2 id="objective">Objective</h2><p>By the end of this guide you&rsquo;ll have created a Kubernetes namespace ready for
-you to <a href="tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">deploy an application</a> into.</p>
+you to <a href="/documentation/deploying-an-app/helloworld-app-deploy.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">deploy an application</a> into.</p>
 <h2 id="create-an-environment">Create an environment</h2><h3 id="pre-requisites">Pre-requisites</h3>
 <ul>
 <li>Docker</li>
@@ -207,9 +207,9 @@ see yours in the list.</p>
 our <code>myenv-dev</code> namespace, we would run:</p>
 <p><code>$ kubectl get pods -n myenv-dev</code> or</p>
 <p><code>$ kubectl get pods --namespace myenv-dev</code></p>
-<h2 id="next-steps">Next steps</h2><p><a href="tasks.html#creating-an-ecr-repository">Create an ECR repository</a> to push your application docker image to.</p>
-<p>Then you can try <a href="tasks.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">deploying an app to Kubernetes manually</a>
-by writing some custom YAML files or <a href="tasks.html#deploying-an-application-to-the-cloud-platform-with-helm">deploying an app with Helm</a>,
+<h2 id="next-steps">Next steps</h2><p><a href="/documentation/getting-started/ecr-setup.html#creating-an-ecr-repository">Create an ECR repository</a> to push your application docker image to.</p>
+<p>Then you can try <a href="/documentation/deploying-an-app/helloworld-app-deploy.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">deploying an app to Kubernetes manually</a>
+by writing some custom YAML files or <a href="/documentation/deploying-an-app/app-deploy-helm.html#deploying-an-application-to-the-cloud-platform-with-helm">deploying an app with Helm</a>,
 a Kubernetes <a href="https://helm.sh/">package manager</a>.</p>
 <p>The remainder of this section we describe in detail the YAML files which define
 your namespace, in case you need to alter any values.</p>
@@ -233,13 +233,13 @@ file:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>resources/main.tf
 </code></pre></div><p>This file defines the standard terraform backend and providers which you will
 need when you add terraform modules to create the AWS resources your service
-will use (e.g. an <a href="tasks.html#creating-an-ecr-repository">ECR</a> for your docker images, <a href="tasks.html#create-an-rds-instance">RDS
+will use (e.g. an <a href="/documentation/getting-started/ecr-setup.html#creating-an-ecr-repository">ECR</a> for your docker images, <a href="/documentation/deploying-an-app/multicontainer-app-deploy.html#create-an-rds-instance">RDS
 databases</a>, and S3 buckets).</p>
 <h2 id="namespace-resource-limits">Namespace resource limits</h2><p>The amount of resources (i.e. CPU and memory) we allocate to new namespaces, by
 default, is deliberately low. When you have worked out how much resource your
 application actually needs, please raise a PR to adjust the limits on your
 namespace accordingly.</p>
-<p>For more information, please see this article on <a href="concepts.html#namespace-container-resource-limits">namespace limits</a>.</p>
+<p>For more information, please see this article on <a href="/documentation/concepts/namespace-limits.html#namespace-container-resource-limits">namespace limits</a>.</p>
 <h2 id="namespace-yaml-files">Namespace YAML files</h2><p>These files define key elements of the namespace and restrictions we want to
 place on it so that we have security and resource allocation properties.</p>
 <h3 id="00-namespace-yaml"><code>00-namespace.yaml</code></h3><p>The <code>00-namespace.yaml</code> file defines the namespace so that the Kubernetes

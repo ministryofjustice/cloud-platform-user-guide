@@ -193,8 +193,8 @@
 <li><a href="https://www.docker.com">Docker</a> is installed and configured.</li>
 <li>Kubectl is installed and configured (<code>brew install kubectl</code> on a Mac with <a href="https://brew.sh">Homebrew</a> installed)</li>
 <li>AWS CLI is installed (<code>brew install awscli</code> on a Mac with <a href="https://brew.sh">Homebrew</a> installed)</li>
-<li>You have <a href="tasks.html#creating-a-cloud-platform-environment">created an environment for your application</a></li>
-<li>You have <a href="tasks.html#creating-an-ecr-repository">created an Amazon ECR</a> to host your docker image</li>
+<li>You have <a href="/documentation/getting-started/env-create.html#creating-a-cloud-platform-environment">created an environment for your application</a></li>
+<li>You have <a href="/documentation/getting-started/ecr-setup.html#creating-an-ecr-repository">created an Amazon ECR</a> to host your docker image</li>
 </ul>
 <h2 id="step-1-build-your-docker-image">Step 1 - Build your docker image</h2>
 <ul>
@@ -212,7 +212,7 @@
 <h3 id="amazon-ecr-terminology">Amazon ECR Terminology</h3><p>Amazon ECR uses the terms <code>repository</code> and <code>image</code> in a rather confusing way. Normally, you would think of a docker image repository as holding multiple images, each with a different name, where each image can have multiple tags. Amazon ECR conflates the repository and image - i.e. you can only push images with the same name to a given ECR.</p>
 <p>So, if you created your ECR using the team_name <code>davids-dummy-team</code> and repo_name <code>davids-dummy-app</code>, then you can only push images to the ECR if they are named <code>davids-dummy-team/davids-dummy-app:[something]</code>. You are free to change the tag of the image (shown as [something], here), and some teams overload the tag value as a way to store multiple completely different docker images in a single ECR.</p>
 <h2 id="step-2-push-the-image-to-your-ecr">Step 2 - Push the image to your ECR</h2><h3 id="authenticating-to-your-docker-image-repository">Authenticating to your docker image repository</h3><p>You must authenticate to the docker image repository before you can push an image to it.</p>
-<p>To authenticate to your ECR, you will need the <code>access_key_id</code> and <code>secret_access_key</code> which were created for you when you created your ECR. To retrieve these, see the <a href="tasks.html#accessing-the-credentials">this section</a> of this guide.</p>
+<p>To authenticate to your ECR, you will need the <code>access_key_id</code> and <code>secret_access_key</code> which were created for you when you created your ECR. To retrieve these, see the <a href="/documentation/getting-started/ecr-setup.html#accessing-the-credentials">this section</a> of this guide.</p>
 <p><em>tl;dr</em> use this command:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>  kubectl -n [namespace_name] get secret [name of your secret] -o yaml
 </code></pre></div><p>Don&rsquo;t forget to base64 decode the <code>access_key_id</code> and <code>secret_access_key</code> values before using them.</p>
@@ -308,7 +308,7 @@ spec:
 <h2 id="step-4-deploy-the-application">Step 4 - Deploy the application</h2><p>With all of the deployment files configured, you can now deploy your application to the Cloud Platform.</p>
 <p>Start by listing the namespaces on the cluster you are connected to:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>  kubectl get namespaces
-</code></pre></div><p>The list that gets returned should include the one you <a href="tasks.html#creating-a-cloud-platform-environment">created earlier</a>, here we assume it is called <code>davids-dummy-dev</code>. Please change that to whatever your namespace (environment) is called, in all of the following commands.</p>
+</code></pre></div><p>The list that gets returned should include the one you <a href="/documentation/getting-started/env-create.html#creating-a-cloud-platform-environment">created earlier</a>, here we assume it is called <code>davids-dummy-dev</code>. Please change that to whatever your namespace (environment) is called, in all of the following commands.</p>
 <p>To deploy your application run the following command. This command assumes that the current directory is the root directory of your working copy of the <a href="https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app">demo application</a>. i.e. <code>kubectl_deploy</code> points to the directory where the deployment files are stored.</p>
 <div class="highlight"><pre class="highlight plaintext"><code>  kubectl apply --filename kubectl_deploy --namespace davids-dummy-dev
 </code></pre></div><p>You have to specify the namespace you want to deploy to, this should be the namespace of the environment you created.</p>
