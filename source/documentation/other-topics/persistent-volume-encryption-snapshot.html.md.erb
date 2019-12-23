@@ -1,0 +1,120 @@
+---
+title: Persistent Volume encryption at rest and daily snapshots
+last_reviewed_on: 2019-12-24
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+
+### Introduction
+
+This guide will give you an overview of how to set up encryption at rest for "[Persistent Volumes (PVs)][persistent-volumes]" and take daily snapshots to back up a PV.
+
+
+### Encrypting Persistent Volumes
+
+To enable encryption at rest on a PV set the `storageClassName` attribute of your [PersistentVolumeClaim] to [`gp2-expand`][gp2-expand]. This [Storage Class] sets `encrypted: "true"` on the underlying EBS volume.
+
+```
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: myclaim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 8Gi
+  storageClassName: gp2-expand
+  selector:
+    matchLabels:
+      release: "stable"
+    matchExpressions:
+      - {key: environment, operator: In, values: [dev]}
+
+```
+
+
+In the above PVC example, the cluster will [dynamically provision][dynamic-provisioning] a [Persistent Volume][persistent-volumes] for the PVC, using the `gp2-expand` [AWS EBS Storage Class][storage-class-aws-ebs], which will cause the PV to be encrypted using the [AWS Key Management Service (KMS)][amazon-kms].
+
+### Snapshots to back up Persistent Volumes
+
+You can take snapshots to back up Persistent Volumes using the [snapshot lifecycle policy][aws_dlm_lifecycle_policy].
+
+The example snapshot lifecycle policy below will create a snapshot of all tagged volumes every 24 hours starting at 05:00 UTC. As per the `retain_rule`, a maximum of 30 snapshots of the target volume will be retained.
+
+Using the example below create a "Data Lifecycle Management (DLM)" file called `dlm.tf` in your namespaces `resources` folder in the [environments repo][env-repo]. Amend the `tags_to_add` and replace `<pvc-name>` with the name of your PersistentVolumeClaim.
+
+> [Amazon Data Lifecycle Manager][aws_dlm_lifecycle_policy] uses `target_tags` to identify the EBS volumes to back up, so please make sure you update the `target_tags` with the right PVC name.
+
+```
+resource "aws_dlm_lifecycle_policy" "persistentvolume_backup" {
+  description        = "PersistentVolume lifecycle policy for <pvc-name>"
+  execution_role_arn = "arn:aws:iam::754256621582:role/dlm-lifecycle-role"
+  state              = "ENABLED"
+
+  policy_details {
+    resource_types = ["VOLUME"]
+
+    schedule {
+      name = "Daily 30 days persistentvolume snapshots for <pvc-name>"
+
+      create_rule {
+        interval      = 24
+        interval_unit = "HOURS"
+        times         = ["05:00"]
+      }
+
+      retain_rule {
+        count = 30
+      }
+
+      tags_to_add = {
+        SnapshotCreator  = "DLM"
+        application      = "test-application"
+        environment-name = "testenvname"
+        team_name        = "example-repo"
+        business-unit    = "example-bu"
+        application      = "exampleapp"
+        is-production    = "false"
+      }
+
+      copy_tags = true
+    }
+
+    target_tags = {
+      "kubernetes.io/created-for/pvc/name" = "<pvc-name>"
+    }
+  }
+}
+
+
+resource "kubernetes_secret" "persistentvolume_backup_sec" {
+  metadata {
+    name      = "persistentvolume-backup-output"
+    namespace = "namespace-name"
+  }
+
+  data = {
+    persistentvolume_backup_id = aws_dlm_lifecycle_policy.persistentvolume_backup.id
+  }
+}
+
+```
+
+### Restoring a Persistent Volume from a snapshot
+
+If you want to [restore a PV from a snapshot][restore-snapshot], speak to the cloud-platform team in the #ask-cloud-platform channel.
+
+[gp2-expand]: https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/storageclass.tf
+[env-repo]: https://github.com/ministryofjustice/cloud-platform-environments/
+[storage class]: https://kubernetes.io/docs/concepts/storage/storage-classes/
+[dynamic-provisioning]: https://kubernetes.io/docs/concepts/storage/dynamic-provisioning/
+[persistent-volumes]: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
+[amazon-kms]: https://aws.amazon.com/kms/
+[storage-class-aws-ebs]: https://kubernetes.io/docs/concepts/storage/storage-classes/#aws-ebs
+[aws_dlm_lifecycle_policy]: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/snapshot-lifecycle.html
+[restore-snapshot]: https://aws.amazon.com/blogs/compute/recovering-files-from-an-amazon-ebs-volume-backup/
+[PersistentVolumeClaim]: https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims
