@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta charset="utf-8">
+    <meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
+      <meta name="robots" content="noindex">
+
+    <title>Persistent Volume encryption at rest and daily snapshots | Cloud Platform User Guide</title>
+
+    <!--[if gt IE 8]><!--><link href="/stylesheets/screen.css" rel="stylesheet" media="screen" /><!--<![endif]-->
+    <!--[if lte IE 8]><link href="/stylesheets/screen-old-ie.css" rel="stylesheet" media="screen" /><![endif]-->
+
+    <link rel="canonical" href="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/persistent-volume-encryption-snapshot.html">
+
+
+    <link href="/stylesheets/print.css" rel="stylesheet" media="print" />
+    <script src="/javascripts/application.js"></script>
+
+      <meta property="og:image" content="https://user-guide.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="og:site_name" content="Cloud Platform User Guide" />
+      <meta property="og:title" content="Persistent Volume encryption at rest and daily snapshots" />
+      <meta property="og:type" content="object" />
+      <meta property="og:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/persistent-volume-encryption-snapshot.html" />
+      <meta property="twitter:card" content="summary" />
+      <meta property="twitter:domain" content="user-guide.cloud-platform.service.justice.gov.uk" />
+      <meta property="twitter:image" content="https://user-guide.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="twitter:title" content="Persistent Volume encryption at rest and daily snapshots | Cloud Platform User Guide" />
+      <meta property="twitter:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/persistent-volume-encryption-snapshot.html" />
+
+    
+  </head>
+
+  <body>
+    <div class="app-pane">
+      <div class="app-pane__header toc-open-disabled">
+        <a href="#content" class="skip-link">Skip to main content</a>
+
+        <header class="header header--full-width">
+  <div class="header__container">
+    <div class="header__brand">
+        <a href="/">
+        <span class="header__title">
+          Cloud Platform User Guide
+            <span class="phase-banner">INTERNAL</span>
+        </span>
+        </a>
+    </div>
+
+      <div data-module="navigation">
+        <button type="button" class="header__navigation-toggle js-nav-toggle" aria-controls="navigation" aria-label="Show or hide top level navigation">Menu</button>
+
+        <nav id="navigation" class="header__navigation js-nav" aria-label="Top Level Navigation" aria-hidden="true">
+          <ul>
+              <li>
+                <a href="mailto:platforms+user-guide@digital.justice.gov.uk?subject=User+guide+feedback">Feedback / Report a problem</a>
+              </li>
+              <li>
+                <a href="/">Documentation</a>
+              </li>
+              <li>
+                <a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub</a>
+              </li>
+          </ul>
+        </nav>
+      </div>
+  </div>
+</header>
+
+      </div>
+
+        <div id="toc-heading" class="toc-show fixedsticky">
+          <a href="#toc" class="toc-show__label js-toc-show" aria-controls="toc">
+            Table of contents <span class="toc-show__icon"></span>
+          </a>
+        </div>
+
+      <div class="app-pane__body" data-module="in-page-navigation">
+          <div class="app-pane__toc">
+            <div class="toc" data-module="table-of-contents">
+              <div class="search" data-module="search">
+  <form action="https://www.google.co.uk/search" method="get" role="search">
+    <input type="hidden" name="as_sitesearch" value="https://user-guide.cloud-platform.service.justice.gov.uk"/>
+    <label for="search"  class="search__label">Search (via Google)</label>
+    <input type="text" id="search" name="q" placeholder="Search" aria-controls="search-results" class="form-control" />
+  </form>
+  <div id="search-results" class="search-results" aria-hidden="true" role="dialog" aria-labelledby="search-results-title">
+    <div class="search-results__inner">
+      <button class="search-results__close">Close<span class="search-results__close-label"> search results</span></button>
+      <h2 id="search-results-title" class="search-results__title" aria-live="polite">Results</h2>
+      <div class="search-results__content"></div>
+    </div>
+  </div>
+</div>
+
+              <a href="#" class="toc__close js-toc-close" aria-controls="toc" aria-label="Hide table of contents"></a>
+              <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading">
+                      <ul>
+  <li>
+    <a href="#persistent-volume-encryption-at-rest-and-daily-snapshots">Persistent Volume encryption at rest and daily snapshots</a>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <a href="#introduction">Introduction</a>
+          </li>
+          <li>
+            <a href="#encrypting-persistent-volumes">Encrypting Persistent Volumes</a>
+          </li>
+          <li>
+            <a href="#snapshots-to-back-up-persistent-volumes">Snapshots to back up Persistent Volumes</a>
+          </li>
+          <li>
+            <a href="#restoring-a-persistent-volume-from-a-snapshot">Restoring a Persistent Volume from a snapshot</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
+              </nav>
+            </div>
+          </div>
+
+        <div class="app-pane__content toc-open-disabled">
+          <main id="content" class="technical-documentation" data-module="anchored-headings">
+              <h1 id="persistent-volume-encryption-at-rest-and-daily-snapshots">Persistent Volume encryption at rest and daily snapshots</h1><h3 id="introduction">Introduction</h3><p>This guide will give you an overview of how to set up encryption at rest for &ldquo;<a href="https://kubernetes.io/docs/concepts/storage/persistent-volumes/">Persistent Volumes (PVs)</a>&rdquo; and take daily snapshots to back up a PV.</p>
+<h3 id="encrypting-persistent-volumes">Encrypting Persistent Volumes</h3><p>To enable encryption at rest on a PV set the <code>storageClassName</code> attribute of your <a href="https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims">PersistentVolumeClaim</a> to <a href="https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/storageclass.tf"><code>gp2-expand</code></a>. This <a href="https://kubernetes.io/docs/concepts/storage/storage-classes/">Storage Class</a> sets <code>encrypted: &quot;true&quot;</code> on the underlying EBS volume.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: myclaim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 8Gi
+  storageClassName: gp2-expand
+  selector:
+    matchLabels:
+      release: "stable"
+    matchExpressions:
+      - {key: environment, operator: In, values: [dev]}
+
+</code></pre></div><p>In the above PVC example, the cluster will <a href="https://kubernetes.io/docs/concepts/storage/dynamic-provisioning/">dynamically provision</a> a <a href="https://kubernetes.io/docs/concepts/storage/persistent-volumes/">Persistent Volume</a> for the PVC, using the <code>gp2-expand</code> <a href="https://kubernetes.io/docs/concepts/storage/storage-classes/#aws-ebs">AWS EBS Storage Class</a>, which will cause the PV to be encrypted using the <a href="https://aws.amazon.com/kms/">AWS Key Management Service (KMS)</a>.</p>
+<h3 id="snapshots-to-back-up-persistent-volumes">Snapshots to back up Persistent Volumes</h3><p>You can take snapshots to back up Persistent Volumes using the <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/snapshot-lifecycle.html">snapshot lifecycle policy</a>.</p>
+<p>The example snapshot lifecycle policy below will create a snapshot of all tagged volumes every 24 hours starting at 05:00 UTC. As per the <code>retain_rule</code>, a maximum of 30 snapshots of the target volume will be retained.</p>
+<p>Using the example below create a &ldquo;Data Lifecycle Management (DLM)&rdquo; file called <code>dlm.tf</code> in your namespaces <code>resources</code> folder in the <a href="https://github.com/ministryofjustice/cloud-platform-environments/">environments repo</a>. Amend the <code>tags_to_add</code> and replace <code>&lt;pvc-name&gt;</code> with the name of your PersistentVolumeClaim.</p>
+
+<blockquote>
+<p><a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/snapshot-lifecycle.html">Amazon Data Lifecycle Manager</a> uses <code>target_tags</code> to identify the EBS volumes to back up, so please make sure you update the <code>target_tags</code> with the right PVC name.</p>
+</blockquote>
+<div class="highlight"><pre class="highlight plaintext"><code>resource "aws_dlm_lifecycle_policy" "persistentvolume_backup" {
+  description        = "PersistentVolume lifecycle policy for &lt;pvc-name&gt;"
+  execution_role_arn = "arn:aws:iam::754256621582:role/dlm-lifecycle-role"
+  state              = "ENABLED"
+
+  policy_details {
+    resource_types = ["VOLUME"]
+
+    schedule {
+      name = "Daily 30 days persistentvolume snapshots for &lt;pvc-name&gt;"
+
+      create_rule {
+        interval      = 24
+        interval_unit = "HOURS"
+        times         = ["05:00"]
+      }
+
+      retain_rule {
+        count = 30
+      }
+
+      tags_to_add = {
+        SnapshotCreator  = "DLM"
+        application      = "test-application"
+        environment-name = "testenvname"
+        team_name        = "example-repo"
+        business-unit    = "example-bu"
+        application      = "exampleapp"
+        is-production    = "false"
+      }
+
+      copy_tags = true
+    }
+
+    target_tags = {
+      "kubernetes.io/created-for/pvc/name" = "&lt;pvc-name&gt;"
+    }
+  }
+}
+
+
+resource "kubernetes_secret" "persistentvolume_backup_sec" {
+  metadata {
+    name      = "persistentvolume-backup-output"
+    namespace = "namespace-name"
+  }
+
+  data = {
+    persistentvolume_backup_id = aws_dlm_lifecycle_policy.persistentvolume_backup.id
+  }
+}
+
+</code></pre></div><h3 id="restoring-a-persistent-volume-from-a-snapshot">Restoring a Persistent Volume from a snapshot</h3><p>If you want to <a href="https://aws.amazon.com/blogs/compute/recovering-files-from-an-amazon-ebs-volume-backup/">restore a PV from a snapshot</a>, speak to the cloud-platform team in the #ask-cloud-platform channel.</p>
+
+
+              <div data-module='page-expiry' data-last-reviewed-on="2020-03-24">
+    <div class='page-expiry--not-expired'>
+      This page was last reviewed on 24 December 2019.
+
+        It needs to be reviewed again on 24 March 2020
+.
+    </div>
+
+    <div class='page-expiry--expired'>
+      This page was set to be reviewed before 24 March 2020.
+      This might mean the content is out of date.
+    </div>
+  </div>
+
+          </main>
+
+            <ul class="contribution-banner">
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/documentation/other-topics/persistent-volume-encryption-snapshot.html.md.erb">View source</a></li>
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'Persistent%20Volume%20encryption%20at%20rest%20and%20daily%20snapshots'&amp;body=Problem%20with%20'Persistent%20Volume%20encryption%20at%20rest%20and%20daily%20snapshots'%20(https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/persistent-volume-encryption-snapshot.html)">Report problem</a></li>
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub Repo</a></li>
+            </ul>
+
+          <footer class="footer">
+  <div class="footer__licence">
+    <a class="footer__licence-logo" href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" rel="license">Open Government Licence</a>
+    <p class="footer__licence-description">All content is available under the <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" rel="license">Open Government Licence v3.0</a>, except where otherwise stated</p>
+  </div>
+
+  <div class="footer__copyright">
+    <a class="footer__copyright-logo" href="http://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/copyright-and-re-use/crown-copyright/">© Crown copyright</a>
+  </div>
+</footer>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </body>
+</html>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138188246-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-138188246-1');
+</script>
+
+<script>
+  // Add the current window.location to the body of the
+  // feedback email message.
+  function sendFeedback(mailto, event) {
+    event.preventDefault();
+
+    var body = "Feedback/Problem on page: " + window.location + "\n";
+    var href = mailto + '&body=' + encodeURIComponent(body);
+
+    window.location = href;
+  }
+
+  $(document).ready(function() {
+    var feedbackLink = $('a[href^="mailto:"]:contains("Feedback")')[0];
+    var mailto = feedbackLink.href;
+    $(feedbackLink).on('click', function(event) { sendFeedback(mailto, event); });
+  });
+</script>
