@@ -9,15 +9,12 @@ review_in: 3 months
 
 ### Introduction
 
-This guide will give you an overview of how to set encryption at rest for the "[Persistent Volume (PV)][persistent-volumes]" and daily snapshots taken to back up PV. 
+This guide will give you an overview of how to set up encryption at rest for "[Persistent Volumes (PVs)][persistent-volumes]" and take daily snapshots to back up a PV.
 
 
-### Encrypting Persistent Volume
+### Encrypting Persistent Volumes
 
-If you need encryption at rest enabled for PV, Cloud Platform team created [gp2-expand][gp2-expand] Storage Class. This `gp2-expand` [Storage Class][storage class] have set with parameter `encrypted: "true"`, which denotes the EBS volume should be encrypted.
-
-The name of a StorageClass object is significant, you should match the "[PersistentVolumeClaim (PVC)][persistentvolumeclaims]" to [gp2-expand][gp2-expand] Storage Class, by setting the storageClassName attribute to the name of a `gp2-expand`, as shown in the example below. 
-
+To enable encryption at rest on a PV set the `storageClassName` attribute of your [PersistentVolumeClaim] to [`gp2-expand`][gp2-expand]. This [Storage Class] sets `encrypted: "true"` on the underlying EBS volume.
 
 ```
 kind: PersistentVolumeClaim
@@ -40,20 +37,17 @@ spec:
 ```
 
 
-Using the above PVC example, the cluster will try to [dynamically provision][dynamic-provisioning] a [Persistent Volume][persistent-volumes] specially for the PVC. This provisioning is based on [gp2-expand][gp2-expand] [Storage Class][storage-class-aws-ebs], which will encrypt the PV using the [KMS][amazon-kms].
+In the above PVC example, the cluster will [dynamically provision][dynamic-provisioning] a [Persistent Volume][persistent-volumes] for the PVC, using the `gp2-expand` [AWS EBS Storage Class][storage-class-aws-ebs], which will cause the PV to be encrypted using the [AWS Key Management Service (KMS)][amazon-kms].
 
+### Snapshots to back up Persistent Volumes
 
-### Snapshots to back up Persistent Volume
+You can take snapshots to back up Persistent Volumes using the [snapshot lifecycle policy][aws_dlm_lifecycle_policy].
 
-You can take snapshots to back up Persistent Volume, that can be done using the [snapshot lifecycle policy][aws_dlm_lifecycle_policy]. This example snapshot lifecycle policy below will create a snapshot of all tagged volumes, every 24 hours starting at 05:00 UTC. A maximum of 30 snapshots will be retained of a target volume. The oldest snapshot retained will be <= 1 months old. 
+The example snapshot lifecycle policy below will create a snapshot of all tagged volumes every 24 hours starting at 05:00 UTC. As per the `retain_rule`, a maximum of 30 snapshots of the target volume will be retained.
 
-Using the example below create a "data lifecycle management", `dlm.tf` file in [environments repo][env-repo] under your namespace/resource. Amend the `tags_to_add` and replace `<pvc-name>` with the name of your PersistentVolumeClaim, you can get the name of your PVC, by running below command.
+Using the example below create a "Data Lifecycle Management (DLM)" file called `dlm.tf` in your namespaces `resources` folder in the [environments repo][env-repo]. Amend the `tags_to_add` and replace `<pvc-name>` with the name of your PersistentVolumeClaim.
 
-```
-kubectl -n namespace-name get persistentvolumeclaims pvc-name -o json | jq -r '.metadata.name'
-```
-
-Note: [Amazon Data Lifecycle Manager][aws_dlm_lifecycle_policy] uses `target_tags` to identify the EBS volumes to back up, make sure you update the `target_tags` with the right pvc name.
+> [Amazon Data Lifecycle Manager][aws_dlm_lifecycle_policy] uses `target_tags` to identify the EBS volumes to back up, so please make sure you update the `target_tags` with the right PVC name.
 
 ```
 resource "aws_dlm_lifecycle_policy" "persistentvolume_backup" {
@@ -110,11 +104,9 @@ resource "kubernetes_secret" "persistentvolume_backup_sec" {
 
 ```
 
-### Restore volume from a snapshot
+### Restoring a Persistent Volume from a snapshot
 
-If you want to restore volume from a snapshot, speak to cloud-platform team in the #ask-cloud-platform channel. Cloud platform team will [Restore a volume from an EBS snapshot] [restore-snapshot]
-
-
+If you want to [restore a PV from a snapshot][restore-snapshot], speak to the cloud-platform team in the #ask-cloud-platform channel.
 
 [gp2-expand]: https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/storageclass.tf
 [env-repo]: https://github.com/ministryofjustice/cloud-platform-environments/
@@ -125,4 +117,4 @@ If you want to restore volume from a snapshot, speak to cloud-platform team in t
 [storage-class-aws-ebs]: https://kubernetes.io/docs/concepts/storage/storage-classes/#aws-ebs
 [aws_dlm_lifecycle_policy]: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/snapshot-lifecycle.html
 [restore-snapshot]: https://aws.amazon.com/blogs/compute/recovering-files-from-an-amazon-ebs-volume-backup/
-[persistentvolumeclaims]: https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims
+[PersistentVolumeClaim]: https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims
