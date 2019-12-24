@@ -65,6 +65,26 @@ resource "kubernetes_secret" "example_route53_zone_sec" {
 
 ```
 
+#### Add DNS records to a route53 zone
+
+Add DNS records for the zone you created, using the [aws_route53_record][aws_route53_record] terraform resource.
+
+Example below, will add a record set of type "CNAME" to the route53 zone.
+
+```
+resource "aws_route53_record" "add_cname_email" {
+  name    = "YOUR DOMAIN GOES HERE"
+  zone_id = aws_route53_zone.example_team_route53_zone.zone_id
+  type    = "CNAME"
+  records = ["test.org"]
+  ttl     = "300"
+}
+
+```
+
+Follow the [example-usage][aws_route53_record], to create different type of record sets, using aws_route53_record resource.
+
+
 ## Creating the resource
 
 Make sure to replace the placeholders and example values above with relevant ones. If you are referring from variables in variables.tf, replace with `var.VARIABLE NAME`. Commit your changes to a branch and raise a pull request.
@@ -78,3 +98,4 @@ Provide them with the domain name, the Cloud Platform team will finalize the pro
 [env-repo]: https://github.com/ministryofjustice/cloud-platform-environments
 [aws-hosted-zone]: https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/AboutHZWorkingWith.html
 [support ticket]: http://goo.gl/msfGiS
+[aws_route53_record]: https://www.terraform.io/docs/providers/aws/r/route53_record.html
