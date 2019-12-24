@@ -171,7 +171,18 @@ resource "kubernetes_secret" "example_route53_zone_sec" {
   }
 }
 
-</code></pre></div><h2 id="creating-the-resource">Creating the resource</h2><p>Make sure to replace the placeholders and example values above with relevant ones. If you are referring from variables in variables.tf, replace with <code>var.VARIABLE NAME</code>. Commit your changes to a branch and raise a pull request.
+</code></pre></div><h4 id="add-dns-records-to-a-route53-zone">Add DNS records to a route53 zone</h4><p>Add DNS records for the zone you created, using the <a href="https://www.terraform.io/docs/providers/aws/r/route53_record.html">aws_route53_record</a> terraform resource.</p>
+<p>Example below, will add a record set of type &ldquo;CNAME&rdquo; to the route53 zone.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>resource "aws_route53_record" "add_cname_email" {
+  name    = "YOUR DOMAIN GOES HERE"
+  zone_id = aws_route53_zone.example_team_route53_zone.zone_id
+  type    = "CNAME"
+  records = ["test.org"]
+  ttl     = "300"
+}
+
+</code></pre></div><p>Follow the <a href="https://www.terraform.io/docs/providers/aws/r/route53_record.html">example-usage</a>, to create different type of record sets, using aws_route53_record resource.</p>
+<h2 id="creating-the-resource">Creating the resource</h2><p>Make sure to replace the placeholders and example values above with relevant ones. If you are referring from variables in variables.tf, replace with <code>var.VARIABLE NAME</code>. Commit your changes to a branch and raise a pull request.
 Once approved, you can merge and the changes will be applied.
 Shortly after, to confirm the zone has been created, you should be able to access the <code>Zone_ID</code> as Secret on kubernetes in your namespace.</p>
 <p>Please raise a <a href="http://goo.gl/msfGiS">support ticket</a> with the Cloud Platform.</p>
