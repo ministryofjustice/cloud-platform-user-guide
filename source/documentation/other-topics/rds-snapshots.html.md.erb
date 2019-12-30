@@ -1,0 +1,17 @@
+---
+title: RDS Snapshots
+last_reviewed_on: 2019-12-30
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+In RDS, snapshots have multiple purposes: migrations, backups, etc. When RDS instances are created using [Cloud Platform RDS terraform module](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance) an IAM user account is created for management purposes (e.g RDS snapshots) - allowing snapshot create, delete, copy, restore. 
+
+Examples about managing RDS snapshots using AWS CLI can be found in the [README](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance#4-managing-rds-snapshots---backups-and-restores) within the [RDS terraform module](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance)
+
+## Considerations
+
+- The amount of manual snapshot is limited per account - so it's important to cleanup
+- Daily snapshots are already happening out of the box. It's important to keep in mind that daily snapshots **are not related** with "Manual Snapshots"
+- Managing snapshots are the team responsibilities (including a snapshot restores). Teams are also responsible for cleaning up any manual snapshots in order to avoid hitting our AWS account limits
