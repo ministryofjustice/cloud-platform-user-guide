@@ -1,0 +1,115 @@
+---
+title: Deploying to the Cloud Platform
+last_reviewed_on: 2020-01-02
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+## Declarative, not Imperative
+
+Deploying to kubernetes is done **declaratively** rather than imperatively. So,
+instead of defining a list of instructions to be carried out (e.g. "install
+these gems, then run this install script"), instead you tell the cluster what
+state it should be in, and then leave it to the cluster to do whatever is
+necessary to get from the state it's in to the state you want it to be in.
+
+By 'state' here, we usually mean something like *"there should be 4 pods, each
+running an instance of this docker image, listening on port 3000, with a
+service called 'rails-app' distributing inbound traffic to them."*
+
+Much of the configuration of your service on the cloud platform will be done
+via kubernetes deployment objects. You can learn more about deployments, and
+see an example, [here][kubernetes deployments].
+
+## Use image tags
+
+You specify the docker images which comprise your application like this:
+
+```
+image: my-awesome-app:0.8.1
+```
+
+The `0.8.1` above refers to the **tag** of the named docker image. This is
+often a semantic version number, as above, but it could also be the hash of a
+specific commit in the underlying software repo.
+
+```
+image: my-awesome-app:c135228626f0d647d699ecb3e9572dbd3750ec3d
+```
+
+It is possible to omit the tag altogether:
+
+```
+image: my-awesome-app
+```
+
+If you do this, you will get the `latest` version of the image (`latest` is the
+default tag value that all docker images have, assigned to the last version
+pushed to the image repository).
+
+We strongly advise against deploying the `latest` version of any images.
+Doing this makes it difficult or impossible to reproduce a known state, for
+example if you wanted to roll back a deployment to an earlier version. **Always
+specify specific tagged versions of your docker images.**
+
+## Multiple replicas
+
+Kubernetes makes it trivially simple to deploy your services in a
+high-availability configuration.  All you need to do is set the value of
+`replicas` in your [deployments][kubernetes deployments] to a value higher than
+1. For production services, we recommend 4 as a sensible number of replicas.
+
+This means that, in the event that a [worker node] dies, taking one of your
+replicas with it, the remaining replicas will handle all application traffic,
+so that there is no downtime for your service while the missing replica is
+replaced.
+
+> Note: Kubernetes will automatically try to schedule your replicas on
+different worker nodes, to minimise the impact of a node outage on all the
+services running in the cluster.
+
+NB: Running multiple replicas is usually sensible for things like web
+application servers, where you just want to be sure that an instance of your
+app. is always available to service web requests. But, for some types of
+workload, such as background job processing, it might make sense to ensure that
+you have zero or one instances, rather than one or more. An example of this
+would be a job processing tasks which **must** be handled in FIFO order -
+running multiple replicas in this case would mean tasks would be processed out
+of order. For workloads like this, consider a [Recreate] deployment strategy.
+
+## Zero Downtime Deploys
+
+This is another feature you get 'for free' from kubernetes.
+
+Your [deployments][kubernetes deployments] have a `strategy` section, which
+could look something like this:
+
+```
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 100%
+    maxUnavailable: 50%
+```
+
+`rollingUpdate` (the default deployment strategy) means that when your
+deployment is updated, or your pods need to be moved to another node, the
+cluster will create new instances before terminating the old ones. `maxSurge:
+100%` means that a complete additional copy of your deployment will be created
+before any of your old pods are terminated, and `maxUnavailable: 50%` means the
+cluster will only allow at most half of your pods being unavailable (e.g. if
+the new version of your service fails to deploy, for some reason).
+
+To redeploy your application with zero downtime, all you need to do is create
+an updated version of your deployment and apply it to the cluster, which will
+then take care of launching new pods and deleting old ones.
+
+More information about deployment strategies is available in the [kubernetes
+documentation][kubernetes deployments], and there is more discussion of zero
+downtime deployments in [this article].
+
+[kubernetes deployments]: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment
+[worker node]: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment
+[this article]: /documentation/other-topics/zero-downtime-deployment.html
+[Recreate]: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#recreate-deployment
