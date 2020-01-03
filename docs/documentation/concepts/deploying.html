@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta charset="utf-8">
+    <meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
+      <meta name="robots" content="noindex">
+
+    <title>Deploying to the Cloud Platform | Cloud Platform User Guide</title>
+
+    <!--[if gt IE 8]><!--><link href="/stylesheets/screen.css" rel="stylesheet" media="screen" /><!--<![endif]-->
+    <!--[if lte IE 8]><link href="/stylesheets/screen-old-ie.css" rel="stylesheet" media="screen" /><![endif]-->
+
+    <link rel="canonical" href="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/concepts/deploying.html">
+
+
+    <link href="/stylesheets/print.css" rel="stylesheet" media="print" />
+    <script src="/javascripts/application.js"></script>
+
+      <meta property="og:image" content="https://user-guide.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="og:site_name" content="Cloud Platform User Guide" />
+      <meta property="og:title" content="Deploying to the Cloud Platform" />
+      <meta property="og:type" content="object" />
+      <meta property="og:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/concepts/deploying.html" />
+      <meta property="twitter:card" content="summary" />
+      <meta property="twitter:domain" content="user-guide.cloud-platform.service.justice.gov.uk" />
+      <meta property="twitter:image" content="https://user-guide.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="twitter:title" content="Deploying to the Cloud Platform | Cloud Platform User Guide" />
+      <meta property="twitter:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/concepts/deploying.html" />
+
+    
+  </head>
+
+  <body>
+    <div class="app-pane">
+      <div class="app-pane__header toc-open-disabled">
+        <a href="#content" class="skip-link">Skip to main content</a>
+
+        <header class="header header--full-width">
+  <div class="header__container">
+    <div class="header__brand">
+        <a href="/">
+        <span class="header__title">
+          Cloud Platform User Guide
+            <span class="phase-banner">INTERNAL</span>
+        </span>
+        </a>
+    </div>
+
+      <div data-module="navigation">
+        <button type="button" class="header__navigation-toggle js-nav-toggle" aria-controls="navigation" aria-label="Show or hide top level navigation">Menu</button>
+
+        <nav id="navigation" class="header__navigation js-nav" aria-label="Top Level Navigation" aria-hidden="true">
+          <ul>
+              <li>
+                <a href="mailto:platforms+user-guide@digital.justice.gov.uk?subject=User+guide+feedback">Feedback / Report a problem</a>
+              </li>
+              <li>
+                <a href="/">Documentation</a>
+              </li>
+              <li>
+                <a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub</a>
+              </li>
+          </ul>
+        </nav>
+      </div>
+  </div>
+</header>
+
+      </div>
+
+        <div id="toc-heading" class="toc-show fixedsticky">
+          <a href="#toc" class="toc-show__label js-toc-show" aria-controls="toc">
+            Table of contents <span class="toc-show__icon"></span>
+          </a>
+        </div>
+
+      <div class="app-pane__body" data-module="in-page-navigation">
+          <div class="app-pane__toc">
+            <div class="toc" data-module="table-of-contents">
+              <div class="search" data-module="search">
+  <form action="https://www.google.co.uk/search" method="get" role="search">
+    <input type="hidden" name="as_sitesearch" value="https://user-guide.cloud-platform.service.justice.gov.uk"/>
+    <label for="search"  class="search__label">Search (via Google)</label>
+    <input type="text" id="search" name="q" placeholder="Search" aria-controls="search-results" class="form-control" />
+  </form>
+  <div id="search-results" class="search-results" aria-hidden="true" role="dialog" aria-labelledby="search-results-title">
+    <div class="search-results__inner">
+      <button class="search-results__close">Close<span class="search-results__close-label"> search results</span></button>
+      <h2 id="search-results-title" class="search-results__title" aria-live="polite">Results</h2>
+      <div class="search-results__content"></div>
+    </div>
+  </div>
+</div>
+
+              <a href="#" class="toc__close js-toc-close" aria-controls="toc" aria-label="Hide table of contents"></a>
+              <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading">
+                      <ul>
+  <li>
+    <a href="#deploying-to-the-cloud-platform">Deploying to the Cloud Platform</a>
+    <ul>
+      <li>
+        <a href="#declarative-not-imperative">Declarative, not Imperative</a>
+      </li>
+      <li>
+        <a href="#use-image-tags">Use image tags</a>
+      </li>
+      <li>
+        <a href="#multiple-replicas">Multiple replicas</a>
+      </li>
+      <li>
+        <a href="#zero-downtime-deploys">Zero Downtime Deploys</a>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
+              </nav>
+            </div>
+          </div>
+
+        <div class="app-pane__content toc-open-disabled">
+          <main id="content" class="technical-documentation" data-module="anchored-headings">
+              <h1 id="deploying-to-the-cloud-platform">Deploying to the Cloud Platform</h1><h2 id="declarative-not-imperative">Declarative, not Imperative</h2><p>Deploying to kubernetes is done <strong>declaratively</strong> rather than imperatively. So,
+instead of defining a list of instructions to be carried out (e.g. &ldquo;install
+these gems, then run this install script&rdquo;), instead you tell the cluster what
+state it should be in, and then leave it to the cluster to do whatever is
+necessary to get from the state it&rsquo;s in to the state you want it to be in.</p>
+<p>By &lsquo;state&rsquo; here, we usually mean something like <em>&ldquo;there should be 4 pods, each
+running an instance of this docker image, listening on port 3000, with a
+service called &#39;rails-app&rsquo; distributing inbound traffic to them.&rdquo;</em></p>
+<p>Much of the configuration of your service on the cloud platform will be done
+via kubernetes deployment objects. You can learn more about deployments, and
+see an example, <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment">here</a>.</p>
+<h2 id="use-image-tags">Use image tags</h2><p>You specify the docker images which comprise your application like this:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>image: my-awesome-app:0.8.1
+</code></pre></div><p>The <code>0.8.1</code> above refers to the <strong>tag</strong> of the named docker image. This is
+often a semantic version number, as above, but it could also be the hash of a
+specific commit in the underlying software repo.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>image: my-awesome-app:c135228626f0d647d699ecb3e9572dbd3750ec3d
+</code></pre></div><p>It is possible to omit the tag altogether:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>image: my-awesome-app
+</code></pre></div><p>If you do this, you will get the <code>latest</code> version of the image (<code>latest</code> is the
+default tag value that all docker images have, assigned to the last version
+pushed to the image repository).</p>
+<p>We strongly advise against deploying the <code>latest</code> version of any images.
+Doing this makes it difficult or impossible to reproduce a known state, for
+example if you wanted to roll back a deployment to an earlier version. <strong>Always
+specify specific tagged versions of your docker images.</strong></p>
+<h2 id="multiple-replicas">Multiple replicas</h2><p>Kubernetes makes it trivially simple to deploy your services in a
+high-availability configuration.  All you need to do is set the value of
+<code>replicas</code> in your <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment">deployments</a> to a value higher than
+1. For production services, we recommend 4 as a sensible number of replicas.</p>
+<p>This means that, in the event that a <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment">worker node</a> dies, taking one of your
+replicas with it, the remaining replicas will handle all application traffic,
+so that there is no downtime for your service while the missing replica is
+replaced.</p>
+
+<blockquote>
+<p>Note: Kubernetes will automatically try to schedule your replicas on
+different worker nodes, to minimise the impact of a node outage on all the
+services running in the cluster.</p>
+</blockquote>
+<p>NB: Running multiple replicas is usually sensible for things like web
+application servers, where you just want to be sure that an instance of your
+app. is always available to service web requests. But, for some types of
+workload, such as background job processing, it might make sense to ensure that
+you have zero or one instances, rather than one or more. An example of this
+would be a job processing tasks which <strong>must</strong> be handled in FIFO order -
+running multiple replicas in this case would mean tasks would be processed out
+of order. For workloads like this, consider a <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#recreate-deployment">Recreate</a> deployment strategy.</p>
+<h2 id="zero-downtime-deploys">Zero Downtime Deploys</h2><p>This is another feature you get &#39;for free&rsquo; from kubernetes.</p>
+<p>Your <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment">deployments</a> have a <code>strategy</code> section, which
+could look something like this:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 100%
+    maxUnavailable: 50%
+</code></pre></div><p><code>rollingUpdate</code> (the default deployment strategy) means that when your
+deployment is updated, or your pods need to be moved to another node, the
+cluster will create new instances before terminating the old ones. <code>maxSurge:
+100%</code> means that a complete additional copy of your deployment will be created
+before any of your old pods are terminated, and <code>maxUnavailable: 50%</code> means the
+cluster will only allow at most half of your pods being unavailable (e.g. if
+the new version of your service fails to deploy, for some reason).</p>
+<p>To redeploy your application with zero downtime, all you need to do is create
+an updated version of your deployment and apply it to the cluster, which will
+then take care of launching new pods and deleting old ones.</p>
+<p>More information about deployment strategies is available in the <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment">kubernetes
+documentation</a>, and there is more discussion of zero
+downtime deployments in <a href="/documentation/other-topics/zero-downtime-deployment.html">this article</a>.</p>
+
+
+              <div data-module='page-expiry' data-last-reviewed-on="2020-04-02">
+    <div class='page-expiry--not-expired'>
+      This page was last reviewed on 2 January 2020.
+
+        It needs to be reviewed again on 2 April 2020
+.
+    </div>
+
+    <div class='page-expiry--expired'>
+      This page was set to be reviewed before 2 April 2020.
+      This might mean the content is out of date.
+    </div>
+  </div>
+
+          </main>
+
+            <ul class="contribution-banner">
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/documentation/concepts/deploying.html.md.erb">View source</a></li>
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'Deploying%20to%20the%20Cloud%20Platform'&amp;body=Problem%20with%20'Deploying%20to%20the%20Cloud%20Platform'%20(https://user-guide.cloud-platform.service.justice.gov.uk/documentation/concepts/deploying.html)">Report problem</a></li>
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub Repo</a></li>
+            </ul>
+
+          <footer class="footer">
+  <div class="footer__licence">
+    <a class="footer__licence-logo" href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" rel="license">Open Government Licence</a>
+    <p class="footer__licence-description">All content is available under the <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" rel="license">Open Government Licence v3.0</a>, except where otherwise stated</p>
+  </div>
+
+  <div class="footer__copyright">
+    <a class="footer__copyright-logo" href="http://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/copyright-and-re-use/crown-copyright/">© Crown copyright</a>
+  </div>
+</footer>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </body>
+</html>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138188246-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-138188246-1');
+</script>
+
+<script>
+  // Add the current window.location to the body of the
+  // feedback email message.
+  function sendFeedback(mailto, event) {
+    event.preventDefault();
+
+    var body = "Feedback/Problem on page: " + window.location + "\n";
+    var href = mailto + '&body=' + encodeURIComponent(body);
+
+    window.location = href;
+  }
+
+  $(document).ready(function() {
+    var feedbackLink = $('a[href^="mailto:"]:contains("Feedback")')[0];
+    var mailto = feedbackLink.href;
+    $(feedbackLink).on('click', function(event) { sendFeedback(mailto, event); });
+  });
+</script>
