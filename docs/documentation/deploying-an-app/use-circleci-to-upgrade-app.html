@@ -170,7 +170,7 @@
   ...
   namespace: cm..cA<span class="o">==</span>
   token: ZX...EE<span class="o">=</span>
-</code></pre></div><h3 id="linking-repository-to-circleci">Linking Repository to CircleCI</h3><p>MoJ has as an account with CircleCI, please login to <a href="https://circleci.com/dashboard">CircleCI</a> using GitHub credentials. Select project, and if config.yml is in the repo CircleCI will build and run tests.</p>
+</code></pre></div><h3 id="linking-repository-to-circleci">Linking Repository to CircleCI</h3><p>MoJ has as an account with CircleCI, please login to <a href="https://circleci.com">CircleCI</a> using GitHub credentials. Select project, and if config.yml is in the repo CircleCI will build and run tests.</p>
 <h3 id="add-variables-to-circleci">Add variables to CircleCI</h3><p>There is a number of environment variables that you will need to set on your CircleCI project in order to build a docker image, push it to the ECR and trigger a deployment in your environment. On the project page, click the cog icon in the top right corner and select <code>Enviroment Variables</code> under <code>Build Settings</code>. The variables you will need to set are listed below.</p>
 <h4 id="aws-credentials">AWS credentials</h4><p>To authenticate with ECR, you will need to set:</p>
 
