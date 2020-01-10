@@ -39,7 +39,7 @@ These values represent the amount of CPU and memory that the cluster will **set 
 
 This means it is possible to run out of cluster resources before any work is actually performed, just by requesting (i.e. reserving) capacity.
 
-![Cluster namespace packing](../images/cluster-namespace-packing.png)
+![Cluster namespace packing](/images/cluster-namespace-packing.png)
 
 For this reason, we need to be conservative when assigning request limits to namespaces. This won't prevent your namespace from accessing resources that it needs, but a lower request limit will help us to use the capacity of the cluster more efficiently, to run everyone's workloads.
 
@@ -57,7 +57,7 @@ Kubernetes workloads are generally defined in terms of [pods], where each pod de
 
 Whenever the scheduler tries to schedule a pod, it reserves whatever request limits are specified for each container. If the deployment doesn't specify request limits for a given container, the default for the namespace will be used. This default comes from the namespace's [LimitRange]. In our case, the default we apply for new namespaces is specified [here][limit-range].
 
-![Deployment one replica](../images/deployment-one-replica.png)
+![Deployment one replica](/images/deployment-one-replica.png)
 
 The diagram above shows a namespace with a deployment consisting of four containers. If the service team wanted to run multiple replicas of this deployment, the scheduler would not allow it, because the namespace capacity limit (the pink square) is not enough to set aside the amount of resources that each of the containers say they want (the green square; i.e. you couldn't fit another green square of that size inside the pink square).
 
@@ -87,7 +87,7 @@ CPU values are in millicores (m). Memory values are in mebibytes (Mi).
 
 As you can see, we're doing quite badly in terms of efficient usage of cluster resources. Inside the namespace, we're requesting 2215 millicores of CPU, but only using 363, and we're requesting 13115Mi of memory, but only using 6795Mi.
 
-![Requested versus used](../images/requested-versus-used.png)
+![Requested versus used](/images/requested-versus-used.png)
 
 Worse still, we have a request limit of 10000m CPU and 24000Mi of memory (i.e. 10 CPU cores, and 25G of memory). Those resources have been set aside for the monitoring namespace, and are not available to run any other workloads.
 
