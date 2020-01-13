@@ -7,7 +7,7 @@ jobs:
     docker:
       # This docker image is created from the Dockerfile in
       # this repository.
-      - image: ministryofjustice/cloud-platform-user-guide:1.5
+      - image: ministryofjustice/cloud-platform-user-guide:1.6
         environment:
           # This is the domain on which the user guide is served
           DOMAIN: user-guide.cloud-platform.service.justice.gov.uk
@@ -35,6 +35,9 @@ jobs:
 
         # Build the user guide
       - run: bundle exec middleman build --build-dir docs
+
+        # Test the hyperlinks
+      - run: htmlproofer --allow-hash-href ./docs
 
         # Replace docs/.nojekyll (which gets deleted during the build process) so github knows we're
         # not using jekyll. Without this, github will try to process our files, and error.

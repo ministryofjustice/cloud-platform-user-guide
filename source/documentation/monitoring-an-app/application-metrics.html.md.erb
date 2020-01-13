@@ -15,7 +15,7 @@ The example application in this document will be the [Ruby reference app](https:
 The application latency [metric](https://prometheus.io/docs/concepts/metric_types/) is quite basic but our intention is to get you started.
 
 ### Assumptions
-To keep this document short we will assume you already have an application up and running in a namespace on the Cloud Platform, if not, please see [Deploying a multi-container application to the Cloud Platform](https://user-guide.cloud-platform.service.justice.gov.uk/tasks.html#deploying-a-multi-container-application-to-the-cloud-platform).
+To keep this document short we will assume you already have an application up and running in a namespace on the Cloud Platform, if not, please see [Deploying a multi-container application to the Cloud Platform](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/multicontainer-app-deploy.html#deploying-a-multi-container-application-to-the-cloud-platform).
 
 ### Changing the application code
 We need to add the Prometheus Ruby client library via a gem to give us our `/metrics` endpoint.
@@ -119,7 +119,7 @@ http_server_request_duration_seconds_sum{namespace="my-namespace"}
 ```
 
 The output will be something like:
-![Image of prometheus output](../images/prometheus.png)
+![Image of prometheus output](/images/prometheus.png)
 
 ### Example in full
 If you'd like to see the changes I've made to the [cloud-platform-multi-container-demo-app](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app), please see this [PR](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/pull/7).

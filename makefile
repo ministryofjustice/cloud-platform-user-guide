@@ -1,6 +1,8 @@
 IMAGE := cloud-platform-user-guide
 DOMAIN := user-guide.cloud-platform.service.justice.gov.uk
-VERSION := 1.5  # Change this in .circleci/config.yml if you update it here
+VERSION := 1.6  # Change this in .circleci/config.yml if you update it here
+LINKCHECKER := linkchecker --no-warnings --ignore-url=^mailto: -f ./.linkchecker.rc $(VERBOSE_FLAG)
+SERVER_PORT?=4567
 
 .built-docker-image: Dockerfile Gemfile Gemfile.lock
 	docker build -t $(IMAGE) .
@@ -40,6 +42,9 @@ build: .built-docker-image
 		$(IMAGE) bundle exec middleman build --build-dir docs
 	touch docs/.nojekyll
 	echo $(DOMAIN) > docs/CNAME
+
+test: 
+	htmlproofer --allow-hash-href ./docs
 
 # Convert the user guide to a folder-based structure
 convert:
