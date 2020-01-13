@@ -1,8 +1,6 @@
 IMAGE := cloud-platform-user-guide
 DOMAIN := user-guide.cloud-platform.service.justice.gov.uk
 VERSION := 1.6  # Change this in .circleci/config.yml if you update it here
-LINKCHECKER := linkchecker --no-warnings --ignore-url=^mailto: -f ./.linkchecker.rc $(VERBOSE_FLAG)
-SERVER_PORT?=4567
 
 .built-docker-image: Dockerfile Gemfile Gemfile.lock
 	docker build -t $(IMAGE) .
