@@ -37,7 +37,7 @@ jobs:
       - run: bundle exec middleman build --build-dir docs
 
         # Test the hyperlinks
-      - run: htmlproofer --allow-hash-href ./docs
+      - run: bundle exec htmlproofer --allow-hash-href ./docs
 
         # Replace docs/.nojekyll (which gets deleted during the build process) so github knows we're
         # not using jekyll. Without this, github will try to process our files, and error.

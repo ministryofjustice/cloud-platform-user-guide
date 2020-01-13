@@ -42,7 +42,7 @@ build: .built-docker-image
 	echo $(DOMAIN) > docs/CNAME
 
 test: 
-	htmlproofer --allow-hash-href ./docs
+	bundle exec htmlproofer --allow-hash-href ./docs
 
 # Convert the user guide to a folder-based structure
 convert:
