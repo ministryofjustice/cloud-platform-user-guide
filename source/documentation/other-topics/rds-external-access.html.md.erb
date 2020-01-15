@@ -51,7 +51,12 @@ kubectl \
   --env="REMOTE_PORT=5432"
 ```
 
-Note: This creates a pod in your namespace, but without a deployment to manage it. This means that, if the cluster moves your workload to a different node, the port-forward pod will not be moved - it will just disappear. If you need your port-forward pod to persist, please use a [deployment].
+> This creates a pod in your namespace, but without a deployment to manage it.
+Manually-created pods (i.e. those which are not part of a [deployment]) block
+some cluster operations such as [draining a node] in order to replace it. For
+this reason, we have set up an automated process which will delete any such
+pods after 48 hours. If you need a port-forward pod to persist longer than
+this, please make it part of a [deployment].
 
 ### 2. Forward local traffic to the port-forward-pod
 
@@ -65,8 +70,6 @@ kubectl \
 ```
 
 You need to leave this running as long as you are accessing the database.
-
-> Manually-created pods (i.e. those which are not part of a [deployment]) block some cluster operations such as [draining a node] in order to replace it. For this reason, we have set up an automated process which will delete any such pods after 48 hours. If you need a port-forward pod to persist longer than this, please make it part of a [deployment].
 
 ### 3. Access the database
 
