@@ -18,7 +18,8 @@ This guide assumes the following:
 * You have [created a namespace for your application][env-create]
 
 ### Creating a slack webhook and amend Alertmanager
-This step requires the Cloud Platform team to create a receiver in [Alertmanager](https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/templates/prometheus-operator.yaml.tpl###L115) and a [Slack webhook](https://api.slack.com/incoming-webhooks).
+Create a [slack webhook](https://slack.com/intl/en-gb/help/articles/115005265063-Incoming-webhooks-for-Slack) if you dont already have one for the channel you want to send the alerts.
+Provide the webhook url securely to the Cloud Platform team to perform the next step.
 
 Create a ticket to request a new alert route in Alertmanager. The team will need the following information:
 
@@ -26,6 +27,10 @@ Create a ticket to request a new alert route in Alertmanager. The team will need
 - team name
 - application name
 - slack channel
+- severity level (warning/information)
+
+If you want an event/information type slack message for monitoring non-problem/non-failure type events 
+- e.g. a team wants to positively know something happened (like a database refresh, or app deployment etc), mention the severity level as `information`
 
 The team will provide you with a "`custom severity level`" that'll need to be defined in the next step. Please copy it to your clipboard.
 
@@ -86,6 +91,8 @@ spec:
 ```
 
 The `alert` name, `message` and `runbook_url` annotations will be sent to the Slack channel when the rule has been triggered.
+
+For information type alerts, you can also add a label `status_icon: information` to have a information icon on the alert title.
 
 You can view the applied rules with the following command:
 
