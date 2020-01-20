@@ -17,20 +17,22 @@ This guide assumes the following:
 
 * You have [created a namespace for your application][env-create]
 
-### Creating a slack webhook and amend Alertmanager
-Create a [slack webhook](https://slack.com/intl/en-gb/help/articles/115005265063-Incoming-webhooks-for-Slack) if you dont already have one for the channel you want to send the alerts.
-Provide the webhook url securely to the Cloud Platform team to perform the next step.
+### Create a slack webhook and amend Alertmanager
+1. Create a [slack webhook](https://slack.com/intl/en-gb/help/articles/115005265063-Incoming-webhooks-for-Slack) if you dont already have one for the channel you want to send the alerts.
 
-Create a ticket to request a new alert route in Alertmanager. The team will need the following information:
+2. Create a [kubernetes secret](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/add-secrets-to-deployment.html#adding-a-secret-to-an-application) to store the slack webhook. 
+
+3. Create a ticket to request a new alert route in Alertmanager. The Cloud Platform team will need the following information:
 
 - namespace name
 - team name
 - application name
 - slack channel
+- kubernetes secret name where the webhook url is stored
 - severity level (warning/information)
 
 If you want an event/information type slack message for monitoring non-problem/non-failure type events 
-- e.g. a team wants to positively know something happened (like a database refresh, or app deployment etc), mention the severity level as `information`
+- e.g. a team wants to positively know something happened (like a database refresh, or app deployment etc), specify the severity level as `information`
 
 The team will provide you with a "`custom severity level`" that'll need to be defined in the next step. Please copy it to your clipboard.
 
@@ -92,7 +94,7 @@ spec:
 
 The `alert` name, `message` and `runbook_url` annotations will be sent to the Slack channel when the rule has been triggered.
 
-For information type alerts, you can also add a label `status_icon: information` to have a information icon on the alert title.
+For information type alerts, you can also add a label `status_icon: information` to have an information icon on the alert title.
 
 You can view the applied rules with the following command:
 
