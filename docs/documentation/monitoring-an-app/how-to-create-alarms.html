@@ -108,7 +108,7 @@
             <a href="#prerequisites">Prerequisites</a>
           </li>
           <li>
-            <a href="#creating-a-slack-webhook-and-amend-alertmanager">Creating a slack webhook and amend Alertmanager</a>
+            <a href="#create-a-slack-webhook-and-amend-alertmanager">Create a slack webhook and amend Alertmanager</a>
           </li>
           <li>
             <a href="#create-a-prometheusrule">Create a PrometheusRule</a>
@@ -145,15 +145,23 @@
 <ul>
 <li>You have <a href="/documentation/getting-started/env-create.html#creating-a-cloud-platform-environment">created a namespace for your application</a></li>
 </ul>
-<h3 id="creating-a-slack-webhook-and-amend-alertmanager">Creating a slack webhook and amend Alertmanager</h3><p>This step requires the Cloud Platform team to create a receiver in <a href="https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/templates/prometheus-operator.yaml.tpl###L115">Alertmanager</a> and a <a href="https://api.slack.com/incoming-webhooks">Slack webhook</a>.</p>
-<p>Create a ticket to request a new alert route in Alertmanager. The team will need the following information:</p>
+<h3 id="create-a-slack-webhook-and-amend-alertmanager">Create a slack webhook and amend Alertmanager</h3>
+<ol>
+<li><p>Create a <a href="https://slack.com/intl/en-gb/help/articles/115005265063-Incoming-webhooks-for-Slack">slack webhook</a> if you dont already have one for the channel you want to send the alerts.</p></li>
+<li><p>Create a <a href="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/add-secrets-to-deployment.html#adding-a-secret-to-an-application">kubernetes secret</a> to store the slack webhook.</p></li>
+<li><p>Create a ticket to request a new alert route in Alertmanager. The Cloud Platform team will need the following information:</p></li>
+</ol>
 
 <ul>
 <li>namespace name</li>
 <li>team name</li>
 <li>application name</li>
 <li>slack channel</li>
+<li>kubernetes secret name where the webhook url is stored</li>
+<li>severity level (warning/information)</li>
 </ul>
+<p>If you want an event/information type slack message for monitoring non-problem/non-failure type events 
+- e.g. a team wants to positively know something happened (like a database refresh, or app deployment etc), specify the severity level as <code>information</code></p>
 <p>The team will provide you with a &ldquo;<code>custom severity level</code>&rdquo; that&rsquo;ll need to be defined in the next step. Please copy it to your clipboard.</p>
 <h3 id="create-a-prometheusrule">Create a PrometheusRule</h3><p>A <code>PrometheusRule</code> is a custom resource that defines your triggered alert. This file will contain the alert name, promql expression and time of check.</p>
 <p>To create your own custom alert you&rsquo;ll need to fill in the template below and deploy it to your namespace (tip: you can check rules in your namespace by running <code>kubectl get prometheusrule -n &lt;namespace&gt;</code>).</p>
@@ -207,6 +215,7 @@
         <span class="na">message</span><span class="pi">:</span> <span class="s">Namespace {{ $labels.namespace }} is using {{ printf "%0.0f" $value}}% of its {{ $labels.resource }} quota.</span>
         <span class="na">runbook_url</span><span class="pi">:</span> <span class="s">https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md###alert-name-kubequotaexceeded</span>
 </code></pre></div><p>The <code>alert</code> name, <code>message</code> and <code>runbook_url</code> annotations will be sent to the Slack channel when the rule has been triggered.</p>
+<p>For information type alerts, you can also add a label <code>status_icon: information</code> to have an information icon on the alert title.</p>
 <p>You can view the applied rules with the following command:</p>
 <div class="highlight"><pre class="highlight shell"><code>kubectl <span class="nt">-n</span> &lt;namespace&gt; describe prometheusrules prometheus-custom-rules-&lt;application_name&gt;
 </code></pre></div><h3 id="prometheusrule-examples">PrometheusRule examples</h3><p>If you&rsquo;re struggling for ideas on how and which alerts to setup, please see some examples <a href="https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/resources/prometheusrule-examples/application-alerts.yaml">here</a>.</p>
