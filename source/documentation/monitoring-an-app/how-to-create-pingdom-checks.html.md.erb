@@ -17,31 +17,33 @@ This guide assumes the following:
 * You have a slack channel to send alerts to
 
 ## Create a Pingdom check
-To create a Pingdom check simply add a `pingdom.tf` file in the resources directory of your namespace in your [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces/live-1.cloud-platform.service.justice.gov.uk) repository. You can define the conditions of your check using the resources outlined in the [Terraform community provider](https://github.com/russellcardullo/terraform-provider-pingdom). Here's a working example of a [basic check](https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/monitoring/resources).
+To create a Pingdom check simply add a `pingdom.tf` file in the resources directory of your namespace in your [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces/live-1.cloud-platform.service.justice.gov.uk) repository. You can define the conditions of your check using the resources outlined in the [Terraform community provider](https://github.com/russellcardullo/terraform-provider-pingdom). Here's a working example of a [basic check](https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces/live-1.cloud-platform.service.justice.gov.uk/monitoring/resources).
 
 ```yaml
-provider "pingdom" {}
+provider "pingdom" {
+}
 
-resource "pingdom_check" "cloud-platform-prometheus-live-0-healthcheck" {
-   type                     = "http"
-   name                     = "Prometheus - live-0 - cloud-platform - Healthcheck"
-   host                     = "prometheus.apps.cloud-platform-live-0.k8s.integration.dsd.io"
-   resolution               = 1
-   notifywhenbackup         = true
-   sendnotificationwhendown = 6
-   notifyagainevery         = 0
-   url                      = "/-/healthy"
-   encryption               = true
-   port                     = 443
-   tags                     = "businessunit_platforms,application_prometheus,component_healthcheck,isproduction_true,environment_prod,infrastructuresupport_platforms"
-   probefilters             = "region:EU"
-   publicreport             = "true"
- }
+resource "pingdom_check" "claim-criminal-injuries-compensation-uat" {
+  type                     = "http"
+  name                     = "cica - uat - cloud-platform - claim"
+  host                     = "uat.claim-criminal-injuries-compensation.service.justice.gov.uk"
+  resolution               = 1
+  notifywhenbackup         = true
+  sendnotificationwhendown = 6
+  notifyagainevery         = 0
+  url                      = "/"
+  encryption               = true
+  port                     = 443
+  tags                     = "businessunit_platforms,application_prometheus,component_healthcheck,isproduction_true,environment_uat,infrastructuresupport_platforms"
+  probefilters             = "region:EU"
+  publicreport             = "true"
+}
+
 ```
 
 **Note**: You'll need to include the `provider "pingdom"` and `terraform` blocks either in this file or in a `main.tf` file.
 
-This basic check simply checks that the host/url (in this case; https://prometheus.apps.cloud-platform-live-0.k8s.integration.dsd.io/-/healthy) returns a 200 every minute (resolution = 1 minute). When six (sendnotificationwhendown = 6) consecutive checks fail it triggers an alarm. As publicreport is set to true, you can view the status of your check by visiting the [public status page](http://pingdom.service.dsd.io), where this check would appear with the name "Prometheus - live-0 - cloud-platform - Healthcheck".
+This basic check simply checks that the host/url (in this case; uat.claim-criminal-injuries-compensation.service.justice.gov.uk) returns a 200 every minute (resolution = 1 minute). When six (sendnotificationwhendown = 6) consecutive checks fail it triggers an alarm. As publicreport is set to true, you can view the status of your check by visiting the [public status page](http://pingdom.service.dsd.io), where this check would appear with the name "cica - uat - cloud-platform - claim".
 
 [This](https://github.com/russellcardullo/terraform-provider-pingdom#pingdom-check) page explains all the attributes used in the check.
 
@@ -63,29 +65,25 @@ The team will provide you with an integration id, following the steps outlined [
 You can now add `integrationids` to your `pingdom.tf`. Appending the example above, your check will now appear as follows (assuming you were given 1000 as the integration id):
 
 ```yaml
-terraform {
-   backend "s3" {}
- }
+provider "pingdom" {
+}
 
- provider "pingdom" {}
-
- resource "pingdom_check" "cloud-platform-prometheus-live-0-healthcheck" {
-    type                     = "http"
-    name                     = "Prometheus - live-0 - cloud-platform - Healthcheck"
-    host                     = "prometheus.apps.cloud-platform-live-0.k8s.integration.dsd.io"
-    resolution               = 1
-    notifywhenbackup         = true
-    sendnotificationwhendown = 6
-    notifyagainevery         = 0
-    url                      = "/-/healthy"
-    encryption               = true
-    port                     = 443
-    tags                     = "businessunit_platforms,application_prometheus,component_healthcheck,isproduction_true,environment_prod,infrastructuresupport_platforms"
-    probefilters             = "region:EU"
-    publicreport             = "true"
-    integrationids           = [1000]
-  }
-
+resource "pingdom_check" "claim-criminal-injuries-compensation-uat" {
+  type                     = "http"
+  name                     = "cica - uat - cloud-platform - claim"
+  host                     = "uat.claim-criminal-injuries-compensation.service.justice.gov.uk"
+  resolution               = 1
+  notifywhenbackup         = true
+  sendnotificationwhendown = 6
+  notifyagainevery         = 0
+  url                      = "/"
+  encryption               = true
+  port                     = 443
+  tags                     = "businessunit_platforms,application_prometheus,component_healthcheck,isproduction_true,environment_uat,infrastructuresupport_platforms"
+  probefilters             = "region:EU"
+  publicreport             = "true"
+  integrationids           = [1000]
+}
 ```
 
 [env-create]: /documentation/getting-started/env-create.html#creating-a-cloud-platform-environment
