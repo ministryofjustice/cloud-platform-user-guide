@@ -111,6 +111,9 @@
       <li>
         <a href="#zero-downtime-deploys">Zero Downtime Deploys</a>
       </li>
+      <li>
+        <a href="#horizontal-pod-autoscaling">Horizontal Pod Autoscaling</a>
+      </li>
     </ul>
   </li>
 </ul>
@@ -191,6 +194,34 @@ then take care of launching new pods and deleting old ones.</p>
 <p>More information about deployment strategies is available in the <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment">kubernetes
 documentation</a>, and there is more discussion of zero
 downtime deployments in <a href="/documentation/other-topics/zero-downtime-deployment.html">this article</a>.</p>
+<h2 id="horizontal-pod-autoscaling">Horizontal Pod Autoscaling</h2><p>Kubernetes make it easy to ensure you have the right number of pod replicas to 
+meet your current computational needs. This can be done by setting up Horizontal Pod Autoscaler. 
+The metrics you specify in the <code>HorizontalPodAutoscaler manifest</code> will determine the number 
+of pods needed, and set the thresholds at which pods should be created or removed.</p>
+<p>The usual metrics are CPU and memory usage, but you can also specify your own custom metrics.</p>
+<p>To create the horizontal pod autoscaler for your deployment, create a <code>hpa-myapp.yaml</code> similar to:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: my-app-name
+  namespace: my-namespace
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: my-app-name
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 50
+</code></pre></div><p>issue the following command:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>kubectl apply -f hpa-myapp.yaml -n my-namespace
+horizontalpodautoscaler.autoscaling/hpa-myapp autoscaled
+</code></pre></div><p>To check the current status of the autoscalar run:
+<code>
+kubectl get hpa -n my-namespace
+</code>
+When the CPU comsumption has increased more than 50%, you can see your deployment getting resized to the number of replicas required.</p>
+<p>For more examples and how to use custom metrics, see <a href="https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough">Horizontal Pod Autoscaler Walkthrough</a></p>
 
 
               <div data-module='page-expiry' data-last-reviewed-on="2020-04-02">
