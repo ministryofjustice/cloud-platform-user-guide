@@ -43,10 +43,6 @@ This means it is possible to run out of cluster resources before any work is act
 
 For this reason, we need to be conservative when assigning request limits to namespaces. This won't prevent your namespace from accessing resources that it needs, but a lower request limit will help us to use the capacity of the cluster more efficiently, to run everyone's workloads.
 
-## Namespace Usage Report
-
-We publish a web page showing the resources requested for each namespace, versus the resources actually used here.
-
 ## Container request limits
 
 The smallest unit of work the cluster cares about is a container.
