@@ -131,26 +131,28 @@
 <li>You have <a href="/documentation/getting-started/env-create.html#creating-a-cloud-platform-environment">created a namespace for your application</a></li>
 <li>You have a slack channel to send alerts to</li>
 </ul>
-<h2 id="create-a-pingdom-check">Create a Pingdom check</h2><p>To create a Pingdom check simply add a <code>pingdom.tf</code> file in the resources directory of your namespace in your <a href="https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces/live-1.cloud-platform.service.justice.gov.uk">cloud-platform-environments</a> repository. You can define the conditions of your check using the resources outlined in the <a href="https://github.com/russellcardullo/terraform-provider-pingdom">Terraform community provider</a>. Here&rsquo;s a working example of a <a href="https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/monitoring/resources">basic check</a>.</p>
-<div class="highlight"><pre class="highlight yaml"><code><span class="s">provider "pingdom" {}</span>
+<h2 id="create-a-pingdom-check">Create a Pingdom check</h2><p>To create a Pingdom check simply add a <code>pingdom.tf</code> file in the resources directory of your namespace in your <a href="https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces/live-1.cloud-platform.service.justice.gov.uk">cloud-platform-environments</a> repository. You can define the conditions of your check using the resources outlined in the <a href="https://github.com/russellcardullo/terraform-provider-pingdom">Terraform community provider</a>. Here&rsquo;s a working example of a <a href="https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces/live-1.cloud-platform.service.justice.gov.uk/monitoring/resources">basic check</a>.</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="s">provider "pingdom" {</span>
+<span class="err">}</span>
 
-<span class="s">resource "pingdom_check" "cloud-platform-prometheus-live-0-healthcheck" {</span>
-   <span class="s">type                     = "http"</span>
-   <span class="s">name                     = "Prometheus - live-0 - cloud-platform - Healthcheck"</span>
-   <span class="s">host                     = "prometheus.apps.cloud-platform-live-0.k8s.integration.dsd.io"</span>
-   <span class="s">resolution               = 1</span>
-   <span class="s">notifywhenbackup         = </span><span class="no">true</span>
-   <span class="s">sendnotificationwhendown = 6</span>
-   <span class="s">notifyagainevery         = 0</span>
-   <span class="s">url                      = "/-/healthy"</span>
-   <span class="s">encryption               = </span><span class="no">true</span>
-   <span class="s">port                     = 443</span>
-   <span class="s">tags                     = "businessunit_platforms,application_prometheus,component_healthcheck,isproduction_true,environment_prod,infrastructuresupport_platforms"</span>
-   <span class="s">probefilters             = "region:EU"</span>
-   <span class="s">publicreport             = "true"</span>
- <span class="s">}</span>
+<span class="s">resource "pingdom_check" "claim-criminal-injuries-compensation-uat" {</span>
+  <span class="s">type                     = "http"</span>
+  <span class="s">name                     = "cica - uat - cloud-platform - claim"</span>
+  <span class="s">host                     = "uat.claim-criminal-injuries-compensation.service.justice.gov.uk"</span>
+  <span class="s">resolution               = 1</span>
+  <span class="s">notifywhenbackup         = </span><span class="no">true</span>
+  <span class="s">sendnotificationwhendown = 6</span>
+  <span class="s">notifyagainevery         = 0</span>
+  <span class="s">url                      = "/"</span>
+  <span class="s">encryption               = </span><span class="no">true</span>
+  <span class="s">port                     = 443</span>
+  <span class="s">tags                     = "businessunit_platforms,application_prometheus,component_healthcheck,isproduction_true,environment_uat,infrastructuresupport_platforms"</span>
+  <span class="s">probefilters             = "region:EU"</span>
+  <span class="s">publicreport             = "true"</span>
+<span class="err">}</span>
+
 </code></pre></div><p><strong>Note</strong>: You&rsquo;ll need to include the <code>provider &quot;pingdom&quot;</code> and <code>terraform</code> blocks either in this file or in a <code>main.tf</code> file.</p>
-<p>This basic check simply checks that the host/url (in this case; https://prometheus.apps.cloud-platform-live-0.k8s.integration.dsd.io/-/healthy) returns a 200 every minute (resolution = 1 minute). When six (sendnotificationwhendown = 6) consecutive checks fail it triggers an alarm. As publicreport is set to true, you can view the status of your check by visiting the <a href="http://pingdom.service.dsd.io">public status page</a>, where this check would appear with the name &ldquo;Prometheus - live-0 - cloud-platform - Healthcheck&rdquo;.</p>
+<p>This basic check simply checks that the host/url (in this case; uat.claim-criminal-injuries-compensation.service.justice.gov.uk) returns a 200 every minute (resolution = 1 minute). When six (sendnotificationwhendown = 6) consecutive checks fail it triggers an alarm. As publicreport is set to true, you can view the status of your check by visiting the public status page - http://pingdom.service.dsd.io, where this check would appear with the name &ldquo;cica - uat - cloud-platform - claim&rdquo;.</p>
 <p><a href="https://github.com/russellcardullo/terraform-provider-pingdom#pingdom-check">This</a> page explains all the attributes used in the check.</p>
 <p>All resources, including Pingdom checks <strong>must</strong> be tagged and adhere to the technical guidance outlined <a href="https://github.com/ministryofjustice/technical-guidance/blob/master/standards/documenting-infrastructure-owners.md">here</a>. Ensure your check has appropriate tags before submitting a pull request.</p>
 <p>Once reviewed and merged to master, the pipeline will create your check in the MoJ Pingdom account.</p>
@@ -164,29 +166,25 @@
 </ul>
 <p>The team will provide you with an integration id, following the steps outlined <a href="https://github.com/ministryofjustice/cloud-platform-environments/blob/master/docs/creating-pingdom-webhook.md">here</a>.</p>
 <p>You can now add <code>integrationids</code> to your <code>pingdom.tf</code>. Appending the example above, your check will now appear as follows (assuming you were given 1000 as the integration id):</p>
-<div class="highlight"><pre class="highlight yaml"><code><span class="s">terraform {</span>
-   <span class="s">backend "s3" {}</span>
- <span class="s">}</span>
+<div class="highlight"><pre class="highlight yaml"><code><span class="s">provider "pingdom" {</span>
+<span class="err">}</span>
 
- <span class="s">provider "pingdom" {}</span>
-
- <span class="s">resource "pingdom_check" "cloud-platform-prometheus-live-0-healthcheck" {</span>
-    <span class="s">type                     = "http"</span>
-    <span class="s">name                     = "Prometheus - live-0 - cloud-platform - Healthcheck"</span>
-    <span class="s">host                     = "prometheus.apps.cloud-platform-live-0.k8s.integration.dsd.io"</span>
-    <span class="s">resolution               = 1</span>
-    <span class="s">notifywhenbackup         = </span><span class="no">true</span>
-    <span class="s">sendnotificationwhendown = 6</span>
-    <span class="s">notifyagainevery         = 0</span>
-    <span class="s">url                      = "/-/healthy"</span>
-    <span class="s">encryption               = </span><span class="no">true</span>
-    <span class="s">port                     = 443</span>
-    <span class="s">tags                     = "businessunit_platforms,application_prometheus,component_healthcheck,isproduction_true,environment_prod,infrastructuresupport_platforms"</span>
-    <span class="s">probefilters             = "region:EU"</span>
-    <span class="s">publicreport             = "true"</span>
-    <span class="s">integrationids           = [1000]</span>
-  <span class="s">}</span>
-
+<span class="s">resource "pingdom_check" "claim-criminal-injuries-compensation-uat" {</span>
+  <span class="s">type                     = "http"</span>
+  <span class="s">name                     = "cica - uat - cloud-platform - claim"</span>
+  <span class="s">host                     = "uat.claim-criminal-injuries-compensation.service.justice.gov.uk"</span>
+  <span class="s">resolution               = 1</span>
+  <span class="s">notifywhenbackup         = </span><span class="no">true</span>
+  <span class="s">sendnotificationwhendown = 6</span>
+  <span class="s">notifyagainevery         = 0</span>
+  <span class="s">url                      = "/"</span>
+  <span class="s">encryption               = </span><span class="no">true</span>
+  <span class="s">port                     = 443</span>
+  <span class="s">tags                     = "businessunit_platforms,application_prometheus,component_healthcheck,isproduction_true,environment_uat,infrastructuresupport_platforms"</span>
+  <span class="s">probefilters             = "region:EU"</span>
+  <span class="s">publicreport             = "true"</span>
+  <span class="s">integrationids           = [1000]</span>
+<span class="err">}</span>
 </code></pre></div>
 
               <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
