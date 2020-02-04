@@ -43,7 +43,7 @@ resource "pingdom_check" "claim-criminal-injuries-compensation-uat" {
 
 **Note**: You'll need to include the `provider "pingdom"` and `terraform` blocks either in this file or in a `main.tf` file.
 
-This basic check simply checks that the host/url (in this case; uat.claim-criminal-injuries-compensation.service.justice.gov.uk) returns a 200 every minute (resolution = 1 minute). When six (sendnotificationwhendown = 6) consecutive checks fail it triggers an alarm. As publicreport is set to true, you can view the status of your check by visiting the [public status page](http://pingdom.service.dsd.io), where this check would appear with the name "cica - uat - cloud-platform - claim".
+This basic check simply checks that the host/url (in this case; uat.claim-criminal-injuries-compensation.service.justice.gov.uk) returns a 200 every minute (resolution = 1 minute). When six (sendnotificationwhendown = 6) consecutive checks fail it triggers an alarm. As publicreport is set to true, you can view the status of your check by visiting the public status page - http://pingdom.service.dsd.io, where this check would appear with the name "cica - uat - cloud-platform - claim".
 
 [This](https://github.com/russellcardullo/terraform-provider-pingdom#pingdom-check) page explains all the attributes used in the check.
 
