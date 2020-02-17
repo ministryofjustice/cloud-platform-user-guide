@@ -29,14 +29,6 @@ If you want to restore your production RDS instance from a previous snapshot eit
 
     The output will have a list of snapshots available for that RDS instance. Pick the `DBSnapshotIdentifier` from which you want the RDS to be restored.
 
-   
-    ```
-    aws rds describe-db-snapshots --db-instance-identifier [db-instance-identifier]
-    ```
-    The `db-instance-identifier` is the first part (`cloud-platform-xxxxx`) of `rds_instance_address` in your kubernetes secret inside your namespace. 
-
-    The output will have a list of snapshots available for that RDS instance. Pick the `DBSnapshotIdentifier` from which you want the RDS to be restored.
-
 2. Update your current RDS manifest file (`rds.tf`) in the [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments) repo to include `snapshot-identifier` and raise the PR.
 
     ```
