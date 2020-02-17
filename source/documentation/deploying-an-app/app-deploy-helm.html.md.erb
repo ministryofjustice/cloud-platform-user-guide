@@ -212,3 +212,174 @@ The next step will be to create your own Helm Chart. You can try this with an ap
 [env-create]: /documentation/getting-started/env-create.html#creating-a-cloud-platform-environment
 [auth-to-cluster]: /documentation/getting-started/kubectl-config.html#authentication
 [basic-auth-topic]: /documentation/deploying-an-app/helloworld-app-deploy.html#add-http-basic-authentication
+
+## Migrate from Helm v2 to Helm v3
+
+One of the most important parts of upgrading to a new major release of Helm is the migration of data. This is especially true of Helm v2 to v3 considering the [architectural changes](https://helm.sh/blog/helm-3-released/#what-changed-in-helm-3) between the releases. This is where the `helm-2to3` plugin comes in.
+
+It helps with this migration by supporting:
+
+ - Migration of Helm v2 configuration.
+ - Migration of Helm v2 releases.
+ - Clean up Helm v2 configuration, release data and Tiller deployment.
+
+### Helm v3 CLI Binary
+
+As we do not want to override Helm v2 CLI binary, we need to perform an additional step to ensure that both CLI versions can co-exist until we are ready to remove Helm v2 CLI and all it’s related data:
+
+Download latest Helm v3 release from [here](https://github.com/helm/helm/releases), rename the binary to helm3 and store it in your path.
+
+```
+mv helm /usr/local/bin/helm3
+```
+
+You should now be able to check the version of helm v3 by running:
+
+```
+helm3 version --short
+```
+
+helm v3 does not install with any repositories including the `stable` repo, you can confirm this by running:
+
+```
+helm3 repo list
+```
+You should see the message `Error: no repositories to show`
+
+### Helm-2TO3 Plugin
+
+`helm-2to3` plugin will allow us to migrate and cleanup helm v2 configuration and releases to helm v3 in-place.
+
+Installed Kubernetes objects will not be modified or removed.
+
+To install the plugin:
+
+```
+helm3 plugin install https://github.com/helm/helm-2to3 -n <env-var>
+Downloading and installing helm-2to3 v0.3.0 ...
+https://github.com/helm/helm-2to3/releases/download/v0.3.0/helm-2to3_0.3.0_darwin_amd64.tar.gz
+Installed plugin: 2to3
+```
+
+```
+helm3 plugin list
+NAME  	VERSION	DESCRIPTION
+2to3  	0.3.0  	migrate and cleanup Helm v2 configuration and releases in-place to Helm v3
+```
+
+### Migrate helm v2 Configuration
+
+First we need to migrate Helm v2 config and data folders.
+
+It will migrate:
+
+ - Chart starters
+ - Repositories
+ - Plugins
+
+The safest way is to start with –dry-run flag:
+
+```
+helm3 2to3 move config --dry-run
+```
+
+This will show you all the commands and files that will be moving to helm3. To run the actual migration, run without the --dry-run flag:
+
+```
+helm3 2to3 move config
+```
+
+If you now run the helm3 repo list, you should get back the `stable` repo, and any other you have used in helm v2:
+
+```
+helm3 repo list
+NAME       	URL
+stable     	https://kubernetes-charts.storage.googleapis.com
+```
+
+### Migrate helm v2 releases
+
+The migration is conducted per release, you can get a list of all releases by running:
+
+```
+helm list --tiller-namespace <env-var>
+```
+
+The safest way to run the convert is to again use the --dry-run flag:
+
+```
+helm3 2to3 convert <release-name> --tiller-ns <env-var> --dry-run
+```
+
+To run the actual migration, run without the --dry-run flag:
+
+```
+helm3 2to3 convert <release-name> --tiller-ns <env-var>
+```
+
+To view if it was successful and a part of helm3, run a helm3 list:
+
+```
+helm3 list -n <env-var>
+```
+
+You have now migrated your release from helm v2 to helm v3. (If required, please migrate any other releases). However, the release is still listed on helm v2 and needs to be cleaned up.
+
+### Clean up of helm v2 data
+
+The last step is cleaning up the old data.
+
+It will clean: 
+
+ - Configuration (Helm home directory) 
+ - v2 release data 
+ - Tiller deployment
+
+```
+helm3 2to3 cleanup --tiller-ns <env-var> --dry-run
+```
+
+It will show what releases going to be deleted, Tiller service to be removed from your namespace and Helm v2 home folder will be deleted.
+
+`NOTE:` The cleanup command will remove the Helm v2 Configuration, Release Data and Tiller Deployment. It cleans up all releases managed by Helm v2. It will not be possible to restore them if you haven’t made a backup of the releases. Helm v2 will not be usable afterwards.
+
+To run the actual cleanup, run without the --dry-run flag:
+
+```
+helm3 2to3 cleanup --tiller-ns <env-var>
+```
+
+#### Tiller RBAC Configuration Removal 
+
+The Tiller Service Account resource created using your 01-rbac.yaml file in the cloud-platform-environments repo is no longer required. 
+
+Please create a PR to remove the `Tiller Service Account and RoleBinding` from the 01-rbac.yaml file.
+
+```
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tiller
+  namespace: myapp-dev ### Your namespace `<servicename-env>`
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: tiller
+  namespace: myapp-dev ### Your namespace `<servicename-env>`
+subjects:
+- kind: ServiceAccount
+  name: tiller
+  namespace: myapp-dev ### Your namespace `<servicename-env>`
+roleRef:
+  kind: ClusterRole
+  name: admin
+  apiGroup: rbac.authorization.k8s.io
+```
+
+A member of the Cloud-Platform team will `manually delete the Rolebinding` before this is applied, as the concourse pipeline is not able to delete Rolebindings currently.
+
+```
+kubectl -n <env-var> delete rolebindings tiller
+```
