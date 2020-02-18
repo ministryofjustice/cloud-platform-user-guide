@@ -112,6 +112,26 @@
           </li>
         </ul>
       </li>
+      <li>
+        <a href="#migrate-from-helm-v2-to-helm-v3">Migrate from Helm v2 to Helm v3</a>
+        <ul>
+          <li>
+            <a href="#helm-v3-cli-binary">Helm v3 CLI Binary</a>
+          </li>
+          <li>
+            <a href="#helm-2to3-plugin">Helm-2TO3 Plugin</a>
+          </li>
+          <li>
+            <a href="#migrate-helm-v2-configuration">Migrate helm v2 Configuration</a>
+          </li>
+          <li>
+            <a href="#migrate-helm-v2-releases">Migrate helm v2 releases</a>
+          </li>
+          <li>
+            <a href="#clean-up-of-helm-v2-data">Clean up of helm v2 data</a>
+          </li>
+        </ul>
+      </li>
     </ul>
   </li>
 </ul>
@@ -239,7 +259,95 @@ django-app-&lt;Name&gt;-postgresql-7b4bdff4b8-xdlw2   1/1       Running   0     
 </code></pre></div><p>And then confirm the pods are terminating as expected:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>$ kubectl get pods --namespace &lt;env-var&gt;
 </code></pre></div><h3 id="next-steps">Next steps</h3><p>The next step will be to create your own Helm Chart. You can try this with an application of your own or run through <a href="https://docs.bitnami.com/kubernetes/how-to/create-your-first-helm-chart/">Bitnami&rsquo;s excellent guide</a> on how to build using a simple quickstart.</p>
+<h2 id="migrate-from-helm-v2-to-helm-v3">Migrate from Helm v2 to Helm v3</h2><p>One of the most important parts of upgrading to a new major release of Helm is the migration of data. This is especially true of Helm v2 to v3 considering the <a href="https://helm.sh/blog/helm-3-released/#what-changed-in-helm-3">architectural changes</a> between the releases. This is where the <code>helm-2to3</code> plugin comes in.</p>
+<p>It helps with this migration by supporting:</p>
 
+<ul>
+<li>Migration of Helm v2 configuration.</li>
+<li>Migration of Helm v2 releases.</li>
+<li>Clean up Helm v2 configuration, release data and Tiller deployment.</li>
+</ul>
+<h3 id="helm-v3-cli-binary">Helm v3 CLI Binary</h3><p>As we do not want to overwrite Helm v2 CLI binary, we need to perform an additional step to ensure that both CLI versions can co-exist until we are ready to remove the Helm v2 CLI and all it’s related data:</p>
+<p>Download latest Helm v3 release from <a href="https://github.com/helm/helm/releases">here</a>, rename the binary to helm3 and store it in your path.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>mv helm /usr/local/bin/helm3
+</code></pre></div><p>You should now be able to check the version of helm v3 by running:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>helm3 version --short
+</code></pre></div><p>helm v3 does not install with any repositories including the <code>stable</code> repo, you can confirm this by running:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>helm3 repo list
+</code></pre></div><p>You should see the message <code>Error: no repositories to show</code></p>
+<h3 id="helm-2to3-plugin">Helm-2TO3 Plugin</h3><p><code>helm-2to3</code> plugin will allow us to migrate and cleanup helm v2 configuration and releases to helm v3 in-place.</p>
+<p>Installed Kubernetes objects will not be modified or removed.</p>
+<p>To install the plugin:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>helm3 plugin install https://github.com/helm/helm-2to3 -n &lt;namespace-name&gt;
+Downloading and installing helm-2to3 v0.3.0 ...
+https://github.com/helm/helm-2to3/releases/download/v0.3.0/helm-2to3_0.3.0_darwin_amd64.tar.gz
+Installed plugin: 2to3
+</code></pre></div><div class="highlight"><pre class="highlight plaintext"><code>helm3 plugin list
+NAME    VERSION DESCRIPTION
+2to3    0.3.0   migrate and cleanup Helm v2 configuration and releases in-place to Helm v3
+</code></pre></div><h3 id="migrate-helm-v2-configuration">Migrate helm v2 Configuration</h3><p>First we need to migrate Helm v2 config and data folders.</p>
+<p>It will migrate:</p>
+
+<ul>
+<li>Chart starters</li>
+<li>Repositories</li>
+<li>Plugins</li>
+</ul>
+<p>The safest way is to start with –dry-run flag:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>helm3 2to3 move config --dry-run
+</code></pre></div><p>This will show you all the commands and files that will be moving to helm3. To run the actual migration, run without the &ndash;dry-run flag:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>helm3 2to3 move config
+</code></pre></div><p>If you now run the helm3 repo list, you should get back the <code>stable</code> repo, and any other you have used in helm v2:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>helm3 repo list
+NAME        URL
+stable      https://kubernetes-charts.storage.googleapis.com
+</code></pre></div><h3 id="migrate-helm-v2-releases">Migrate helm v2 releases</h3><p>The migration is conducted per release, you can get a list of all releases by running:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>helm list --tiller-namespace &lt;namespace-name&gt;
+</code></pre></div><p>The safest way to run the convert is to again use the &ndash;dry-run flag:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>helm3 2to3 convert &lt;release-name&gt; --tiller-ns &lt;namespace-name&gt; --dry-run
+</code></pre></div><p>To run the actual migration, run without the &ndash;dry-run flag:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>helm3 2to3 convert &lt;release-name&gt; --tiller-ns &lt;namespace-name&gt;
+</code></pre></div><p>To view if it was successful and a part of helm3, run a helm3 list:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>helm3 list -n &lt;namespace-name&gt;
+</code></pre></div><p>You have now migrated your release from helm v2 to helm v3. (If required, please migrate any other releases). However, the release is still listed on helm v2 and needs to be cleaned up.</p>
+<h3 id="clean-up-of-helm-v2-data">Clean up of helm v2 data</h3><p>The last step is cleaning up the old data.</p>
+<p>It will clean:</p>
+
+<ul>
+<li>Configuration (Helm home directory) </li>
+<li>v2 release data </li>
+<li>Tiller deployment</li>
+</ul>
+<div class="highlight"><pre class="highlight plaintext"><code>helm3 2to3 cleanup --tiller-ns &lt;namespace-name&gt; --dry-run
+</code></pre></div><p>It will show what releases going to be deleted, Tiller service to be removed from your namespace and Helm v2 home folder will be deleted.</p>
+<p><code>NOTE:</code> The cleanup command will remove the Helm v2 Configuration, Release Data and Tiller Deployment. It cleans up all releases managed by Helm v2. It will not be possible to restore them if you haven’t made a backup of the releases. Helm v2 will not be usable afterwards.</p>
+<p>To run the actual cleanup, run without the &ndash;dry-run flag:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>helm3 2to3 cleanup --tiller-ns &lt;namespace-name&gt;
+</code></pre></div><h4 id="tiller-rbac-configuration-removal">Tiller RBAC Configuration Removal</h4><p>The Tiller Service Account resource created using your 01-rbac.yaml file in the cloud-platform-environments repo is no longer required.</p>
+<p>Please create a PR to remove the <code>Tiller Service Account and RoleBinding</code> from the 01-rbac.yaml file.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tiller
+  namespace: myapp-dev ### Your namespace
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: tiller
+  namespace: myapp-dev ### Your namespace 
+subjects:
+- kind: ServiceAccount
+  name: tiller
+  namespace: myapp-dev ### Your namespace 
+roleRef:
+  kind: ClusterRole
+  name: admin
+  apiGroup: rbac.authorization.k8s.io
+</code></pre></div><p>A member of the Cloud-Platform team will <code>manually delete the Rolebinding</code> before this is applied, as the concourse pipeline is not able to delete Rolebindings currently.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>kubectl -n &lt;namespace-name&gt; delete rolebindings tiller
+</code></pre></div>
 
               <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
     <div class='page-expiry--not-expired'>

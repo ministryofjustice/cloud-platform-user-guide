@@ -129,38 +129,26 @@ maintenance page:</p>
 standard maintenance page into your namespace. This directory also
 contains the maintenance page HTML file, along with a DockerFile
 to build an image to serve the maintenance page.</p>
-<p>Within the <code>Kubectl_deploy</code> directory, there are 3 simple manifest
-files that make up the deployment, <code>deploy.yaml</code>, <code>ingress.yaml</code>
-and <code>service.yaml</code>.</p>
-<p>To use this example, copy the files into your namespace and make
-any changes you require, to tailor the maintenance page to your
-service.</p>
-<p>Once you have done this, the maintenance page will be deployed
-into your namespace, ready for you to use as and when you need
-it.</p>
-<h4 id="maintenance-deploy-yaml">maintenance-deploy.yaml</h4><p>A notable part of this file is the <code>image</code> line, which points to
-the ECR URI.</p>
-<p>If you wish to customize the maintenance page, you must edit and
-build the image and update the <code>image</code> value.</p>
-<h4 id="maintenance-ingress-yaml">maintenance-ingress.yaml</h4><p>In this file, change the example <code>host</code> field to your applications
-URL.</p>
-<p>Rather than using this file, you may prefer to change your existing
-<code>Ingress</code> so that the <code>backend</code> points to your maintenance page,
-whenever you need to replace your service with the maintenance page.</p>
-<p>This will ensure that you do not incur any downtime (by deleting
-the previous ingress and creating a new one).</p>
+<p>Within the <code>Kubectl_deploy</code> directory, there are 2 simple manifest
+files that make up the deployment, <code>maintenance-deploy.yaml</code> and <code>maintenance-service.yaml</code>.</p>
+<p>To use this example, copy the files into your namespace and deploy the files.</p>
+<p>The deployment will create a pod called maintenance-page-* and a service named maintenance-page-svc.</p>
+<p>To redirect traffic to maintenance page, change the <code>serviceName</code> field in your current ingress 
+to point to <code>maintenance-page-svc</code> and redeploy the ingress. Also, check the <code>servicePort</code> matches the one mentioned in the service you want to deploy.</p>
+<p>By changing the current ingress will ensure that you do not incur any downtime.</p>
+<p>For more details on customizing the HTML and cleaning up, refer the <a href="https://github.com/ministryofjustice/cloud-platform-maintenance-page">cloud-platform-maintenance-page</a> repository.</p>
 
 
-              <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
+              <div data-module='page-expiry' data-last-reviewed-on="2020-05-17">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 9 December 2019.
+      This page was last reviewed on 17 February 2020.
 
-        It needs to be reviewed again on 9 March 2020
+        It needs to be reviewed again on 17 May 2020
 .
     </div>
 
     <div class='page-expiry--expired'>
-      This page was set to be reviewed before 9 March 2020.
+      This page was set to be reviewed before 17 May 2020.
       This might mean the content is out of date.
     </div>
   </div>
