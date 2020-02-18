@@ -255,7 +255,7 @@ Installed Kubernetes objects will not be modified or removed.
 To install the plugin:
 
 ```
-helm3 plugin install https://github.com/helm/helm-2to3 -n <env-var>
+helm3 plugin install https://github.com/helm/helm-2to3 -n <namespace-name>
 Downloading and installing helm-2to3 v0.3.0 ...
 https://github.com/helm/helm-2to3/releases/download/v0.3.0/helm-2to3_0.3.0_darwin_amd64.tar.gz
 Installed plugin: 2to3
@@ -302,25 +302,25 @@ stable     	https://kubernetes-charts.storage.googleapis.com
 The migration is conducted per release, you can get a list of all releases by running:
 
 ```
-helm list --tiller-namespace <env-var>
+helm list --tiller-namespace <namespace-name>
 ```
 
 The safest way to run the convert is to again use the --dry-run flag:
 
 ```
-helm3 2to3 convert <release-name> --tiller-ns <env-var> --dry-run
+helm3 2to3 convert <release-name> --tiller-ns <namespace-name> --dry-run
 ```
 
 To run the actual migration, run without the --dry-run flag:
 
 ```
-helm3 2to3 convert <release-name> --tiller-ns <env-var>
+helm3 2to3 convert <release-name> --tiller-ns <namespace-name>
 ```
 
 To view if it was successful and a part of helm3, run a helm3 list:
 
 ```
-helm3 list -n <env-var>
+helm3 list -n <namespace-name>
 ```
 
 You have now migrated your release from helm v2 to helm v3. (If required, please migrate any other releases). However, the release is still listed on helm v2 and needs to be cleaned up.
@@ -336,7 +336,7 @@ It will clean:
  - Tiller deployment
 
 ```
-helm3 2to3 cleanup --tiller-ns <env-var> --dry-run
+helm3 2to3 cleanup --tiller-ns <namespace-name> --dry-run
 ```
 
 It will show what releases going to be deleted, Tiller service to be removed from your namespace and Helm v2 home folder will be deleted.
@@ -346,7 +346,7 @@ It will show what releases going to be deleted, Tiller service to be removed fro
 To run the actual cleanup, run without the --dry-run flag:
 
 ```
-helm3 2to3 cleanup --tiller-ns <env-var>
+helm3 2to3 cleanup --tiller-ns <namespace-name>
 ```
 
 #### Tiller RBAC Configuration Removal 
@@ -361,17 +361,17 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: tiller
-  namespace: myapp-dev ### Your namespace `<servicename-env>`
+  namespace: myapp-dev ### Your namespace
 ---
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
   name: tiller
-  namespace: myapp-dev ### Your namespace `<servicename-env>`
+  namespace: myapp-dev ### Your namespace 
 subjects:
 - kind: ServiceAccount
   name: tiller
-  namespace: myapp-dev ### Your namespace `<servicename-env>`
+  namespace: myapp-dev ### Your namespace 
 roleRef:
   kind: ClusterRole
   name: admin
@@ -381,5 +381,5 @@ roleRef:
 A member of the Cloud-Platform team will `manually delete the Rolebinding` before this is applied, as the concourse pipeline is not able to delete Rolebindings currently.
 
 ```
-kubectl -n <env-var> delete rolebindings tiller
+kubectl -n <namespace-name> delete rolebindings tiller
 ```
