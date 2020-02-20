@@ -1,17 +1,79 @@
 ---
 title: RDS Snapshots
-last_reviewed_on: 2019-12-30
+last_reviewed_on: 2020-02-17
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
 
-In RDS, snapshots have multiple purposes: migrations, backups, etc. When RDS instances are created using [Cloud Platform RDS terraform module](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance) an IAM user account is created for management purposes (e.g RDS snapshots) - allowing snapshot create, delete, copy, restore. 
+In RDS, snapshots have multiple purposes: migrations, backups, etc. When RDS DB instances are created using [Cloud Platform RDS terraform module](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance) an IAM user account is created for management purposes (e.g RDS snapshots) - allowing snapshot create, delete, copy, restore. 
 
-Examples about managing RDS snapshots using AWS CLI can be found in the [README](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance#4-managing-rds-snapshots---backups-and-restores) within the [RDS terraform module](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance)
+Examples about managing RDS DB snapshots using AWS CLI can be found in the [README](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance#4-managing-rds-snapshots---backups-and-restores) within the [RDS terraform module](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance)
 
 ## Considerations
 
 - The amount of manual snapshot is limited per account - so it's important to cleanup
 - Daily snapshots are already happening out of the box. It's important to keep in mind that daily snapshots **are not related** with "Manual Snapshots"
 - Managing snapshots are the team responsibilities (including a snapshot restores). Teams are also responsible for cleaning up any manual snapshots in order to avoid hitting our AWS account limits
+
+## Restoring live services from a RDS DB snapshot
+
+If you want to restore your production RDS DB instance from a previous snapshot either because the database is corrupted or the whole database is deleted, here is the procedure to restore it from your RDS snapshot.
+
+1. Get the `DBSnapshotIdentifier` of your DB instance from which you want to restore using AWS CLI below:
+   
+    ```
+    aws rds describe-db-snapshots --db-instance-identifier [db-instance-identifier]
+    ```
+    The `db-instance-identifier` is the first part (`cloud-platform-xxxxx`) of `rds_instance_address` in your kubernetes secret inside your namespace. 
+    
+    For example, if your `rds_instance_address` value is `cloud-platform-foo.bar.eu-west-2.rds.amazonaws.com`, then the `db-instance-identifier`value is `cloud-platform-foo`.
+
+    The output will have a list of snapshots available for that RDS DB instance. Pick the `DBSnapshotIdentifier` from which you want the RDS to be restored.
+
+2. Update your current RDS manifest file (`rds.tf`) in the [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments) repo to include `snapshot-identifier` and raise the PR.
+
+    ```
+    snapshot_identifier = "rds:cloud-platform-XXXXX-2020-02-08-04-23"
+    ```
+   An example will look like below:
+
+    ```
+    module "example_team_rds" {
+        source               = "github.com/ministryofjustice/cloud-platform-terraform-rds-instance?ref=5.1"
+        cluster_name           = var.cluster_name
+        cluster_state_bucket   = var.cluster_state_bucket
+        team_name              = var.team_name
+        business-unit          = var.business-unit
+        application            = var.application
+        is-production          = var.is-production
+        db_engine_version      = "11.4"
+        environment-name       = var.environment-name
+        infrastructure-support = var.infrastructure-support
+        force_ssl              = "true"
+        rds_family             = "postgres11"
+
+        snapshot_identifier = "rds:cloud-platform-XXXXX-2020-02-08-04-23"
+
+        providers = {
+        # Can be either "aws.london" or "aws.ireland"
+        aws = aws.london
+        }
+    }
+    ```
+
+    It is important to retain the original settings associated with the DB instance when restoring from the snapshot. So don't make any other changes to this file.
+
+3. **Contact Cloud Platform team** about the restore providing the `db-instance-identifier` and the PR raised.
+     
+4. Before the PR can be merged, the Cloud Platform team have to:
+    > * pause the concourse pipeline, and
+    > * rename the DB Instance via the AWS console
+
+    This allows the pipeline to create the new DB Instance from the snapshot, using the same name and settings as the original, and preserves the database endpoint and credentials. 
+
+5. Merge the PR to master and check for the build pipeline to create the new DB instance with the same Identifier and endpoints. The Cloud Platform team can also apply your changes manually if this is time critical.
+   
+Once the new DB instance is restored and available, your application should be able to access the database with the same database credentials and endpoint.
+
+After you have verified that your DB instance and the database is working as expected, let the Cloud Platform team know to delete the renamed DB instance performed on Step 4 above.
