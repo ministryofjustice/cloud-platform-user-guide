@@ -20,9 +20,10 @@ def main
   end
 end
 
-# This script is invoked in response to a 'git push', but publishing also does
-# a git push. So, we check whether the current change only affects compiled
-# doc/ files. If that's true, we don't want to do anything else.
+# This script was previously invoked in response to a 'git push', but
+# publishing also does a git push. So, we check here whether the current change
+# only affects compiled doc/ files. If that's true, we don't want to do
+# anything else.
 #
 # The logic here may not be needed, since the github action will only trigger
 # when a PR is closed. Since publishing the site pushes straight to the master
