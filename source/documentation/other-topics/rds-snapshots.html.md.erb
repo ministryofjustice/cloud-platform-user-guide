@@ -26,6 +26,8 @@ If you want to restore your production RDS instance from a previous snapshot eit
     aws rds describe-db-snapshots --db-instance-identifier [db-instance-identifier]
     ```
     The `db-instance-identifier` is the first part (`cloud-platform-xxxxx`) of `rds_instance_address` in your kubernetes secret inside your namespace. 
+    
+    For example, if your `rds_instance_address` value is `cloud-platform-foo.bar.eu-west-2.rds.amazonaws.com`, then the `db-instance-identifier`value is `cloud-platform-foo`.
 
     The output will have a list of snapshots available for that RDS instance. Pick the `DBSnapshotIdentifier` from which you want the RDS to be restored.
 
@@ -60,14 +62,18 @@ If you want to restore your production RDS instance from a previous snapshot eit
     }
     ```
 
-    It is important to retain the original settings associated with the DB instance when restoring from the snapshot. Hence, most of the restore should be done through terraform code. 
+    It is important to retain the original settings associated with the DB instance when restoring from the snapshot. So don't make any other changes to this file.
 
-3. Contact Cloud Platform team about the restore providing the `db-instance-identifier` and the PR raised.
+3. **Contact Cloud Platform team** about the restore providing the `db-instance-identifier` and the PR raised.
      
-4. Before the PR in [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments) repo is merged, Cloud Platform has to pause the concourse pipeline, 
-   login to the console and rename the DB Instance. That would allow the pipeline to create the DB Instance in the same name with original settings like DB parameter group, security group, 
-   database credentials and endpoint with the snapshot.  
+4. Before the PR can be merged, the Cloud Platform team have to:
+    > * pause the concourse pipeline, and
+    > * rename the DB Instance via the AWS console
 
-5. Merge the PR to master and check for the build pipeline to create the new DB instance with the same Identifier and endpoints. Cloud Platform can also apply your changes manually if this is time critical.
+    This allows the pipeline to create the new DB Instance from the snapshot, using the same name and settings as the original, and preserves the database endpoint and credentials. 
+
+5. Merge the PR to master and check for the build pipeline to create the new DB instance with the same Identifier and endpoints. The Cloud Platform team can also apply your changes manually if this is time critical.
    
-Once the new DB instance is restored, your application should be able to access the database with the same database credentials and endpoint.
+Once the new DB instance is restored and available, your application should be able to access the database with the same database credentials and endpoint.
+
+After you have verified that your RDS instance and the database is working as expected, let the Cloud Platform team know to delete the renamed RDS instance performed on Step 4 above.
