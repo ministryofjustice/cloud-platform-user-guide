@@ -6,7 +6,7 @@ VERSION := 1.6  # Change this in .circleci/config.yml if you update it here
 	docker build -t $(IMAGE) .
 	touch .built-docker-image
 
-Gemfile.lock: Dockerfile.gemfile-lock
+Gemfile.lock: Dockerfile.gemfile-lock Gemfile
 	docker build -t temp -f Dockerfile.gemfile-lock .
 	docker run \
 		-v $$(pwd):/app \
