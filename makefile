@@ -41,7 +41,7 @@ build: .built-docker-image
 	touch docs/.nojekyll
 	echo $(DOMAIN) > docs/CNAME
 
-test: 
+test:
 	bundle exec htmlproofer --allow-hash-href --url-swap "https?\:\/\/user-guide\.cloud-platform\.service\.justice\.gov\.uk:" ./docs
 
 # Convert the user guide to a folder-based structure
