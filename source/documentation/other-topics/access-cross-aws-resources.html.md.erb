@@ -6,15 +6,15 @@ review_in: 3 months
 
 # <%= current_page.data.title %>
 
- This article explains how to use IAM role to connect authorization from applications running in Cloud platform to 
+ This article explains how to use IAM role to connect and authorize from applications running in Cloud platform to 
  access AWS resources in a different AWS account. 
 
  Cloud Platform Infrastructure uses [KIAM](https://github.com/uswitch/kiam) to allow secured access to AWS APIs by associating IAM roles to Pods.
- Hence, by annotating the pod to allow them to assume a role you can get temporary role credentials to access other AWS account resources. 
+ By annotating the pod and allow them to assume a role you can get temporary role credentials to access AWS account resources.
 
  To acheive this, follow the steps below:
 
-1. ***Create IAM role***
+1. **Create IAM role**
  
     Cloud Platform maintain these cross account roles in [cloud-platform-infrastructure](https://github.com/ministryofjustice/cloud-platform-infrastructure/tree/master/terraform/cross-account-IAM) repo.
 
@@ -81,7 +81,7 @@ review_in: 3 months
           "<some action>",
         ]
         resources = [
-          "<ARN of target resource>/*",
+          "<ARN of resource in target AWS account>/*",
         ]
       }
     }
@@ -161,7 +161,7 @@ review_in: 3 months
         "s3.PutObject",
       ]
       resources = [
-        "arn:aws:s3:::AAA/folder/*",
+        "arn:aws:s3:::AAAAAAAA/AA-bucket/folder/*",
       ]
     }
     }
@@ -180,16 +180,80 @@ review_in: 3 months
     </details>
 
 
-2. ***Annotate the pod with the IAM role***
+2. **Annotate the pod with the IAM role**
+
+    Once the PR in **step 1** is merged and applied, you will get the role ARN, name and id as a kubernetes secret in your namespace.
+
+    Decode the role ARN and annotate the pod to indicate which role which will need access to resource in different AWS account like below:
+
+    ```
+      annotations:
+        iam.amazonaws.com/role: <role-arn>
+    ```
+    An example would look like this:
+
+    ```
+      annotations:
+        iam.amazonaws.com/role: arn:aws:iam::11111111:role/my-namespace-app-iam-role
+    ```
+
+3. **Annotate the namespace to allow the role to AssumeRole**
+
+    Next, annotate the namespace to indicate which roles are permitted to be assumed within the namespace. 
+    
+    Update the `annotations` section with the below code along with existing annotations list in `00-namespace.yaml` 
+    for your namespace in the (cloud-platform-environments)[] repo and raise a PR.
+
+    ```
+      iam.amazonaws.com/permitted: "<role-name>"
+    ```
+    An example would look like this:
+
+    ```
+    iam.amazonaws.com/permitted: "my-namespace-app-iam-role"
+    ```
+
+4. **Use the IAM role in your application**
+
+    There are several ways you can use the role created to access the resource in different AWS account. 
+    
+    An example to call the AWS SDK for Ruby and get temporary AWS credentials as below:
+
+    ```
+    role_credentials = Aws::AssumeRoleCredentials.new(
+      role_arn: role_arn,
+      role_session_name: "myapp_session"
+    ) 
+    ```
+
+    For more details on using assumeRole check AWS documentation for [AWS CLI](https://docs.aws.amazon.com/cli/latest/reference/sts/assume-role.html) 
+    and [AWS SDK](https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/AssumeRoleCredentials.html)
 
 
-3. ***Annotate the namespace to allow the role to AssumeRole***
+5. **Allow the IAM role to permit access in the target AWS account**
+   
+    You also need to update the AWS resource policy of the target AWS account to allow permissions for the IAM role to perform actions.
+    
+    An example s3 bucket policy to allow the IAM role to perform specific actions as below:
+
+    ```
+    {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "Cross IAM permissions",
+        "Effect": "Allow",
+        "Principal": {
+          "AWS": "arn:aws:iam::11111111:role/my-namespace-app-iam-role"
+        },
+        "Action": [
+          "s3:PutObject",
+          "s3:GetObject",
+        ],
+        "Resource": "arn:aws:s3:::target-s3-bucket/*"
+      }
+    ]
+  }
+  ```
 
 
-4. ***Use the IAM role in your application***
-
-
-
- https://github.com/uswitch/kiam/blob/master/docs/IAM.md#application-roles
- 
- 
