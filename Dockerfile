@@ -10,9 +10,6 @@ RUN apk add --no-cache nodejs
 # Required by the CircleCI build pipeline
 RUN apk add --no-cache git openssh-client bash
 
-RUN addgroup -g 1000 -S appgroup && \
-    adduser -u 1000 -S appuser -G appgroup
-
 WORKDIR /app
 
 COPY Gemfile Gemfile.lock ./
@@ -20,8 +17,4 @@ COPY Gemfile Gemfile.lock ./
 RUN gem install bundler
 RUN bundle install
 
-RUN chown -R appuser:appgroup /app
-
 COPY . /app
-
-USER appuser

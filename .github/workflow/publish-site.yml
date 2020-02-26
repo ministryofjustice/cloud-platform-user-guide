@@ -1,0 +1,19 @@
+name: Publish
+
+on:
+  pull_request:
+    types: [closed]
+    # This will trigger the action even if the PR is closed without merging,
+    # but in that event the action will fail when it tries to push no changes,
+    # so that probably doesn't matter.
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    container:
+      image: ministryofjustice/cloud-platform-user-guide:2.1
+    steps:
+      - uses: actions/checkout@master
+      - run: ruby bin/publish.rb
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
