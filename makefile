@@ -1,6 +1,6 @@
 IMAGE := cloud-platform-user-guide
 DOMAIN := user-guide.cloud-platform.service.justice.gov.uk
-VERSION := 2.0  # Change this in .github/workflow/publish-site.yml if you update it here
+VERSION := 2.1  # Change this in .github/workflow/publish-site.yml if you update it here
 
 .built-docker-image: Dockerfile Gemfile Gemfile.lock
 	docker build -t $(IMAGE) .

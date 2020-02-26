@@ -11,7 +11,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     container:
-      image: ministryofjustice/cloud-platform-user-guide:2.0
+      image: ministryofjustice/cloud-platform-user-guide:2.1
     steps:
       - uses: actions/checkout@master
       - run: ruby bin/publish.rb
