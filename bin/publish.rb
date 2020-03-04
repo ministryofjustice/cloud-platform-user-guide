@@ -67,7 +67,7 @@ def commit_and_push_docs
   set_git_credentials
 	execute %[git add docs -f]
 	execute %[git commit -m 'Publish compiled site via github action']
-	execute %[git push origin master]
+	execute %[git push origin master --force]
 end
 
 def set_git_credentials
@@ -79,7 +79,10 @@ end
 def execute(cmd)
   stdout, stderr, status = Executor.new.execute(cmd)
   log "blue", stdout
-  log("red", stderr) unless status.success?
+  unless status.success?
+    log("red", stderr)
+    exit 1
+  end
   [stdout, stderr, status]
 end
 
