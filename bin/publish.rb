@@ -79,7 +79,10 @@ end
 def execute(cmd)
   stdout, stderr, status = Executor.new.execute(cmd)
   log "blue", stdout
-  log("red", stderr) unless status.success?
+  unless status.success?
+    log("red", stderr)
+    exit 1
+  end
   [stdout, stderr, status]
 end
 
