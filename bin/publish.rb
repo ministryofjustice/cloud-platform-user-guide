@@ -65,9 +65,15 @@ end
 
 def commit_and_push_docs
   set_git_credentials
-	execute %[git add docs -f]
-	execute %[git commit -m 'Publish compiled site via github action']
-	execute %[git push origin master --force]
+
+  execute %[git add docs -f]
+  execute %[git commit -m 'Publish compiled site via github action']
+
+  token = ENV.fetch("GITHUB_TOKEN")
+  actor = ENV.fetch("GITHUB_ACTOR")
+  repo = ENV.fetch("GITHUB_REPOSITORY")
+
+  execute %[git push "#{remote_repo}" HEAD:master --force]
 end
 
 def set_git_credentials
