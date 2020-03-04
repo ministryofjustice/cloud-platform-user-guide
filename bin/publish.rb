@@ -73,6 +73,8 @@ def commit_and_push_docs
   actor = ENV.fetch("GITHUB_ACTOR")
   repo = ENV.fetch("GITHUB_REPOSITORY")
 
+  remote_repo="https://#{actor}:#{token}@github.com/#{repo}.git"
+
   execute %[git push "#{remote_repo}" HEAD:master --force]
 end
 
