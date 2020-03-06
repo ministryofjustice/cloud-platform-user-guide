@@ -44,16 +44,6 @@ def should_rebuild?
   rtn
 end
 
-def this_commit
-  commit, _stderr, _status = execute %[git rev-parse HEAD]
-  commit
-end
-
-def files_in(commit)
-  files, _stderr, _status = execute %[git diff-tree --no-commit-id --name-only -r #{commit}]
-  files.split("\n")
-end
-
 def compile_docs_folder
   execute "bundle exec middleman build --build-dir docs"
 end
