@@ -64,7 +64,7 @@ class GithubClient
   private
 
   def modified_files
-    stdout, _stderr, _status = executor.execute("git status --porcelain=1 --untracked-files=no")
+    stdout, _stderr, _status = executor.execute("git status --porcelain=1")
 
     stdout
       .split("\n")
