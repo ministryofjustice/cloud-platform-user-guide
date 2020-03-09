@@ -123,9 +123,6 @@
         <a href="#environment-definition-files">Environment definition files</a>
       </li>
       <li>
-        <a href="#namespace-resource-limits">Namespace resource limits</a>
-      </li>
-      <li>
         <a href="#namespace-yaml-files">Namespace YAML files</a>
         <ul>
           <li>
@@ -156,7 +153,7 @@
 
         <div class="app-pane__content toc-open-disabled">
           <main id="content" class="technical-documentation" data-module="anchored-headings">
-              <h1 id="creating-a-cloud-platform-environment">Creating a Cloud Platform Environment</h1><h2 id="introduction">Introduction</h2><p>This is a guide to creating a environment in one of our Kubernetes clusters.</p>
+              <h1 id="creating-a-cloud-platform-environment">Creating a Cloud Platform Environment</h1><h2 id="introduction">Introduction</h2><p>This is a guide to creating a environment on our Kubernetes cluster.</p>
 <p>We define an environment as a Kubernetes <a href="https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/">namespace</a>
 with some key resources deployed in it. Each Kubernetes namespace creates a
 logical separation within our cluster that provides isolation from any other
@@ -224,8 +221,7 @@ your namespace:</p>
 <li><a href="#04-networkpolicy-yaml"><code>04-networkpolicy.yaml</code></a></li>
 </ul>
 <p>These files define key elements of the namespace and restrictions we want to
-place on it so that we have security and resource allocation properties. We
-will use terraform to create these files from templates. We also describe each
+place on it so that we have security and resource allocation properties. We describe each
 of these files <a href="#00-namespace-yaml">in more detail below</a> in case you want to
 make future changes.</p>
 <p>In addition to the Kubernetes configuration files, we create a terraform config
@@ -235,11 +231,6 @@ file:</p>
 need when you add terraform modules to create the AWS resources your service
 will use (e.g. an <a href="/documentation/getting-started/ecr-setup.html#creating-an-ecr-repository">ECR</a> for your docker images, <a href="/documentation/deploying-an-app/multicontainer-app-deploy.html#create-an-rds-instance">RDS
 databases</a>, and S3 buckets).</p>
-<h2 id="namespace-resource-limits">Namespace resource limits</h2><p>The amount of resources (i.e. CPU and memory) we allocate to new namespaces, by
-default, is deliberately low. When you have worked out how much resource your
-application actually needs, please raise a PR to adjust the limits on your
-namespace accordingly.</p>
-<p>For more information, please see this article on <a href="/documentation/concepts/namespace-limits.html#namespace-container-resource-limits">namespace limits</a>.</p>
 <h2 id="namespace-yaml-files">Namespace YAML files</h2><p>These files define key elements of the namespace and restrictions we want to
 place on it so that we have security and resource allocation properties.</p>
 <h3 id="00-namespace-yaml"><code>00-namespace.yaml</code></h3><p>The <code>00-namespace.yaml</code> file defines the namespace so that the Kubernetes
@@ -250,7 +241,7 @@ metadata:
   name: myapp-dev ### This is where you will define your &lt;servicename-env&gt;
   labels:
     name: myapp-dev ### Also your &lt;servicename-env&gt;
-</code></pre></div><p>The namespace is the your (team&rsquo;s) &lsquo;private&rsquo; part of the cluster. The name of
+</code></pre></div><p>The namespace is your (team&rsquo;s) &lsquo;private&rsquo; part of the cluster. The name of
 your namespace must be unique across the whole of the cluster. If you try to
 create a new namespace using the name of one which already exists, you will get
 an error when you try to apply the generated kubernetes config files (or when
@@ -311,10 +302,9 @@ spec:
       memory: 100Mi
     type: Container
 </code></pre></div><h3 id="03-resourcequota-yaml"><code>03-resourcequota.yaml</code></h3><p>The <a href="https://kubernetes.io/docs/concepts/policy/resource-quotas/">ResourceQuota</a> object allows us to set a total limit on the resources
-reserved for a namespace. As with the LimitRange, the <code>requests.cpu</code> and
-<code>requests.memory</code> limits set how much the namespace will request on creation.</p>
-<p>As you learn more about the behaviour of your applications on Kubernetes you
-can change the limits on your namespace.</p>
+which are made available to a namespace. On the Cloud Platform, we take a
+simple approach, and merely limit the maximum number of pods which a namespace
+is allowed to launch.</p>
 <div class="highlight"><pre class="highlight plaintext"><code>
 apiVersion: v1
 kind: ResourceQuota
@@ -323,8 +313,7 @@ metadata:
   namespace: myapp-dev ### Your namespace `&lt;servicename-env&gt;`
 spec:
   hard:
-    requests.cpu: 100m
-    requests.memory: 1000Mi
+    pods: "50"
 </code></pre></div><h3 id="04-networkpolicy-yaml"><code>04-networkpolicy.yaml</code></h3><p>The <a href="https://kubernetes.io/docs/concepts/services-networking/network-policies/">NetworkPolicy</a> object defines how groups of pods are allowed to
 communicate with each other and other network endpoints. By default pods are
 non-isolated, they accept traffic from any source. We apply a network policy to
@@ -358,16 +347,16 @@ spec:
           component: ingress-controllers
 </code></pre></div>
 
-              <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
+              <div data-module='page-expiry' data-last-reviewed-on="2020-06-09">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 9 December 2019.
+      This page was last reviewed on 9 March 2020.
 
-        It needs to be reviewed again on 9 March 2020
+        It needs to be reviewed again on 9 June 2020
 .
     </div>
 
     <div class='page-expiry--expired'>
-      This page was set to be reviewed before 9 March 2020.
+      This page was set to be reviewed before 9 June 2020.
       This might mean the content is out of date.
     </div>
   </div>
