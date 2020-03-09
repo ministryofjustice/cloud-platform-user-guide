@@ -1,6 +1,6 @@
 ---
 title: Creating a Cloud Platform Environment
-last_reviewed_on: 2019-12-09
+last_reviewed_on: 2020-03-09
 review_in: 3 months
 ---
 
@@ -9,7 +9,7 @@ review_in: 3 months
 
 ## Introduction
 
-This is a guide to creating a environment in one of our Kubernetes clusters.
+This is a guide to creating a environment on our Kubernetes cluster.
 
 We define an environment as a Kubernetes [namespace]
 with some key resources deployed in it. Each Kubernetes namespace creates a
@@ -113,8 +113,7 @@ your namespace:
 * [`04-networkpolicy.yaml`](#04-networkpolicy-yaml)
 
 These files define key elements of the namespace and restrictions we want to
-place on it so that we have security and resource allocation properties. We
-will use terraform to create these files from templates. We also describe each
+place on it so that we have security and resource allocation properties. We describe each
 of these files [in more detail below](#00-namespace-yaml) in case you want to
 make future changes.
 
@@ -127,15 +126,6 @@ This file defines the standard terraform backend and providers which you will
 need when you add terraform modules to create the AWS resources your service
 will use (e.g. an [ECR][ecr-setup] for your docker images, [RDS
 databases][create-rds], and S3 buckets).
-
-## Namespace resource limits
-
-The amount of resources (i.e. CPU and memory) we allocate to new namespaces, by
-default, is deliberately low. When you have worked out how much resource your
-application actually needs, please raise a PR to adjust the limits on your
-namespace accordingly.
-
-For more information, please see this article on [namespace limits].
 
 ## Namespace YAML files
 
@@ -156,7 +146,7 @@ metadata:
     name: myapp-dev ### Also your <servicename-env>
 ```
 
-The namespace is the your (team's) 'private' part of the cluster. The name of
+The namespace is your (team's) 'private' part of the cluster. The name of
 your namespace must be unique across the whole of the cluster. If you try to
 create a new namespace using the name of one which already exists, you will get
 an error when you try to apply the generated kubernetes config files (or when
@@ -237,11 +227,9 @@ spec:
 ### `03-resourcequota.yaml`
 
 The [ResourceQuota] object allows us to set a total limit on the resources
-reserved for a namespace. As with the LimitRange, the `requests.cpu` and
-`requests.memory` limits set how much the namespace will request on creation.
-
-As you learn more about the behaviour of your applications on Kubernetes you
-can change the limits on your namespace.
+which are made available to a namespace. On the Cloud Platform, we take a
+simple approach, and merely limit the maximum number of pods which a namespace
+is allowed to launch.
 
 ```YAML
 
@@ -252,8 +240,7 @@ metadata:
   namespace: myapp-dev ### Your namespace `<servicename-env>`
 spec:
   hard:
-    requests.cpu: 100m
-    requests.memory: 1000Mi
+    pods: "50"
 ```
 
 ### `04-networkpolicy.yaml`
