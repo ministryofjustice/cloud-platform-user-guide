@@ -2,10 +2,7 @@ name: Publish
 
 on:
   pull_request:
-    types: [closed]
-    # This will trigger the action even if the PR is closed without merging,
-    # but in that event the action will fail when it tries to push no changes,
-    # so that probably doesn't matter.
+    types: [opened, edited, reopened, synchronize]
 
 jobs:
   publish:
