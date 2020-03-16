@@ -87,13 +87,23 @@ This guide assumes you are using these credentials in your `default` AWS profile
 
 ### Authenticating with the repository
 
-Use the following command to login to Amazon ECR
+The command to login to Amazon ECR is slightly different, depending on your version of the `aws` command-line tool. You can find this out by running:
+
+      aws --version
+
+For AWS version 1.x use the following command to login to Amazon ECR
 
       $(aws ecr get-login --no-include-email --region eu-west-2)
 
-Note: The output of the `aws ecr...` command is a long `docker login...` command. Including the `$(...)` around the command executes this output in the context of the current shell
+> The output of the `aws ecr...` command is a long `docker login...` command. Including the `$(...)` around the command executes this output in the context of the current shell
 
-The output of the above should include `Login Succeeded` to confirm you have authenticated to the docker image repository.
+For AWS version 2.0, use this command:
+
+      aws ecr get-login-password --region eu-west-2 \
+        | docker login --username AWS --password-stdin \
+        754256621582.dkr.ecr.eu-west-2.amazonaws.com
+
+For either version of the aws cli, the output of the above should include `Login Succeeded` to confirm you have authenticated to the docker image repository.
 
 These credential are valid for 12 hours. So, if you are working through this example over a longer period, you will have to login again, e.g. the following day.
 
