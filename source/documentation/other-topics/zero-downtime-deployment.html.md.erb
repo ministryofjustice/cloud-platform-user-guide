@@ -17,7 +17,7 @@ Rolling updates introduce the ability to update an application without any downt
 
 A rolling update works by ensuring there is always one extra Pod than the maximum number stated in the deployment.
 
-The new deployment is applied incrementally, usually one to two Pods at a time until all Pods are running the latest version. How the deployment is rolled out, can be configured by the user. More information about configuring a rolling update can be found [here](https://kubernetes.io/docs/tasks/run-application/rolling-update-replication-controller/).
+The new deployment is applied incrementally, usually one to two Pods at a time until all Pods are running the latest version. How the deployment is rolled out, can be configured by the user. More information about configuring a rolling update can be found [here](https://v1-16.docs.kubernetes.io/docs/tasks/run-application/rolling-update-replication-controller/).
 
 If an application is exposed publicly, traffic will only be routed to the available Pods. However, this is only the case if the user configured `readinessProbes` correctly. This is a large topic, so more information can be found [here](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/).
 
