@@ -166,7 +166,7 @@
 </ul>
 <h4 id="troubleshooting-quot-current-quot-context">Troubleshooting: &ldquo;current&rdquo; context</h4><p>If you receive <code>The connection to the server localhost:8080 was refused</code> errors while executing <code>kubectl</code> commands,
 check that your &ldquo;current&rdquo; context is set.</p>
-<p>Run <code>kubectl config get-contexts</code>:</p>
+<p>Run <code>kubectl config get-contexts</code></p>
 <div class="highlight"><pre class="highlight plaintext"><code>CURRENT   NAME                                           CLUSTER                                        AUTHINFO                 NAMESPACE
           live-1.cloud-platform.service.justice.gov.uk   live-1.cloud-platform.service.justice.gov.uk   &lt;your github e-mail&gt;
 </code></pre></div><p>Set the context you want to use as &ldquo;current&rdquo; with: <code>kubectl config use-context &lt;NAME&gt;</code>.</p>
