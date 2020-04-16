@@ -61,6 +61,31 @@ in the [environments repository][env-repo] using the terraform
 details. The `secretName` attribute defines the name of a `Secret` in your
 namespace where the certificate and key material will be stored
 
+Imp Note: We are planning for cert-manager upgrade soon. After the upgrade, the [Certificate][cert-guidence] resource definition will be changed.
+Make sure you use the right format of Certificate resource.
+
+If you have any queries related to the upgrade, please get in touch with us in `#ask-cloud-platform`.
+
+After the cert-manager upgrade, the Certificate resource should be in below format:
+
+   ```
+   ---
+   apiVersion: cert-manager.io/v1alpha2
+   kind: Certificate
+   metadata:
+     name: <my-cert>
+     namespace: <my-namespace>
+   spec:
+     secretName: <my-cert-secret>
+     issuerRef:
+       name: letsencrypt-production
+       kind: ClusterIssuer
+     dnsNames:
+     - <hostname>
+   ```
+
+Before the cert-manager upgrade, the Certificate resource should be in below format:
+
    ```
    ---
    apiVersion: certmanager.k8s.io/v1alpha1
@@ -160,3 +185,4 @@ based on your operating system and/or browser.
 [wiki-domain-structure]: https://en.wikipedia.org/wiki/Domain_Name_System#Structure
 [wiki-nameservers]: https://en.wikipedia.org/wiki/Name_server#Authoritative_name_server
 [tf-route53-record]: https://www.terraform.io/docs/providers/aws/r/route53_record.html
+[cert-guidence]: https://cert-manager.io/docs/concepts/certificate/
