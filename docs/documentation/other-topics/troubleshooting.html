@@ -254,7 +254,7 @@ spec:
 <h4 id="my-pod-shows-crashloopbackoff-after-deployment-troubleshooting">Troubleshooting</h4><p>As this issue is quite vague, you&rsquo;ll want to start by checking what your pod is printing to STDOUT using the command <code>kubectl -n &lt;namespace&gt; logs &lt;pod_name&gt;</code>. This should give you a clear understanding of whether the application has crashed. If your application is crashing, you need to identify the reason and try to fix it. Some possibilities are missing environment variables, insufficient resources, missing files or directories, or a lack of required permissions.</p>
 <h4 id="my-pod-shows-crashloopbackoff-after-deployment-solution">Solution</h4><p>Fix application or misconfiguration errors.</p>
 <h3 id="my-pod-shows-imagepullbackoff-after-deployment">My pod shows <code>ImagePullBackOff</code> after deployment</h3><h4 id="my-pod-shows-imagepullbackoff-after-deployment-scenario">Scenario</h4><p>You have deployed an application to the Cloud Platform and its status shows <code>ImagePullBackOff</code> (you can get the status by running <code>kubect get pods -n &lt;namespace&gt;</code>).</p>
-<h4 id="my-pod-shows-imagepullbackoff-after-deployment-cause">Cause</h4><p>This error is caused by a misconfiguration in your deployment, there are three primary culprits besides network connectivity issues:</p>
+<h4 id="my-pod-shows-imagepullbackoff-after-deployment-cause">Cause</h4><p>This means the cluster is unable to fetch your docker image. There are three primary culprits besides network connectivity issues:</p>
 
 <ul>
 <li>The image tag is incorrect</li>
@@ -296,16 +296,16 @@ spec:
 </ul>
 
 
-              <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
+              <div data-module='page-expiry' data-last-reviewed-on="2020-07-20">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 9 December 2019.
+      This page was last reviewed on 20 April 2020.
 
-        It needs to be reviewed again on 9 March 2020
+        It needs to be reviewed again on 20 July 2020
 .
     </div>
 
     <div class='page-expiry--expired'>
-      This page was set to be reviewed before 9 March 2020.
+      This page was set to be reviewed before 20 July 2020.
       This might mean the content is out of date.
     </div>
   </div>
