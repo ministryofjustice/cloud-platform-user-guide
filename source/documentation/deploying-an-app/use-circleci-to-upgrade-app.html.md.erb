@@ -8,7 +8,7 @@ review_in: 3 months
 
 
 ## Introduction
-This document covers how to continuously deploy your application in the Cloud Platform. It is essentially a continuation of [‘Deploying an application to the Cloud Platform with Helm’][deploy-helm].
+This document covers how to continuously deploy your application in the Cloud Platform. 
 
 *Note: This document is specific to using [CircleCI](https://circleci.com/) as the Continuous Integration method.*
 
@@ -120,7 +120,7 @@ Raise a PR for your serviceaccount creation. Once approved you should then see y
 There will be a secret for the circle ci service account. The secret contains the ca.crt and token which we will be injected into the circle CI image container as environment variables. This will allow it to authenticate against the cluster. 
 Access to the cluster is scoped for the namespace the service account was created in. 
 
-Once the circle CI service account is created above, you can grab the car.crt as follows:
+Once the circle CI service account is created above, you can grab the ca.crt as follows:
 
 ```bash
 k get secret <NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET> -o yaml -n <NAMESPACE | grep ca.crt
@@ -144,7 +144,7 @@ MoJ has as an account with CircleCI, please login to [CircleCI](https://circleci
 
 ### Add variables to CircleCI
 There is a number of environment variables that you will need to set on your CircleCI project in order to build a docker image, push it to the ECR and trigger a deployment in your environment. On the project page, click the cog icon in the left pane. Click on 'Contexts'. Click 'Create Context'.
-Enter your preferred name for you context. Would make sense to add the environment as prefix to the context, i.e dev or prod.
+Enter your preferred name for your context. Would make sense to add the environment as prefix to the context, i.e dev or prod.
 The context will hold your environment variables and later be used by the docker executor of the pipeline. 
 
 Add the following environment variables:
@@ -212,14 +212,14 @@ jobs:
         name: Install demo helm chart
         command: |
           if [ "${CIRCLE_BRANCH}" == "master" ]; th en
-            helm upgrade demo-app demo --install --namespace=${K8S_NAMESPACE}
+            helm upgrade demo helm_deploy --install --namespace=${K8S_NAMESPACE}
           fi 
           kubectl --namespace=${K8S_NAMESPACE} get pods
 ```
 
-In the above config.yml replace <CONTEXT> with the name of the context you created. 
-Also replace <REPO-NAME> with the name of your ECR repo proceeding the tag name. For example if my repo name is my-repo/test and my image tag is rails then I would replace
-<REPO-NAME> with my-repo/test:rails
+In the above config.yml replace CONTEXT with the name of the context you created. 
+Also replace REPO-NAME with the name of your ECR repo proceeding the tag name. For example if my repo name is my-repo/test and my image tag is rails then I would replace
+REPO-NAME with my-repo/test:rails
 
 The above config.yml needs to be saved in a folder called .circleci in the root of your application repository. 
 For demo purposes you may use the [multi-demo container repository] (https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/multicontainer-app-deploy.html)
@@ -230,7 +230,7 @@ We then have 3 key steps as follows:
 
 1) Build / Push our application docker image. 
 
-   The multi-container demo repo has a folder callded 'rails-app'. Inside this folder is Dockerfile that defines the rail app. So we run 'docker build..'
+   The multi-container demo repo has a folder called 'rails-app'. Inside this folder is a Dockerfile that defines the rail app. We run 'docker build..'
    inside this directory. The next command is to push the image into your ECR 
 
 2) Authenticate with cluster
@@ -252,9 +252,7 @@ Once all the above is complete make a change to the rails app and commit to mast
 
 In Circle CI click on 'Jobs' > Click on your repo > Click on the new job > You shoud now see all your steps in the dashboard and their status
 
-After the job has finished your rails app should now be up and running. You can access the app by hitting the DNS you specified in your helm chart values for the rails app
+After the job has finished your rails app should now be up and running. You can access the app by hitting the DNS you specified in your helm chart values for the rails app.
 
-
-[deploy-multi-container-demo]: /documentation/deploying-an-app/multicontainer-app-deploy.html#deploying a multi-container application to the Cloud Platform
 [ecr-setup]: /documentation/getting-started/ecr-setup.html#creating-an-ecr-repository
 [env-create]: /documentation/getting-started/env-create.html#creating-a-cloud-platform-environment
