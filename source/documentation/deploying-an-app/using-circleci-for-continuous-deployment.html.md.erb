@@ -10,7 +10,7 @@ review_in: 3 months
 ## Introduction
 This document covers how to continuously deploy your application in the Cloud Platform. 
 
-*Note: This document is specific to using [CircleCI](https://circleci.com/) as the Continuous Integration method.*
+> Note: This document is specific to using [CircleCI](https://circleci.com/) as the Continuous Integration method.*
 
 ### Objective
 By the end of the tutorial, you will have done the following:
@@ -23,7 +23,7 @@ By the end of the tutorial, you will have done the following:
 It is assumed you have the following:
 
  - You have [created an environment for your application][env-create]
- - You have deployed the multi-container rails app to the 'cloud-platform-live-1' cluster.
+ - You have deployed the [multi-container rails app] to the 'cloud-platform-live-1' cluster.
  - You have created an [ECR repository][ecr-setup]
 
 ### Creating a Service Account for CircleCI
@@ -31,21 +31,21 @@ As part of the CircleCI deployment pipeline, CircleCI will need to authenticate 
 
 A Service Account is created in the [namespace creation github repository](https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces).
 
-If you have not created a Circle CI service account along with the role / rolebinding then you may
+If you have not created a CircleCI service account along with the role / rolebinding then you may
 use the below as an example:
 
-```bash
+```yaml
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: circleci
+  name: CircleCI
   namespace: <YOUR-NAMESPACE>
 
 ---
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
-  name: circleci
+  name: CircleCI
   namespace: <YOUR-NAMESPACE>
 rules:
   - apiGroups: ["", "extensions", "apps", "batch"]
@@ -78,24 +78,24 @@ rules:
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
-  name: circleci
+  name: CircleCI
   namespace: <YOUR-NAMESPACE>
 subjects:
 - kind: ServiceAccount
-  name: circleci
+  name: CircleCI
   namespace: <YOUR-NAMESPACE>
 roleRef:
   kind: Role
-  name: circleci
+  name: CircleCI
   apiGroup: rbac.authorization.k8s.io
 ```
 
-Remember to replace <YOUR-NAMESPACE> with your namespace. Save the above as 'serviceaccount-circleci.yaml' under your [namespace folder](https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces).
+Remember to replace `<YOUR-NAMESPACE>` with your namespace. Save the above as 'serviceaccount-circleci.yaml' under your [namespace folder](https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces).
 
-Raise a PR for your serviceaccount creation. Once approved you should then see your new circle ci service account in your namespace.
+Raise a PR for your service account creation. Once approved you should then see your new CircleCI service account in your namespace.
 
 
-```bash
+```yaml
   $ kubectl get serviceaccounts --namespace $ns
   NAME       SECRETS   AGE
   circleci   1         3h
@@ -117,26 +117,28 @@ Raise a PR for your serviceaccount creation. Once approved you should then see y
   token: ZX...EE=
 ```
 
-There will be a secret for the circle ci service account. The secret contains the ca.crt and token which we will be injected into the circle CI image container as environment variables. This will allow it to authenticate against the cluster. 
+There will be a secret for the CircleCI service account. The secret contains the ca.crt and token which we will make available to the CircleCI image container as environment variables. This will allow it to authenticate against the cluster. 
 Access to the cluster is scoped for the namespace the service account was created in. 
 
-Once the circle CI service account is created above, you can grab the ca.crt as follows:
+### Retrieving the Service Account credentials
 
-```bash
-k get secret <NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET> -o yaml -n <NAMESPACE | grep ca.crt
+Once the CircleCI service account is created above, you can grab the ca.crt as follows:
+
+```yaml
+k get secret <NAME-OF-CircleCI-SERVICE-ACCOUNT-SECRET> -o yaml -n <NAMESPACE | grep ca.crt
 ```
 
-Likewise grab the circle CI service accont token as follows: 
+Likewise grab the CircleCI service accont token as follows: 
 
-```bash
-k get secret <NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET> -o yaml -n <NAMESPACE | grep token
+```yaml
+k get secret <NAME-OF-CircleCI-SERVICE-ACCOUNT-SECRET> -o yaml -n <NAMESPACE | grep token
 
 The token will need to be decoded as follows: 
 
 echo <ENCODED_TOKEN> | base 64 --decode
 ```
 
-Both the ca.crt and token will be added as environment variables by creating a context in the circle CI console, that holds these values as shown below. 
+Both the ca.crt and token will be added as environment variables by creating a context in the CircleCI console, that holds these values as shown below. 
 
 
 ### Linking Repository to CircleCI
@@ -171,7 +173,7 @@ There are four different variables that CircleCI will need to access the cluster
 ### Creating the config.yml
 CircleCI uses a YAML file to identify how you want your testing environment set up and what tests you want to run. On CircleCI 2.0, this file must be called ```config.yml``` and must be in a hidden folder called ```.circleci``` .
 
-[Tutorial](https://circleci.com/docs/2.0/tutorials/) on creating a config.yml file. As long as you are building a Docker image you can configure Circle however you wish. The only additional configuration you will need to add is to upload an image to ECR and deploy to Kubernetes:
+[Tutorial](https://circleci.com/docs/2.0/tutorials/) on creating a config.yml file. As long as you are building a Docker image you can configure CircleCI however you wish. The only additional configuration you will need to add is to upload an image to ECR and deploy to Kubernetes:
 
 Below is sample config.yml you may re-use:
 
@@ -217,9 +219,9 @@ jobs:
           kubectl --namespace=${K8S_NAMESPACE} get pods
 ```
 
-In the above config.yml replace CONTEXT with the name of the context you created. 
-Also replace REPO-NAME with the name of your ECR repo proceeding the tag name. For example if my repo name is my-repo/test and my image tag is rails then I would replace
-REPO-NAME with my-repo/test:rails
+In the above config.yml replace `<CONTEXT>` with the name of the context you created. 
+Also replace `<REPO-NAME>` with the name of your ECR repo excluding the tag name. For example if my repo name is myteam/myrepo and my image tag is rails then I would replace
+`<REPO-NAME>` with myteam/myrepo:rails with the full repo URL being: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/myteam/myrepo:rails
 
 The above config.yml needs to be saved in a folder called .circleci in the root of your application repository. 
 For demo purposes you may use the [multi-demo container repository] (https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/multicontainer-app-deploy.html)
@@ -236,7 +238,7 @@ We then have 3 key steps as follows:
 2) Authenticate with cluster
 
 In this step we issue a series of 'kubectl' commands to authenticate against the cluster, scoped to the namespace to which the service account belongs. 
-Earlier above we added the ${K8S_CLUSTER_CERT} and ${K8S_TOKEN} variables into our context in the circle ci console. These variables are injected into the circle CI image.
+Earlier above we added the ${K8S_CLUSTER_CERT} and ${K8S_TOKEN} variables into our context in the CircleCI console. These variables are injected into the CircleCI image.
 The kubectl commands can then use these env variables to authenticate against the cluster. 
 
 
@@ -246,13 +248,15 @@ In the multi-container repo there is folder that contains the helm chart for the
 
 ### Triggering the Pipeline
 
-The pipeline will automatically be triggered when a change to the 'master' is commmited. Circle CI will execute the latest config.yml and execute each step in the pipeline.
+The pipeline will automatically be triggered when a change to the 'master' is commmited. CircleCI will execute the latest config.yml and execute each step in the pipeline.
 
-Once all the above is complete make a change to the rails app and commit to master. You should now see a new job creaed in Circle CI 
+Once all the above is complete make a change to the rails app. For example from the multi-container app repo you can amend the index html file located at 
+'/rails-app/app/views/home/index.html.erb' by changing the title and commit to master. You should now see a new job creaed in CircleCI 
 
-In Circle CI click on 'Jobs' > Click on your repo > Click on the new job > You shoud now see all your steps in the dashboard and their status
+In CircleCI click on 'Jobs' > Click on your repo > Click on the new job > You shoud now see all your steps in the dashboard and their status
 
-After the job has finished your rails app should now be up and running. You can access the app by hitting the DNS you specified in your helm chart values for the rails app.
+After the job has finished your rails app should now be up and running. You can access the app by visiting the DNS you specified in your helm chart values for the rails app.
 
+[multi-container rails app]: /documentation/deploying-an-app/multicontainer-app-deploy.html#creating-an-multicontainer-app
 [ecr-setup]: /documentation/getting-started/ecr-setup.html#creating-an-ecr-repository
 [env-create]: /documentation/getting-started/env-create.html#creating-a-cloud-platform-environment
