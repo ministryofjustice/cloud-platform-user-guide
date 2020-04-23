@@ -57,16 +57,9 @@ in the [environments repository][env-repo] using the terraform
 
 #### Obtaining a certificate
 
-1. Create the `Certificate` resource, filling in any placeholders with your
+1. Create the [Certificate][cert-guidance] resource, filling in any placeholders with your
 details. The `secretName` attribute defines the name of a `Secret` in your
 namespace where the certificate and key material will be stored
-
-Imp Note: We are planning for cert-manager upgrade soon. After the upgrade, the [Certificate][cert-guidance] resource definition will be changed.
-Make sure you use the right format of Certificate resource.
-
-If you have any queries related to the upgrade, please get in touch with us in `#ask-cloud-platform`.
-
-After the cert-manager upgrade, the Certificate resource should be in below format:
 
    ```
    ---
@@ -82,29 +75,6 @@ After the cert-manager upgrade, the Certificate resource should be in below form
        kind: ClusterIssuer
      dnsNames:
      - <hostname>
-   ```
-
-Before the cert-manager upgrade, the Certificate resource should be in below format:
-
-   ```
-   ---
-   apiVersion: certmanager.k8s.io/v1alpha1
-   kind: Certificate
-   metadata:
-     name: <my-cert>
-     namespace: <my-namespace>
-   spec:
-     secretName: <my-cert-secret>
-     issuerRef:
-       name: letsencrypt-production
-       kind: ClusterIssuer
-     commonName: '<hostname>'
-     acme:
-       config:
-       - domains:
-         - '<hostname>'
-         dns01:
-           provider: route53-cloud-platform
    ```
 
 2. Make sure the certificate has been issued correctly, by checking its `Status`:
