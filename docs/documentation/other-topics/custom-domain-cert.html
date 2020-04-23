@@ -156,14 +156,10 @@ in the <a href="https://github.com/ministryofjustice/cloud-platform-environments
 <a href="https://www.terraform.io/docs/providers/aws/r/route53_record.html"><code>aws_route53_record</code></a> resource.</p>
 <h4 id="obtaining-a-certificate">Obtaining a certificate</h4>
 <ol>
-<li>Create the <code>Certificate</code> resource, filling in any placeholders with your
+<li>Create the <a href="https://cert-manager.io/docs/concepts/certificate/">Certificate</a> resource, filling in any placeholders with your
 details. The <code>secretName</code> attribute defines the name of a <code>Secret</code> in your
 namespace where the certificate and key material will be stored</li>
 </ol>
-<p>Imp Note: We are planning for cert-manager upgrade soon. After the upgrade, the <a href="https://cert-manager.io/docs/concepts/certificate/">Certificate</a> resource definition will be changed.
-Make sure you use the right format of Certificate resource.</p>
-<p>If you have any queries related to the upgrade, please get in touch with us in <code>#ask-cloud-platform</code>.</p>
-<p>After the cert-manager upgrade, the Certificate resource should be in below format:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>   ---
    apiVersion: cert-manager.io/v1alpha3
    kind: Certificate
@@ -177,25 +173,6 @@ Make sure you use the right format of Certificate resource.</p>
        kind: ClusterIssuer
      dnsNames:
      - &lt;hostname&gt;
-</code></pre></div><p>Before the cert-manager upgrade, the Certificate resource should be in below format:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>   ---
-   apiVersion: certmanager.k8s.io/v1alpha1
-   kind: Certificate
-   metadata:
-     name: &lt;my-cert&gt;
-     namespace: &lt;my-namespace&gt;
-   spec:
-     secretName: &lt;my-cert-secret&gt;
-     issuerRef:
-       name: letsencrypt-production
-       kind: ClusterIssuer
-     commonName: '&lt;hostname&gt;'
-     acme:
-       config:
-       - domains:
-         - '&lt;hostname&gt;'
-         dns01:
-           provider: route53-cloud-platform
 </code></pre></div>
 <ol>
 <li>Make sure the certificate has been issued correctly, by checking its <code>Status</code>:</li>
