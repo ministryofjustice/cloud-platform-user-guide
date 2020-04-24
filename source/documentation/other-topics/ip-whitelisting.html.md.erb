@@ -1,11 +1,14 @@
 ---
 title: IP Whitelisting
-last_reviewed_on: 2019-12-09
+last_reviewed_on: 2020-04-24
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
 
+> Wherever possible, we treat the [network as a bearer][networks-are-bearers], rather than a means to confer trust.
+>
+> For this reason, IP whitelisting is discouraged in general.
 
 ### Inbound IP Whitelisting
 
@@ -56,13 +59,13 @@ Will return a "403 forbidden" status
 
 ### Outbound IP Whitelisting
 
+> Please note that these number are likely to change, and **should not be relied upon for authentication/authorisation**.
+
 #### NAT Gateways
 
-Many applications use third-party tools for a variety of reasons, and many of these tools require IP Whitelisting.
+IP traffic from the Cloud Platform will originate from the IP numbers of one our NAT Gateways. We have one NAT Gateway in each of the three availability zones in which we host the Cloud Platform, and outbound traffic may originate from any of them.
 
-The Cloud Platform uses NAT Gateways as its external IP Endpoints.
-
-The IP addresses for the clusters are as follows:
+Currently, these are the IPs from which traffic will appear to come:
 
 ##### Live-1 Cluster
 ```
@@ -70,3 +73,5 @@ The IP addresses for the clusters are as follows:
 3.8.51.207
 35.177.252.54
 ```
+
+[networks-are-bearers]: https://ministryofjustice.github.io/security-guidance/mythbusting/internet-v-psn/#networks-are-bearers
