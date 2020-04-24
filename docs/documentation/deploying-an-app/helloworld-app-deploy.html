@@ -377,10 +377,9 @@ spec:
 <span class="na">spec</span><span class="pi">:</span>
 <span class="nn">...</span>
 </code></pre></div><p>This tells the Ingress what kind of authentication to use, and which kubernetes secret contains the credentials.</p>
-<h3 id="apply-the-changes">Apply the changes</h3><p>All that remains is to apply our updated yaml files in almost exactly the same way as we did before, when we deployed the application:</p>
+<h3 id="apply-the-changes">Apply the changes</h3><p>All that remains is to apply our updated yaml files in exactly the same way as we did before, when we deployed the application:</p>
 <div class="highlight"><pre class="highlight shell"><code>kubectl apply <span class="nt">--filename</span> kubectl_deploy <span class="nt">--namespace</span> <span class="o">[</span>your namespace]
-</code></pre></div><p>The only difference is that we are running <code>kubectl apply</code> instead of <code>kubectl create</code>.</p>
-<p>You should see output like this:</p>
+</code></pre></div><p>You should see output like this:</p>
 <div class="highlight"><pre class="highlight shell"><code>deployment.extensions <span class="s2">"helloworld-rubyapp"</span> unchanged
 ingress.extensions <span class="s2">"helloworld-rubyapp-ingress"</span> configured
 secret <span class="s2">"basic-auth"</span> created
@@ -388,16 +387,16 @@ service <span class="s2">"rubyapp-service"</span> unchanged
 </code></pre></div><p>Now, if you reload the browser page showing the &#39;Hello world&rsquo; message from the application, you will be prompted to enter the username and password.</p>
 
 
-              <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
+              <div data-module='page-expiry' data-last-reviewed-on="2020-07-24">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 9 December 2019.
+      This page was last reviewed on 24 April 2020.
 
-        It needs to be reviewed again on 9 March 2020
+        It needs to be reviewed again on 24 July 2020
 .
     </div>
 
     <div class='page-expiry--expired'>
-      This page was set to be reviewed before 9 March 2020.
+      This page was set to be reviewed before 24 July 2020.
       This might mean the content is out of date.
     </div>
   </div>
