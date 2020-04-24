@@ -1,6 +1,6 @@
 ---
 title: Deploying a 'Hello World' application to the Cloud Platform
-last_reviewed_on: 2019-12-09
+last_reviewed_on: 2020-04-24
 review_in: 3 months
 ---
 
@@ -359,13 +359,11 @@ This tells the Ingress what kind of authentication to use, and which kubernetes 
 
 ### Apply the changes
 
-All that remains is to apply our updated yaml files in almost exactly the same way as we did before, when we deployed the application:
+All that remains is to apply our updated yaml files in exactly the same way as we did before, when we deployed the application:
 
 ```bash
 kubectl apply --filename kubectl_deploy --namespace [your namespace]
 ```
-
-The only difference is that we are running `kubectl apply` instead of `kubectl create`.
 
 You should see output like this:
 
