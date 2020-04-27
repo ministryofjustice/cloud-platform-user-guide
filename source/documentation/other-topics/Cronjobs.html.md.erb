@@ -1,6 +1,6 @@
 ---
 title: Kubernetes Cronjobs
-last_reviewed_on: 2019-12-09
+last_reviewed_on: 2020-04-27
 review_in: 3 months
 ---
 
@@ -40,22 +40,21 @@ spec:
           restartPolicy: OnFailure
 ```
 
-### Applying Cronjob in your Namespace
+### Deploying a Cronjob to your Namespace
 
-You need a yaml file to define your cronjob. You can either create your own, or use [this one][cronjob-yaml] as an example. This runs a job periodically on a given schedule to delete untagged images in the ecr-repo, this will help to limit the count of Images in the ecr-repo.
+You need a yaml file to define your cronjob. You can either create your own, or use [this one][cronjob-yaml] as an example. This periodically deletes untagged images in the ECR docker image repository (to ensure we stay within the nubmer of images we are allowed).
 
       ```
       kubectl apply --filename cronjob-ecr.yaml --namespace [your namespace]
       ```
 
-Verify the Cronjob is created, and job is triggered on a given schedule.
+Verify the Cronjob is created:
 
       ```
       kubectl get cronjob --namespace [your namespace]
       ```
 
-Note:
-Kubernetes uses UTC exclusively. Make sure you take that into account when you’re creating your schedule.
+> Note: Kubernetes uses UTC exclusively. Make sure you take that into account when you’re creating your schedule.
 
 [cronjob-yaml]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/tree/cronjob-example-v1.0/k8s_additional_resources
 [cron-jobs]: https://kubernetes.io/docs/tasks/job/automated-tasks-with-cron-jobs/#creating-a-cron-job
