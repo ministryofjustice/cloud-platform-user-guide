@@ -17,9 +17,9 @@ The [django-reference-application][django-app] uses Bitnami PostgreSQL Helm Char
 It is assumed you have the following:
 
  - You have [created an environment for your application][env-create]
- - You have configured [Helm and Tiller][using-helm]. 
  - You have installed [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) on your local machine
  - You have [Authenticated][auth-to-cluster] to the cloud-platform-live-1 cluster
+ - You have configured Helm
 
 #### Set up
 First copy [values.yaml][postgresql-values] file in to your working directory. You now have a [Bitnami PostgreSQL][postgresql-chart] Helm Chart "values.yaml" file. If you need to create your own values for postgresqlUsername,postgresqlPassword and postgresqlDatabase you can update the `values.yaml` or provide those as an argument on our installation command, the `set postgresql values` overwrites the value stored in `value.yaml` file.
@@ -76,6 +76,5 @@ Congratulations on getting this far. If all went well your postgresql pod is now
 [env-create]: /documentation/getting-started/env-create.html#creating-a-cloud-platform-environment
 [auth-to-cluster]: /documentation/getting-started/kubectl-config.html#authentication
 [django-app]: /documentation/deploying-an-app/app-deploy-helm.html#deploying-an-application-to-the-cloud-platform-with-helm
-[using-helm]: /documentation/deploying-an-app/use-circleci-to-upgrade-app.html#continuous-deployment-of-an-application-using-circleci-and-helm
 [postgresql-chart]: https://github.com/helm/charts/tree/master/stable/postgresql
 [postgresql-values]: https://github.com/ministryofjustice/cloud-platform-reference-app/blob/master/helm_deploy/django-app/charts/postgresql/values.yaml
