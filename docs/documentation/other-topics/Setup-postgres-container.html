@@ -126,9 +126,9 @@
 
 <ul>
 <li>You have <a href="/documentation/getting-started/env-create.html#creating-a-cloud-platform-environment">created an environment for your application</a></li>
-<li>You have installed <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/">Kubectl</a> on your local machine.</li>
-<li>You have <a href="/documentation/getting-started/kubectl-config.html#authentication">Authenticated</a> to the cloud-platform-live-1 cluster.</li>
-<li>You have configured <a href="/documentation/deploying-an-app/use-circleci-to-upgrade-app.html#continuous-deployment-of-an-application-using-circleci-and-helm">Helm and Tiller</a>. </li>
+<li>You have installed <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/">Kubectl</a> on your local machine</li>
+<li>You have <a href="/documentation/getting-started/kubectl-config.html#authentication">Authenticated</a> to the cloud-platform-live-1 cluster</li>
+<li>You have configured Helm</li>
 </ul>
 <h4 id="set-up">Set up</h4><p>First copy <a href="https://github.com/ministryofjustice/cloud-platform-reference-app/blob/master/helm_deploy/django-app/charts/postgresql/values.yaml">values.yaml</a> file in to your working directory. You now have a <a href="https://github.com/helm/charts/tree/master/stable/postgresql">Bitnami PostgreSQL</a> Helm Chart &ldquo;values.yaml&rdquo; file. If you need to create your own values for postgresqlUsername,postgresqlPassword and postgresqlDatabase you can update the <code>values.yaml</code> or provide those as an argument on our installation command, the <code>set postgresql values</code> overwrites the value stored in <code>value.yaml</code> file.</p>
 <p>Run the following (replacing the <code>YourName</code> with your own name and <code>env-name</code> with your environment name:</p>
@@ -142,7 +142,7 @@
 <div class="highlight"><pre class="highlight plaintext"><code>NAME                              READY     STATUS    RESTARTS   AGE
 &lt;YourName&gt;-postgresql-0           1/1       Running   0          39m
 </code></pre></div><p>You should have a postgres pod with the status <strong>running</strong>. You can also check the logs of the PostgreSQL pod:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl --namespace &lt;env-name&gt; logs &lt;YourName&gt;-postgresql-0 
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl --namespace &lt;env-name&gt; logs &lt;YourName&gt;-postgresql-0
 </code></pre></div><p>If the PostgreSQL setup was successful you should be seeing tail of log as below:</p>
 <div class="highlight"><pre class="highlight plaintext"><code> 12:49:28.02 INFO  ==&gt; ** PostgreSQL setup finished! **
 </code></pre></div><h4 id="accessing-your-postgresql-db">Accessing your PostgreSQL DB</h4><p>PostgreSQL can be accessed via port 5432 on the following DNS name from within your cluster:</p>
