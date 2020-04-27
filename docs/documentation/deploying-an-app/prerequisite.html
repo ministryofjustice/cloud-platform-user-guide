@@ -120,18 +120,19 @@
 
         <div class="app-pane__content toc-open-disabled">
           <main id="content" class="technical-documentation" data-module="anchored-headings">
-              <h1 id="prerequisite-for-live-1-deployment">Prerequisite for Live-1 deployment</h1><p><strong>This section only applies to applications aiming to be deployed to Live-1.</strong></p>
-<p>In Live-1, the Cloud Platform team introduced <a href="https://kubernetes.io/docs/concepts/policy/pod-security-policy/">Pod Security Policies</a>, to
-tighten the security on this production cluster.  Two policies have been
-applied to the cluster, <em>restricted</em> and <em>privileged</em>.</p>
+              <h1 id="prerequisite-for-live-1-deployment">Prerequisite for Live-1 deployment</h1><p>We use two <a href="https://kubernetes.io/docs/concepts/policy/pod-security-policy/">Pod Security Policies</a> in the Cloud Platform, <em>restricted</em> and <em>privileged</em>.</p>
 <p>By default, any new environment/namespace on Live-1 will be assigned the
 <em>restricted</em> policy</p>
-<h3 id="impact">Impact</h3><p>The main impact of this <em>restricted</em> policy is that it prevents pods/containers
-from running as the root user. A container&rsquo;s user is usually defined in its
+<h3 id="impact">Impact</h3><p>The main impact of the <em>restricted</em> policy is that it prevents pods/containers
+from running as the root user.</p>
+<p>A container&rsquo;s user is usually defined in its
 Dockerfile. If no user is explicitly specified in the Dockerfile, the chances
 are that it will run as root.</p>
-<p>It is important to understand that not being able to use root also implies that
+
+<blockquote>
+<p>Not being able to use root also implies that
 it is impossible to bind to a privileged port (e.g. 80, 443).</p>
+</blockquote>
 <p>The policies only take effect after the container has started. Anything in the
 Dockerfile can be run as root at image build time e.g. to install required
 software.</p>
@@ -157,10 +158,13 @@ the application requires.</p></li>
 </code></pre></div><p>Depending on the base image, you might also need to explicitly create a group
 for the user. In the busybox example above, a &lsquo;myNewUser&rsquo; group is implicitly
 created by the adduser command.</p>
+
+<blockquote>
 <p><strong>You must specify the user by its numeric UID</strong>, as above, not by its
 username.  If you use the username (<code>USER myNewUser</code>) then the pod security
 policy will not be able to tell that that is a non-root user, and your
 container will not be scheduled.</p>
+</blockquote>
 <p>A more complete example can be found here :
 <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/rails-app/Dockerfile">Dockerfile</a></p>
 <h4 id="adapting-the-nginx-image">Adapting the NGINX image</h4><p>Since NGINX binds itself to a privileged port by default, it will not be able
@@ -170,16 +174,16 @@ regarding nginx, as soon as it is ready.  In the meantime, feel free to reach
 out to the cloud-platform team for help : <a href="/documentation/reference/getting-help.html#getting-help">Getting Help</a></p>
 
 
-              <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
+              <div data-module='page-expiry' data-last-reviewed-on="2020-07-27">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 9 December 2019.
+      This page was last reviewed on 27 April 2020.
 
-        It needs to be reviewed again on 9 March 2020
+        It needs to be reviewed again on 27 July 2020
 .
     </div>
 
     <div class='page-expiry--expired'>
-      This page was set to be reviewed before 9 March 2020.
+      This page was set to be reviewed before 27 July 2020.
       This might mean the content is out of date.
     </div>
   </div>
