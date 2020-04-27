@@ -1,30 +1,27 @@
 ---
 title: Prerequisite for Live-1 deployment
-last_reviewed_on: 2019-12-09
+last_reviewed_on: 2020-04-27
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
 
-
-**This section only applies to applications aiming to be deployed to Live-1.**
-
-In Live-1, the Cloud Platform team introduced [Pod Security Policies][psp], to
-tighten the security on this production cluster.  Two policies have been
-applied to the cluster, _restricted_ and _privileged_.
+We use two [Pod Security Policies][psp] in the Cloud Platform, _restricted_ and _privileged_.
 
 By default, any new environment/namespace on Live-1 will be assigned the
 _restricted_ policy
 
 ### Impact
 
-The main impact of this _restricted_ policy is that it prevents pods/containers
-from running as the root user. A container's user is usually defined in its
+The main impact of the _restricted_ policy is that it prevents pods/containers
+from running as the root user. 
+
+A container's user is usually defined in its
 Dockerfile. If no user is explicitly specified in the Dockerfile, the chances
 are that it will run as root.
 
-It is important to understand that not being able to use root also implies that
-it is impossible to bind to a privileged port (e.g. 80, 443).
+> Not being able to use root also implies that
+> it is impossible to bind to a privileged port (e.g. 80, 443).
 
 The policies only take effect after the container has started. Anything in the
 Dockerfile can be run as root at image build time e.g. to install required
@@ -41,7 +38,6 @@ Most of the time, your application's Dockerfile can be easily adapted by:
    the application requires.
 
  - Adding a `USER` clause in your Dockerfile to switch to your non-root user
-
 
 Example:
 
@@ -61,10 +57,10 @@ Depending on the base image, you might also need to explicitly create a group
 for the user. In the busybox example above, a 'myNewUser' group is implicitly
 created by the adduser command.
 
-**You must specify the user by its numeric UID**, as above, not by its
-username.  If you use the username (`USER myNewUser`) then the pod security
-policy will not be able to tell that that is a non-root user, and your
-container will not be scheduled.
+> **You must specify the user by its numeric UID**, as above, not by its
+> username.  If you use the username (`USER myNewUser`) then the pod security
+> policy will not be able to tell that that is a non-root user, and your
+> container will not be scheduled.
 
 A more complete example can be found here :
 [Dockerfile](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/rails-app/Dockerfile)
