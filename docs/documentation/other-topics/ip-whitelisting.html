@@ -120,7 +120,12 @@
 
         <div class="app-pane__content toc-open-disabled">
           <main id="content" class="technical-documentation" data-module="anchored-headings">
-              <h1 id="ip-whitelisting">IP Whitelisting</h1><h3 id="inbound-ip-whitelisting">Inbound IP Whitelisting</h3><p>Allowed client IP source ranges can be specified using the nginx.ingress.kubernetes.io/whitelist-source-range annotation. The value is a comma separated list of CIDRs, e.g. 1.1.1.1/24,10.0.0.0/24.</p>
+              <h1 id="ip-whitelisting">IP Whitelisting</h1>
+<blockquote>
+<p>Wherever possible, we treat the <a href="https://ministryofjustice.github.io/security-guidance/mythbusting/internet-v-psn/#networks-are-bearers">network as a bearer</a>, rather than a means to confer trust.</p>
+<p>For this reason, IP whitelisting is discouraged in general.</p>
+</blockquote>
+<h3 id="inbound-ip-whitelisting">Inbound IP Whitelisting</h3><p>Allowed client IP source ranges can be specified using the nginx.ingress.kubernetes.io/whitelist-source-range annotation. The value is a comma separated list of CIDRs, e.g. 1.1.1.1/24,10.0.0.0/24.</p>
 <p><a href="https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#whitelist-source-range">Kubernetes official documentation on whitelisting source ranges</a>.</p>
 <p>An example configuration using &ldquo;nginx.ingress.kubernetes.io/whitelist-source-range: 1.1.1.1/24,10.0.0.0/24&rdquo;</p>
 <div class="highlight"><pre class="highlight plaintext"><code>apiVersion: extensions/v1beta1
@@ -154,24 +159,27 @@ status:
 </code></pre></div><p>Testing with the annotation set:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>curl -v -H "Host: my-app.apps.live-1.cloud-platform.service.justice.gov.uk" &lt;HOST-IP&gt;
 </code></pre></div><p>Will return a &ldquo;403 forbidden&rdquo; status</p>
-<h3 id="outbound-ip-whitelisting">Outbound IP Whitelisting</h3><h4 id="nat-gateways">NAT Gateways</h4><p>Many applications use third-party tools for a variety of reasons, and many of these tools require IP Whitelisting.</p>
-<p>The Cloud Platform uses NAT Gateways as its external IP Endpoints.</p>
-<p>The IP addresses for the clusters are as follows:</p>
+<h3 id="outbound-ip-whitelisting">Outbound IP Whitelisting</h3>
+<blockquote>
+<p>Please note that these number are likely to change, and <strong>should not be relied upon for authentication/authorisation</strong>.</p>
+</blockquote>
+<h4 id="nat-gateways">NAT Gateways</h4><p>IP traffic from the Cloud Platform will originate from the IP numbers of one our NAT Gateways. We have one NAT Gateway in each of the three availability zones in which we host the Cloud Platform, and outbound traffic may originate from any of them.</p>
+<p>Currently, these are the IPs from which traffic will appear to come:</p>
 <h5 id="live-1-cluster">Live-1 Cluster</h5><div class="highlight"><pre class="highlight plaintext"><code>35.178.209.113
 3.8.51.207
 35.177.252.54
 </code></pre></div>
 
-              <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
+              <div data-module='page-expiry' data-last-reviewed-on="2020-07-24">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 9 December 2019.
+      This page was last reviewed on 24 April 2020.
 
-        It needs to be reviewed again on 9 March 2020
+        It needs to be reviewed again on 24 July 2020
 .
     </div>
 
     <div class='page-expiry--expired'>
-      This page was set to be reviewed before 9 March 2020.
+      This page was set to be reviewed before 24 July 2020.
       This might mean the content is out of date.
     </div>
   </div>
