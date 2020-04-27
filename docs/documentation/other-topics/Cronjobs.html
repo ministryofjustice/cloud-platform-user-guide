@@ -108,7 +108,7 @@
             <a href="#usage">Usage</a>
           </li>
           <li>
-            <a href="#applying-cronjob-in-your-namespace">Applying Cronjob in your Namespace</a>
+            <a href="#deploying-a-cronjob-to-your-namespace">Deploying a Cronjob to your Namespace</a>
           </li>
         </ul>
       </li>
@@ -145,28 +145,30 @@ spec:
             - -c
             - date; echo "Hello, World!"
           restartPolicy: OnFailure
-</code></pre></div><h3 id="applying-cronjob-in-your-namespace">Applying Cronjob in your Namespace</h3><p>You need a yaml file to define your cronjob. You can either create your own, or use <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/tree/cronjob-example-v1.0/k8s_additional_resources">this one</a> as an example. This runs a job periodically on a given schedule to delete untagged images in the ecr-repo, this will help to limit the count of Images in the ecr-repo.</p>
+</code></pre></div><h3 id="deploying-a-cronjob-to-your-namespace">Deploying a Cronjob to your Namespace</h3><p>You need a yaml file to define your cronjob. You can either create your own, or use <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/tree/cronjob-example-v1.0/k8s_additional_resources">this one</a> as an example. This periodically deletes untagged images in the ECR docker image repository (to ensure we stay within the nubmer of images we are allowed).</p>
 <div class="highlight"><pre class="highlight plaintext"><code>  ```
   kubectl apply --filename cronjob-ecr.yaml --namespace [your namespace]
   ```
-</code></pre></div><p>Verify the Cronjob is created, and job is triggered on a given schedule.</p>
+</code></pre></div><p>Verify the Cronjob is created:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>  ```
   kubectl get cronjob --namespace [your namespace]
   ```
-</code></pre></div><p>Note:
-Kubernetes uses UTC exclusively. Make sure you take that into account when you’re creating your schedule.</p>
+</code></pre></div>
+<blockquote>
+<p>Note: Kubernetes uses UTC exclusively. Make sure you take that into account when you’re creating your schedule.</p>
+</blockquote>
 
 
-              <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
+              <div data-module='page-expiry' data-last-reviewed-on="2020-07-27">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 9 December 2019.
+      This page was last reviewed on 27 April 2020.
 
-        It needs to be reviewed again on 9 March 2020
+        It needs to be reviewed again on 27 July 2020
 .
     </div>
 
     <div class='page-expiry--expired'>
-      This page was set to be reviewed before 9 March 2020.
+      This page was set to be reviewed before 27 July 2020.
       This might mean the content is out of date.
     </div>
   </div>
