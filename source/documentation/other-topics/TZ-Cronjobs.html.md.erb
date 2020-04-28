@@ -1,6 +1,6 @@
 ---
 title: Time Zone Cronjobs
-last_reviewed_on: 2019-12-09
+last_reviewed_on: 2020-04-28
 review_in: 3 months
 ---
 
@@ -9,13 +9,13 @@ review_in: 3 months
 
 ### Overview
 
-There may be a requirement for some Cronjobs to run at specific times of a day in the UK (including during BST), but Kubernetes Cronjob does not support time zone, our cluster uses UTC timezone internally. To enable service teams to run cronjobs at specific times, we deployed [TZ Cronjobber][hiddeco-cronjobber](cronjob controller for Kubernetes with support for time zones).
+The Cloud Platform uses UTC, but sometimes you may need a Cronjob to run at specific times of a day in the UK (including during BST). Kubernetes Cronjobs do not support time zones, so to enable running cronjobs at specific UK times, you can use [TZ Cronjobber][hiddeco-cronjobber](a cronjob controller for Kubernetes with support for time zones).
 
 ### Usage
 
 Instead of creating a CronJob like you normally would, you create a TZCronJob, which works exactly the same but supports an additional field: `.spec.timezone`. Set this to the [time zone][tz_database_time_zones] you wish to schedule your jobs in and Cronjobber will take care of the rest.
 
-In the below example timezone is set to "Europe/London" and scheduled every day at 14:10. During BST the job will trigger at 13:10 UTC, but the rest of the year it will trigger at 14:10 UTC.
+In this example the timezone is set to "Europe/London" and scheduled every day at 14:10. During BST the job will trigger at 13:10 UTC, but the rest of the year it will trigger at 14:10 UTC.
 
 example:
 
@@ -43,13 +43,13 @@ spec:
 
 ### Applying tzcronjob in your Namespace
 
-Using the above example create an tzcronjob.yaml and apply the TZCronjob to your namespace in the kubernetes cluster.
+Using the above example create a `tzcronjob.yaml` file and apply it to your namespace in the kubernetes cluster.
 
       ```
       kubectl apply --filename tzcronjob.yaml --namespace [your namespace]
       ```
 
-Verify the tzcronjob is created, and job is triggered on a given schedule as per the timezone used.
+Verify that the tzcronjob is created.
 
       ```
       kubectl get tzcronjob --namespace [your namespace]
