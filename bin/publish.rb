@@ -23,7 +23,7 @@ def compile_docs_folder
 end
 
 def passes_html_proofer?
-  _stdout, _stderr, status = execute %[bundle exec htmlproofer ./docs --allow-hash-href --url-swap "https?\\:\\/\\/user-guide\\.cloud-platform\\.service\\.justice\\.gov\\.uk:" ./docs]
+  _stdout, _stderr, status = execute %[bundle exec htmlproofer ./docs --http-status-ignore 429 --allow-hash-href --url-swap "https?\\:\\/\\/user-guide\\.cloud-platform\\.service\\.justice\\.gov\\.uk:" ./docs]
   status.success?
 end
 
