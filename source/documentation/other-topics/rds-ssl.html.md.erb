@@ -1,6 +1,6 @@
 ---
 title: SSL connections with RDS
-last_reviewed_on: 2019-12-09
+last_reviewed_on: 2020-04-27
 review_in: 3 months
 ---
 
@@ -18,7 +18,7 @@ WARNING: psql major version 9.6, server major version 10.
 SSL connection (protocol: TLSv1.2, cipher: ECDHE-RSA-AES256-GCM-SHA384, bits: 256, compression: off)
 Type "help" for help.
 
-dba02192a049ed7ce8=> ^D\q
+dba02192a049ed7ce8=> 
 ```
 
 Where `$url` is of the form `postgres://user:pass@host:port/db`.
@@ -35,7 +35,7 @@ certificate.
 
 In order to establish a connection with `sslmode=verify-full`, which offers [MITM][mitm] protection, we have to provide
 the client with the root CA certificate before it is able to verify the chain of trust. AWS offers [detailed instructions][aws-rds-ssl]
-on how to exactly that.
+on how to do that.
 
 As you can see below, unless provided with the root CA certificate, the client cannot fully verify the endpoint:
 
@@ -53,7 +53,7 @@ WARNING: psql major version 9.6, server major version 10.
 SSL connection (protocol: TLSv1.2, cipher: ECDHE-RSA-AES256-GCM-SHA384, bits: 256, compression: off)
 Type "help" for help.
 
-dba02192a049ed7ce8=> ^D\q
+dba02192a049ed7ce8=> 
 ```
 
 This CA bundle can be added into your application's docker image. You can simply add the following directive in your
