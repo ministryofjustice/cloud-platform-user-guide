@@ -42,7 +42,7 @@ build: .built-docker-image
 	echo $(DOMAIN) > docs/CNAME
 
 test:
-	bundle exec htmlproofer --allow-hash-href --url-swap "https?\:\/\/user-guide\.cloud-platform\.service\.justice\.gov\.uk:" ./docs
+	bundle exec htmlproofer ./docs --http-status-ignore 429 --allow-hash-href --url-swap "https?\:\/\/user-guide\.cloud-platform\.service\.justice\.gov\.uk:"
 
 # Convert the user guide to a folder-based structure
 convert:
