@@ -123,9 +123,9 @@
 
         <div class="app-pane__content toc-open-disabled">
           <main id="content" class="technical-documentation" data-module="anchored-headings">
-              <h1 id="time-zone-cronjobs">Time Zone Cronjobs</h1><h3 id="overview">Overview</h3><p>There may be a requirement for some Cronjobs to run at specific times of a day in the UK (including during BST), but Kubernetes Cronjob does not support time zone, our cluster uses UTC timezone internally. To enable service teams to run cronjobs at specific times, we deployed <a href="https://github.com/hiddeco/cronjobber">TZ Cronjobber</a>(cronjob controller for Kubernetes with support for time zones).</p>
+              <h1 id="time-zone-cronjobs">Time Zone Cronjobs</h1><h3 id="overview">Overview</h3><p>The Cloud Platform uses UTC, but sometimes you may need a Cronjob to run at specific times of a day in the UK (including during BST). Kubernetes Cronjobs do not support time zones, so to enable running cronjobs at specific UK times, you can use <a href="https://github.com/hiddeco/cronjobber">TZ Cronjobber</a>(a cronjob controller for Kubernetes with support for time zones).</p>
 <h3 id="usage">Usage</h3><p>Instead of creating a CronJob like you normally would, you create a TZCronJob, which works exactly the same but supports an additional field: <code>.spec.timezone</code>. Set this to the <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones">time zone</a> you wish to schedule your jobs in and Cronjobber will take care of the rest.</p>
-<p>In the below example timezone is set to &ldquo;Europe/London&rdquo; and scheduled every day at 14:10. During BST the job will trigger at 13:10 UTC, but the rest of the year it will trigger at 14:10 UTC.</p>
+<p>In this example the timezone is set to &ldquo;Europe/London&rdquo; and scheduled every day at 14:10. During BST the job will trigger at 13:10 UTC, but the rest of the year it will trigger at 14:10 UTC.</p>
 <p>example:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>apiVersion: cronjobber.hidde.co/v1alpha1
 kind: TZCronJob
@@ -146,26 +146,26 @@ spec:
             - -c
             - date; echo "Hello, World!"
           restartPolicy: OnFailure
-</code></pre></div><h3 id="applying-tzcronjob-in-your-namespace">Applying tzcronjob in your Namespace</h3><p>Using the above example create an tzcronjob.yaml and apply the TZCronjob to your namespace in the kubernetes cluster.</p>
+</code></pre></div><h3 id="applying-tzcronjob-in-your-namespace">Applying tzcronjob in your Namespace</h3><p>Using the above example create a <code>tzcronjob.yaml</code> file and apply it to your namespace in the kubernetes cluster.</p>
 <div class="highlight"><pre class="highlight plaintext"><code>  ```
   kubectl apply --filename tzcronjob.yaml --namespace [your namespace]
   ```
-</code></pre></div><p>Verify the tzcronjob is created, and job is triggered on a given schedule as per the timezone used.</p>
+</code></pre></div><p>Verify that the tzcronjob is created.</p>
 <div class="highlight"><pre class="highlight plaintext"><code>  ```
   kubectl get tzcronjob --namespace [your namespace]
   ```
 </code></pre></div>
 
-              <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
+              <div data-module='page-expiry' data-last-reviewed-on="2020-07-28">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 9 December 2019.
+      This page was last reviewed on 28 April 2020.
 
-        It needs to be reviewed again on 9 March 2020
+        It needs to be reviewed again on 28 July 2020
 .
     </div>
 
     <div class='page-expiry--expired'>
-      This page was set to be reviewed before 9 March 2020.
+      This page was set to be reviewed before 28 July 2020.
       This might mean the content is out of date.
     </div>
   </div>
