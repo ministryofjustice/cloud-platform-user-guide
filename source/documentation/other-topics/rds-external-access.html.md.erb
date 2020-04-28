@@ -1,6 +1,6 @@
 ---
 title: Accessing your RDS database
-last_reviewed_on: 2020-01-13
+last_reviewed_on: 2020-04-27
 review_in: 3 months
 ---
 
@@ -12,9 +12,10 @@ within the kubernetes cluster.  So, trying to connect to the RDS instance from
 your local machine will not work.
 
 ```
-+--------------+                   \ /                        +--------------+
++--------------+      outside      \ /       inside           +--------------+
 | Your machine | -------------------X-----------------------> | RDS instance |
 +--------------+                   / \                        +--------------+
+                               VPC Boundary
 ```
 
 If you need to access your database from outside the cluster (e.g. from your
@@ -35,9 +36,11 @@ So, the connection from your machine to the RDS instance works like this:
 
 ### 1. Run a port-forward pod
 
-There are several docker images designed to forward network traffic, but you need one which does not run as `root`. We will use [ministryofjustice/port-forward][port-forward-image] for this example.
+There are several docker images designed to forward network traffic, but you need one which does not run as `root`. 
 
-NB: **The cluster pod security policy (PSP) will prevent any images from running a process as the `root` user, so docker images which expect to do this will not work.**
+> The cluster pod security policy (PSP) will prevent any images from running a process as the `root` user, so docker images which expect to do this will not work.
+
+We will use [ministryofjustice/port-forward][port-forward-image] for this example.
 
 ```
 kubectl \
@@ -52,10 +55,11 @@ kubectl \
 ```
 
 > This creates a pod in your namespace, but without a deployment to manage it.
-Manually-created pods (i.e. those which are not part of a [deployment]) block
+>
+> Manually-created pods (i.e. those which are not part of a [deployment]) block
 some cluster operations such as [draining a node] in order to replace it. For
-this reason, we have set up an automated process which will delete any such
-pods after 48 hours. If you need a port-forward pod to persist longer than
+this reason, we have set up an automated process which will **delete any such
+pods after 24 hours**. If you need a port-forward pod to persist longer than
 this, please make it part of a [deployment].
 
 ### 2. Forward local traffic to the port-forward-pod
@@ -102,6 +106,8 @@ psql \
 ```
 
 (You will be prompted to enter the database password, which you should get (and then base64 decode) from your kubernetes secret)
+
+### 4. Delete the port-forward pod
 
 Please remember to delete the port-forwarding pod when you have finished.
 
