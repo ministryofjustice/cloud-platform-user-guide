@@ -117,46 +117,35 @@
         <div class="app-pane__content toc-open-disabled">
           <main id="content" class="technical-documentation" data-module="anchored-headings">
               <h1 id="kubectl-quick-reference">Kubectl quick reference</h1><p>This document acts as a quick reference to <code>kubectl</code>, listing some of the most common operations.</p>
-<p>The examples here only address the most basic approach to these operations. For more options, please refer to the command-line help of <code>kubectl</code> subcommands.</p>
-<p>There is also a more detailed <a href="https://kubernetes.io/docs/reference/kubectl/cheatsheet/">cheatsheet</a> in the official kubernetes documentation.</p>
-<h5 id="inspecting-running-instances-of-the-application">Inspecting running instances of the application</h5><p>To list running <code>Pods</code>:
-<code>
-$ kubectl -n &lt;namespace&gt; get pods
-</code>
-To view details for a <code>Pod</code>:
-<code>
-$ kubectl -n &lt;namespace&gt; describe pod &lt;pod&gt;
-</code></p>
-<h5 id="viewing-logs">Viewing logs</h5><p>To access the logs of a running container:
-<code>
-$ kubectl -n &lt;namespace&gt; logs &lt;pod&gt;
-</code></p>
-<h5 id="viewing-kubernetes-events">Viewing kubernetes events</h5><p>To see kubernetes events, which can help debugging:
-<code>
-$ kubectl -n &lt;namespace&gt; get events
-</code></p>
-<h5 id="container-shell">Container shell</h5><p>You can get a shell inside a running container:
-<code>
-$ kubectl -n &lt;namespace&gt; exec -it &lt;pod&gt; sh
-</code></p>
-<p>For more information, click <a href="https://kubernetes.io/docs/tasks/debug-application-cluster/get-shell-running-container/">here</a></p>
-<h5 id="pod-port-forwarding">Pod port-forwarding</h5><p>To forward port <code>5000</code> on <code>localhost</code> to port <code>5001</code> in the <code>Pod</code>:
-<code>
-$ kubectl -n &lt;namespace&gt; port-forward &lt;pod&gt; 5000:5001
-</code></p>
-<p>For more information, click <a href="https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/">here</a></p>
+<p>The examples here only address the most basic approach to these operations. For more options, please refer to the command-line help of <code>kubectl</code> subcommands, which you can access like this:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>kubectl get --help
+</code></pre></div><p>There is also a more detailed <a href="https://kubernetes.io/docs/reference/kubectl/cheatsheet/">cheatsheet</a> in the official kubernetes documentation.</p>
+<h5 id="inspecting-running-instances-of-an-application">Inspecting running instances of an application</h5><p>To list running <code>Pods</code>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl -n &lt;namespace&gt; get pods
+</code></pre></div><p>To view details for a <code>Pod</code>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl -n &lt;namespace&gt; describe pod &lt;pod&gt;
+</code></pre></div><h5 id="viewing-logs">Viewing logs</h5><p>To access the logs of a running container:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl -n &lt;namespace&gt; logs &lt;pod&gt;
+</code></pre></div><h5 id="viewing-kubernetes-events">Viewing kubernetes events</h5><p>To see kubernetes events, which can help debugging:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl -n &lt;namespace&gt; get events
+</code></pre></div><h5 id="container-shell">Container shell</h5><p>You can get a shell inside a running container:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl -n &lt;namespace&gt; exec -it &lt;pod&gt; sh
+</code></pre></div><p>For more information, click <a href="https://kubernetes.io/docs/tasks/debug-application-cluster/get-shell-running-container/">here</a></p>
+<h5 id="pod-port-forwarding">Pod port-forwarding</h5><p>To forward port <code>5000</code> on <code>localhost</code> to port <code>5001</code> in the <code>Pod</code>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl -n &lt;namespace&gt; port-forward &lt;pod&gt; 5000:5001
+</code></pre></div><p>For more information, click <a href="https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/">here</a></p>
 
 
-              <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
+              <div data-module='page-expiry' data-last-reviewed-on="2020-08-04">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 9 December 2019.
+      This page was last reviewed on 4 May 2020.
 
-        It needs to be reviewed again on 9 March 2020
+        It needs to be reviewed again on 4 August 2020
 .
     </div>
 
     <div class='page-expiry--expired'>
-      This page was set to be reviewed before 9 March 2020.
+      This page was set to be reviewed before 4 August 2020.
       This might mean the content is out of date.
     </div>
   </div>
