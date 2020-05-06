@@ -6,7 +6,7 @@
     <meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
       <meta name="robots" content="noindex">
 
-    <title>Setup Postgres container | Cloud Platform User Guide</title>
+    <title>Create a Postgres container | Cloud Platform User Guide</title>
 
     <!--[if gt IE 8]><!--><link href="/stylesheets/screen.css" rel="stylesheet" media="screen" /><!--<![endif]-->
     <!--[if lte IE 8]><link href="/stylesheets/screen-old-ie.css" rel="stylesheet" media="screen" /><![endif]-->
@@ -19,13 +19,13 @@
 
       <meta property="og:image" content="https://user-guide.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
       <meta property="og:site_name" content="Cloud Platform User Guide" />
-      <meta property="og:title" content="Setup Postgres container" />
+      <meta property="og:title" content="Create a Postgres container" />
       <meta property="og:type" content="object" />
       <meta property="og:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/Setup-postgres-container.html" />
       <meta property="twitter:card" content="summary" />
       <meta property="twitter:domain" content="user-guide.cloud-platform.service.justice.gov.uk" />
       <meta property="twitter:image" content="https://user-guide.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
-      <meta property="twitter:title" content="Setup Postgres container | Cloud Platform User Guide" />
+      <meta property="twitter:title" content="Create a Postgres container | Cloud Platform User Guide" />
       <meta property="twitter:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/Setup-postgres-container.html" />
 
     
@@ -97,7 +97,7 @@
               <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading">
                       <ul>
   <li>
-    <a href="#setup-postgres-container">Setup Postgres container</a>
+    <a href="#create-a-postgres-container">Create a Postgres container</a>
     <ul>
       <li>
         <ul>
@@ -116,55 +116,62 @@
 
         <div class="app-pane__content toc-open-disabled">
           <main id="content" class="technical-documentation" data-module="anchored-headings">
-              <h1 id="setup-postgres-container">Setup Postgres container</h1><p>If you need to quickly create DB for test/dev, you can set up a pod in your namespace running postgres in a container. Deploying <a href="https://github.com/helm/charts/tree/master/stable/postgresql">Bitnami PostgreSQL</a> as Helm Chart is the easiest way to get started with PostgreSQL on Kubernetes. This chart bootstraps a PostgreSQL deployment on a Kubernetes cluster using the Helm package manager.</p>
+              <h1 id="create-a-postgres-container">Create a Postgres container</h1><p>If you need a quick, ephemeral database for testing/development, you can create a pod in your namespace running postgres in a container.</p>
+<p>The <a href="https://github.com/helm/charts/tree/master/stable/postgresql">Bitnami PostgreSQL</a> helm chart is the easiest way to get started with PostgreSQL on Kubernetes. This chart bootstraps a PostgreSQL deployment on a Kubernetes cluster using the Helm package manager.</p>
 <p>The <a href="/documentation/deploying-an-app/app-deploy-helm.html#deploying-an-application-to-the-cloud-platform-with-helm">django-reference-application</a> uses Bitnami PostgreSQL Helm Chart to add a postgres instance, you can use the same Chart to setup postgres in your namespace.</p>
 
 <blockquote>
-<p>Note: Even though we are going to install a database within the Kubernetes cluster, it is recommended to use a database as a service offering such as <a href="https://aws.amazon.com/rds/">AWS RDS</a> if running in production.</p>
+<p>Note: Using a postgres container is only recommended for ephemeral testing/development purposes. For any production, or long-lived development/testing environments, we strongly recommend using the <a href="https://aws.amazon.com/rds/">AWS RDS</a> managed database service.</p>
 </blockquote>
-<h4 id="requirements">Requirements</h4><p>It is assumed you have the following:</p>
-
+<h4 id="pre-requisites">Pre-requisites</h4>
 <ul>
 <li>You have <a href="/documentation/getting-started/env-create.html#creating-a-cloud-platform-environment">created an environment for your application</a></li>
 <li>You have installed <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/">Kubectl</a> on your local machine</li>
-<li>You have <a href="/documentation/getting-started/kubectl-config.html#authentication">Authenticated</a> to the cloud-platform-live-1 cluster</li>
+<li>You have <a href="/documentation/getting-started/kubectl-config.html#authentication">Authenticated</a> to the cloud platform</li>
 <li>You have configured Helm</li>
 </ul>
-<h4 id="set-up">Set up</h4><p>First copy <a href="https://github.com/ministryofjustice/cloud-platform-reference-app/blob/master/helm_deploy/django-app/charts/postgresql/values.yaml">values.yaml</a> file in to your working directory. You now have a <a href="https://github.com/helm/charts/tree/master/stable/postgresql">Bitnami PostgreSQL</a> Helm Chart &ldquo;values.yaml&rdquo; file. If you need to create your own values for postgresqlUsername,postgresqlPassword and postgresqlDatabase you can update the <code>values.yaml</code> or provide those as an argument on our installation command, the <code>set postgresql values</code> overwrites the value stored in <code>value.yaml</code> file.</p>
-<p>Run the following (replacing the <code>YourName</code> with your own name and <code>env-name</code> with your environment name:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>    $ helm install --name &lt;YourName&gt; -f values.yaml stable/postgresql \
-      --namespace &lt;env-name&gt; \
-      --set postgresqlUsername=postgres,postgresqlPassword=secretpassword,postgresqlDatabase=my-database \
-      --tiller-namespace &lt;env-name&gt;
-</code></pre></div><h4 id="viewing-your-postgresql-db">Viewing your PostgreSQL DB</h4><p>You can now check PostgreSQL Helm Chart is deployed sucessfully:</p>
+<h4 id="set-up">Set up</h4><p>First copy the <a href="https://github.com/ministryofjustice/cloud-platform-reference-app/blob/master/helm_deploy/django-app/charts/postgresql/values.yaml">values.yaml</a> file to your working directory.</p>
+<p>You should edit the file to set your own values for:</p>
+
+<ul>
+<li><code>postgresqlUsername</code></li>
+<li><code>postgresqlPassword</code></li>
+<li><code>postgresqlDatabase</code></li>
+</ul>
+<p>Or, you can provide those as an argument to the installation command. Below, the <code>--set</code> values override the values in the <code>value.yaml</code> file:</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>helm install <span class="nt">--name</span> &lt;YourName&gt; <span class="nt">-f</span> values.yaml stable/postgresql <span class="se">\</span>
+  <span class="nt">--namespace</span> &lt;env-name&gt; <span class="se">\</span>
+  <span class="nt">--set</span> <span class="nv">postgresqlUsername</span><span class="o">=</span>postgres,postgresqlPassword<span class="o">=</span>secretpassword,postgresqlDatabase<span class="o">=</span>my-database <span class="se">\</span>
+  <span class="nt">--tiller-namespace</span> &lt;env-name&gt;
+</code></pre></div><p>Check that the PostgreSQL Helm Chart is deployed sucessfully:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>$ kubectl get pods --namespace &lt;env-name&gt;
-</code></pre></div><p>If the Installation was successful you should be seeing something similar to the below:</p>
+</code></pre></div><p>If the Installation was successful you should see something similar to this:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>NAME                              READY     STATUS    RESTARTS   AGE
 &lt;YourName&gt;-postgresql-0           1/1       Running   0          39m
 </code></pre></div><p>You should have a postgres pod with the status <strong>running</strong>. You can also check the logs of the PostgreSQL pod:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>$ kubectl --namespace &lt;env-name&gt; logs &lt;YourName&gt;-postgresql-0
-</code></pre></div><p>If the PostgreSQL setup was successful you should be seeing tail of log as below:</p>
+</code></pre></div><p>If the PostgreSQL setup was successful, the last line should be something like:</p>
 <div class="highlight"><pre class="highlight plaintext"><code> 12:49:28.02 INFO  ==&gt; ** PostgreSQL setup finished! **
 </code></pre></div><h4 id="accessing-your-postgresql-db">Accessing your PostgreSQL DB</h4><p>PostgreSQL can be accessed via port 5432 on the following DNS name from within your cluster:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>&lt;YourName&gt;-postgresql.&lt;env-name&gt;.svc.cluster.local - Read/Write connection
-</code></pre></div><p>The <code>postgresqlPassword</code> you have set will be stored as a secret in your namespace, to get the password for &ldquo;postgres&rdquo; run:</p>
+</code></pre></div><p>The <code>postgresqlPassword</code> you have set will be stored as a secret in your namespace, to get the password for the <code>postgres</code> datase user, run:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>export POSTGRES_PASSWORD=$(kubectl get secret --namespace &lt;env-name&gt; &lt;YourName&gt;-postgresql -o jsonpath="{.data.postgresql-password}" | base64 --decode)
 </code></pre></div><p>To connect to your database from outside the cluster execute the following commands:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>kubectl port-forward --namespace &lt;env-name&gt; svc/&lt;YourName&gt;-postgresql 5432:5432 &amp;
+
 PGPASSWORD="$POSTGRES_PASSWORD" psql --host 127.0.0.1 -U postgres -d my-database -p 5432
-</code></pre></div><p>Congratulations on getting this far. If all went well your postgresql pod is now deployed and you could connect to your database from outside the cluster.</p>
+</code></pre></div>
 
-
-              <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
+              <div data-module='page-expiry' data-last-reviewed-on="2020-08-06">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 9 December 2019.
+      This page was last reviewed on 6 May 2020.
 
-        It needs to be reviewed again on 9 March 2020
+        It needs to be reviewed again on 6 August 2020
 .
     </div>
 
     <div class='page-expiry--expired'>
-      This page was set to be reviewed before 9 March 2020.
+      This page was set to be reviewed before 6 August 2020.
       This might mean the content is out of date.
     </div>
   </div>
@@ -173,7 +180,7 @@ PGPASSWORD="$POSTGRES_PASSWORD" psql --host 127.0.0.1 -U postgres -d my-database
 
             <ul class="contribution-banner">
               <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/documentation/other-topics/Setup-postgres-container.html.md.erb">View source</a></li>
-              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'Setup%20Postgres%20container'&amp;body=Problem%20with%20'Setup%20Postgres%20container'%20(https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/Setup-postgres-container.html)">Report problem</a></li>
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'Create%20a%20Postgres%20container'&amp;body=Problem%20with%20'Create%20a%20Postgres%20container'%20(https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/Setup-postgres-container.html)">Report problem</a></li>
               <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub Repo</a></li>
             </ul>
 
