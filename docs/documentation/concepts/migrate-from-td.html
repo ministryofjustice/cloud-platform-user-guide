@@ -154,7 +154,7 @@
 </ul>
 <h2 id="aws-access">AWS access</h2><p>All AWS resources in the Cloud Platform are in a separate, <code>moj-cp</code> AWS account. Access to this account is tightly restricted, so if you are accustomed to e.g. using the AWS web console to help operate your service, you will need to do things differently in the Cloud Platform.</p>
 <h2 id="aws-region">AWS region</h2><p>Everything for the Cloud Platform is in the <code>eu-west-2</code> (London) region.  TD generally uses <code>eu-west-1</code> (Ireland). For features not available in the London region (eg SES, at time of writing), cross-region links can be created and will be evaluated on request.</p>
-<h2 id="ssl">SSL</h2><p>DNS and SSL are managed by cluster-shared services (cert-manager and external-dns)</p>
+<h2 id="ssl">SSL</h2><p>DNS and SSL are managed by cluster-shared services (<a href="https://cert-manager.io/docs/">cert-manager</a> and <a href="https://github.com/kubernetes-sigs/external-dns">external-dns</a>)</p>
 
 <ul>
 <li>Validation and deployment are managed by a single pipeline.</li>
@@ -167,8 +167,11 @@
 <li>TLS version: Kubernetes supports a minimum TLS version of 1.2 If you have users with browsers that do not support TLS 1.2, they will not be able to access your service.</li>
 </ul>
 <h2 id="connections-to-from-service-ips">Connections to/from service IPs</h2><p>Inbound connections to service IPs are not possible, on the Cloud Platform. Access to your service must go via https to a URL, not by inbound access to an IP number.</p>
-<p>Connections <strong>to</strong> resources outside the cluster are allowed, and pods will be NATed to the IPs of the VPC gateways (the IP addresses are pinned int the #ask-cloud-platform channel).</p>
+<p>Connections <strong>to</strong> resources outside the cluster are allowed, and pods will be NATed to the IPs of the VPC gateways (the IP addresses are pinned in the #ask-cloud-platform channel).</p>
+
+<blockquote>
 <p>NB: UDP is not available at all.</p>
+</blockquote>
 <h2 id="application-architecture">Application Architecture</h2>
 <ol>
 <li><p>Applications must log their entire output to STDOUT/STDERR.</p>
@@ -212,16 +215,16 @@
 </ol>
 
 
-              <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
+              <div data-module='page-expiry' data-last-reviewed-on="2020-08-06">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 9 December 2019.
+      This page was last reviewed on 6 May 2020.
 
-        It needs to be reviewed again on 9 March 2020
+        It needs to be reviewed again on 6 August 2020
 .
     </div>
 
     <div class='page-expiry--expired'>
-      This page was set to be reviewed before 9 March 2020.
+      This page was set to be reviewed before 6 August 2020.
       This might mean the content is out of date.
     </div>
   </div>
