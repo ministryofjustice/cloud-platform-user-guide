@@ -1,6 +1,6 @@
 ---
 title: ModSecurity - Web Application Firewall
-last_reviewed_on: 2019-12-09
+last_reviewed_on: 2020-05-06
 review_in: 3 months
 ---
 
@@ -72,7 +72,7 @@ spec:
 ### Logging
 
 All disruptive actions are logged in the ModSecurity audit log file and the error log for for nginx ingress-controller. 
-Fluentd is used to ship error logs into the Cloud Platform ELK stack. To view any possible logs, log into [Kibana](https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/) and search for `ModSecurity`. You can filter down to a particular host using `nginx-ingress.log is "host: "test-ingress.url""`
+Fluentd is used to ship error logs into the Cloud Platform ELK stack. To view any possible logs, log into [Kibana](https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/), select `ingress-json` index and search for `ModSecurity`. You can filter down to a particular host using `nginx-ingress.log is "host: "test-ingress.url""`
 
 Error Log Example:
 
