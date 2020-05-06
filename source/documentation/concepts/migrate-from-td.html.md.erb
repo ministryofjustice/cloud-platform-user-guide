@@ -1,11 +1,10 @@
 ---
 title: Migrating to the Cloud Platform from Template Deploy
-last_reviewed_on: 2019-12-09
+last_reviewed_on: 2020-05-06
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
-
 
 These are some of the things to think about when migrating your application from [Template Deploy][template-deploy] (TD) to the [Cloud Platform][cloud-platform] (CP).
 
@@ -40,7 +39,7 @@ Everything for the Cloud Platform is in the `eu-west-2` (London) region.  TD gen
 
 ## SSL
 
-DNS and SSL are managed by cluster-shared services (cert-manager and external-dns)
+DNS and SSL are managed by cluster-shared services ([cert-manager] and [external-dns])
 
  * Validation and deployment are managed by a single pipeline.
  * Renewals are automatic.
@@ -54,9 +53,9 @@ Does your service have users who are stuck with very old browsers? If so, consid
 
 Inbound connections to service IPs are not possible, on the Cloud Platform. Access to your service must go via https to a URL, not by inbound access to an IP number.
 
-Connections **to** resources outside the cluster are allowed, and pods will be NATed to the IPs of the VPC gateways (the IP addresses are pinned int the #ask-cloud-platform channel).
+Connections **to** resources outside the cluster are allowed, and pods will be NATed to the IPs of the VPC gateways (the IP addresses are pinned in the #ask-cloud-platform channel).
 
-NB: UDP is not available at all.
+> NB: UDP is not available at all.
 
 ## Application Architecture
 
@@ -115,3 +114,5 @@ NB: UDP is not available at all.
 [kubernetes jobs]: https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/
 [kubernetes cron jobs]: https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
 [Basic auth]: /documentation/deploying-an-app/helloworld-app-deploy.html#add-http-basic-authentication
+[cert-manager]: https://cert-manager.io/docs/
+[external-dns]: https://github.com/kubernetes-sigs/external-dns
