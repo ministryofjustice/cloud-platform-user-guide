@@ -163,7 +163,7 @@ The <code>SecRuleEngine On</code> configures ModSecurity to actively block traff
           <span class="na">serviceName</span><span class="pi">:</span> <span class="s">app-service</span>
           <span class="na">servicePort</span><span class="pi">:</span> <span class="s">8080</span>
 </code></pre></div><h3 id="logging">Logging</h3><p>All disruptive actions are logged in the ModSecurity audit log file and the error log for for nginx ingress-controller. 
-Fluentd is used to ship error logs into the Cloud Platform ELK stack. To view any possible logs, log into <a href="https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/">Kibana</a> and search for <code>ModSecurity</code>. You can filter down to a particular host using <code>nginx-ingress.log is &quot;host: &quot;test-ingress.url&quot;&quot;</code></p>
+Fluentd is used to ship error logs into the Cloud Platform ELK stack. To view any possible logs, log into <a href="https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/">Kibana</a>, select <code>ingress-json</code> index and search for <code>ModSecurity</code>. You can filter down to a particular host using <code>nginx-ingress.log is &quot;host: &quot;test-ingress.url&quot;&quot;</code></p>
 <p>Error Log Example:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>2019/01/01 11:00:00 [warn] 12647#12647: *1158975 [client 12.123.1.12] ModSecurity: Access denied with code 403 (phase 2). Matched "Operator `Ge'
  with parameter `5' against variable `TX:ANOMALY_SCORE' (Value: `5' ) [file "/etc/nginx/owasp-modsecurity-crs/rules/
@@ -191,16 +191,16 @@ client: 12.123.1.12, server: test-ingress.url, request: "GET /?exec=/bin/bash HT
 For more information in anomaly scoring, click <a href="https://www.modsecurity.org/CRS/Documentation/anomaly.html#anomaly-scoring-mode">here</a></p>
 
 
-              <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
+              <div data-module='page-expiry' data-last-reviewed-on="2020-08-06">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 9 December 2019.
+      This page was last reviewed on 6 May 2020.
 
-        It needs to be reviewed again on 9 March 2020
+        It needs to be reviewed again on 6 August 2020
 .
     </div>
 
     <div class='page-expiry--expired'>
-      This page was set to be reviewed before 9 March 2020.
+      This page was set to be reviewed before 6 August 2020.
       This might mean the content is out of date.
     </div>
   </div>
