@@ -1,6 +1,6 @@
 ---
 title: Deploying an application to the Cloud Platform with Helm
-last_reviewed_on: 2019-12-09
+last_reviewed_on: 2020-05-14
 review_in: 3 months
 ---
 
@@ -11,7 +11,7 @@ review_in: 3 months
 This document will act as a guide to your first application deployment into the Cloud Platform. If you have any issues completing the objective or have any suggestions please feel free to drop use a line in the `#ask-cloud-platform` slack channel.
 
 #### Objective
-By the end of this guide you'll have deployed a [Multi Container Ruby App](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/) to a cluster using the Kubernetes package manager [Helm](https://helm.sh/).
+By the end of this guide you'll have deployed a [Multi Container demo App](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/) to a cluster using the Kubernetes package manager [Helm](https://helm.sh/).
 
 _Disclaimer: You'll see fairly quickly that the application is not fit for production. A perfect example of this is the [plaintext secrets file](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/helm_deploy/multi-container-app/container-postgres-secrets.yaml). For the demo application we've left this file in plaintext but it **must** be encrypted when writing your own manifests for production/non-production work in the MoJ._
 
@@ -27,13 +27,13 @@ It is assumed you have the following:
 The multi container demo application we're going to use is a very simple Ruby application with an on-cluster Postgresql database.
 
 > Note: The default installation include all components (API server, postgres, worker, rails app) of this application. 
-Even though the postgresql database will be installed within the Kubernetes cluster, when deploying to [cloud platform][cloudplatform], this can be disabled and setup a RDS instance using the [terraform module] (https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance) which is recommended if running in production.
+Even though the postgresql database will be installed within the Kubernetes cluster, when deploying to [cloud platform](https://github.com/ministryofjustice/cloud-platform), this can be disabled and setup a RDS instance using the [terraform module] (https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance) which is recommended if running in production.
 
 
 The Helm deployment manifests have been pre-written for this exercise. But if you wish to know more about these files and what they do have a quick browse of the [README](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/helm_deploy/multi-container-app/README.md).
 
 #### Set up
-First we need to clone our Multi COntainer demo application and change directory:
+First we need to clone our Multi Container demo application and change directory:
 
     $ git clone https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app.git
     $ cd cloud-platform-multi-container-demo-app
@@ -75,30 +75,45 @@ To deploy the application with Helm first change directory so we can focus on th
 Values for our application are stored in the `values.yaml` at the root of our directory. Configurations such as 'number of pods running' and which image repository to use is stored here in this file. Open this file and get familiar with our application layout.
 
 If you want to use the postgres database deployed in the container, 
- - apply the secrets required for the database by modifying and applying [this secret file](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/helm_deploy/multi-container-app/container-postgres-secrets.yaml`)
- - create a [secret file](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/add-secrets-to-deployment.html#creating-the-secret) secrets.yaml to store the database url with key called `url`. 
-   The database url should be in the format `postgres://<USERNAME>:<ADD-PASSWORD-HERE>@<DB-SERVICE-NAME>:5432/<DATABASE_NAME>`.
-   For this helm deployment, the url will look like this:
-   `postgres://postgres:<ADD-PASSWORD-HERE>@multi-container-app-postgresql:5432/multi_container_demo_app`
-  Update the <<ADD-PASSWORD-HERE> with the password you mentioned in [this secret file](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/helm_deploy/multi-container-app/container-postgres-secrets.yaml`)
-- Encode the secret 
-```
-echo -n 'postgres://postgres:<ADD-PASSWORD-HERE>@multi-container-app-postgresql:5432/multi_container_demo_app' | base64 -b0
-```
-- Apply the secret file to your environment 
+
+ 1. apply the secrets required for the posgres database by modifying and applying [this file](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/helm_deploy/multi-container-app/container-postgres-secrets.yaml`)
+ 2. create another [secret file](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/add-secrets-to-deployment.html#creating-the-secret) secrets.yaml to store the database url with key called `url`. 
+    The database url should be in the format 
+    
+    ```
+    postgres://<USERNAME>:<ADD-PASSWORD-HERE>@<DB-SERVICE-NAME>:5432/<DATABASE_NAME>
+    ```
+   
+    For this helm deployment, the url will look like this:
+    
+    ```
+    postgres://postgres:<ADD-PASSWORD-HERE>@multi-container-app-postgresql:5432/multi_container_demo_app
+    ```
+
+    Update the `<ADD-PASSWORD-HERE>` with the password you mentioned in [this secret file](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/helm_deploy/multi-container-app/container-postgres-secrets.yaml`)
+ 3. Encode the secret 
+
+    ```
+    echo -n 'postgres://postgres:<ADD-PASSWORD-HERE>@multi-container-app-postgresql:5432/multi_container_demo_app' | base64 -b0
+    ```
+ 4. Apply the secret file to your environment 
+
   ```
-kubectl apply -f secrets.yaml -n <namespace-name>
-```
+  kubectl apply -f secrets.yaml -n <namespace-name>
+  ```
 
 Update the values.yaml file for 
- - `<DATABASE-URL-SECRET-NAME>` with the name of the secret where you stored the database url
- - `<DNS-PREFIX>` with the your own name.
 
-Run the following (replacing `namespace-name` with your environment name:
+ * `<DATABASE-URL-SECRET-NAME>` with the name of the secret where you stored the database url
+ * `<DNS-PREFIX>` with the your own name.
 
+Run the following (replacing `<namespace-name>` with your environment name:
+
+```
 helm install multi-container-app . \
 --values values.yaml \
 --namespace <namespace-name> 
+```
 
 > Note: We're naming it like this as app names and host names have to be unique on the cluster.
 
