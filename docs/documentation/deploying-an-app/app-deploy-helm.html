@@ -144,7 +144,7 @@
         <div class="app-pane__content toc-open-disabled">
           <main id="content" class="technical-documentation" data-module="anchored-headings">
               <h1 id="deploying-an-application-to-the-cloud-platform-with-helm">Deploying an application to the Cloud Platform with Helm</h1><h3 id="introduction">Introduction</h3><p>This document will act as a guide to your first application deployment into the Cloud Platform. If you have any issues completing the objective or have any suggestions please feel free to drop use a line in the <code>#ask-cloud-platform</code> slack channel.</p>
-<h4 id="objective">Objective</h4><p>By the end of this guide you&rsquo;ll have deployed a <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/">Multi Container demo App</a> to a cluster using the Kubernetes package manager <a href="https://helm.sh/">Helm</a>.</p>
+<h4 id="objective">Objective</h4><p>By the end of this guide you&rsquo;ll have deployed a <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/">Multi-container demo app</a> to a cluster using the Kubernetes package manager <a href="https://helm.sh/">Helm</a>.</p>
 <p><em>Disclaimer: You&rsquo;ll see fairly quickly that the application is not fit for production. A perfect example of this is the <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/helm_deploy/multi-container-app/container-postgres-secrets.yaml">plaintext secrets file</a>. For the demo application we&rsquo;ve left this file in plaintext but it <strong>must</strong> be encrypted when writing your own manifests for production/non-production work in the MoJ.</em></p>
 <h4 id="requirements">Requirements</h4><p>It is assumed you have the following:</p>
 
@@ -152,19 +152,19 @@
 <li>You have a basic understanding of what <a href="https://kubernetes.io/">Kubernetes</a> is.</li>
 <li>You have <a href="/documentation/getting-started/env-create.html#creating-a-cloud-platform-environment">created an environment for your application</a></li>
 <li>You have installed <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/">Kubectl</a> on your local machine.</li>
-<li>You have <a href="/documentation/getting-started/kubectl-config.html#authentication">Authenticated</a> to the cloud-platform-live-1 cluster.</li>
+<li>You have <a href="/documentation/getting-started/kubectl-config.html#authentication">authenticated</a> to the cloud-platform-live-1 cluster.</li>
 </ul>
-<h3 id="deploy-the-app">Deploy the app</h3><p>The multi container demo application we&rsquo;re going to use is a very simple Ruby application with an on-cluster Postgresql database.</p>
+<h3 id="deploy-the-app">Deploy the app</h3><p>The multi-container demo application we&rsquo;re going to use is a very simple Ruby application with an on-cluster Postgresql database.</p>
 
 <blockquote>
 <p>Note: The default installation include all components (API server, postgres, worker, rails app) of this application. 
 Even though the postgresql database will be installed within the Kubernetes cluster, when deploying to <a href="https://github.com/ministryofjustice/cloud-platform">cloud platform</a>, this can be disabled and setup a RDS instance using the <a href="https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance">terraform module</a> which is recommended if running in production.</p>
 </blockquote>
 <p>The Helm deployment manifests have been pre-written for this exercise. But if you wish to know more about these files and what they do have a quick browse of the <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/helm_deploy/multi-container-app/README.md">README</a>.</p>
-<h4 id="set-up">Set up</h4><p>First we need to clone our Multi Container demo application and change directory:</p>
+<h4 id="set-up">Set up</h4><p>First we need to clone our Multi-container demo application and change directory:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>$ git clone https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app.git
 $ cd cloud-platform-multi-container-demo-app
-</code></pre></div><p>You now have a functioning git repository that contains a multi container ruby application. Have a browse around and get familiar with the directory structure.</p>
+</code></pre></div><p>You now have a functioning git repository that contains a multi-container ruby application. Have a browse around and get familiar with the directory structure.</p>
 <h4 id="browse-the-cluster">Browse the cluster</h4><p>Let&rsquo;s make use of the command line tool <code>kubectl</code> to browse around the cluster to see what it looks like before we deploy our application:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>$ kubectl get pods --namespace &lt;namespace-name&gt;
 </code></pre></div><p><em>The <code>&lt;namespace-name&gt;</code> here is the environment you created, listed in the requirements section at the beginning of the document.</em></p>
@@ -183,13 +183,13 @@ We&rsquo;ve chosen to use Helm as the default way to deploy applications to the 
 <p>If you want to use the postgres database deployed in the container,</p>
 
 <ol>
-<li>apply the secrets required for the posgres database by modifying and applying <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/helm_deploy/multi-container-app/container-postgres-secrets.yaml`">this file</a></li>
+<li>apply the secrets required for the posgres database by modifying and applying <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/helm_deploy/multi-container-app/container-postgres-secrets.yaml">this file</a></li>
 <li><p>create another <a href="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/add-secrets-to-deployment.html#creating-the-secret">secret file</a> secrets.yaml to store the database url with key called <code>url</code>. 
 The database url should be in the format</p>
 <div class="highlight"><pre class="highlight plaintext"><code>postgres://&lt;USERNAME&gt;:&lt;ADD-PASSWORD-HERE&gt;@&lt;DB-SERVICE-NAME&gt;:5432/&lt;DATABASE_NAME&gt;
 </code></pre></div><p>For this helm deployment, the url will look like this:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>postgres://postgres:&lt;ADD-PASSWORD-HERE&gt;@multi-container-app-postgresql:5432/multi_container_demo_app
-</code></pre></div><p>Update the <code>&lt;ADD-PASSWORD-HERE&gt;</code> with the password you mentioned in <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/helm_deploy/multi-container-app/container-postgres-secrets.yaml`">this secret file</a></p></li>
+</code></pre></div><p>Update the <code>&lt;ADD-PASSWORD-HERE&gt;</code> with the password you mentioned in <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/helm_deploy/multi-container-app/container-postgres-secrets.yaml">this secret file</a></p></li>
 <li><p>Encode the secret</p>
 <div class="highlight"><pre class="highlight plaintext"><code>echo -n 'postgres://postgres:&lt;ADD-PASSWORD-HERE&gt;@multi-container-app-postgresql:5432/multi_container_demo_app' | base64 -b0
 </code></pre></div></li>
