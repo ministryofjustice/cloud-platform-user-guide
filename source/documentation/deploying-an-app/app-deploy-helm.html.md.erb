@@ -11,7 +11,7 @@ review_in: 3 months
 This document will act as a guide to your first application deployment into the Cloud Platform. If you have any issues completing the objective or have any suggestions please feel free to drop use a line in the `#ask-cloud-platform` slack channel.
 
 #### Objective
-By the end of this guide you'll have deployed a [Multi Container demo App](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/) to a cluster using the Kubernetes package manager [Helm](https://helm.sh/).
+By the end of this guide you'll have deployed a [Multi-container demo app](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/) to a cluster using the Kubernetes package manager [Helm](https://helm.sh/).
 
 _Disclaimer: You'll see fairly quickly that the application is not fit for production. A perfect example of this is the [plaintext secrets file](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/helm_deploy/multi-container-app/container-postgres-secrets.yaml). For the demo application we've left this file in plaintext but it **must** be encrypted when writing your own manifests for production/non-production work in the MoJ._
 
@@ -21,10 +21,10 @@ It is assumed you have the following:
  - You have a basic understanding of what [Kubernetes](https://kubernetes.io/) is.
  - You have [created an environment for your application][env-create]
  - You have installed [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) on your local machine.
- - You have [Authenticated][auth-to-cluster] to the cloud-platform-live-1 cluster.
+ - You have [authenticated][auth-to-cluster] to the cloud-platform-live-1 cluster.
 
 ### Deploy the app
-The multi container demo application we're going to use is a very simple Ruby application with an on-cluster Postgresql database.
+The multi-container demo application we're going to use is a very simple Ruby application with an on-cluster Postgresql database.
 
 > Note: The default installation include all components (API server, postgres, worker, rails app) of this application. 
 Even though the postgresql database will be installed within the Kubernetes cluster, when deploying to [cloud platform](https://github.com/ministryofjustice/cloud-platform), this can be disabled and setup a RDS instance using the [terraform module] (https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance) which is recommended if running in production.
@@ -33,12 +33,12 @@ Even though the postgresql database will be installed within the Kubernetes clus
 The Helm deployment manifests have been pre-written for this exercise. But if you wish to know more about these files and what they do have a quick browse of the [README](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/helm_deploy/multi-container-app/README.md).
 
 #### Set up
-First we need to clone our Multi Container demo application and change directory:
+First we need to clone our Multi-container demo application and change directory:
 
     $ git clone https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app.git
     $ cd cloud-platform-multi-container-demo-app
 
-You now have a functioning git repository that contains a multi container ruby application. Have a browse around and get familiar with the directory structure.
+You now have a functioning git repository that contains a multi-container ruby application. Have a browse around and get familiar with the directory structure.
 
 #### Browse the cluster
 Let's make use of the command line tool `kubectl` to browse around the cluster to see what it looks like before we deploy our application:
@@ -76,7 +76,7 @@ Values for our application are stored in the `values.yaml` at the root of our di
 
 If you want to use the postgres database deployed in the container, 
 
- 1. apply the secrets required for the posgres database by modifying and applying [this file](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/helm_deploy/multi-container-app/container-postgres-secrets.yaml`)
+ 1. apply the secrets required for the posgres database by modifying and applying [this file](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/helm_deploy/multi-container-app/container-postgres-secrets.yaml)
  2. create another [secret file](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/add-secrets-to-deployment.html#creating-the-secret) secrets.yaml to store the database url with key called `url`. 
     The database url should be in the format 
     
@@ -90,7 +90,7 @@ If you want to use the postgres database deployed in the container,
     postgres://postgres:<ADD-PASSWORD-HERE>@multi-container-app-postgresql:5432/multi_container_demo_app
     ```
 
-    Update the `<ADD-PASSWORD-HERE>` with the password you mentioned in [this secret file](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/helm_deploy/multi-container-app/container-postgres-secrets.yaml`)
+    Update the `<ADD-PASSWORD-HERE>` with the password you mentioned in [this secret file](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/helm_deploy/multi-container-app/container-postgres-secrets.yaml)
  3. Encode the secret 
 
     ```
