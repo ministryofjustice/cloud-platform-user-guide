@@ -127,28 +127,28 @@ maintenance page:</p>
 <p><a href="https://github.com/ministryofjustice/cloud-platform-maintenance-page">cloud-platform-maintenance-page</a></p>
 <p>The repository contains the manifest files needed to deploy a
 standard maintenance page into your namespace. This directory also
-contains the maintenance page HTML file, along with a DockerFile
+contains the maintenance page HTML file, along with a <code>Dockerfile</code>
 to build an image to serve the maintenance page.</p>
-<p>Within the <code>Kubectl_deploy</code> directory, there are 2 simple manifest
+<p>Within the <code>kubectl_deploy</code> directory, there are 2 simple manifest
 files that make up the deployment, <code>maintenance-deploy.yaml</code> and <code>maintenance-service.yaml</code>.</p>
-<p>To use this example, copy the files into your namespace and deploy the files.</p>
+<p>To use this example, deploy the files into your namespace (you may want to create your own docker image, with a customised HTML page, and tweak the yaml files to use that image).</p>
 <p>The deployment will create a pod called maintenance-page-* and a service named maintenance-page-svc.</p>
-<p>To redirect traffic to maintenance page, change the <code>serviceName</code> field in your current ingress 
+<p>To redirect traffic to your maintenance page, change the <code>serviceName</code> field in your <strong>current</strong> ingress 
 to point to <code>maintenance-page-svc</code> and redeploy the ingress. Also, check the <code>servicePort</code> matches the one mentioned in the service you want to deploy.</p>
-<p>By changing the current ingress will ensure that you do not incur any downtime.</p>
-<p>For more details on customizing the HTML and cleaning up, refer the <a href="https://github.com/ministryofjustice/cloud-platform-maintenance-page">cloud-platform-maintenance-page</a> repository.</p>
+<p>By changing the current ingress you can ensure that you do not incur any downtime.</p>
+<p>For more details on customizing the HTML and cleaning up, please refer to the <a href="https://github.com/ministryofjustice/cloud-platform-maintenance-page">cloud-platform-maintenance-page</a> repository.</p>
 
 
-              <div data-module='page-expiry' data-last-reviewed-on="2020-05-17">
+              <div data-module='page-expiry' data-last-reviewed-on="2020-08-26">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 17 February 2020.
+      This page was last reviewed on 26 May 2020.
 
-        It needs to be reviewed again on 17 May 2020
+        It needs to be reviewed again on 26 August 2020
 .
     </div>
 
     <div class='page-expiry--expired'>
-      This page was set to be reviewed before 17 May 2020.
+      This page was set to be reviewed before 26 August 2020.
       This might mean the content is out of date.
     </div>
   </div>
