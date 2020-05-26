@@ -1,6 +1,6 @@
 ---
 title: RDS Snapshots
-last_reviewed_on: 2020-02-17
+last_reviewed_on: 2020-05-22
 review_in: 3 months
 ---
 
@@ -12,15 +12,15 @@ Examples about managing RDS DB snapshots using AWS CLI can be found in the [READ
 
 ## Considerations
 
-- The amount of manual snapshot is limited per account - so it's important to cleanup
+- The amount of manual snapshots per AWS account is limited, so it's important to cleanup old snapshots
 - Daily snapshots are already happening out of the box. It's important to keep in mind that daily snapshots **are not related** with "Manual Snapshots"
-- Managing snapshots are the team responsibilities (including a snapshot restores). Teams are also responsible for cleaning up any manual snapshots in order to avoid hitting our AWS account limits
+- Managing snapshots is the teams' responsibility (as are snapshot restores), so teams are responsible for cleaning up unneeded manual snapshots in order to avoid hitting our AWS account limits
 
 ## Restoring live services from a RDS DB snapshot
 
-If you want to restore your production RDS DB instance from a previous snapshot either because the database is corrupted or the whole database is deleted, here is the procedure to restore it from your RDS snapshot.
+If you want to restore your production RDS DB instance from a previous snapshot, either because the database is corrupted or the whole database was deleted, here is the procedure:
 
-1. Get the `DBSnapshotIdentifier` of your DB instance from which you want to restore using AWS CLI below:
+1. Get the `DBSnapshotIdentifier` of your DB instance from which you want to restore using the AWS CLI:
    
     ```
     aws rds describe-db-snapshots --db-instance-identifier [db-instance-identifier]
@@ -31,12 +31,12 @@ If you want to restore your production RDS DB instance from a previous snapshot 
 
     The output will have a list of snapshots available for that RDS DB instance. Pick the `DBSnapshotIdentifier` from which you want the RDS to be restored.
 
-2. Update your current RDS manifest file (`rds.tf`) in the [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments) repo to include `snapshot-identifier` and raise the PR.
+2. Update your current RDS manifest file (usually called `rds.tf`) in the [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments) repo to include `snapshot-identifier` and raise the PR.
 
     ```
     snapshot_identifier = "rds:cloud-platform-XXXXX-2020-02-08-04-23"
     ```
-   An example will look like below:
+For example:
 
     ```
     module "example_team_rds" {
@@ -64,7 +64,7 @@ If you want to restore your production RDS DB instance from a previous snapshot 
 
     It is important to retain the original settings associated with the DB instance when restoring from the snapshot. So don't make any other changes to this file.
 
-3. **Contact Cloud Platform team** about the restore providing the `db-instance-identifier` and the PR raised.
+3. **Contact the Cloud Platform team** about the restore, providing the `db-instance-identifier` and the PR raised.
      
 4. Before the PR can be merged, the Cloud Platform team have to:
     > * pause the concourse pipeline, and
@@ -72,8 +72,8 @@ If you want to restore your production RDS DB instance from a previous snapshot 
 
     This allows the pipeline to create the new DB Instance from the snapshot, using the same name and settings as the original, and preserves the database endpoint and credentials. 
 
-5. Merge the PR to master and check for the build pipeline to create the new DB instance with the same Identifier and endpoints. The Cloud Platform team can also apply your changes manually if this is time critical.
+5. Merge the PR to master and check that the build pipeline creates the new DB instance with the same identifier and endpoints. The Cloud Platform team can also apply your changes manually if this is time critical.
    
-Once the new DB instance is restored and available, your application should be able to access the database with the same database credentials and endpoint.
+Once the new DB instance is restored and available, your application should be able to access the database with the same database credentials and endpoint as before.
 
-After you have verified that your DB instance and the database is working as expected, let the Cloud Platform team know to delete the renamed DB instance performed on Step 4 above.
+After you have verified that your DB instance and the database is working as expected, let the Cloud Platform team know, so they can delete the renamed DB instance created in Step 4 above.
