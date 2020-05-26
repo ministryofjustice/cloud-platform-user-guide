@@ -1,6 +1,6 @@
 ---
 title: Applying a Maintenance Page
-last_reviewed_on: 2020-02-17
+last_reviewed_on: 2020-05-26
 review_in: 3 months
 ---
 
@@ -21,21 +21,21 @@ maintenance page:
 
 The repository contains the manifest files needed to deploy a
 standard maintenance page into your namespace. This directory also
-contains the maintenance page HTML file, along with a DockerFile
+contains the maintenance page HTML file, along with a `Dockerfile`
 to build an image to serve the maintenance page.
 
-Within the `Kubectl_deploy` directory, there are 2 simple manifest
+Within the `kubectl_deploy` directory, there are 2 simple manifest
 files that make up the deployment, `maintenance-deploy.yaml` and `maintenance-service.yaml`.
 
-To use this example, copy the files into your namespace and deploy the files.
+To use this example, deploy the files into your namespace (you may want to create your own docker image, with a customised HTML page, and tweak the yaml files to use that image).
 
 The deployment will create a pod called maintenance-page-* and a service named maintenance-page-svc.
 
-To redirect traffic to maintenance page, change the `serviceName` field in your current ingress 
+To redirect traffic to your maintenance page, change the `serviceName` field in your **current** ingress 
 to point to `maintenance-page-svc` and redeploy the ingress. Also, check the `servicePort` matches the one mentioned in the service you want to deploy.
 
-By changing the current ingress will ensure that you do not incur any downtime.
+By changing the current ingress you can ensure that you do not incur any downtime.
 
-For more details on customizing the HTML and cleaning up, refer the [cloud-platform-maintenance-page](https://github.com/ministryofjustice/cloud-platform-maintenance-page) repository.
+For more details on customizing the HTML and cleaning up, please refer to the [cloud-platform-maintenance-page](https://github.com/ministryofjustice/cloud-platform-maintenance-page) repository.
 
 
