@@ -174,14 +174,14 @@ use the below as an example:</p>
 <div class="highlight"><pre class="highlight yaml"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
 <span class="na">kind</span><span class="pi">:</span> <span class="s">ServiceAccount</span>
 <span class="na">metadata</span><span class="pi">:</span>
-  <span class="na">name</span><span class="pi">:</span> <span class="s">CircleCI</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">circleci</span>
   <span class="na">namespace</span><span class="pi">:</span> <span class="s">&lt;YOUR-NAMESPACE&gt;</span>
 
 <span class="nn">---</span>
 <span class="na">kind</span><span class="pi">:</span> <span class="s">Role</span>
 <span class="na">apiVersion</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io/v1beta1</span>
 <span class="na">metadata</span><span class="pi">:</span>
-  <span class="na">name</span><span class="pi">:</span> <span class="s">CircleCI</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">circleci</span>
   <span class="na">namespace</span><span class="pi">:</span> <span class="s">&lt;YOUR-NAMESPACE&gt;</span>
 <span class="na">rules</span><span class="pi">:</span>
   <span class="pi">-</span> <span class="na">apiGroups</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">extensions"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">apps"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">batch"</span><span class="pi">]</span>
@@ -214,15 +214,15 @@ use the below as an example:</p>
 <span class="na">kind</span><span class="pi">:</span> <span class="s">RoleBinding</span>
 <span class="na">apiVersion</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io/v1beta1</span>
 <span class="na">metadata</span><span class="pi">:</span>
-  <span class="na">name</span><span class="pi">:</span> <span class="s">CircleCI</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">circleci</span>
   <span class="na">namespace</span><span class="pi">:</span> <span class="s">&lt;YOUR-NAMESPACE&gt;</span>
 <span class="na">subjects</span><span class="pi">:</span>
 <span class="pi">-</span> <span class="na">kind</span><span class="pi">:</span> <span class="s">ServiceAccount</span>
-  <span class="na">name</span><span class="pi">:</span> <span class="s">CircleCI</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">circleci</span>
   <span class="na">namespace</span><span class="pi">:</span> <span class="s">&lt;YOUR-NAMESPACE&gt;</span>
 <span class="na">roleRef</span><span class="pi">:</span>
   <span class="na">kind</span><span class="pi">:</span> <span class="s">Role</span>
-  <span class="na">name</span><span class="pi">:</span> <span class="s">CircleCI</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">circleci</span>
   <span class="na">apiGroup</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io</span>
 </code></pre></div><p>Remember to replace <code>&lt;YOUR-NAMESPACE&gt;</code> with your namespace. Save the above as &#39;serviceaccount-circleci.yaml&rsquo; under your <a href="https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces">namespace folder</a>.</p>
 <p>Raise a PR for your service account creation. Once approved you should then see your new CircleCI service account in your namespace.</p>
@@ -248,9 +248,9 @@ use the below as an example:</p>
 </code></pre></div><p>There will be a secret for the CircleCI service account. The secret contains the ca.crt and token which we will make available to the CircleCI image container as environment variables. This will allow it to authenticate against the cluster.
 Access to the cluster is scoped for the namespace the service account was created in.</p>
 <h3 id="retrieving-the-service-account-credentials">Retrieving the Service Account credentials</h3><p>Once the CircleCI service account is created above, you can grab the ca.crt as follows:</p>
-<div class="highlight"><pre class="highlight yaml"><code><span class="s">k get secret &lt;NAME-OF-CircleCI-SERVICE-ACCOUNT-SECRET&gt; -o yaml -n &lt;NAMESPACE | grep ca.crt</span>
+<div class="highlight"><pre class="highlight yaml"><code><span class="s">k get secret &lt;NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET&gt; -o yaml -n &lt;NAMESPACE | grep ca.crt</span>
 </code></pre></div><p>Likewise grab the CircleCI service accont token as follows:</p>
-<div class="highlight"><pre class="highlight yaml"><code><span class="s">k get secret &lt;NAME-OF-CircleCI-SERVICE-ACCOUNT-SECRET&gt; -o yaml -n &lt;NAMESPACE | grep token</span>
+<div class="highlight"><pre class="highlight yaml"><code><span class="s">k get secret &lt;NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET&gt; -o yaml -n &lt;NAMESPACE | grep token</span>
 
 <span class="na">The token will need to be decoded as follows</span><span class="pi">:</span>
 
