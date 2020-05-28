@@ -38,14 +38,14 @@ use the below as an example:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: CircleCI
+  name: circleci
   namespace: <YOUR-NAMESPACE>
 
 ---
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
-  name: CircleCI
+  name: circleci
   namespace: <YOUR-NAMESPACE>
 rules:
   - apiGroups: ["", "extensions", "apps", "batch"]
@@ -78,15 +78,15 @@ rules:
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
-  name: CircleCI
+  name: circleci
   namespace: <YOUR-NAMESPACE>
 subjects:
 - kind: ServiceAccount
-  name: CircleCI
+  name: circleci
   namespace: <YOUR-NAMESPACE>
 roleRef:
   kind: Role
-  name: CircleCI
+  name: circleci
   apiGroup: rbac.authorization.k8s.io
 ```
 
@@ -125,13 +125,13 @@ Access to the cluster is scoped for the namespace the service account was create
 Once the CircleCI service account is created above, you can grab the ca.crt as follows:
 
 ```yaml
-k get secret <NAME-OF-CircleCI-SERVICE-ACCOUNT-SECRET> -o yaml -n <NAMESPACE | grep ca.crt
+k get secret <NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET> -o yaml -n <NAMESPACE | grep ca.crt
 ```
 
 Likewise grab the CircleCI service accont token as follows:
 
 ```yaml
-k get secret <NAME-OF-CircleCI-SERVICE-ACCOUNT-SECRET> -o yaml -n <NAMESPACE | grep token
+k get secret <NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET> -o yaml -n <NAMESPACE | grep token
 
 The token will need to be decoded as follows:
 
