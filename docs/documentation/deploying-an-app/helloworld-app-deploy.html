@@ -248,7 +248,7 @@
 <div class="highlight"><pre class="highlight plaintext"><code>docker push 754256621582.dkr.ecr.eu-west-2.amazonaws.com/[team_name]/[repo_name]:latest
 </code></pre></div><h2 id="step-3-configure-your-namespace-in-the-kubernetes-cluster">Step 3 - Configure your namespace in the Kubernetes Cluster</h2><p>To deploy an application to the Cloud Platform, a number of deployment files must first be configured. You can find examples of these in the <code>kubectl_deploy</code> directory of the <a href="https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app">demo application</a>, but you will need to edit your copy to replace some of the values to use your kubernetes cluster environment and docker image.</p>
 <p><em>Tip:</em> You can find more deployment config info <a href="https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/">in the kubernetes developer documentation</a>.</p>
-<h3 id="deployment-yaml">deployment.yaml</h3><div class="highlight"><pre class="highlight plaintext"><code>apiVersion: extensions/v1beta1
+<h3 id="deployment-yaml">deployment.yaml</h3><div class="highlight"><pre class="highlight plaintext"><code>apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: helloworld-rubyapp
@@ -259,6 +259,9 @@ spec:
       maxUnavailable: 50%
     type: RollingUpdate
   replicas: 4
+  selector:
+  matchLabels:
+    app: helloworld-rubyapp
   template:
     metadata:
       labels:
@@ -266,7 +269,7 @@ spec:
     spec:
       containers:
       - name: rubyapp
-        image: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/[team_name]/[repo_name]:latest
+        image: ministryofjustice/cloud-platform-helloworld-ruby:1.1
         ports:
         - containerPort: 4567
 </code></pre></div><p>Change the image value to refer to the image you pushed to your ECR in the earlier step.</p>
@@ -295,7 +298,7 @@ spec:
 <h3 id="ingress-yaml">ingress.yaml</h3><p>Ingress files are to use to define external access to the application.</p>
 <p>This creates an <a href="https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/">ingress controller</a> to enable network connections from outside of the cluster.</p>
 <p>Note: Because we are specifying <code>http</code>, and we have a <code>tls</code> section, this ingress controller will expose port 443, and will redirect connections to port 4567 of the named service.</p>
-<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: extensions/v1beta1
+<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: helloworld-rubyapp-ingress
@@ -380,8 +383,8 @@ spec:
 <h3 id="apply-the-changes">Apply the changes</h3><p>All that remains is to apply our updated yaml files in exactly the same way as we did before, when we deployed the application:</p>
 <div class="highlight"><pre class="highlight shell"><code>kubectl apply <span class="nt">--filename</span> kubectl_deploy <span class="nt">--namespace</span> <span class="o">[</span>your namespace]
 </code></pre></div><p>You should see output like this:</p>
-<div class="highlight"><pre class="highlight shell"><code>deployment.extensions <span class="s2">"helloworld-rubyapp"</span> unchanged
-ingress.extensions <span class="s2">"helloworld-rubyapp-ingress"</span> configured
+<div class="highlight"><pre class="highlight shell"><code>deployment.apps/helloworld-rubyapp unchanged
+ingress.networking.k8s.io/helloworld-rubyapp-ingress configured
 secret <span class="s2">"basic-auth"</span> created
 service <span class="s2">"rubyapp-service"</span> unchanged
 </code></pre></div><p>Now, if you reload the browser page showing the &#39;Hello world&rsquo; message from the application, you will be prompted to enter the username and password.</p>

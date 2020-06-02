@@ -138,7 +138,7 @@ To deploy an application to the Cloud Platform, a number of deployment files mus
 ### deployment.yaml
 
 ```Yaml
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: helloworld-rubyapp
@@ -149,6 +149,9 @@ spec:
       maxUnavailable: 50%
     type: RollingUpdate
   replicas: 4
+  selector:
+  matchLabels:
+    app: helloworld-rubyapp
   template:
     metadata:
       labels:
@@ -156,7 +159,7 @@ spec:
     spec:
       containers:
       - name: rubyapp
-        image: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/[team_name]/[repo_name]:latest
+        image: ministryofjustice/cloud-platform-helloworld-ruby:1.1
         ports:
         - containerPort: 4567
 ```
@@ -208,7 +211,7 @@ This creates an [ingress controller](https://kubernetes.io/docs/concepts/service
 Note: Because we are specifying `http`, and we have a `tls` section, this ingress controller will expose port 443, and will redirect connections to port 4567 of the named service.
 
 ```Yaml
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: helloworld-rubyapp-ingress
@@ -368,8 +371,8 @@ kubectl apply --filename kubectl_deploy --namespace [your namespace]
 You should see output like this:
 
 ```bash
-deployment.extensions "helloworld-rubyapp" unchanged
-ingress.extensions "helloworld-rubyapp-ingress" configured
+deployment.apps/helloworld-rubyapp unchanged
+ingress.networking.k8s.io/helloworld-rubyapp-ingress configured
 secret "basic-auth" created
 service "rubyapp-service" unchanged
 ```
