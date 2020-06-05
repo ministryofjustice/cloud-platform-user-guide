@@ -1,0 +1,80 @@
+---
+title: Removing Deprecated APIs for Kubernetes version 1.16
+last_reviewed_on: 2020-06-03
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+The Cloud Platform kubernetes cluster has to be upgraded from 1.15.10 to 1.16.10. Before the upgrade, number of deprecated 
+APIs has to be removed from the manifest used to create kubernetes resources. The replacement APIs is already available with 
+the current kubernetes version 1.15.10.
+
+Below is the details of what APIs are removed and the replacement APIs to use. It is **mandatory** to update the affected manifest with below replacement 
+before we upgrade the cluster to kubernetes version 1.16.
+
+- All resources under `apps/v1beta1` and `apps/v1beta2` - use `apps/v1` instead
+- `daemonsets`, `deployments`, `replicasets` resources under `extensions/v1beta1` - use `apps/v1` instead
+- `networkpolicies` resources under `extensions/v1beta1` - use `networking.k8s.io/v1` instead
+- `podsecuritypolicies` resources under `extensions/v1beta1` - use `policy/v1beta1` instead
+- `ingress` resources will no longer be served from `extensions/v1beta1` in v1.20. - use `networking.k8s.io/v1beta1` instead
+
+- Resources deployed using helm chart
+  If you are using helm version < 2.16.3, then the generated manifest would have the deprecated APIs. It is **mandatory** 
+  to upgrade the helm version > 2.16.3 ideally to Helm 3.
+
+More detailed changes to kubernetes resources are explained in this [kubernetes blog](https://kubernetes.io/blog/2019/07/18/api-deprecations-in-1-16/) and 
+the [1.16 CHANGELOG](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.16.md#deprecations-and-removals)
+
+## What to do
+
+We have identified the list of affected resources on all namespaces on this [google sheet](https://docs.google.com/spreadsheets/d/1DY4PSZjmXqLcnqww0NetmIjMdw3p0hUqfv_ytJ304j4/edit?usp=sharing)
+
+### Deployments
+
+If you deployment manifest looks similar to below
+
+<pre>
+    apiVersion: <b>extensions/v1beta1</b> # or apps/v1beta2 or apps/v1beta1
+    kind: Deployment
+    metadata:
+      name: helloworld-rubyapp
+    spec:
+      replicas: 1
+      template:
+        metadata:
+          labels:
+            app: helloworld-rubyapp
+        spec:
+          containers:
+</pre>
+
+Main changes include
+
+1. change the `apiVersion` tp `apps/v1`
+2. Add `spec.selector` **if one not present** and use the existing `spec.template.metadata.labels` as the selector
+
+The manifest after changes will look like:
+<pre>
+    apiVersion: <b>apps/v1</b>
+    kind: Deployment
+    metadata:
+      name: helloworld-rubyapp
+    spec:
+      replicas: 1
+      <b>selector:
+        matchLabels:
+          app: helloworld-rubyapp</b>
+    template:
+        metadata:
+          labels:
+            app: helloworld-rubyapp
+        spec:
+          containers:
+</pre>
+
+See "Notable changes" section in the [kubernetes blog](https://kubernetes.io/blog/2019/07/18/api-deprecations-in-1-16/),
+if any other fields in your manifest are affected.
+
+
+
