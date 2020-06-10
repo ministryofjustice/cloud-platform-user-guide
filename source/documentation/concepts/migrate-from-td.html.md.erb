@@ -18,7 +18,7 @@ The IP numbers from which your app's traffic originates will change. If your app
 
 If you have configured your service to allow inbound traffic from any specific IPs, you will need to add the corresponding config to your kubernetes deploymnent files.
 
-This section of the user guide describes both of these procedures: [IP filtering][ip-whitelist].
+This section of the user guide describes both of these procedures: [IP filtering][ip-filtering].
 
 ## DNS changes
 
@@ -82,7 +82,7 @@ Connections **to** resources outside the cluster are allowed, and pods will be N
 
 ## Additional features
 
-1. A shared, highly-available deployment of reverse-proxy instances based on AWS ELB and Nginx runs in front of all application instances and offers features like [WAF][waf], custom [error pages][error-pages] or [IP-based ACLs][ip-whitelist] user-configurable per application but independent from its running state.
+1. A shared, highly-available deployment of reverse-proxy instances based on AWS ELB and Nginx runs in front of all application instances and offers features like [WAF][waf], custom [error pages][error-pages] or [IP-based ACLs][ip-filtering] user-configurable per application but independent from its running state.
    * [Basic auth] can be quickly turned on/off at ingress level, useful when deploying dev services.
 
 1. Several AWS resource types are tested and documented as [Terraform modules][terraform-modules]; they simplify deployment and default to best-practices options.
@@ -105,7 +105,7 @@ Connections **to** resources outside the cluster are allowed, and pods will be N
 [examples]: /documentation/deploying-an-app/helloworld-app-deploy.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform
 [error-pages]: https://github.com/ministryofjustice/cloud-platform-custom-error-pages
 [waf]: /documentation/other-topics/modsecurity.html#modsecurity-web-application-firewall
-[ip-whitelist]: /documentation/other-topics/ip-whitelisting.html#ip-whitelisting
+[ip-filtering]: /documentation/other-topics/ip-filtering.html
 [monitoring]: /index.html#monitoring-applications
 [sentry]: https://sentry.service.dsd.io/mojds
 [kibana]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana
