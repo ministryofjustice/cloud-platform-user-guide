@@ -103,7 +103,7 @@
         <a href="#production-infrastructure">Production infrastructure</a>
       </li>
       <li>
-        <a href="#network-traffic-whitelisting">Network traffic whitelisting</a>
+        <a href="#allowing-network-traffic-to-from-your-service">Allowing network traffic to/from your service</a>
       </li>
       <li>
         <a href="#dns-changes">DNS changes</a>
@@ -142,9 +142,9 @@
           <main id="content" class="technical-documentation" data-module="anchored-headings">
               <h1 id="migrating-to-the-cloud-platform-from-template-deploy">Migrating to the Cloud Platform from Template Deploy</h1><p>These are some of the things to think about when migrating your application from <a href="https://dsdmoj.atlassian.net/wiki/spaces/PLAT/pages/86310992/Template+Deploy">Template Deploy</a> (TD) to the <a href="https://github.com/ministryofjustice/cloud-platform">Cloud Platform</a> (CP).</p>
 <h2 id="production-infrastructure">Production infrastructure</h2><p>Any infrastructure resources, such as databases or cache servers, should be of the same size, and running the same software (e.g. postgres) version, for the CP version of your app. as for the TD version.</p>
-<h2 id="network-traffic-whitelisting">Network traffic whitelisting</h2><p>The IP numbers from which your app&rsquo;s traffic originates will change. If your app. talks to any external services which care about its source IP addresses, you may need to arrange for those services to whitelist the cluster IPs.</p>
-<p>If you have whitelisted any IPs for inbound traffic, you will need to add the corresponding config to your kubernetes deploymnent files.</p>
-<p>This section of the user guide describes both of these procedures: <a href="/documentation/other-topics/ip-whitelisting.html#ip-whitelisting">IP whitelisting</a>.</p>
+<h2 id="allowing-network-traffic-to-from-your-service">Allowing network traffic to/from your service</h2><p>The IP numbers from which your app&rsquo;s traffic originates will change. If your app. talks to any external services which care about its source IP addresses, you may need to arrange for those services to allow traffic from the cluster IPs.</p>
+<p>If you have configured your service to allow inbound traffic from any specific IPs, you will need to add the corresponding config to your kubernetes deploymnent files.</p>
+<p>This section of the user guide describes both of these procedures: <a href="/documentation/other-topics/ip-filtering.html">IP filtering</a>.</p>
 <h2 id="dns-changes">DNS changes</h2><p>When you are ready to switch from the TD version of your app. to the production version deployed in CP, the last step will be to change the <a href="https://en.wikipedia.org/wiki/Domain_Name_System">DNS</a> entries such that visitors to your app&rsquo;s domain are sent to the new CP version.</p>
 <p>It&rsquo;s important to plan this step carefully. Some things to think about include:</p>
 
@@ -199,7 +199,7 @@
 </ol>
 <h2 id="additional-features">Additional features</h2>
 <ol>
-<li><p>A shared, highly-available deployment of reverse-proxy instances based on AWS ELB and Nginx runs in front of all application instances and offers features like <a href="/documentation/other-topics/modsecurity.html#modsecurity-web-application-firewall">WAF</a>, custom <a href="https://github.com/ministryofjustice/cloud-platform-custom-error-pages">error pages</a> or <a href="/documentation/other-topics/ip-whitelisting.html#ip-whitelisting">IP-based ACLs</a> user-configurable per application but independent from its running state.</p>
+<li><p>A shared, highly-available deployment of reverse-proxy instances based on AWS ELB and Nginx runs in front of all application instances and offers features like <a href="/documentation/other-topics/modsecurity.html#modsecurity-web-application-firewall">WAF</a>, custom <a href="https://github.com/ministryofjustice/cloud-platform-custom-error-pages">error pages</a> or <a href="/documentation/other-topics/ip-filtering.html">IP-based ACLs</a> user-configurable per application but independent from its running state.</p>
 
 <ul>
 <li><a href="/documentation/deploying-an-app/helloworld-app-deploy.html#add-http-basic-authentication">Basic auth</a> can be quickly turned on/off at ingress level, useful when deploying dev services.</li>
