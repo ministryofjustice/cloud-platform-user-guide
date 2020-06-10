@@ -6,12 +6,12 @@
     <meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
       <meta name="robots" content="noindex">
 
-    <title>IP Whitelisting | Cloud Platform User Guide</title>
+    <title>Allowing traffic to/from specific IPs | Cloud Platform User Guide</title>
 
     <!--[if gt IE 8]><!--><link href="/stylesheets/screen.css" rel="stylesheet" media="screen" /><!--<![endif]-->
     <!--[if lte IE 8]><link href="/stylesheets/screen-old-ie.css" rel="stylesheet" media="screen" /><![endif]-->
 
-    <link rel="canonical" href="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/ip-whitelisting.html">
+    <link rel="canonical" href="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/ip-filtering.html">
 
 
     <link href="/stylesheets/print.css" rel="stylesheet" media="print" />
@@ -19,14 +19,14 @@
 
       <meta property="og:image" content="https://user-guide.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
       <meta property="og:site_name" content="Cloud Platform User Guide" />
-      <meta property="og:title" content="IP Whitelisting" />
+      <meta property="og:title" content="Allowing traffic to/from specific IPs" />
       <meta property="og:type" content="object" />
-      <meta property="og:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/ip-whitelisting.html" />
+      <meta property="og:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/ip-filtering.html" />
       <meta property="twitter:card" content="summary" />
       <meta property="twitter:domain" content="user-guide.cloud-platform.service.justice.gov.uk" />
       <meta property="twitter:image" content="https://user-guide.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
-      <meta property="twitter:title" content="IP Whitelisting | Cloud Platform User Guide" />
-      <meta property="twitter:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/ip-whitelisting.html" />
+      <meta property="twitter:title" content="Allowing traffic to/from specific IPs | Cloud Platform User Guide" />
+      <meta property="twitter:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/ip-filtering.html" />
 
     
   </head>
@@ -97,15 +97,15 @@
               <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading">
                       <ul>
   <li>
-    <a href="#ip-whitelisting">IP Whitelisting</a>
+    <a href="#allowing-traffic-to-from-specific-ips">Allowing traffic to/from specific IPs</a>
     <ul>
       <li>
         <ul>
           <li>
-            <a href="#inbound-ip-whitelisting">Inbound IP Whitelisting</a>
+            <a href="#inbound-ip-filtering">Inbound IP Filtering</a>
           </li>
           <li>
-            <a href="#outbound-ip-whitelisting">Outbound IP Whitelisting</a>
+            <a href="#outbound-ip-filtering">Outbound IP filtering</a>
           </li>
         </ul>
       </li>
@@ -120,13 +120,13 @@
 
         <div class="app-pane__content toc-open-disabled">
           <main id="content" class="technical-documentation" data-module="anchored-headings">
-              <h1 id="ip-whitelisting">IP Whitelisting</h1>
+              <h1 id="allowing-traffic-to-from-specific-ips">Allowing traffic to/from specific IPs</h1>
 <blockquote>
 <p>Wherever possible, we treat the <a href="https://ministryofjustice.github.io/security-guidance/mythbusting/internet-v-psn/#networks-are-bearers">network as a bearer</a>, rather than a means to confer trust.</p>
-<p>For this reason, IP whitelisting is discouraged in general.</p>
+<p>For this reason, explicitly allowing traffic from/to specific IP numbers is discouraged in general.</p>
 </blockquote>
-<h3 id="inbound-ip-whitelisting">Inbound IP Whitelisting</h3><p>Allowed client IP source ranges can be specified using the nginx.ingress.kubernetes.io/whitelist-source-range annotation. The value is a comma separated list of CIDRs, e.g. 1.1.1.1/24,10.0.0.0/24.</p>
-<p><a href="https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#whitelist-source-range">Kubernetes official documentation on whitelisting source ranges</a>.</p>
+<h3 id="inbound-ip-filtering">Inbound IP Filtering</h3><p>Allowed client IP source ranges can be specified using the nginx.ingress.kubernetes.io/whitelist-source-range annotation. The value is a comma separated list of CIDRs, e.g. 1.1.1.1/24,10.0.0.0/24.</p>
+<p><a href="https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#whitelist-source-range">Kubernetes official documentation on allowing source ranges</a>.</p>
 <p>An example configuration using &ldquo;nginx.ingress.kubernetes.io/whitelist-source-range: 1.1.1.1/24,10.0.0.0/24&rdquo;</p>
 <div class="highlight"><pre class="highlight plaintext"><code>apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
@@ -159,7 +159,7 @@ status:
 </code></pre></div><p>Testing with the annotation set:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>curl -v -H "Host: my-app.apps.live-1.cloud-platform.service.justice.gov.uk" &lt;HOST-IP&gt;
 </code></pre></div><p>Will return a &ldquo;403 forbidden&rdquo; status</p>
-<h3 id="outbound-ip-whitelisting">Outbound IP Whitelisting</h3>
+<h3 id="outbound-ip-filtering">Outbound IP filtering</h3>
 <blockquote>
 <p>Please note that these number are likely to change, and <strong>should not be relied upon for authentication/authorisation</strong>.</p>
 </blockquote>
@@ -187,8 +187,8 @@ status:
           </main>
 
             <ul class="contribution-banner">
-              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/documentation/other-topics/ip-whitelisting.html.md.erb">View source</a></li>
-              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'IP%20Whitelisting'&amp;body=Problem%20with%20'IP%20Whitelisting'%20(https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/ip-whitelisting.html)">Report problem</a></li>
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/documentation/other-topics/ip-filtering.html.md.erb">View source</a></li>
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'Allowing%20traffic%20to/from%20specific%20IPs'&amp;body=Problem%20with%20'Allowing%20traffic%20to/from%20specific%20IPs'%20(https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/ip-filtering.html)">Report problem</a></li>
               <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub Repo</a></li>
             </ul>
 
