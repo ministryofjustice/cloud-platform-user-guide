@@ -1,5 +1,5 @@
 ---
-title: IP Whitelisting
+title: Allowing traffic to/from specific IPs
 last_reviewed_on: 2020-04-24
 review_in: 3 months
 ---
@@ -8,13 +8,13 @@ review_in: 3 months
 
 > Wherever possible, we treat the [network as a bearer][networks-are-bearers], rather than a means to confer trust.
 >
-> For this reason, IP whitelisting is discouraged in general.
+> For this reason, explicitly allowing traffic from/to specific IP numbers is discouraged in general.
 
-### Inbound IP Whitelisting
+### Inbound IP Filtering
 
 Allowed client IP source ranges can be specified using the nginx.ingress.kubernetes.io/whitelist-source-range annotation. The value is a comma separated list of CIDRs, e.g. 1.1.1.1/24,10.0.0.0/24.
 
- [Kubernetes official documentation on whitelisting source ranges][kubernetes-annotations-whitelist-source-range].
+[Kubernetes official documentation on allowing source ranges][kubernetes-annotations-whitelist-source-range].
 
 [kubernetes-annotations-whitelist-source-range]: https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#whitelist-source-range
 
@@ -57,7 +57,7 @@ curl -v -H "Host: my-app.apps.live-1.cloud-platform.service.justice.gov.uk" <HOS
 ```
 Will return a "403 forbidden" status
 
-### Outbound IP Whitelisting
+### Outbound IP filtering
 
 > Please note that these number are likely to change, and **should not be relied upon for authentication/authorisation**.
 
