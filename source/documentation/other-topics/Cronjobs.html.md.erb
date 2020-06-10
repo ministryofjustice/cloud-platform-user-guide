@@ -9,11 +9,11 @@ review_in: 3 months
 
 ### Overview
 
-Kubernetes has the concept of [Cronjobs][kubernetes-cronjobs] which creates Jobs on a time-based schedule, you can use CronJobs to run tasks at a specific time or interval. CronJobs are a good choice for automatic tasks, such as backups, reporting, sending emails, or cleanup tasks. 
+Kubernetes has the concept of [Cronjobs][kubernetes-cronjobs] which creates Jobs on a time-based schedule, you can use CronJobs to run tasks at a specific time or interval. CronJobs are a good choice for automatic tasks, such as backups, reporting, sending emails, or cleanup tasks.
 
 ### Usage
 
-CronJobs use [Job][kubernetes-jobs] objects to complete their tasks. A CronJob creates a Job object each time it runs. CronJobs are created, managed, scaled, and deleted in the same way as Jobs. Cron jobs require a config file, follow the [guide][cron-jobs] on creating a Cronjob. 
+CronJobs use [Job][kubernetes-jobs] objects to complete their tasks. A CronJob creates a Job object each time it runs. CronJobs are created, managed, scaled, and deleted in the same way as Jobs. Cron jobs require a config file, follow the [guide][cron-jobs] on creating a Cronjob.
 
 This example cron job below prints the current time and a hello message every first minute of every hour from 0200 to 1400 UTC on Sunday, Monday, Friday, and Saturday
 
@@ -42,7 +42,7 @@ spec:
 
 ### Deploying a Cronjob to your Namespace
 
-You need a yaml file to define your cronjob. You can either create your own, or use [this one][cronjob-yaml] as an example. This periodically deletes untagged images in the ECR docker image repository (to ensure we stay within the nubmer of images we are allowed).
+You need a yaml file to define your cronjob. You can either create your own, or use [this one][cronjob-yaml] as an example. This periodically deletes untagged images in the ECR docker image repository (to ensure we stay within the number of images we are allowed).
 
       ```
       kubectl apply --filename cronjob-ecr.yaml --namespace [your namespace]
