@@ -12,13 +12,13 @@ These are some of the things to think about when migrating your application from
 
 Any infrastructure resources, such as databases or cache servers, should be of the same size, and running the same software (e.g. postgres) version, for the CP version of your app. as for the TD version.
 
-## Network traffic whitelisting
+## Allowing network traffic to/from your service
 
-The IP numbers from which your app's traffic originates will change. If your app. talks to any external services which care about its source IP addresses, you may need to arrange for those services to whitelist the cluster IPs.
+The IP numbers from which your app's traffic originates will change. If your app. talks to any external services which care about its source IP addresses, you may need to arrange for those services to allow traffic from the cluster IPs.
 
-If you have whitelisted any IPs for inbound traffic, you will need to add the corresponding config to your kubernetes deploymnent files.
+If you have configured your service to allow inbound traffic from any specific IPs, you will need to add the corresponding config to your kubernetes deploymnent files.
 
-This section of the user guide describes both of these procedures: [IP whitelisting][ip-whitelist].
+This section of the user guide describes both of these procedures: [IP filtering][ip-whitelist].
 
 ## DNS changes
 
