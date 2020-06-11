@@ -111,12 +111,19 @@ downtime deployments in [this article].
 
 ## Horizontal Pod Autoscaling
 
-Kubernetes make it easy to ensure you have the right number of pod replicas to 
-meet your current computational needs. This can be done by setting up Horizontal Pod Autoscaler. 
-The metrics you specify in the `HorizontalPodAutoscaler manifest` will determine the number 
-of pods needed, and set the thresholds at which pods should be created or removed. 
+The Horizontal Pod Autoscaler is a built-in Kubernetes feature that allows to horizontally scale applications based on one or more monitored metric such as cpu or memory.
 
-The usual metrics are CPU and memory usage, but you can also specify your own custom metrics. 
+The metrics you specify in the `HorizontalPodAutoscaler` manifest will determine the minimum and maximum number of pods needed, and set the thresholds at which pods should be created or removed. 
+
+The Horizontal Pod Autoscaler can ensure that critical applications are elastic and can scale out to meet increasing demand as well scale down to ensure optimal resource usage, it is also a great tool in saving money by auto-scaling down non-production work loads when not in use, such as overnight or the weekend.
+
+#### Important aspects of the HorizontalPodAutoscaler to be aware of:
+* Resource Limits - You need to set resource limits otherwise HPA will not work, as it will not have a value to quantify from.
+* 15 seconds - The HPA controller checks the value of the metric used every 15 seconds per pod. 
+* 3 minutes - The HPA scales up pods if the metric threshold has been continually exceeded for 3 mins. 
+* 5 minutes - The HPA scales down pods if the metric threshold has not been exceeded for 5 mins. 
+
+
 
 To create the horizontal pod autoscaler for your deployment, create a `hpa-myapp.yaml` similar to:
 
@@ -136,21 +143,46 @@ spec:
   targetCPUUtilizationPercentage: 50
 ```
 
-issue the following command:
+The above manifest will ensure a minimum of 1 replica is available for the deployment called my-app-name, but will increase replicas up to 5 when the CPU utilization is above 50%.
+
+Run the following command to apply:
 
 ```
 kubectl apply -f hpa-myapp.yaml -n my-namespace
 horizontalpodautoscaler.autoscaling/hpa-myapp autoscaled
 ```
 To check the current status of the autoscalar run:
-```
-kubectl get hpa -n my-namespace
-```
-When the CPU comsumption has increased more than 50%, you can see your deployment getting resized to the number of replicas required.
 
-For more examples and how to use custom metrics, see [Horizontal Pod Autoscaler Walkthrough]
+```
+kubectl describe hpa -n my-namespace my-app-name
+```
+ 
+```
+Name:                                                  my-app-name
+Namespace:                                             my-namespace
+Labels:                                                app=my-app-name
+Annotations:                                           <none>
+CreationTimestamp:                                     Tue, 01 Jun 2019 23:35:22 +0100
+Reference:                                             Deployment/my-app-name
+Metrics:                                               ( current / target )
+  resource cpu on pods  (as a percentage of request):  10% (1m) / 50%
+Min replicas:                                          1
+Max replicas:                                          5
+Deployment pods:                                       1 current / 1 desired
+Conditions:
+  Type            Status  Reason              Message
+  ----            ------  ------              -------
+  AbleToScale     True    ReadyForNewScale    recommended size matches current size
+  ScalingActive   True    ValidMetricFound    the HPA was able to successfully calculate a replica count from cpu resource utilization (percentage of request)
+  ScalingLimited  False   DesiredWithinRange  the desired count is within the acceptable range
+```
 
-[Horizontal Pod Autoscaler Walkthrough]: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough
+For the above, the current use is 10% of the resource limit, if/when the CPU consumption exceeds the threshold of 50% for more than 3 minutes, the deployment will scale up. 
+
+It is also possible to use custom metrics with the horizontal pod-autoscaler. However. this requires a bit more input from the development and Cloud-Platform team. If this is something you may be interested in, please speak to a member of the team on #ask-cloud-platform
+
+Click [HERE](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough) for the official Kubernetes documentation on the horizontal pod autoscaler walkthrough. 
+
 [kubernetes deployments]: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment
 [worker node]: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment
 [this article]: /documentation/other-topics/zero-downtime-deployment.html
