@@ -1,6 +1,6 @@
 ---
 title: Using a custom domain
-last_reviewed_on: 2019-12-09
+last_reviewed_on: 2020-04-28
 review_in: 3 months
 ---
 
@@ -57,13 +57,13 @@ in the [environments repository][env-repo] using the terraform
 
 #### Obtaining a certificate
 
-1. Create the `Certificate` resource, filling in any placeholders with your
+1. Create the [Certificate][cert-guidance] resource, filling in any placeholders with your
 details. The `secretName` attribute defines the name of a `Secret` in your
 namespace where the certificate and key material will be stored
 
    ```
    ---
-   apiVersion: certmanager.k8s.io/v1alpha1
+   apiVersion: cert-manager.io/v1alpha3
    kind: Certificate
    metadata:
      name: <my-cert>
@@ -73,13 +73,8 @@ namespace where the certificate and key material will be stored
      issuerRef:
        name: letsencrypt-production
        kind: ClusterIssuer
-     commonName: '<hostname>'
-     acme:
-       config:
-       - domains:
-         - '<hostname>'
-         dns01:
-           provider: route53-cloud-platform
+     dnsNames:
+     - <hostname>
    ```
 
 2. Make sure the certificate has been issued correctly, by checking its `Status`:
@@ -116,7 +111,7 @@ namespace where the certificate and key material will be stored
 3. You will need to update your `Ingress` spec to include the new hostname.
 
    ```
-     apiVersion: extensions/v1beta1
+     apiVersion: networking.k8s.io/v1beta1
      kind: Ingress
      metadata:
        name: <my-ingress>
@@ -160,3 +155,4 @@ based on your operating system and/or browser.
 [wiki-domain-structure]: https://en.wikipedia.org/wiki/Domain_Name_System#Structure
 [wiki-nameservers]: https://en.wikipedia.org/wiki/Name_server#Authoritative_name_server
 [tf-route53-record]: https://www.terraform.io/docs/providers/aws/r/route53_record.html
+[cert-guidance]: https://cert-manager.io/docs/concepts/certificate/

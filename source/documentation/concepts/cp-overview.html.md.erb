@@ -1,0 +1,62 @@
+---
+title: Cloud Platform Overview
+last_reviewed_on: 2020-06-02
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+The Cloud Platform (CP) is a [kubernetes] cluster, running in the "moj-cp" [Amazon AWS] account, inside a [Virtual Private Cloud (VPC)] which isolates the cluster and the AWS resources used by services running in the cluster.
+
+![Cloud Platform Diagram](/images/cp-vpc-diagram.png)
+
+## Where your code runs
+
+Within the cluster, services are isolated in [namespaces], inside which [deployments] consist of one or more [docker containers]. The code you write will run inside those containers.
+
+## Your namespace(s)
+
+A namespace is like a "fenced off" portion of the cluster. Your service runs inside one or more namespaces, and only your team has access to those namespaces. Access is controlled via membership in a specific github team within the MoJ github organisation, e.g. [prisoner-money])
+
+All namespaces are defined in the [Cloud Platform Environments repository]. Follow [this guide][get a namespace] to create a new namespace. To modify an existing namespace, you need to raise a PR with the relevant changes, and a member of the Cloud Platform team will review it for you.
+
+### AWS resources
+
+The namespaces are defined in kubernetes YAML files. There is also a `resources` directory inside each namespace directory. This contains [terraform] code which defines any AWS resources (e.g. an [RDS database]) that your namespace requires.
+
+
+Typically, creating an AWS resource will also add [secrets] to your namespace, containing the access credentials required to use that resource.
+
+## How your code gets to the cluster
+
+To deploy code to the CP, you will update a local YAML file which defines your deployment, and change the reference to your docker image.
+
+![Deploy Diagram](/images/cp-deploy-diagram.png)
+
+e.g. you might change that reference from `ministryofjustice/my-application:1.3` to `ministryofjustice/my-application:1.4` and then apply the new definition to the cluster.
+
+As soon as you do this, the cluster will recognise that the container which is currently running `ministryofjustice/my-application:1.3` is no longer the correct version, and will launch a new instance of `ministryofjustice/my-application:1.4` and delete the old one.
+
+## Typical Workflow
+
+1. Develop code in your local environment, and raise PRs in your team's Github repositories
+2. Review and merge PR
+3. On merge, your CI/CD pipeline (e.g. CircleCI):
+   1. creates docker image(s) from your code
+   2. tags and pushes docker images to your docker repository (e.g. ECR or Docker Hub)
+   3. updates your kubernetes yaml files (usually also in github) with new image tag values (this may be a manual step)
+4. Code is now ready to deploy to the cluster by using `kubectl apply` to apply the updated yaml file to the cluster (this may also be done via a CD pipeline)
+5. Kubernetes recognises that the state of the cluster (specifically, your namespace) doesn't match the desired state defined in your yaml files, and makes whatever changes are required (e.g. launches pods running your new docker image, and shuts down any pods running the old version)
+
+[Kubernetes]: https://kubernetes.io
+[Amazon AWS]: https://aws.amazon.com/
+[Virtual Private Cloud (VPC)]: https://aws.amazon.com/vpc/
+[namespaces]: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
+[deployments]: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+[docker containers]: https://www.docker.com/resources/what-container
+[prisoner-money]: https://github.com/orgs/ministryofjustice/teams/prisoner-money
+[Cloud Platform Environments repository]: https://github.com/ministryofjustice/cloud-platform-environments
+[get a namespace]: https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/env-create.html#creating-a-cloud-platform-environment
+[terraform]: https://www.terraform.io/
+[RDS database]: https://aws.amazon.com/rds/
+[secrets]: https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/add-secrets-to-deployment.html#adding-a-secret-to-an-application

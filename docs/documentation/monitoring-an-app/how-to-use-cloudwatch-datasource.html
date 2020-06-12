@@ -6,12 +6,12 @@
     <meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
       <meta name="robots" content="noindex">
 
-    <title>IP Whitelisting | Cloud Platform User Guide</title>
+    <title>Using the CloudWatch data source in Grafana | Cloud Platform User Guide</title>
 
     <!--[if gt IE 8]><!--><link href="/stylesheets/screen.css" rel="stylesheet" media="screen" /><!--<![endif]-->
     <!--[if lte IE 8]><link href="/stylesheets/screen-old-ie.css" rel="stylesheet" media="screen" /><![endif]-->
 
-    <link rel="canonical" href="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/ip-whitelisting.html">
+    <link rel="canonical" href="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-use-cloudwatch-datasource.html">
 
 
     <link href="/stylesheets/print.css" rel="stylesheet" media="print" />
@@ -19,14 +19,14 @@
 
       <meta property="og:image" content="https://user-guide.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
       <meta property="og:site_name" content="Cloud Platform User Guide" />
-      <meta property="og:title" content="IP Whitelisting" />
+      <meta property="og:title" content="Using the CloudWatch data source in Grafana" />
       <meta property="og:type" content="object" />
-      <meta property="og:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/ip-whitelisting.html" />
+      <meta property="og:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-use-cloudwatch-datasource.html" />
       <meta property="twitter:card" content="summary" />
       <meta property="twitter:domain" content="user-guide.cloud-platform.service.justice.gov.uk" />
       <meta property="twitter:image" content="https://user-guide.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
-      <meta property="twitter:title" content="IP Whitelisting | Cloud Platform User Guide" />
-      <meta property="twitter:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/ip-whitelisting.html" />
+      <meta property="twitter:title" content="Using the CloudWatch data source in Grafana | Cloud Platform User Guide" />
+      <meta property="twitter:url" content="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-use-cloudwatch-datasource.html" />
 
     
   </head>
@@ -97,15 +97,12 @@
               <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading">
                       <ul>
   <li>
-    <a href="#ip-whitelisting">IP Whitelisting</a>
+    <a href="#using-the-cloudwatch-data-source-in-grafana">Using the CloudWatch data source in Grafana</a>
     <ul>
       <li>
         <ul>
           <li>
-            <a href="#inbound-ip-whitelisting">Inbound IP Whitelisting</a>
-          </li>
-          <li>
-            <a href="#outbound-ip-whitelisting">Outbound IP Whitelisting</a>
+            <a href="#introduction">Introduction</a>
           </li>
         </ul>
       </li>
@@ -120,58 +117,40 @@
 
         <div class="app-pane__content toc-open-disabled">
           <main id="content" class="technical-documentation" data-module="anchored-headings">
-              <h1 id="ip-whitelisting">IP Whitelisting</h1><h3 id="inbound-ip-whitelisting">Inbound IP Whitelisting</h3><p>Allowed client IP source ranges can be specified using the nginx.ingress.kubernetes.io/whitelist-source-range annotation. The value is a comma separated list of CIDRs, e.g. 1.1.1.1/24,10.0.0.0/24.</p>
-<p><a href="https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#whitelist-source-range">Kubernetes official documentation on whitelisting source ranges</a>.</p>
-<p>An example configuration using &ldquo;nginx.ingress.kubernetes.io/whitelist-source-range: 1.1.1.1/24,10.0.0.0/24&rdquo;</p>
-<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: extensions/v1beta1
-kind: Ingress
+              <h1 id="using-the-cloudwatch-data-source-in-grafana">Using the CloudWatch data source in Grafana</h1><h3 id="introduction">Introduction</h3><p>To build dashboards for your <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/working_with_metrics.html">CloudWatch</a> metrics, you can use the <a href="https://grafana.com/grafana/plugins/CloudWatch">CloudWatch data source</a>.</p>
+<h4 id="introduction-using-the-cloudwatch-data-source-in-grafana">Using the CloudWatch data source in Grafana</h4><p>There are some default dashboards <a href="https://grafana.cloud-platform.service.justice.gov.uk/dashboards">here</a>, or you can build your own. You can also do dynamic queries using dimension wildcards.</p>
+<p>Create a dashboard using CloudWatch data source:</p>
+<p>From the official &amp; community built <a href="https://grafana.com/grafana/dashboards?dataSource=CloudWatch">dashboards</a>, select the AWS resource for which you want to create the dashboard. Download it as JSON and modify it as you see fit. Copy the JSON string into a <code>ConfigMap</code> according to the example below.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>---
+apiVersion: v1
+kind: ConfigMap
 metadata:
-  annotations:
-    kubectl.kubernetes.io/last-applied-configuration: |
-          {"apiVersion":"extensions/v1beta1","kind":"Ingress","metadata":{"annotations":{"kubernetes.io/ingress.class":"nginx","nginx.ingress.kubernetes.io/whitelist-source-range":"1.1.1.1/24,10.0.0.0/24"},"name":"&lt;my-ingress&gt;","namespace":"&lt;my-namespace&gt;"},"spec":{"rules":[{"host":"my-app.apps.live-1.cloud-platform.service.justice.gov.uk","http":{"paths":[{"backend":{"serviceName":"&lt;my-svc&gt;","servicePort":3000},"path":"/"}]}}],"tls":[{"hosts":["my-app.apps.live-1.cloud-platform.service.justice.gov.uk"]}]}}
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/whitelist-source-range: 1.1.1.1/24,10.0.0.0/24
-  creationTimestamp: 2019-03-21T14:26:31Z
-  generation: 1
-  name: &lt;my-ingress&gt;
+  name: &lt;my-dashboard&gt;
   namespace: &lt;my-namespace&gt;
-spec:
-  rules:
-  - host: my-app.apps.live-1.cloud-platform.service.justice.gov.uk
-    http:
-      paths:
-      - path: /
-      - backend:
-          serviceName: &lt;my-svc&gt;
-          servicePort: 3000
-  tls:
-  - hosts:
-    - my-app.apps.live-1.cloud-platform.service.justice.gov.uk
-status:
-  loadBalancer:
-    ingress:
-    - hostname: &lt;hostname&gt;
-</code></pre></div><p>Testing with the annotation set:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>curl -v -H "Host: my-app.apps.live-1.cloud-platform.service.justice.gov.uk" &lt;HOST-IP&gt;
-</code></pre></div><p>Will return a &ldquo;403 forbidden&rdquo; status</p>
-<h3 id="outbound-ip-whitelisting">Outbound IP Whitelisting</h3><h4 id="nat-gateways">NAT Gateways</h4><p>Many applications use third-party tools for a variety of reasons, and many of these tools require IP Whitelisting.</p>
-<p>The Cloud Platform uses NAT Gateways as its external IP Endpoints.</p>
-<p>The IP addresses for the clusters are as follows:</p>
-<h5 id="live-1-cluster">Live-1 Cluster</h5><div class="highlight"><pre class="highlight plaintext"><code>35.178.209.113
-3.8.51.207
-35.177.252.54
-</code></pre></div>
+  labels:
+    grafana_dashboard: ""
+data:
+  my-dashboard.json: |
+    {
+      [ ... ]
+    }
+</code></pre></div><p>Add the <code>ConfigMap</code> above to your namespace folder in the <a href="https://github.com/ministryofjustice/cloud-platform-environments">environments repo</a>. Once the ConfigMap is applied though the concourse pipeline, your dashboard should be visible in Grafana shortly.</p>
+<p>Dynamic queries using dimension wildcards:</p>
+<p>Login to <a href="https://grafana.cloud-platform.service.justice.gov.uk/">Grafana</a> with your GitHub account. Select CloudWatch in Explore as shown in the picture below</p>
+<p><a href="/images/explore-cloudwatch.png" target="_blank" rel="noopener noreferrer"><img src="/images/explore-cloudwatch.png" alt="Explore CloudWatch" /></a></p>
+<p>Follow the guidance <a href="https://grafana.com/docs/grafana/latest/features/datasources/cloudwatch/#dynamic-queries-using-dimension-wildcards">here</a>, to do dynamic queries using dimension wildcards.</p>
 
-              <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
+
+              <div data-module='page-expiry' data-last-reviewed-on="2020-08-20">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 9 December 2019.
+      This page was last reviewed on 20 May 2020.
 
-        It needs to be reviewed again on 9 March 2020
+        It needs to be reviewed again on 20 August 2020
 .
     </div>
 
     <div class='page-expiry--expired'>
-      This page was set to be reviewed before 9 March 2020.
+      This page was set to be reviewed before 20 August 2020.
       This might mean the content is out of date.
     </div>
   </div>
@@ -179,8 +158,8 @@ status:
           </main>
 
             <ul class="contribution-banner">
-              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/documentation/other-topics/ip-whitelisting.html.md.erb">View source</a></li>
-              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'IP%20Whitelisting'&amp;body=Problem%20with%20'IP%20Whitelisting'%20(https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/ip-whitelisting.html)">Report problem</a></li>
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/documentation/monitoring-an-app/how-to-use-cloudwatch-datasource.html.md.erb">View source</a></li>
+              <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'Using%20the%20CloudWatch%20data%20source%20in%20Grafana'&amp;body=Problem%20with%20'Using%20the%20CloudWatch%20data%20source%20in%20Grafana'%20(https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-use-cloudwatch-datasource.html)">Report problem</a></li>
               <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub Repo</a></li>
             </ul>
 

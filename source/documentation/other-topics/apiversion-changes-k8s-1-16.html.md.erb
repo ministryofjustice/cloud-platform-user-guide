@@ -1,0 +1,250 @@
+---
+title: Removing Deprecated APIs for Kubernetes version 1.16
+last_reviewed_on: 2020-06-11
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+The Cloud Platform kubernetes cluster has to be upgraded from **1.15.10** to **1.16.10**.
+ 
+As the Kubernetes API evolves, certain APIs are reorganized/upgraded or removed.
+Therefore before the upgrade can take place, a number of deprecated 
+APIs have to be removed from the manifests used to create kubernetes resources.
+
+The replacement APIs are already available within the current kubernetes version 1.15.10.
+
+Below are the details of the APIs that have been removed in this release, together with the related replacement APIs that should be used in their place.
+
+It is therefore **mandatory** to update affected manifests with the replacements shown below
+before we upgrade the cluster to kubernetes version 1.16.
+
+- All resources under `apps/v1beta1` and `apps/v1beta2` - use `apps/v1` instead
+- `daemonsets`, `deployments`, `replicasets` resources under `extensions/v1beta1` - use `apps/v1` instead
+- `networkpolicies` resources under `extensions/v1beta1` - use `networking.k8s.io/v1` instead
+- `podsecuritypolicies` resources under `extensions/v1beta1` - use `policy/v1beta1` instead
+- `ingress` resources will no longer be served from `extensions/v1beta1` in v1.20. - use `networking.k8s.io/v1beta1` instead
+
+### Resources deployed using helm charts
+
+If you have used helm version < 2.16.3, then the generated manifests will use the deprecated APIs. 
+It is therefore **mandatory** to update the manifest with replacement APIs. 
+We also suggest upgrading your helm version to > 2.16.3, ideally to [Helm 3](/documentation/deploying-an-app/app-deploy-helm.html#migrate-from-helm-v2-to-helm-v3) so the helm
+  manifests are not generated with deprecated APIs.
+
+More detailed changes to kubernetes resources are explained in this [kubernetes blog](https://kubernetes.io/blog/2019/07/18/api-deprecations-in-1-16/) and 
+the [1.16 CHANGELOG](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.16.md#deprecations-and-removals)
+
+## What to do
+
+We have identified the list of affected resources on all namespaces in this [google sheet](https://docs.google.com/spreadsheets/d/1DY4PSZjmXqLcnqww0NetmIjMdw3p0hUqfv_ytJ304j4/edit?usp=sharing)
+
+Please make changes as follows:
+
+ * [If you deployed an application to the Cloud Platform with kubectl](#kubectl)
+
+ * [If you deployed an application to the Cloud Platform with Helm](#helm-deployments)
+
+### kubectl 
+
+#### Deployments
+
+Issue the following command to see if you are using deprecated API versions:
+
+```kubectl describe deployment -n <namespace> | egrep '"apiVersion":"extensions/v1beta1"|"apiVersion":"apps/v1beta1"|"apiVersion":"apps/v1beta2"'```
+
+If there is any output similar to that below, then you must change your manifest.
+
+```
+
+{"apiVersion":"extensions/v1beta1","kind":"Deployment","metadata":{"annotations":{},"name":"helloworld-rubyapp","namespace":"dstest"}
+```
+
+If your deployment manifest looks similar to this:
+
+<pre>
+    apiVersion: <b>extensions/v1beta1</b> 
+(or apiVersion: <b>apps/v1beta1</b> or apiVersion: <b>apps/v1beta2</b>)
+    kind: Deployment
+    metadata:
+      name: helloworld-rubyapp
+    spec:
+      replicas: 1
+      template:
+        metadata:
+          labels:
+            app: helloworld-rubyapp
+        spec:
+          containers:
+</pre>
+
+Migrate to use the `apps/v1` API version. The main changes are:
+
+ * Change the `apiVersion` to `apps/v1`
+ * Add a `spec.selector` entry **if there isn't one already** and use the existing `spec.template.metadata.labels` as the selector
+
+The manifest above, after changes, would look like this:
+
+<pre>
+    apiVersion: <b>apps/v1</b>
+    kind: Deployment
+    metadata:
+      name: helloworld-rubyapp
+    spec:
+      replicas: 1
+      <b>selector:
+        matchLabels:
+          app: helloworld-rubyapp</b>
+
+    template:
+        metadata:
+          labels:
+            app: helloworld-rubyapp
+        spec:
+          containers:
+</pre>
+
+To apply your changes:
+
+```kubectl apply --filename <your yaml file> --namespace <namespace>```
+
+Issue the following command again (the list should decrease as you apply your changes):
+
+```kubectl describe deployment -n <namespace> | egrep '"apiVersion":"extensions/v1beta1"|"apiVersion":"apps/v1beta1"|"apiVersion":"apps/v1beta2"'```
+
+#### Ingress
+
+Issue the following command to see if you are using deprecated API versions:
+
+```kubectl describe ingress --namespace <namespace> | grep '"apiVersion":"extensions/v1beta1"'```
+
+If your Ingress configuration looks similar to this:
+
+<pre>
+    apiVersion: <b>extensions/v1beta1</b>
+    kind: Ingress
+    metadata:
+      name: helloworld-rubyapp-ingress
+    spec:
+      .................
+</pre>
+
+Migrate to use the networking.k8s.io/v1beta1 API version. The main changes are:
+
+ * Change the `apiVersion` to `networking.k8s.io/v1beta1`
+
+ The Ingress configuration after changes will look like:
+<pre>
+    apiVersion: <b>networking.k8s.io/v1beta1</b>
+    kind: Ingress
+    metadata:
+      name: helloworld-rubyapp-ingress
+    spec:
+      .................
+</pre>
+
+To apply your changes:
+
+```kubectl apply --filename <your ingress yaml file> --namespace <namespace>```
+
+Issue the following command again (the list should decrease as you apply your changes):
+
+```kubectl describe ingress --namespace <namespace> | grep '"apiVersion":"extensions/v1beta1"'```
+
+
+See **"Notable changes"** section in the [kubernetes blog](https://kubernetes.io/blog/2019/07/18/api-deprecations-in-1-16/),
+if any other fields in your manifests are affected.
+
+### Helm Deployments
+
+Prerequisite: Install [pluto](https://github.com/FairwindsOps/pluto)
+
+```brew install FairwindsOps/tap/pluto```
+
+You can use this to find out whether your helm templates have any of the deprecated APIs.
+ 
+#### Helm 2
+
+Issue the following command to see if you have applications deployed via Helm 2:
+
+```pluto detect-helm --helm-version 2 -n <namespace>  -owide```
+
+Here is an example output of a helm chart in the `cptest` namespace which has deprecated APIs, and the suggested replacement:
+
+```
+NAME                                                 NAMESPACE    KIND          VERSION              REPLACEMENT                 DEPRECATED   DEPRECATED IN   REMOVED   REMOVED IN
+helloworld/helloworld-rubyapp-ingress                cptest   Ingress      extensions/v1beta1   networking.k8s.io/v1beta1   true         v1.14.0         false     v1.22.0
+helloworld/independent-bobcat-helloworld             cptest   Deployment   apps/v1beta2         apps/v1                     true         v1.9.0          true      v1.16.0
+```
+
+Update the template manifests in your helm chart repo, making the required changes. 
+
+You can test your source code directly using pluto by running:
+
+```
+pluto detect-files -d <DIRECTORY YOU WANT TO SCAN>
+```
+
+ Upgrade your local helm version to >v2.16.3, Ideally to [Helm 3](/documentation/deploying-an-app/app-deploy-helm.html#migrate-from-helm-v2-to-helm-v3). Check the user guide for more instructions on [migrating to Helm 3](/documentation/deploying-an-app/app-deploy-helm.html#migrate-from-helm-v2-to-helm-v3)
+
+ If for any reason you cant upgrade to Helm 3:
+ 
+  - Update your local helm version to minimum v2.16.3
+  - Upgrade the tiller version in your namespace to minimum v2.16.3
+
+   ```
+   helm init --upgrade --tiller-namespace <namespace>
+   ```
+- rollout the helm chart changes to the cluster
+
+Once updated issue the following command to check the changes were correctly deployed:
+
+```pluto detect-helm --helm-version 2 -n <namespace>  -owide```
+
+The output should say
+
+```
+APIVersions were found, but none were deprecated. Try --show-all.
+```
+
+#### Helm 3
+
+Issue the following command to see if you have applications deployed via Helm 3:
+
+```pluto detect-helm --helm-version 3 -n <namespace>  -owide```
+
+Here is an example output of a helm chart in the `cptest` namespace which has deprecated APIs, and the suggested replacement:
+
+```
+NAME                                                 NAMESPACE    KIND          VERSION              REPLACEMENT                 DEPRECATED   DEPRECATED IN   REMOVED   REMOVED IN
+helloworld/helloworld-rubyapp-ingress                cptest   Ingress      extensions/v1beta1   networking.k8s.io/v1beta1   true         v1.14.0         false     v1.22.0
+helloworld/independent-bobcat-helloworld             cptest   Deployment   apps/v1beta2         apps/v1                     true         v1.9.0          true      v1.16.0
+```
+
+Update the template manifests in your helm chart repo with the required changes. 
+
+You can test your source code directly using pluto by running:
+
+```
+pluto detect-files -d <DIRECTORY YOU WANT TO SCAN>
+```
+ 
+Deploy the helm chart changes to the cluster.
+
+Once updated, use the following command to check the changes were correctly deployed:
+
+```pluto detect-helm --helm-version 3 -n <namespace>  -owide```
+
+The output should say:
+
+```
+APIVersions were found, but none were deprecated. Try --show-all.
+```
+
+**NOTE: If you don't update your manifests to use the latest API versions you will get failures when deploying your applications after we upgrade the cluster to kubernetes 1.16**
+
+### Getting help
+
+If you have any questions, please contact us on the [#ask-cloud-platform] Slack channel.
+
+[#ask-cloud-platform]: https://mojdt.slack.com/messages/C57UPMZLY

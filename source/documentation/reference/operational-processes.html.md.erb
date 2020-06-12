@@ -1,6 +1,6 @@
 ---
 title: Cloud Platform Operational Processes
-last_reviewed_on: 2019-12-09
+last_reviewed_on: 2020-05-04
 review_in: 3 months
 ---
 
@@ -13,7 +13,7 @@ This is a record of the operational processes that we will use to support our us
 
 Our hours of providing support are 10am - 5pm. During this time we will work on support requests from teams and make sure someone is available to answer questions in Slack channel [`#ask-cloud-platform`](https://mojdt.slack.com/messages/C57UPMZLY/) and look at PR request notifications for the cloud-platform-environments repo on [`#cloud-platform-notify`](https://mojdt.slack.com/messages/CA5MDLM34/)
 
-Outside of these hours we will respond to [high priority](#prioritising-incidents) incidents as per our [on call](#our-on-call-process) process.
+Outside of these hours we will respond to high priority incidents as per our [on call](#our-on-call-process) process.
 
 ### Working hours
 
@@ -68,7 +68,7 @@ If someone is asking for help that will be quick to do (less than 15 mins) or is
 
 If someone needs something that takes longer, is more challenging to complete or you find you've spent longer than 15 mins on it, then continue to talk in the channel but also ask the person asking for help to raise a ticket using the GitHub issue [link](https://github.com/ministryofjustice/cloud-platform/issues/new?template=cloud-platform-support-request.md&labels=support%20team).
 
-The purpose of the ticket is to keep a record of the work we are doing and how it is progressing. It is *not* the primary communication channel with the person who raised the problem - this should remain slack where you can provide a richer and more human interaction, answering questions if necessary. The engineer working on the ticket should update the ticket for our record as work progresses.
+The purpose of the ticket is to keep a record of the work we are doing and how it is progressing. It is *not* the primary communication channel with the person who raised the problem - this should remain in slack where you can provide a richer and more human interaction, answering questions if necessary. The engineer working on the ticket should update the ticket for our records as work progresses.
 
 In many cases it can be more helpful for the engineer on support to create the ticket rather than the person reporting the problem as you will be able to provide more relevant context.
 
@@ -76,10 +76,11 @@ Once they have created the ticket it will appear in the `Support New Issues` col
 
 ### `#cloud-platform-update` slack channel
 
-[`#cloud-platform-update`](https://mojdt.slack.com/messages/CH6D099DF/) has been created to make broadcast communications, examples include:
+[`#cloud-platform-update`](https://mojdt.slack.com/messages/CH6D099DF/) is a low-volume channel for broadcast communications. Examples include:
 
-* when there is planned work on a service (e.g. we are completing maintenance on Postgres RDS instance in prod)
-* when there is an incident in progress (e.g there is a problem with Jenkins, no one can access it right now)
+* to announce future scheduled work (e.g. "we will be upgrading kubernetes on ... no downtime is expected")
+* when there is planned work on a service (e.g. "we are doing some maintenance work on an RDS instance in prod")
+* when there is an incident in progress (e.g "there is a problem with Jenkins, no one can access it right now")
 
 In these situations:
 
@@ -98,7 +99,7 @@ We will be doing this work between 10AM and 3PM, we will update at 1PM and 3PM t
 
 ### Our on call process
 
-Team members who are on call manage an on call rota in pagerduty. The on call rota consists of a primary engineer and a secondary engineer.
+Team members who are on call manage an on call rota in [pagerduty]. The on call rota consists of a primary engineer and a secondary engineer.
 
 Team members that are new to the rota should ensure that they have a secondary who has enough knowledge and experience of the process to support them.
 
@@ -108,12 +109,14 @@ On call team members will respond to high priority incidents out of hours and wi
 
 * put the service into maintenance mode
 * inform the affected team
-* put together a plan to resolve the issue in hours
+* put together a plan to resolve the issue during normal working hours
 
 ### Our documentation
 
 All Cloud Platform documentation is openly available in Git repos stored on Github. The starting point for this documentation is the [Cloud Platform repo](https://github.com/ministryofjustice/cloud-platform).
 
-For using Cloud Platform we have created the [Cloud Platform User Guide](https://user-guide.cloud-platform.service.justice.gov.uk). This guide is the "front door" to the Cloud Platform and contains concepts, tasks, walkthroughs and other reference to help teams use the Cloud Platform.
+For users of the Cloud Platform there is the [Cloud Platform User Guide](https://user-guide.cloud-platform.service.justice.gov.uk). This guide is the "front door" to the Cloud Platform and contains concepts, tasks, walkthroughs and other information to help teams use the Cloud Platform.
 
-For our legacy systems based around the Template Deploy tooling, our documentation lives in [Confluence](https://dsdmoj.atlassian.net/wiki/spaces/PLAT/overview). This documentation includes architecture, runbooks and common issues.
+For our legacy systems based around Template Deploy, documentation lives in [Confluence](https://dsdmoj.atlassian.net/wiki/spaces/PLAT/overview). This documentation includes architecture, runbooks and common issues.
+
+[pagerduty]: https://www.pagerduty.com/

@@ -1,0 +1,77 @@
+---
+title: Allowing traffic to/from specific IPs
+last_reviewed_on: 2020-04-24
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+> Wherever possible, we treat the [network as a bearer][networks-are-bearers], rather than a means to confer trust.
+>
+> For this reason, explicitly allowing traffic from/to specific IP numbers is discouraged in general.
+
+### Inbound IP Filtering
+
+Allowed client IP source ranges can be specified using the nginx.ingress.kubernetes.io/whitelist-source-range annotation. The value is a comma separated list of CIDRs, e.g. 1.1.1.1/24,10.0.0.0/24.
+
+[Kubernetes official documentation on allowing source ranges][kubernetes-annotations-whitelist-source-range].
+
+[kubernetes-annotations-whitelist-source-range]: https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#whitelist-source-range
+
+An example configuration using "nginx.ingress.kubernetes.io/whitelist-source-range: 1.1.1.1/24,10.0.0.0/24"
+
+   ```
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+          {"apiVersion":"networking.k8s.io/v1beta1","kind":"Ingress","metadata":{"annotations":{"kubernetes.io/ingress.class":"nginx","nginx.ingress.kubernetes.io/whitelist-source-range":"1.1.1.1/24,10.0.0.0/24"},"name":"<my-ingress>","namespace":"<my-namespace>"},"spec":{"rules":[{"host":"my-app.apps.live-1.cloud-platform.service.justice.gov.uk","http":{"paths":[{"backend":{"serviceName":"<my-svc>","servicePort":3000},"path":"/"}]}}],"tls":[{"hosts":["my-app.apps.live-1.cloud-platform.service.justice.gov.uk"]}]}}
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/whitelist-source-range: 1.1.1.1/24,10.0.0.0/24
+  creationTimestamp: 2019-03-21T14:26:31Z
+  generation: 1
+  name: <my-ingress>
+  namespace: <my-namespace>
+spec:
+  rules:
+  - host: my-app.apps.live-1.cloud-platform.service.justice.gov.uk
+    http:
+      paths:
+      - path: /
+      - backend:
+          serviceName: <my-svc>
+          servicePort: 3000
+  tls:
+  - hosts:
+    - my-app.apps.live-1.cloud-platform.service.justice.gov.uk
+status:
+  loadBalancer:
+    ingress:
+    - hostname: <hostname>
+   ```
+Testing with the annotation set:
+
+```
+curl -v -H "Host: my-app.apps.live-1.cloud-platform.service.justice.gov.uk" <HOST-IP>
+```
+Will return a "403 forbidden" status
+
+### Outbound IP filtering
+
+> Please note that these number are likely to change, and **should not be relied upon for authentication/authorisation**.
+
+#### NAT Gateways
+
+IP traffic from the Cloud Platform will originate from the IP numbers of one our NAT Gateways. We have one NAT Gateway in each of the three availability zones in which we host the Cloud Platform, and outbound traffic may originate from any of them.
+
+Currently, these are the IPs from which traffic will appear to come:
+
+##### Live-1 Cluster
+```
+35.178.209.113
+3.8.51.207
+35.177.252.54
+```
+
+[networks-are-bearers]: https://ministryofjustice.github.io/security-guidance/mythbusting/internet-v-psn/#networks-are-bearers

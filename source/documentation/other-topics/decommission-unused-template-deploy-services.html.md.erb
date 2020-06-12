@@ -1,43 +1,44 @@
 ---
 title: How to decommission unused template deploy services
-last_reviewed_on: 2019-12-09
+last_reviewed_on: 2020-05-06
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
 
-
-### 1.	Stack Deletion (will also delete related instances, vpu’s, security groups, network gateways etc).
+### 1.	Stack Deletion (will also delete related instances, VPCs, security groups, network gateways etc).
 
 NOTE As a first port of call we would recommend raising a support ticket in [#ask-cloud-platform](https://mojdt.slack.com/messages/C57UPMZLY/team/U58MLFA0M/) requesting that cloud-platform delete your AWS stack. 
 
-In most cases cloud-platform’s will have the necessary credentials to delete the stack for you (most template-deploy stacks will have been created within the mojdsd AWS account).
+In most cases the cloud platform team will have the necessary credentials to delete the stack for you (most template-deploy stacks will have been created within the moj-dsd AWS account).
  
-NOTE Caution should also be taken as AWS Route53 dns configuration may be deleted (and this could be referenced in new AWS account Kubernetes setups). We would recommend making a copy of any such configuration so that it can be reinstated if necessary. 
-Should you wish to go ahead yourselves, whilst it is possible to delete from the AWS stack dashboard, for a cleaner operation (the deleting of related AWS resources) the following fabric command should be carried out:
+NOTE Caution should also be taken as AWS Route53 DNS configuration may be deleted (and this could be referenced from your new deployment on the cloud platform). We recommend taking a backup of your DNS configuration so that it can be restored if necessary.
 
-in order to proceed, you need to have :
+While it is possible to delete your stack from the AWS web interface, a cleaner way (including deleting related AWS resources) is to use fabric commands:
 
-* installed the prerequisite tools
+Pre-requisites:
+
+* installed the prerequisite tools (python, virtualenv, fabric, aws cli)
 * configured your AWS credentials
 * configured your github access
 * create your own GPG key
-  
-   a.	Run [mkvirtualenv](https://dsdmoj.atlassian.net/wiki/spaces/PLAT/pages/82640903/Quickstart+-+Template+Deploy) to create your local environment.
 
-   b.	Run the fabric command to delete your stack
+a.	Run [mkvirtualenv](https://dsdmoj.atlassian.net/wiki/spaces/PLAT/pages/82640903/Quickstart+-+Template+Deploy) to create your local environment.
 
-The Fabric command to delete an AWS stack:
+b.	Run the fabric command to delete your stack
 
 ```
-$ fab aws:<awsaccountname> environment:<environmentname> application:<projectname> config:cloudformation/<projectname>.yaml  passwords:cloudformation/<projectname>-secrets.yaml -u <githubsshkey> cfn_delete
+$ fab aws:<awsaccountname> environment:<environmentname> \
+   application:<projectname> config:cloudformation/<projectname>.yaml \
+   passwords:cloudformation/<projectname>-secrets.yaml \
+   -u <githubsshkey> cfn_delete
 ```
 
 ### 2.	Jenkins Projects:
 
-NOTE If you do not have the necessary permissions to carry out the following actions, raise a support ticket in [#ask-cloud-platform](https://mojdt.slack.com/messages/C57UPMZLY/team/U58MLFA0M/ 
+> NOTE If you do not have the necessary permissions to carry out the following actions, raise a support ticket in [#ask-cloud-platform](https://mojdt.slack.com/messages/C57UPMZLY/team/U58MLFA0M/ 
 
-   a.   Disable the project (if you wish to retain the configuration for reference):
+Either a)   Disable the project (if you wish to retain the configuration for reference):
 
    	i.   Locate your project’s job:
 
@@ -47,17 +48,15 @@ NOTE If you do not have the necessary permissions to carry out the following act
 
    	iii. If you wish to resurrect your project job, click on “Enable” button: 
 
-   b.	Delete the project (if you no longer require the Jenkins deploy config):
+Or, b)	Delete the project (if you no longer require the Jenkins deploy config):
 
    	i.   Click on “Delete Project”:
 
-![Image description](https://issues.jenkins-ci.org/secure/attachment/31690/upload.png)
-
 ### 3.	Github deploy repos (this should take place after you have deleted the AWS resources)
 
-NOTE If you do not have the necessary permissions to carry out the following actions, raise a support ticket in [#ask-cloud-platform](https://mojdt.slack.com/messages/C57UPMZLY/team/U58MLFA0M/
+> NOTE If you do not have the necessary permissions to carry out the following actions, raise a support ticket in [#ask-cloud-platform](https://mojdt.slack.com/messages/C57UPMZLY/team/U58MLFA0M/
 
-   a.	[Archive the Github deploy repos](https://help.github.com/en/articles/archiving-repositories)  (if you still require the deploy configuration for reference)
+Either, a)	[Archive the Github deploy repos](https://help.github.com/en/articles/archiving-repositories)  (if you still require the deployment source code for reference)
 
    	i.   Locate your deploy-repos. Click on the “Settings” button:
 
@@ -67,10 +66,10 @@ NOTE If you do not have the necessary permissions to carry out the following act
 
    	iv.  The deploy repository will then be archived (confirmatory message will appear):
 
-   b.	[Delete the Github deploy repos](https://help.github.com/en/articles/deleting-a-repository)  (if you no longer require the deploy configuration for reference)
+Or, b)	[Delete the Github deploy repos](https://help.github.com/en/articles/deleting-a-repository)  (if you no longer require the deploy configuration for reference)
 
    	i.   As for archiving -Locate your deploy-repos. Click on the “Settings” button. Then click on the “Delete this repository” button:
  
 ### 4.	Docker Images:
 
-   a.	The docker image repository will be completely decommissioned when we have switched everything over from template-deploy
+The template deploy docker image repository will be completely decommissioned when we have switched everything over from template-deploy. So, you do not need to bother deleting your docker images from it.

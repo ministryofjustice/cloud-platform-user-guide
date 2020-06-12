@@ -1,11 +1,10 @@
 ---
 title: Migrating to the Cloud Platform from Template Deploy
-last_reviewed_on: 2019-12-09
+last_reviewed_on: 2020-05-06
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
-
 
 These are some of the things to think about when migrating your application from [Template Deploy][template-deploy] (TD) to the [Cloud Platform][cloud-platform] (CP).
 
@@ -13,13 +12,13 @@ These are some of the things to think about when migrating your application from
 
 Any infrastructure resources, such as databases or cache servers, should be of the same size, and running the same software (e.g. postgres) version, for the CP version of your app. as for the TD version.
 
-## Network traffic whitelisting
+## Allowing network traffic to/from your service
 
-The IP numbers from which your app's traffic originates will change. If your app. talks to any external services which care about its source IP addresses, you may need to arrange for those services to whitelist the cluster IPs.
+The IP numbers from which your app's traffic originates will change. If your app. talks to any external services which care about its source IP addresses, you may need to arrange for those services to allow traffic from the cluster IPs.
 
-If you have whitelisted any IPs for inbound traffic, you will need to add the corresponding config to your kubernetes deploymnent files.
+If you have configured your service to allow inbound traffic from any specific IPs, you will need to add the corresponding config to your kubernetes deploymnent files.
 
-This section of the user guide describes both of these procedures: [IP whitelisting][ip-whitelist].
+This section of the user guide describes both of these procedures: [IP filtering][ip-filtering].
 
 ## DNS changes
 
@@ -40,7 +39,7 @@ Everything for the Cloud Platform is in the `eu-west-2` (London) region.  TD gen
 
 ## SSL
 
-DNS and SSL are managed by cluster-shared services (cert-manager and external-dns)
+DNS and SSL are managed by cluster-shared services ([cert-manager] and [external-dns])
 
  * Validation and deployment are managed by a single pipeline.
  * Renewals are automatic.
@@ -54,9 +53,9 @@ Does your service have users who are stuck with very old browsers? If so, consid
 
 Inbound connections to service IPs are not possible, on the Cloud Platform. Access to your service must go via https to a URL, not by inbound access to an IP number.
 
-Connections **to** resources outside the cluster are allowed, and pods will be NATed to the IPs of the VPC gateways (the IP addresses are pinned int the #ask-cloud-platform channel).
+Connections **to** resources outside the cluster are allowed, and pods will be NATed to the IPs of the VPC gateways (the IP addresses are pinned in the #ask-cloud-platform channel).
 
-NB: UDP is not available at all.
+> NB: UDP is not available at all.
 
 ## Application Architecture
 
@@ -83,7 +82,7 @@ NB: UDP is not available at all.
 
 ## Additional features
 
-1. A shared, highly-available deployment of reverse-proxy instances based on AWS ELB and Nginx runs in front of all application instances and offers features like [WAF][waf], custom [error pages][error-pages] or [IP-based ACLs][ip-whitelist] user-configurable per application but independent from its running state.
+1. A shared, highly-available deployment of reverse-proxy instances based on AWS ELB and Nginx runs in front of all application instances and offers features like [WAF][waf], custom [error pages][error-pages] or [IP-based ACLs][ip-filtering] user-configurable per application but independent from its running state.
    * [Basic auth] can be quickly turned on/off at ingress level, useful when deploying dev services.
 
 1. Several AWS resource types are tested and documented as [Terraform modules][terraform-modules]; they simplify deployment and default to best-practices options.
@@ -102,11 +101,11 @@ NB: UDP is not available at all.
 [template-deploy]: https://dsdmoj.atlassian.net/wiki/spaces/PLAT/pages/86310992/Template+Deploy
 [cloud-platform]: https://github.com/ministryofjustice/cloud-platform
 [terraform-modules]: /documentation/deploying-an-app/add-aws-resources.html#available-modules
-[circleci]: /documentation/deploying-an-app/use-circleci-to-upgrade-app.html#continuous-deployment-of-an-application-using-circleci-and-helm
+[circleci]: /documentation/deploying-an-app/using-circleci-for-continuous-deployment.html
 [examples]: /documentation/deploying-an-app/helloworld-app-deploy.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform
 [error-pages]: https://github.com/ministryofjustice/cloud-platform-custom-error-pages
 [waf]: /documentation/other-topics/modsecurity.html#modsecurity-web-application-firewall
-[ip-whitelist]: /documentation/other-topics/ip-whitelisting.html#ip-whitelisting
+[ip-filtering]: /documentation/other-topics/ip-filtering.html
 [monitoring]: /index.html#monitoring-applications
 [sentry]: https://sentry.service.dsd.io/mojds
 [kibana]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana
@@ -115,3 +114,5 @@ NB: UDP is not available at all.
 [kubernetes jobs]: https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/
 [kubernetes cron jobs]: https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
 [Basic auth]: /documentation/deploying-an-app/helloworld-app-deploy.html#add-http-basic-authentication
+[cert-manager]: https://cert-manager.io/docs/
+[external-dns]: https://github.com/kubernetes-sigs/external-dns

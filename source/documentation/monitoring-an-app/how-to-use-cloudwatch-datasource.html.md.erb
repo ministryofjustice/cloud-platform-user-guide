@@ -1,0 +1,53 @@
+---
+title: Using the CloudWatch data source in Grafana 
+last_reviewed_on: 2020-05-20
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+### Introduction
+
+To build dashboards for your [CloudWatch][cloudwatch-metrics] metrics, you can use the [CloudWatch data source][CloudWatch-datasource].
+
+#### Using the CloudWatch data source in Grafana 
+
+There are some default dashboards [here][cp-dashboards], or you can build your own. You can also do dynamic queries using dimension wildcards.
+
+Create a dashboard using CloudWatch data source:
+
+From the official & community built [dashboards][default-dashboards], select the AWS resource for which you want to create the dashboard. Download it as JSON and modify it as you see fit. Copy the JSON string into a `ConfigMap` according to the example below.
+
+```YAML
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: <my-dashboard>
+  namespace: <my-namespace>
+  labels:
+    grafana_dashboard: ""
+data:
+  my-dashboard.json: |
+    {
+      [ ... ]
+    }
+```
+
+Add the `ConfigMap` above to your namespace folder in the [environments repo][env-repo]. Once the ConfigMap is applied though the concourse pipeline, your dashboard should be visible in Grafana shortly.
+
+Dynamic queries using dimension wildcards:
+
+Login to [Grafana][grafana-login] with your GitHub account. Select CloudWatch in Explore as shown in the picture below
+
+![Explore CloudWatch](/images/explore-cloudwatch.png)
+
+Follow the guidance [here][dynamic-queries], to do dynamic queries using dimension wildcards.
+
+[CloudWatch-datasource]: https://grafana.com/grafana/plugins/CloudWatch
+[grafana-login]: https://grafana.cloud-platform.service.justice.gov.uk/
+[default-dashboards]: https://grafana.com/grafana/dashboards?dataSource=CloudWatch
+[env-repo]: https://github.com/ministryofjustice/cloud-platform-environments
+[cp-dashboards]: https://grafana.cloud-platform.service.justice.gov.uk/dashboards
+[dynamic-queries]: https://grafana.com/docs/grafana/latest/features/datasources/cloudwatch/#dynamic-queries-using-dimension-wildcards
+[cloudwatch-metrics]: https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/working_with_metrics.html

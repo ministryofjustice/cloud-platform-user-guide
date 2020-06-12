@@ -1,6 +1,6 @@
 ---
 title: Deploying a 'Hello World' application to the Cloud Platform
-last_reviewed_on: 2019-12-09
+last_reviewed_on: 2020-04-24
 review_in: 3 months
 ---
 
@@ -29,7 +29,7 @@ The process of building an image and pushing it to an ECR will normally be carri
 This guide assumes the following:
 
 * [Docker][docker] is installed and configured.
-* Kubectl is installed and configured (`brew install kubectl` on a Mac with [Homebrew][homebrew] installed)
+* Kubectl is installed and configured (`brew install kubectl` on a Mac with [Homebrew][homebrew] installed, or [follow these instructions](https://kubernetes.io/docs/tasks/tools/install-kubectl/))
 * AWS CLI is installed (`brew install awscli` on a Mac with [Homebrew][homebrew] installed)
 * You have [created an environment for your application][env-create]
 * You have [created an Amazon ECR][ecr-setup] to host your docker image
@@ -87,13 +87,23 @@ This guide assumes you are using these credentials in your `default` AWS profile
 
 ### Authenticating with the repository
 
-Use the following command to login to Amazon ECR
+The command to login to Amazon ECR is slightly different, depending on your version of the `aws` command-line tool. You can find this out by running:
+
+      aws --version
+
+For AWS version 1.x use the following command to login to Amazon ECR
 
       $(aws ecr get-login --no-include-email --region eu-west-2)
 
-Note: The output of the `aws ecr...` command is a long `docker login...` command. Including the `$(...)` around the command executes this output in the context of the current shell
+> The output of the `aws ecr...` command is a long `docker login...` command. Including the `$(...)` around the command executes this output in the context of the current shell
 
-The output of the above should include `Login Succeeded` to confirm you have authenticated to the docker image repository.
+For AWS version 2.0, use this command:
+
+      aws ecr get-login-password --region eu-west-2 \
+        | docker login --username AWS --password-stdin \
+        754256621582.dkr.ecr.eu-west-2.amazonaws.com
+
+For either version of the aws cli, the output of the above should include `Login Succeeded` to confirm you have authenticated to the docker image repository.
 
 These credential are valid for 12 hours. So, if you are working through this example over a longer period, you will have to login again, e.g. the following day.
 
@@ -128,7 +138,7 @@ To deploy an application to the Cloud Platform, a number of deployment files mus
 ### deployment.yaml
 
 ```Yaml
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: helloworld-rubyapp
@@ -139,6 +149,9 @@ spec:
       maxUnavailable: 50%
     type: RollingUpdate
   replicas: 4
+  selector:
+  matchLabels:
+    app: helloworld-rubyapp
   template:
     metadata:
       labels:
@@ -146,7 +159,7 @@ spec:
     spec:
       containers:
       - name: rubyapp
-        image: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/[team_name]/[repo_name]:latest
+        image: ministryofjustice/cloud-platform-helloworld-ruby:1.1
         ports:
         - containerPort: 4567
 ```
@@ -198,7 +211,7 @@ This creates an [ingress controller](https://kubernetes.io/docs/concepts/service
 Note: Because we are specifying `http`, and we have a `tls` section, this ingress controller will expose port 443, and will redirect connections to port 4567 of the named service.
 
 ```Yaml
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: helloworld-rubyapp-ingress
@@ -349,19 +362,17 @@ This tells the Ingress what kind of authentication to use, and which kubernetes 
 
 ### Apply the changes
 
-All that remains is to apply our updated yaml files in almost exactly the same way as we did before, when we deployed the application:
+All that remains is to apply our updated yaml files in exactly the same way as we did before, when we deployed the application:
 
 ```bash
 kubectl apply --filename kubectl_deploy --namespace [your namespace]
 ```
 
-The only difference is that we are running `kubectl apply` instead of `kubectl create`.
-
 You should see output like this:
 
 ```bash
-deployment.extensions "helloworld-rubyapp" unchanged
-ingress.extensions "helloworld-rubyapp-ingress" configured
+deployment.apps/helloworld-rubyapp unchanged
+ingress.networking.k8s.io/helloworld-rubyapp-ingress configured
 secret "basic-auth" created
 service "rubyapp-service" unchanged
 ```

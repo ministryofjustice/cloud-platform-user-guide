@@ -191,7 +191,7 @@
 
 <ul>
 <li><a href="https://www.docker.com">Docker</a> is installed and configured.</li>
-<li>Kubectl is installed and configured (<code>brew install kubectl</code> on a Mac with <a href="https://brew.sh">Homebrew</a> installed)</li>
+<li>Kubectl is installed and configured (<code>brew install kubectl</code> on a Mac with <a href="https://brew.sh">Homebrew</a> installed, or <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/">follow these instructions</a>)</li>
 <li>AWS CLI is installed (<code>brew install awscli</code> on a Mac with <a href="https://brew.sh">Homebrew</a> installed)</li>
 <li>You have <a href="/documentation/getting-started/env-create.html#creating-a-cloud-platform-environment">created an environment for your application</a></li>
 <li>You have <a href="/documentation/getting-started/ecr-setup.html#creating-an-ecr-repository">created an Amazon ECR</a> to host your docker image</li>
@@ -222,10 +222,19 @@
 <div class="highlight"><pre class="highlight plaintext"><code>  aws configure
 </code></pre></div><p>Supply your credentials when prompted.</p>
 <p>This guide assumes you are using these credentials in your <code>default</code> AWS profile. If you have used a different name for this AWS profile, please add <code>--profile [YOUR PROFILE]</code> to all of the following AWS commands.</p>
-<h3 id="authenticating-with-the-repository">Authenticating with the repository</h3><p>Use the following command to login to Amazon ECR</p>
+<h3 id="authenticating-with-the-repository">Authenticating with the repository</h3><p>The command to login to Amazon ECR is slightly different, depending on your version of the <code>aws</code> command-line tool. You can find this out by running:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  aws --version
+</code></pre></div><p>For AWS version 1.x use the following command to login to Amazon ECR</p>
 <div class="highlight"><pre class="highlight plaintext"><code>  $(aws ecr get-login --no-include-email --region eu-west-2)
-</code></pre></div><p>Note: The output of the <code>aws ecr...</code> command is a long <code>docker login...</code> command. Including the <code>$(...)</code> around the command executes this output in the context of the current shell</p>
-<p>The output of the above should include <code>Login Succeeded</code> to confirm you have authenticated to the docker image repository.</p>
+</code></pre></div>
+<blockquote>
+<p>The output of the <code>aws ecr...</code> command is a long <code>docker login...</code> command. Including the <code>$(...)</code> around the command executes this output in the context of the current shell</p>
+</blockquote>
+<p>For AWS version 2.0, use this command:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  aws ecr get-login-password --region eu-west-2 \
+    | docker login --username AWS --password-stdin \
+    754256621582.dkr.ecr.eu-west-2.amazonaws.com
+</code></pre></div><p>For either version of the aws cli, the output of the above should include <code>Login Succeeded</code> to confirm you have authenticated to the docker image repository.</p>
 <p>These credential are valid for 12 hours. So, if you are working through this example over a longer period, you will have to login again, e.g. the following day.</p>
 <h3 id="pushing-your-docker-image-to-the-ecr">Pushing your docker image to the ECR</h3><p>All of the MoJ Digital docker images are stored within the same Cloud Platform AWS account (cloud-platform-aws).</p>
 <p>Your specific ECR will be:</p>
@@ -239,7 +248,7 @@
 <div class="highlight"><pre class="highlight plaintext"><code>docker push 754256621582.dkr.ecr.eu-west-2.amazonaws.com/[team_name]/[repo_name]:latest
 </code></pre></div><h2 id="step-3-configure-your-namespace-in-the-kubernetes-cluster">Step 3 - Configure your namespace in the Kubernetes Cluster</h2><p>To deploy an application to the Cloud Platform, a number of deployment files must first be configured. You can find examples of these in the <code>kubectl_deploy</code> directory of the <a href="https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app">demo application</a>, but you will need to edit your copy to replace some of the values to use your kubernetes cluster environment and docker image.</p>
 <p><em>Tip:</em> You can find more deployment config info <a href="https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/">in the kubernetes developer documentation</a>.</p>
-<h3 id="deployment-yaml">deployment.yaml</h3><div class="highlight"><pre class="highlight plaintext"><code>apiVersion: extensions/v1beta1
+<h3 id="deployment-yaml">deployment.yaml</h3><div class="highlight"><pre class="highlight plaintext"><code>apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: helloworld-rubyapp
@@ -250,6 +259,9 @@ spec:
       maxUnavailable: 50%
     type: RollingUpdate
   replicas: 4
+  selector:
+  matchLabels:
+    app: helloworld-rubyapp
   template:
     metadata:
       labels:
@@ -257,7 +269,7 @@ spec:
     spec:
       containers:
       - name: rubyapp
-        image: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/[team_name]/[repo_name]:latest
+        image: ministryofjustice/cloud-platform-helloworld-ruby:1.1
         ports:
         - containerPort: 4567
 </code></pre></div><p>Change the image value to refer to the image you pushed to your ECR in the earlier step.</p>
@@ -286,7 +298,7 @@ spec:
 <h3 id="ingress-yaml">ingress.yaml</h3><p>Ingress files are to use to define external access to the application.</p>
 <p>This creates an <a href="https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/">ingress controller</a> to enable network connections from outside of the cluster.</p>
 <p>Note: Because we are specifying <code>http</code>, and we have a <code>tls</code> section, this ingress controller will expose port 443, and will redirect connections to port 4567 of the named service.</p>
-<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: extensions/v1beta1
+<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: helloworld-rubyapp-ingress
@@ -368,27 +380,26 @@ spec:
 <span class="na">spec</span><span class="pi">:</span>
 <span class="nn">...</span>
 </code></pre></div><p>This tells the Ingress what kind of authentication to use, and which kubernetes secret contains the credentials.</p>
-<h3 id="apply-the-changes">Apply the changes</h3><p>All that remains is to apply our updated yaml files in almost exactly the same way as we did before, when we deployed the application:</p>
+<h3 id="apply-the-changes">Apply the changes</h3><p>All that remains is to apply our updated yaml files in exactly the same way as we did before, when we deployed the application:</p>
 <div class="highlight"><pre class="highlight shell"><code>kubectl apply <span class="nt">--filename</span> kubectl_deploy <span class="nt">--namespace</span> <span class="o">[</span>your namespace]
-</code></pre></div><p>The only difference is that we are running <code>kubectl apply</code> instead of <code>kubectl create</code>.</p>
-<p>You should see output like this:</p>
-<div class="highlight"><pre class="highlight shell"><code>deployment.extensions <span class="s2">"helloworld-rubyapp"</span> unchanged
-ingress.extensions <span class="s2">"helloworld-rubyapp-ingress"</span> configured
+</code></pre></div><p>You should see output like this:</p>
+<div class="highlight"><pre class="highlight shell"><code>deployment.apps/helloworld-rubyapp unchanged
+ingress.networking.k8s.io/helloworld-rubyapp-ingress configured
 secret <span class="s2">"basic-auth"</span> created
 service <span class="s2">"rubyapp-service"</span> unchanged
 </code></pre></div><p>Now, if you reload the browser page showing the &#39;Hello world&rsquo; message from the application, you will be prompted to enter the username and password.</p>
 
 
-              <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
+              <div data-module='page-expiry' data-last-reviewed-on="2020-07-24">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 9 December 2019.
+      This page was last reviewed on 24 April 2020.
 
-        It needs to be reviewed again on 9 March 2020
+        It needs to be reviewed again on 24 July 2020
 .
     </div>
 
     <div class='page-expiry--expired'>
-      This page was set to be reviewed before 9 March 2020.
+      This page was set to be reviewed before 24 July 2020.
       This might mean the content is out of date.
     </div>
   </div>

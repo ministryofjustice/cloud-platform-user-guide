@@ -103,7 +103,7 @@
         <a href="#production-infrastructure">Production infrastructure</a>
       </li>
       <li>
-        <a href="#network-traffic-whitelisting">Network traffic whitelisting</a>
+        <a href="#allowing-network-traffic-to-from-your-service">Allowing network traffic to/from your service</a>
       </li>
       <li>
         <a href="#dns-changes">DNS changes</a>
@@ -142,9 +142,9 @@
           <main id="content" class="technical-documentation" data-module="anchored-headings">
               <h1 id="migrating-to-the-cloud-platform-from-template-deploy">Migrating to the Cloud Platform from Template Deploy</h1><p>These are some of the things to think about when migrating your application from <a href="https://dsdmoj.atlassian.net/wiki/spaces/PLAT/pages/86310992/Template+Deploy">Template Deploy</a> (TD) to the <a href="https://github.com/ministryofjustice/cloud-platform">Cloud Platform</a> (CP).</p>
 <h2 id="production-infrastructure">Production infrastructure</h2><p>Any infrastructure resources, such as databases or cache servers, should be of the same size, and running the same software (e.g. postgres) version, for the CP version of your app. as for the TD version.</p>
-<h2 id="network-traffic-whitelisting">Network traffic whitelisting</h2><p>The IP numbers from which your app&rsquo;s traffic originates will change. If your app. talks to any external services which care about its source IP addresses, you may need to arrange for those services to whitelist the cluster IPs.</p>
-<p>If you have whitelisted any IPs for inbound traffic, you will need to add the corresponding config to your kubernetes deploymnent files.</p>
-<p>This section of the user guide describes both of these procedures: <a href="/documentation/other-topics/ip-whitelisting.html#ip-whitelisting">IP whitelisting</a>.</p>
+<h2 id="allowing-network-traffic-to-from-your-service">Allowing network traffic to/from your service</h2><p>The IP numbers from which your app&rsquo;s traffic originates will change. If your app. talks to any external services which care about its source IP addresses, you may need to arrange for those services to allow traffic from the cluster IPs.</p>
+<p>If you have configured your service to allow inbound traffic from any specific IPs, you will need to add the corresponding config to your kubernetes deploymnent files.</p>
+<p>This section of the user guide describes both of these procedures: <a href="/documentation/other-topics/ip-filtering.html">IP filtering</a>.</p>
 <h2 id="dns-changes">DNS changes</h2><p>When you are ready to switch from the TD version of your app. to the production version deployed in CP, the last step will be to change the <a href="https://en.wikipedia.org/wiki/Domain_Name_System">DNS</a> entries such that visitors to your app&rsquo;s domain are sent to the new CP version.</p>
 <p>It&rsquo;s important to plan this step carefully. Some things to think about include:</p>
 
@@ -154,7 +154,7 @@
 </ul>
 <h2 id="aws-access">AWS access</h2><p>All AWS resources in the Cloud Platform are in a separate, <code>moj-cp</code> AWS account. Access to this account is tightly restricted, so if you are accustomed to e.g. using the AWS web console to help operate your service, you will need to do things differently in the Cloud Platform.</p>
 <h2 id="aws-region">AWS region</h2><p>Everything for the Cloud Platform is in the <code>eu-west-2</code> (London) region.  TD generally uses <code>eu-west-1</code> (Ireland). For features not available in the London region (eg SES, at time of writing), cross-region links can be created and will be evaluated on request.</p>
-<h2 id="ssl">SSL</h2><p>DNS and SSL are managed by cluster-shared services (cert-manager and external-dns)</p>
+<h2 id="ssl">SSL</h2><p>DNS and SSL are managed by cluster-shared services (<a href="https://cert-manager.io/docs/">cert-manager</a> and <a href="https://github.com/kubernetes-sigs/external-dns">external-dns</a>)</p>
 
 <ul>
 <li>Validation and deployment are managed by a single pipeline.</li>
@@ -167,8 +167,11 @@
 <li>TLS version: Kubernetes supports a minimum TLS version of 1.2 If you have users with browsers that do not support TLS 1.2, they will not be able to access your service.</li>
 </ul>
 <h2 id="connections-to-from-service-ips">Connections to/from service IPs</h2><p>Inbound connections to service IPs are not possible, on the Cloud Platform. Access to your service must go via https to a URL, not by inbound access to an IP number.</p>
-<p>Connections <strong>to</strong> resources outside the cluster are allowed, and pods will be NATed to the IPs of the VPC gateways (the IP addresses are pinned int the #ask-cloud-platform channel).</p>
+<p>Connections <strong>to</strong> resources outside the cluster are allowed, and pods will be NATed to the IPs of the VPC gateways (the IP addresses are pinned in the #ask-cloud-platform channel).</p>
+
+<blockquote>
 <p>NB: UDP is not available at all.</p>
+</blockquote>
 <h2 id="application-architecture">Application Architecture</h2>
 <ol>
 <li><p>Applications must log their entire output to STDOUT/STDERR.</p>
@@ -196,7 +199,7 @@
 </ol>
 <h2 id="additional-features">Additional features</h2>
 <ol>
-<li><p>A shared, highly-available deployment of reverse-proxy instances based on AWS ELB and Nginx runs in front of all application instances and offers features like <a href="/documentation/other-topics/modsecurity.html#modsecurity-web-application-firewall">WAF</a>, custom <a href="https://github.com/ministryofjustice/cloud-platform-custom-error-pages">error pages</a> or <a href="/documentation/other-topics/ip-whitelisting.html#ip-whitelisting">IP-based ACLs</a> user-configurable per application but independent from its running state.</p>
+<li><p>A shared, highly-available deployment of reverse-proxy instances based on AWS ELB and Nginx runs in front of all application instances and offers features like <a href="/documentation/other-topics/modsecurity.html#modsecurity-web-application-firewall">WAF</a>, custom <a href="https://github.com/ministryofjustice/cloud-platform-custom-error-pages">error pages</a> or <a href="/documentation/other-topics/ip-filtering.html">IP-based ACLs</a> user-configurable per application but independent from its running state.</p>
 
 <ul>
 <li><a href="/documentation/deploying-an-app/helloworld-app-deploy.html#add-http-basic-authentication">Basic auth</a> can be quickly turned on/off at ingress level, useful when deploying dev services.</li>
@@ -206,22 +209,22 @@
 <h2 id="obsoleted-features">Obsoleted features</h2>
 <ol>
 <li><p>Salt and CloudFormation are no longer used to define a deployment, replaced by any of Helm or Kubectl (see several <a href="/documentation/deploying-an-app/helloworld-app-deploy.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">reference app</a> examples).</p></li>
-<li><p>Jenkins is no longer used to trigger deployments, teams are encouraged to <a href="/documentation/deploying-an-app/use-circleci-to-upgrade-app.html#continuous-deployment-of-an-application-using-circleci-and-helm">configure CircleCI</a> directly from their repositories.</p></li>
+<li><p>Jenkins is no longer used to trigger deployments, teams are encouraged to <a href="/documentation/deploying-an-app/using-circleci-for-continuous-deployment.html">configure CircleCI</a> directly from their repositories.</p></li>
 <li><p>For application logs, the path <code>awslogs</code> + CloudWatch + Lambda is replaced by <code>fluentd</code>.</p></li>
 <li><p>Gandi and AWS ACM SSL certs are replaced by <a href="https://letsencrypt.org">Let&rsquo;s Encrypt</a></p></li>
 </ol>
 
 
-              <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
+              <div data-module='page-expiry' data-last-reviewed-on="2020-08-06">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 9 December 2019.
+      This page was last reviewed on 6 May 2020.
 
-        It needs to be reviewed again on 9 March 2020
+        It needs to be reviewed again on 6 August 2020
 .
     </div>
 
     <div class='page-expiry--expired'>
-      This page was set to be reviewed before 9 March 2020.
+      This page was set to be reviewed before 6 August 2020.
       This might mean the content is out of date.
     </div>
   </div>

@@ -1,6 +1,6 @@
 ---
 title: Troubleshooting guide
-last_reviewed_on: 2019-12-09
+last_reviewed_on: 2020-04-20
 review_in: 3 months
 ---
 
@@ -208,7 +208,8 @@ Fix application or misconfiguration errors.
 You have deployed an application to the Cloud Platform and its status shows `ImagePullBackOff` (you can get the status by running `kubect get pods -n <namespace>`).
 
 #### Cause
-This error is caused by a misconfiguration in your deployment, there are three primary culprits besides network connectivity issues:
+
+This means the cluster is unable to fetch your docker image. There are three primary culprits besides network connectivity issues:
 
 - The image tag is incorrect
 - The image doesn't exist (or is in a different registry)

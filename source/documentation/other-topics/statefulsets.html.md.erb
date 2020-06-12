@@ -1,6 +1,6 @@
 ---
 title: StatefulSets (Pods with Persistent Volumes)
-last_reviewed_on: 2019-12-09
+last_reviewed_on: 2020-04-27
 review_in: 3 months
 ---
 
@@ -10,9 +10,9 @@ review_in: 3 months
 ### Introduction
 
 Like a Deployment, a [StatefulSet](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/) manages Pods that are based on an identical container spec. Unlike a Deployment, a StatefulSet maintains a sticky identity for each of their Pods. These pods are created from the same spec, but are not interchangeable: each has a persistent identifier (UID) that it maintains across any rescheduling. It also provides guarantees on the ordering and uniqueness of the Pods.
-StatefulSets also require a [headless service](https://kubernetes.io/docs/concepts/services-networking/service/#headless-services) to manage network identities for pods. Each Pod gets a sticky network sub-domain and SRV record that does not change if a Pod is deleted and recreated.
+StatefulSets also require a [headless service] to manage network identities for pods. Each Pod gets a sticky network sub-domain and [SRV record] that does not change if a Pod is deleted and recreated.
 
-You can see an example below where a Pod is deleted, however, it is recreated with the same `Name` using the StatefulSet spec. 
+You can see an example below where a Pod is deleted, but then recreated with the same `name` using the StatefulSet spec. 
 
 ```bash
 kubectl get pods
@@ -31,7 +31,7 @@ web-1   1/1     Running             0          3d
 
 ### Headless Service
 
-As mentioned above, a headless service is required for StatefulSets, where the network type `clusterIP` has a value of `none`. This does not predefine an IP for the service. 
+As mentioned above, a [headless service] is required for StatefulSets, where the network type `clusterIP` has a value of `None`. This does not predefine an IP for the service. 
 
 ```yaml
 apiVersion: v1
@@ -51,7 +51,7 @@ spec:
 
 ### StatefulSet creation
 
-Below is an example of StatefulSet template:
+Below is an example of a StatefulSet definition:
 
 ```yaml
 apiVersion: apps/v1
@@ -93,9 +93,9 @@ spec:
         requests:
           storage: 4Gi # Storage resource request size
 ```
-Please use StorageClass `gp2-expand` to be able to expand PVs in the future.
+Please use StorageClass `gp2-expand` to be able to expand [PersistentVolumes] in the future.
 
-Once all pods are created for the StatefulSet, they have an unique identity based on the metadata name of the StatefulSet.
+Once all pods are created for the StatefulSet, they have a unique identity based on the metadata name of the StatefulSet.
 The pods are named using the following: [StatefulSet_Name]-[Ordinal_Index] e.g. web-0
 
 ```bash
@@ -109,7 +109,7 @@ web-4   1/1     Running   0          20m
 web-5   1/1     Running   0          20m
 web-6   1/1     Running   0          20m
 ```
-All PVCs would have all been created also. The PVC are named using the following: [VolumeClaim_Name]-[StatefulSet_Name]-[Ordinal_Index]
+All [PersistentVolumeClaims] would have all been created also. The PersistentVolumeClaims are named using the following: [VolumeClaim_Name]-[StatefulSet_Name]-[Ordinal_Index]
 
 ```bash
 kubectl get pvc 
@@ -122,10 +122,16 @@ www-web-4   Bound    pvc-4ebb8afd-9299-11e9-b4c5-0a5b8815a91e   4Gi        RWO  
 www-web-5   Bound    pvc-641f5a61-9299-11e9-b4c5-0a5b8815a91e   4Gi        RWO            gp2-expand      26m
 www-web-6   Bound    pvc-6c2a187c-9299-11e9-b4c5-0a5b8815a91e   4Gi        RWO            gp2-expand      26m
 ```
-If a Pod is deleted, it will be rescheduled, use the same name, and the corresponding above PVC will be attached. 
-The Pod also has and will keep a network ID that persists with restarts.
+If a Pod is deleted, it will be rescheduled, with the same name, and the corresponding above PersistentVolumeClaims will be attached. 
+The Pod also has and will keep a network ID that persists through restarts.
 
-If a StatefulSet is deleted, the PVCs remain along with PVs. PVCs and in turn PVs have to be deleted separately.  
+If a StatefulSet is deleted, the PersistentVolumeClaims (PVCs) remain along with PersistentVolumes (PVs). PVCs and PVs have to be deleted separately.  
 
 ### Advisory note: Expanding Persistent Volumes
-It is currently not possible to expand PVs using the StatefulSet template. For the time being, please create PVs with the previous statement in mind. There is a manual way to do this, which the Cloud Platform team can help with if required.
+
+It is currently not possible to expand PVs using the StatefulSet template. There is a manual way to do this, which the Cloud Platform team can help with if required.
+
+[SRV record]: https://en.wikipedia.org/wiki/SRV_record
+[headless service]: https://kubernetes.io/docs/concepts/services-networking/service/#headless-services
+[PersistentVolumes]: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
+[PersistentVolumeClaims]: https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims

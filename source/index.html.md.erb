@@ -1,17 +1,21 @@
 ---
 title: Cloud platform user guide
-last_reviewed_on: 2019-12-09
+last_reviewed_on: 2020-03-09
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
 
 ## Who is this user guide for?
-This user guide is for the teams who deployed their applications in Ministry of Justice Cloud platform or
-want/migrate to deploy and manage their applications on the cloud platform. The platform manages the infrastructure that your application runs on and provides tooling for teams to deploy and manage their applications on that infrastructure.
+
+This user guide is for service teams with applications deployed, or intending
+to deploy, to the Ministry of Justice Cloud Platform. The platform manages the
+infrastructure that your application runs on and provides tooling for teams to
+deploy and manage their applications on that infrastructure.
 
 ##Quickstart
-[Deploy your first Hello World application](documentation/deploying-an-app/helloworld-app-deploy.html)
+- [Overview of the Cloud Platform](documentation/concepts/cp-overview.html)
+- [Deploy your first Hello World application](documentation/deploying-an-app/helloworld-app-deploy.html)
 
 ## How-to guides
 - [How to use `kubectl` to connect to the cluster](documentation/getting-started/kubectl-config.html)
@@ -35,7 +39,7 @@ want/migrate to deploy and manage their applications on the cloud platform. The 
 
 ### Deploying with Helm and CircleCI
  - [Prerequisite for Live-1 deployment](documentation/deploying-an-app/prerequisite.html)
- - [Continuous Deployment of an application using CircleCI and Helm](documentation/deploying-an-app/use-circleci-to-upgrade-app.html)
+ - [Continuous Deployment of an application using CircleCI and Helm](documentation/deploying-an-app/using-circleci-for-continuous-deployment.html)
  - [Deploying an application to the Cloud Platform with Helm](documentation/deploying-an-app/app-deploy-helm.html)
 
 ### Monitoring applications
@@ -43,13 +47,11 @@ want/migrate to deploy and manage their applications on the cloud platform. The 
 - [Using the Cloud Platform Prometheus, AlertManager and Grafana](documentation/monitoring-an-app/prometheus.html)
 - [Creating your own custom alerts](documentation/monitoring-an-app/how-to-create-alarms.html)
 - [Creating Pingdom checks](documentation/monitoring-an-app/how-to-create-pingdom-checks.html)
+- [Using the CloudWatch data source in Grafana](documentation/monitoring-an-app/how-to-use-cloudwatch-datasource.html)
 
 ### Application logging
 - [Application Log Collection and Storage](documentation/logging-an-app/log-collection-and-storage.html)
 - [Accessing Application Log Data](documentation/logging-an-app/access-logs.html)
-
-### Migrating from Live-0 to Live-1
- - [Live-1 migration guide](documentation/other-topics/live1-migration-guide.html)
 
 ### Other topics
  - [Adding a secret to an application](documentation/deploying-an-app/add-secrets-to-deployment.html)
@@ -63,9 +65,8 @@ want/migrate to deploy and manage their applications on the cloud platform. The 
  - [Time Zone Cronjobs](documentation/other-topics/TZ-Cronjobs.html)
  - [How to decommission unused template deploy services](documentation/other-topics/decommission-unused-template-deploy-services.html)
  - [Git-Crypt](documentation/other-topics/git-crypt-setup.html)
- - [Custom default-backend](documentation/other-topics/custom-default-backend.html)
  - [Kubernetes Cronjobs](documentation/other-topics/Cronjobs.html)
- - [IP Whitelisting](documentation/other-topics/ip-whitelisting.html)
+ - [IP Filtering](documentation/other-topics/ip-filtering.html)
  - [Applying a Maintenance Page](documentation/other-topics/maintenance-page.html)
  - [Kubectl quick reference](documentation/other-topics/quick-reference.html)
  - [StatefulSets (Pods with Persistent Volumes)](documentation/other-topics/statefulsets.html)
@@ -79,6 +80,7 @@ want/migrate to deploy and manage their applications on the cloud platform. The 
  - [Migrating an S3 bucket](documentation/other-topics/s3-bucket-migration.html)
  - [Kibana Circleci Monitoring Dashboards](documentation/other-topics/kibana-circleci-monitoring-dashboards.html)
  - [Namespace/Container Resource Limits](documentation/concepts/namespace-limits.html)
+ - [Removing Deprecated APIs for Kubernetes version 1.16](documentation/other-topics/apiversion-changes-k8s-1-16.html)
 
 ## Reference
 - [Cloud Platform Operational Processes](documentation/reference/operational-processes.html)

@@ -120,14 +120,12 @@
 
         <div class="app-pane__content toc-open-disabled">
           <main id="content" class="technical-documentation" data-module="anchored-headings">
-              <h1 id="zero-downtime-deployments">Zero Downtime Deployments</h1><h3 id="introduction">Introduction</h3><p>Zero Downtime Deployments are a significant feature of the Cloud Platform, that bring a host of advantages.</p>
-<h3 id="rolling-updates">Rolling Updates</h3><p>Rolling updates introduce the ability to update an application without any downtime.</p>
-<p>A rolling update works by ensuring there is always one extra Pod than the maximum number stated in the deployment.</p>
-<p>The new deployment is applied incrementally, usually one to two Pods at a time until all Pods are running the latest version. How the deployment is rolled out, can be configured by the user. More information about configuring a rolling update can be found <a href="https://kubernetes.io/docs/tasks/run-application/rolling-update-replication-controller/">here</a>.</p>
-<p>If an application is exposed publicly, traffic will only be routed to the available Pods. However, this is only the case if the user configured <code>readinessProbes</code> correctly. This is a large topic, so more information can be found <a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/">here</a>.</p>
-<h4 id="the-major-advantage">The Major Advantage</h4><p>Where rolling updates really brings benefit is the enabling of Continuous Integration and Continuous Delivery.</p>
-<p>The ability to constantly update your application, with zero downtime, brings a host of benefits.</p>
-<h4 id="further-reading">Further Reading</h4><p>If you&rsquo;d like to read more in-depth into rolling updates, then Kubernetes has some great documentation <a href="https://kubernetes.io/docs/tutorials/kubernetes-basics/update/update-intro/">here</a>.</p>
+              <h1 id="zero-downtime-deployments">Zero Downtime Deployments</h1><h3 id="introduction">Introduction</h3><p>Zero Downtime Deployments are a significant feature that the Cloud Platform provides.</p>
+<h3 id="rolling-updates">Rolling Updates</h3><p>Rolling updates enable you to update an application without any downtime.</p>
+<p>A rolling update works by ensuring there is always one extra Pod than the maximum number stated in the deployment, for the duration of the update. i.e. when updating the application, new pods are created before the old pods are destroyed.</p>
+<p>The new deployment is applied incrementally, usually one to two Pods at a time until all Pods are running the latest version. How the deployment is rolled out, can be configured by the user. More information about configuring a rolling update can be found <a href="https://v1-16.docs.kubernetes.io/docs/tasks/run-application/rolling-update-replication-controller/">here</a>.</p>
+<p>If an application is exposed publicly, traffic will only be routed to <strong>available</strong> Pods. This requires that your pods have correctly-configured <code>readinessProbes</code>. More information can be found <a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/">here</a>.</p>
+<h4 id="further-reading">Further Reading</h4><p>More information about rolling updates is available <a href="https://kubernetes.io/docs/tutorials/kubernetes-basics/update/update-intro/">here</a>.</p>
 <h4 id="readiness-liveness-probes-and-ssl-in-rails-applications">Readiness/Liveness probes and SSL in Rails applications</h4><p>For zero downtime deployments, you will need a readiness probe in your application, so that the cluster knows when your container is ready to receive traffic. You will also need a liveness probe, so that the cluster knows if it needs to restart your container after a crash.</p>
 <p>SSL will be terminated outside of your pod, so your probes will need to respond to HTTP requests. However, Ruby on Rails applications are sometimes configured to only respond to HTTPS traffic (by adding <code>config.force_ssl = true</code> in the <code>config/environments/production.rb</code> file).</p>
 <p>In this case, the application will respond to any HTTP request with a redirect status code, asking the requester to resend the request to the equivalent HTTPS URL. This will cause your probes to fail, because the redirect will not be followed.</p>
@@ -144,16 +142,16 @@
 </code></pre></div><p>This will send an HTTP request to <code>/ping.json</code>, but the rails application will respond as if it is HTTPS, and your probe should work as expected. This works for both readiness and liveness probes.</p>
 
 
-              <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
+              <div data-module='page-expiry' data-last-reviewed-on="2020-07-27">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 9 December 2019.
+      This page was last reviewed on 27 April 2020.
 
-        It needs to be reviewed again on 9 March 2020
+        It needs to be reviewed again on 27 July 2020
 .
     </div>
 
     <div class='page-expiry--expired'>
-      This page was set to be reviewed before 9 March 2020.
+      This page was set to be reviewed before 27 July 2020.
       This might mean the content is out of date.
     </div>
   </div>

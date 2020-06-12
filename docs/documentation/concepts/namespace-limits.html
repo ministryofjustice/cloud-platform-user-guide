@@ -133,7 +133,7 @@
 <p>If a workload tries to consume more CPU than is available, it will simply not receive as much CPU time as it wants, and will be throttled.</p>
 <p>This distinction doesn&rsquo;t really matter, for the purposes of this article, so we&rsquo;re going to pretend we can treat memory and CPU exactly the same.</p>
 <h2 id="namespace-request-limits">Namespace request limits</h2><p>A namespace is the largest &ldquo;unit of work&rdquo; that the cluster needs to worry about.</p>
-<p>When you create a namespace the <a href="https://kubernetes.io/docs/concepts/policy/resource-quotas/">ResourceQuota</a> specifies limits on the amount of resources that it will allow the namespace to request. This <a href="https://github.com/ministryofjustice/cloud-platform-environments/blob/master/namespace-resources/03-resourcequota.yaml">file</a> defines the defaults we assign to new namespaces. The <code>requests.cpu</code> specifies the CPU resources, usually in <a href="https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#meaning-of-cpu">millicores</a> aka millicpus. <code>requests.memory</code> specifies the required memory, usually in <a href="https://en.wikipedia.org/wiki/Mebibyte">mebibytes</a>.</p>
+<p>When you create a namespace the <a href="https://kubernetes.io/docs/concepts/policy/resource-quotas/">ResourceQuota</a> specifies limits on the amount of resources that it will allow the namespace to request. This <a href="https://github.com/ministryofjustice/cloud-platform-environments/blob/master/namespace-resources/03-resourcequota.yaml">file</a> defines the defaults we assign to new namespaces. The <code>requests.cpu</code> specifies the CPU resources, usually in <a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#resource-units-in-kubernetes">millicores</a> aka millicpus. <code>requests.memory</code> specifies the required memory, usually in <a href="https://en.wikipedia.org/wiki/Mebibyte">mebibytes</a>.</p>
 <p>These values represent the amount of CPU and memory that the cluster will <strong>set aside as soon as this namespace is created</strong>, regardless of whether or not those resources are being used to do any useful work.</p>
 <p>This means it is possible to run out of cluster resources before any work is actually performed, just by requesting (i.e. reserving) capacity.</p>
 <p><a href="/images/cluster-namespace-packing.png" target="_blank" rel="noopener noreferrer"><img src="/images/cluster-namespace-packing.png" alt="Cluster namespace packing" /></a></p>
@@ -167,16 +167,16 @@ CPU values are in millicores (m). Memory values are in mebibytes (Mi).
 <p>For this reason, we&rsquo;re going to do ongoing work to <strong>right-size</strong> both new and existing namespaces and their limit ranges, so that everyone benefits by having the cluster run their workloads efficiently.</p>
 
 
-              <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
+              <div data-module='page-expiry' data-last-reviewed-on="2020-07-21">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 9 December 2019.
+      This page was last reviewed on 21 April 2020.
 
-        It needs to be reviewed again on 9 March 2020
+        It needs to be reviewed again on 21 July 2020
 .
     </div>
 
     <div class='page-expiry--expired'>
-      This page was set to be reviewed before 9 March 2020.
+      This page was set to be reviewed before 21 July 2020.
       This might mean the content is out of date.
     </div>
   </div>

@@ -1,11 +1,10 @@
 ---
 title: Creating an ECR repository
-last_reviewed_on: 2019-12-09
+last_reviewed_on: 2020-05-07
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
-
 
 ## Introduction
 
@@ -15,85 +14,72 @@ AWS resources are provisioned through the [cloud-platform-environments](https://
 
 ### Creating the registry
 
-1\. In order to create the ECR Docker registry, git clone the repo and create a new branch.
+1. In order to create the ECR Docker registry, git clone the environments repo and create a new branch.
 
 ```bash
-
-  $ git clone git@github.com:ministryofjustice/cloud-platform-environments.git ###git clone repo
-
-  $ cd cloud-platform-environments ### navigate into cloud-platform-environments directory.
-
-  $ git checkout -b add_ecr   ### create and checkout new branch.
-
+$ git clone git@github.com:ministryofjustice/cloud-platform-environments.git
+$ cd cloud-platform-environments
+$ git checkout -b add_ecr
 ```
 
-2\. You will need to navigate to your service's directory which is located in the namespaces directory. Create a directory named "resources".
+2. You will need to navigate to your service's directory which is located in the namespaces directory. Create a directory named "resources".
 
 ```bash
-
-  $ cd namespaces/live-1.cloud-platform.service.justice.gov.uk/$your_service  ###navigate to your service's directory.
-
-  $ mkdir resources ### make directory called resources
-
-  $ cd resources
-
+$ cd namespaces/live-1.cloud-platform.service.justice.gov.uk/$your_service
+$ mkdir resources ### make directory called resources
+$ cd resources
 ```
 
-3\. Create a terraform file within the resources directory.
+3. Create a terraform file within the resources directory.
 
 ```bash
-
-  $ vi ecr.tf  ###create a terraform file.
-
+$ vi ecr.tf
 ```
 
-4\. Adapt the definition from the example described in the [cloud-platform-terraform-ecr-credentials module](https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials/tree/master/examples); make sure you adjust the values of `team_name`, `repo_name` `name` and `namespace` to what is appropriate for your environment.
+4. Adapt the definition from the example described in the [cloud-platform-terraform-ecr-credentials module](https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials/tree/master/examples); make sure you adjust the values of `team_name`, `repo_name` `name` and `namespace` to what is appropriate for your environment.
 
 
-5\. git add, commit and push to your branch.
+5. git add, commit and push to your branch.
 
 ```bash
-
-  $ git add ecr.tf
-
-  $ git commit
-
-  $ git push
-
+$ git add ecr.tf
+$ git commit
+$ git push
 ```
-6\. Once your request has been approved and the branches are merged, it will trigger our build pipeline which will apply the Terraform module and create the resources.
+
+6. Once your pull request has been approved and the branches are merged, it will trigger our build pipeline which will apply the Terraform module and create the resources.
 
 For more information about the terraform module being used, please read the documentation [here](https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials).
 
 ## Accessing the credentials
 
-The end result will be a kubernetes `Secret` inside your environment, called `example-team-ecr-credentials-output` (or whatever you changed that to); the secret holds IAM access keys to authenticate with the registry and the actual repository URL.
+The end result will be a [Kubernetes secret] inside your environment, called `example-team-ecr-credentials-output` (or whatever you changed that to); the secret holds IAM access keys to authenticate with the registry and the actual repository URL.
 
 Note: For `example-team-ecr-credentials-output` you should put whatever you used as the value of the `name` property of the `kubernetes_secret` resource in the `ecr.tf` file you created previously.
 
 To retrieve the credentials:
+
 ```
 kubectl -n <namespace_name> get secret example-team-ecr-credentials-output -o yaml
 ```
 
-The values in kubernetes `Secrets` are always `base64` encoded so you will have to decode them before you can use them outside kubernetes. Inside the cluster, the nodes already have access to the ECR so you don't need to make any changes.
+The values in kubernetes secrets are always `base64` encoded so you will have to decode them before you can use them outside kubernetes (inside your namespace, the base64 decoding is handled automatically). This can be done at the command line using the following:
 
-This can be done at the command line using the following:
 ```
 echo QWxhZGRpbjpvcGVuIHNlc2FtZQ== | base64 --decode; echo
 ```
 
-## Managing ECR Repository
+## Managing your ECR repository
 
-Maximum number of images per repository is default to 10,000 images for Amazon Elastic Container Registry. If a new image is created and pushed to ECR on every code change. As a result, repositories tend to quickly fill up with new revisions. It is important to discover and delete the stale images. In this way, repositories can be kept clean and manageable.
+There is a maximum number of images per repository for Amazon Elastic Container Registry(ECR). If a new image is created and pushed to ECR on every code change, repositories can quickly fill up with new revisions. So it is important to regularly delete images which are no longer required.
 
 You can delete an image with the AWS CLI using this [guide][delete-ecr-image].
 
-Create [custom-alerts][custom-alerts] by monitoring count of ECR images in your Repository using [Prometheus ecr-metrics][ecr-metrics]. 
+You can create [custom-alerts][custom-alerts] to monitor the number of ECR images in your Repository using [Prometheus ecr-metrics][ecr-metrics].
 
 ### Setting up CircleCI
-In your CircleCI project, go to the settings (the cog icon) and select 'AWS Permissions' from the left hand menu. Fill in the IAM credentials and CircleCI will be able to use ECR images. For more information please see [the official docs](https://circleci.com/docs/2.0/private-images/).
 
+In your CircleCI project, go to the settings (the cog icon) and select 'AWS Permissions' from the left hand menu. Fill in the IAM credentials from the kubernetes secret, and CircleCI will be able to pull images from your ECR. For more information please see [the official docs](https://circleci.com/docs/2.0/private-images/).
 
 ## Next steps
 
@@ -104,3 +90,4 @@ Try [deploying an app][deploy-helm] with [Helm](https://helm.sh/), a Kubernetes 
 [delete-ecr-image]: https://docs.aws.amazon.com/AmazonECR/latest/userguide/delete_image.html
 [custom-alerts]: /documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
 [ecr-metrics]: https://prometheus.cloud-platform.service.justice.gov.uk/graph?g0.range_input=1h&g0.expr=aws_ecr_repository_image_count&g0.tab=1
+[Kubernetes secret]: https://kubernetes.io/docs/concepts/configuration/secret/

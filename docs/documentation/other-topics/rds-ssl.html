@@ -129,7 +129,7 @@ WARNING: psql major version 9.6, server major version 10.
 SSL connection (protocol: TLSv1.2, cipher: ECDHE-RSA-AES256-GCM-SHA384, bits: 256, compression: off)
 Type "help" for help.
 
-dba02192a049ed7ce8=&gt; ^D\q
+dba02192a049ed7ce8=&gt; 
 </code></pre></div><p>Where <code>$url</code> is of the form <code>postgres://user:pass@host:port/db</code>.</p>
 <p>Additionally, AWS <a href="https://d1.awsstatic.com/whitepapers/aws-security-whitepaper.pdf">offer strong assurances</a> that a malicious actor cannot spoof their traffic or sniff
 another tenant&rsquo;s traffic, even if they operate inside the same VPC.</p>
@@ -139,7 +139,7 @@ establish an encrypted connection with <code>sslmode=require</code>, which force
 certificate.</p>
 <h3 id="full-verification-of-certificates">Full verification of certificates</h3><p>In order to establish a connection with <code>sslmode=verify-full</code>, which offers <a href="https://en.wikipedia.org/wiki/Man-in-the-middle_attack">MITM</a> protection, we have to provide
 the client with the root CA certificate before it is able to verify the chain of trust. AWS offers <a href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html#PostgreSQL.Concepts.General.SSL">detailed instructions</a>
-on how to exactly that.</p>
+on how to do that.</p>
 <p>As you can see below, unless provided with the root CA certificate, the client cannot fully verify the endpoint:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>$ psql "$url?sslmode=verify-full"
 psql: could not get home directory to locate root certificate file
@@ -151,7 +151,7 @@ WARNING: psql major version 9.6, server major version 10.
 SSL connection (protocol: TLSv1.2, cipher: ECDHE-RSA-AES256-GCM-SHA384, bits: 256, compression: off)
 Type "help" for help.
 
-dba02192a049ed7ce8=&gt; ^D\q
+dba02192a049ed7ce8=&gt; 
 </code></pre></div><p>This CA bundle can be added into your application&rsquo;s docker image. You can simply add the following directive in your
 <code>Dockerfile</code>:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>ADD https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem /path/to/rds-combined-ca-bundle.pem
@@ -170,16 +170,16 @@ a connection using <code>sslmode=disable</code>:</p>
 psql: FATAL:  no pg_hba.conf entry for host "172.20.32.241", user "fDsQgBlavX", database "dba02192a049ed7ce8", SSL off
 </code></pre></div>
 
-              <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
+              <div data-module='page-expiry' data-last-reviewed-on="2020-07-27">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 9 December 2019.
+      This page was last reviewed on 27 April 2020.
 
-        It needs to be reviewed again on 9 March 2020
+        It needs to be reviewed again on 27 July 2020
 .
     </div>
 
     <div class='page-expiry--expired'>
-      This page was set to be reviewed before 9 March 2020.
+      This page was set to be reviewed before 27 July 2020.
       This might mean the content is out of date.
     </div>
   </div>

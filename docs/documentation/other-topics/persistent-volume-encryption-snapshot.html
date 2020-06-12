@@ -127,7 +127,7 @@
         <div class="app-pane__content toc-open-disabled">
           <main id="content" class="technical-documentation" data-module="anchored-headings">
               <h1 id="persistent-volume-encryption-at-rest-and-daily-snapshots">Persistent Volume encryption at rest and daily snapshots</h1><h3 id="introduction">Introduction</h3><p>This guide will give you an overview of how to set up encryption at rest for &ldquo;<a href="https://kubernetes.io/docs/concepts/storage/persistent-volumes/">Persistent Volumes (PVs)</a>&rdquo; and take daily snapshots to back up a PV.</p>
-<h3 id="encrypting-persistent-volumes">Encrypting Persistent Volumes</h3><p>To enable encryption at rest on a PV set the <code>storageClassName</code> attribute of your <a href="https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims">PersistentVolumeClaim</a> to <a href="https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/storageclass.tf"><code>gp2-expand</code></a>. This <a href="https://kubernetes.io/docs/concepts/storage/storage-classes/">Storage Class</a> sets <code>encrypted: &quot;true&quot;</code> on the underlying EBS volume.</p>
+<h3 id="encrypting-persistent-volumes">Encrypting Persistent Volumes</h3><p>To enable encryption at rest on a PV set the <code>storageClassName</code> attribute of your <a href="https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims">PersistentVolumeClaim</a> to <a href="https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/38c22c1b193300fed5944dc21be54dc8eb4b3a02/terraform/cloud-platform-components/k8s-resources.tf#L30"><code>gp2-expand</code></a>. This <a href="https://kubernetes.io/docs/concepts/storage/storage-classes/">Storage Class</a> sets <code>encrypted: &quot;true&quot;</code> on the underlying EBS volume.</p>
 <div class="highlight"><pre class="highlight plaintext"><code>kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
@@ -208,16 +208,16 @@ resource "kubernetes_secret" "persistentvolume_backup_sec" {
 </code></pre></div><h3 id="restoring-a-persistent-volume-from-a-snapshot">Restoring a Persistent Volume from a snapshot</h3><p>If you want to <a href="https://aws.amazon.com/blogs/compute/recovering-files-from-an-amazon-ebs-volume-backup/">restore a PV from a snapshot</a>, speak to the cloud-platform team in the #ask-cloud-platform channel.</p>
 
 
-              <div data-module='page-expiry' data-last-reviewed-on="2020-03-24">
+              <div data-module='page-expiry' data-last-reviewed-on="2020-07-21">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 24 December 2019.
+      This page was last reviewed on 21 April 2020.
 
-        It needs to be reviewed again on 24 March 2020
+        It needs to be reviewed again on 21 July 2020
 .
     </div>
 
     <div class='page-expiry--expired'>
-      This page was set to be reviewed before 24 March 2020.
+      This page was set to be reviewed before 21 July 2020.
       This might mean the content is out of date.
     </div>
   </div>

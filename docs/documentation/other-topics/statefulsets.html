@@ -127,8 +127,8 @@
         <div class="app-pane__content toc-open-disabled">
           <main id="content" class="technical-documentation" data-module="anchored-headings">
               <h1 id="statefulsets-pods-with-persistent-volumes">StatefulSets (Pods with Persistent Volumes)</h1><h3 id="introduction">Introduction</h3><p>Like a Deployment, a <a href="https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/">StatefulSet</a> manages Pods that are based on an identical container spec. Unlike a Deployment, a StatefulSet maintains a sticky identity for each of their Pods. These pods are created from the same spec, but are not interchangeable: each has a persistent identifier (UID) that it maintains across any rescheduling. It also provides guarantees on the ordering and uniqueness of the Pods.
-StatefulSets also require a <a href="https://kubernetes.io/docs/concepts/services-networking/service/#headless-services">headless service</a> to manage network identities for pods. Each Pod gets a sticky network sub-domain and SRV record that does not change if a Pod is deleted and recreated.</p>
-<p>You can see an example below where a Pod is deleted, however, it is recreated with the same <code>Name</code> using the StatefulSet spec.</p>
+StatefulSets also require a <a href="https://kubernetes.io/docs/concepts/services-networking/service/#headless-services">headless service</a> to manage network identities for pods. Each Pod gets a sticky network sub-domain and <a href="https://en.wikipedia.org/wiki/SRV_record">SRV record</a> that does not change if a Pod is deleted and recreated.</p>
+<p>You can see an example below where a Pod is deleted, but then recreated with the same <code>name</code> using the StatefulSet spec.</p>
 <div class="highlight"><pre class="highlight shell"><code>kubectl get pods
 NAME    READY   STATUS    RESTARTS   AGE
 web-0   1/1     Running   0          3d
@@ -141,7 +141,7 @@ kubectl get pods
 NAME    READY   STATUS              RESTARTS   AGE
 web-0   0/1     ContainerCreating   0          7s
 web-1   1/1     Running             0          3d
-</code></pre></div><h3 id="headless-service">Headless Service</h3><p>As mentioned above, a headless service is required for StatefulSets, where the network type <code>clusterIP</code> has a value of <code>none</code>. This does not predefine an IP for the service.</p>
+</code></pre></div><h3 id="headless-service">Headless Service</h3><p>As mentioned above, a <a href="https://kubernetes.io/docs/concepts/services-networking/service/#headless-services">headless service</a> is required for StatefulSets, where the network type <code>clusterIP</code> has a value of <code>None</code>. This does not predefine an IP for the service.</p>
 <div class="highlight"><pre class="highlight yaml"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
 <span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
 <span class="na">metadata</span><span class="pi">:</span>
@@ -155,7 +155,7 @@ web-1   1/1     Running             0          3d
   <span class="na">clusterIP</span><span class="pi">:</span> <span class="s">None</span> <span class="c1"># Headless service setting</span>
   <span class="na">selector</span><span class="pi">:</span>
     <span class="na">app</span><span class="pi">:</span> <span class="s">nginx</span> <span class="c1"># Selector should match the name of the app being deployed as the Statefulset</span>
-</code></pre></div><h3 id="statefulset-creation">StatefulSet creation</h3><p>Below is an example of StatefulSet template:</p>
+</code></pre></div><h3 id="statefulset-creation">StatefulSet creation</h3><p>Below is an example of a StatefulSet definition:</p>
 <div class="highlight"><pre class="highlight yaml"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">apps/v1</span>
 <span class="na">kind</span><span class="pi">:</span> <span class="s">StatefulSet</span>
 <span class="na">metadata</span><span class="pi">:</span>
@@ -194,8 +194,8 @@ web-1   1/1     Running             0          3d
       <span class="na">resources</span><span class="pi">:</span>
         <span class="na">requests</span><span class="pi">:</span>
           <span class="na">storage</span><span class="pi">:</span> <span class="s">4Gi</span> <span class="c1"># Storage resource request size</span>
-</code></pre></div><p>Please use StorageClass <code>gp2-expand</code> to be able to expand PVs in the future.</p>
-<p>Once all pods are created for the StatefulSet, they have an unique identity based on the metadata name of the StatefulSet.
+</code></pre></div><p>Please use StorageClass <code>gp2-expand</code> to be able to expand <a href="https://kubernetes.io/docs/concepts/storage/persistent-volumes/">PersistentVolumes</a> in the future.</p>
+<p>Once all pods are created for the StatefulSet, they have a unique identity based on the metadata name of the StatefulSet.
 The pods are named using the following: [StatefulSet_Name]-[Ordinal_Index] e.g. web-0</p>
 <div class="highlight"><pre class="highlight shell"><code>kubectl get pods 
 NAME    READY   STATUS    RESTARTS   AGE
@@ -206,7 +206,7 @@ web-3   1/1     Running   0          21m
 web-4   1/1     Running   0          20m
 web-5   1/1     Running   0          20m
 web-6   1/1     Running   0          20m
-</code></pre></div><p>All PVCs would have all been created also. The PVC are named using the following: [VolumeClaim_Name]-[StatefulSet_Name]-[Ordinal_Index]</p>
+</code></pre></div><p>All <a href="https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims">PersistentVolumeClaims</a> would have all been created also. The PersistentVolumeClaims are named using the following: [VolumeClaim_Name]-[StatefulSet_Name]-[Ordinal_Index]</p>
 <div class="highlight"><pre class="highlight shell"><code>kubectl get pvc 
 NAME        STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
 www-web-0   Bound    pvc-0ca662d1-9299-11e9-b4c5-0a5b8815a91e   4Gi        RWO            gp2-expand      29m
@@ -216,22 +216,22 @@ www-web-3   Bound    pvc-40e2bc95-9299-11e9-b4c5-0a5b8815a91e   4Gi        RWO  
 www-web-4   Bound    pvc-4ebb8afd-9299-11e9-b4c5-0a5b8815a91e   4Gi        RWO            gp2-expand      27m
 www-web-5   Bound    pvc-641f5a61-9299-11e9-b4c5-0a5b8815a91e   4Gi        RWO            gp2-expand      26m
 www-web-6   Bound    pvc-6c2a187c-9299-11e9-b4c5-0a5b8815a91e   4Gi        RWO            gp2-expand      26m
-</code></pre></div><p>If a Pod is deleted, it will be rescheduled, use the same name, and the corresponding above PVC will be attached. 
-The Pod also has and will keep a network ID that persists with restarts.</p>
-<p>If a StatefulSet is deleted, the PVCs remain along with PVs. PVCs and in turn PVs have to be deleted separately.</p>
-<h3 id="advisory-note-expanding-persistent-volumes">Advisory note: Expanding Persistent Volumes</h3><p>It is currently not possible to expand PVs using the StatefulSet template. For the time being, please create PVs with the previous statement in mind. There is a manual way to do this, which the Cloud Platform team can help with if required.</p>
+</code></pre></div><p>If a Pod is deleted, it will be rescheduled, with the same name, and the corresponding above PersistentVolumeClaims will be attached. 
+The Pod also has and will keep a network ID that persists through restarts.</p>
+<p>If a StatefulSet is deleted, the PersistentVolumeClaims (PVCs) remain along with PersistentVolumes (PVs). PVCs and PVs have to be deleted separately.</p>
+<h3 id="advisory-note-expanding-persistent-volumes">Advisory note: Expanding Persistent Volumes</h3><p>It is currently not possible to expand PVs using the StatefulSet template. There is a manual way to do this, which the Cloud Platform team can help with if required.</p>
 
 
-              <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
+              <div data-module='page-expiry' data-last-reviewed-on="2020-07-27">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 9 December 2019.
+      This page was last reviewed on 27 April 2020.
 
-        It needs to be reviewed again on 9 March 2020
+        It needs to be reviewed again on 27 July 2020
 .
     </div>
 
     <div class='page-expiry--expired'>
-      This page was set to be reviewed before 9 March 2020.
+      This page was set to be reviewed before 27 July 2020.
       This might mean the content is out of date.
     </div>
   </div>

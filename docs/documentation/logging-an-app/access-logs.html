@@ -108,6 +108,9 @@
             <a href="#accessing-kibana">Accessing Kibana</a>
           </li>
           <li>
+            <a href="#sensitive-data">Sensitive data</a>
+          </li>
+          <li>
             <a href="#using-kibana">Using Kibana</a>
           </li>
           <li>
@@ -133,6 +136,14 @@
 <h3 id="accessing-kibana">Accessing Kibana</h3><p>The Cloud Platform collects, indexes and presents your application and system log data enabling you to query using Kibana’s standard query language (based on Lucene query syntax).</p>
 <p>To access Kibana, follow the appropriate link below and authenticate with your GitHub credentials:</p>
 <h4 id="live-1-cluster">Live-1 Cluster</h4><p><a href="https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana">https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana</a></p>
+<h3 id="sensitive-data">Sensitive data</h3><p>Any member of the ministryofjustice GitHub organization can access Kibana, which will provide access to logs for all teams. Information written to log files can be of a sensitive nature, so keep track of your sensitive data, and it is important to keep it out of the logs.</p>
+<p>Few examples of sensitive data:</p>
+
+<ul>
+<li>Personally identifiable data. Combinations of data (like first name + date of birth or last name + post code) or user generated data (like an email or user name)</li>
+<li>Financial Data (like credit card numbers)</li>
+<li>Passwords</li>
+</ul>
 <h3 id="using-kibana">Using Kibana</h3><p>As a quick example, we will filter down to the logs of a particular environment.</p>
 <p>1) On the Kibana dashboard, select the &lsquo;Discover&rsquo; tab.</p>
 <p>2) Select &#39;Add a filter +&rsquo;</p>
@@ -150,16 +161,16 @@
 <p><a href="https://www.elastic.co/guide/en/beats/packetbeat/current/kibana-queries-filters.html">https://www.elastic.co/guide/en/beats/packetbeat/current/kibana-queries-filters.html</a></p>
 
 
-              <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
+              <div data-module='page-expiry' data-last-reviewed-on="2020-06-09">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 9 December 2019.
+      This page was last reviewed on 9 March 2020.
 
-        It needs to be reviewed again on 9 March 2020
+        It needs to be reviewed again on 9 June 2020
 .
     </div>
 
     <div class='page-expiry--expired'>
-      This page was set to be reviewed before 9 March 2020.
+      This page was set to be reviewed before 9 June 2020.
       This might mean the content is out of date.
     </div>
   </div>

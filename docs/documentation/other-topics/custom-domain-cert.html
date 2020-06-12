@@ -156,12 +156,12 @@ in the <a href="https://github.com/ministryofjustice/cloud-platform-environments
 <a href="https://www.terraform.io/docs/providers/aws/r/route53_record.html"><code>aws_route53_record</code></a> resource.</p>
 <h4 id="obtaining-a-certificate">Obtaining a certificate</h4>
 <ol>
-<li>Create the <code>Certificate</code> resource, filling in any placeholders with your
+<li>Create the <a href="https://cert-manager.io/docs/concepts/certificate/">Certificate</a> resource, filling in any placeholders with your
 details. The <code>secretName</code> attribute defines the name of a <code>Secret</code> in your
 namespace where the certificate and key material will be stored</li>
 </ol>
 <div class="highlight"><pre class="highlight plaintext"><code>   ---
-   apiVersion: certmanager.k8s.io/v1alpha1
+   apiVersion: cert-manager.io/v1alpha3
    kind: Certificate
    metadata:
      name: &lt;my-cert&gt;
@@ -171,13 +171,8 @@ namespace where the certificate and key material will be stored</li>
      issuerRef:
        name: letsencrypt-production
        kind: ClusterIssuer
-     commonName: '&lt;hostname&gt;'
-     acme:
-       config:
-       - domains:
-         - '&lt;hostname&gt;'
-         dns01:
-           provider: route53-cloud-platform
+     dnsNames:
+     - &lt;hostname&gt;
 </code></pre></div>
 <ol>
 <li>Make sure the certificate has been issued correctly, by checking its <code>Status</code>:</li>
@@ -207,7 +202,7 @@ namespace where the certificate and key material will be stored</li>
 <ol>
 <li>You will need to update your <code>Ingress</code> spec to include the new hostname.</li>
 </ol>
-<div class="highlight"><pre class="highlight plaintext"><code>     apiVersion: extensions/v1beta1
+<div class="highlight"><pre class="highlight plaintext"><code>     apiVersion: networking.k8s.io/v1beta1
      kind: Ingress
      metadata:
        name: &lt;my-ingress&gt;
@@ -243,16 +238,16 @@ speed up the process. You should search online for the proper method to do so,
 based on your operating system and/or browser.</p>
 
 
-              <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
+              <div data-module='page-expiry' data-last-reviewed-on="2020-07-28">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 9 December 2019.
+      This page was last reviewed on 28 April 2020.
 
-        It needs to be reviewed again on 9 March 2020
+        It needs to be reviewed again on 28 July 2020
 .
     </div>
 
     <div class='page-expiry--expired'>
-      This page was set to be reviewed before 9 March 2020.
+      This page was set to be reviewed before 28 July 2020.
       This might mean the content is out of date.
     </div>
   </div>

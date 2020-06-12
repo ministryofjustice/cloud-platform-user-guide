@@ -123,24 +123,23 @@
 
         <div class="app-pane__content toc-open-disabled">
           <main id="content" class="technical-documentation" data-module="anchored-headings">
-              <h1 id="application-log-collection-and-storage">Application Log Collection and Storage</h1><h3 id="overview">Overview</h3><p>The Cloud Platform supports the ability for application logs to be collected, stored, and accessed.</p>
-<p>Logs are collected automatically, via Fluentd, stored in an AWS-Hosted ElasticSearch Cluster, and accessed via AWS-Hosted Kibana dashboard.</p>
-<h3 id="log-collection">Log Collection</h3><p>Fluentd is a cluster-wide log collection service that runs in it&rsquo;s own dedicated environment.</p>
+              <h1 id="application-log-collection-and-storage">Application Log Collection and Storage</h1><h3 id="overview">Overview</h3><p>The Cloud Platform automatically collects and stores your application logs, and lets you access them via an AWS-Hosted Kibana dashboard.</p>
+<p>Logs are collected via <a href="https://www.fluentd.org/">Fluentd</a>, and stored in an AWS-Hosted <a href="https://aws.amazon.com/elasticsearch-service/">ElasticSearch Cluster</a>.</p>
+<h3 id="log-collection">Log Collection</h3><p>Fluentd is a cluster-wide log collection service.</p>
 <p>The Fluentd application is configured with cluster-wide read permissions. The only requirement for Fluentd to start automatically collecting your application&rsquo;s logs is to have your application output logs to <code>stdout</code>.</p>
-<h3 id="log-storage">Log Storage</h3><p>As an application engineer, you won&rsquo;t really need to pay much attention to how the logs are stored, as this is handled by the Cloud Platform team.</p>
-<p>The logs are shipped from Fluentd and stored in an AWS-Hosted ElasticSearch cluster. All application logs are retained for 30 days, before being curated for deletion.</p>
+<h3 id="log-storage">Log Storage</h3><p>The logs are shipped from Fluentd and stored in an AWS-Hosted ElasticSearch cluster. All application logs are retained for 30 days.</p>
 
 
-              <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
+              <div data-module='page-expiry' data-last-reviewed-on="2020-08-07">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 9 December 2019.
+      This page was last reviewed on 7 May 2020.
 
-        It needs to be reviewed again on 9 March 2020
+        It needs to be reviewed again on 7 August 2020
 .
     </div>
 
     <div class='page-expiry--expired'>
-      This page was set to be reviewed before 9 March 2020.
+      This page was set to be reviewed before 7 August 2020.
       This might mean the content is out of date.
     </div>
   </div>

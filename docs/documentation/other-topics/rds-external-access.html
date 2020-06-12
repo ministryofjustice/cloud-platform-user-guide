@@ -110,6 +110,9 @@
           <li>
             <a href="#3-access-the-database">3. Access the database</a>
           </li>
+          <li>
+            <a href="#4-delete-the-port-forward-pod">4. Delete the port-forward pod</a>
+          </li>
         </ul>
       </li>
     </ul>
@@ -127,9 +130,10 @@
 virtual private cloud (VPC), which will only accept network connections from
 within the kubernetes cluster.  So, trying to connect to the RDS instance from
 your local machine will not work.</p>
-<div class="highlight"><pre class="highlight plaintext"><code>+--------------+                   \ /                        +--------------+
+<div class="highlight"><pre class="highlight plaintext"><code>+--------------+      outside      \ /       inside           +--------------+
 | Your machine | -------------------X-----------------------&gt; | RDS instance |
 +--------------+                   / \                        +--------------+
+                               VPC Boundary
 </code></pre></div><p>If you need to access your database from outside the cluster (e.g. from your
 own development machine, or to perform a bulk data import), you can do so via
 the following steps:</p>
@@ -143,8 +147,12 @@ the following steps:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>+--------------+             +---------------------+          +--------------+
 | Your machine |------------&gt;| Port forwarding pod |---------&gt;| RDS instance |
 +--------------+             +---------------------+          +--------------+
-</code></pre></div><h3 id="1-run-a-port-forward-pod">1. Run a port-forward pod</h3><p>There are several docker images designed to forward network traffic, but you need one which does not run as <code>root</code>. We will use <a href="https://cloud.docker.com/u/ministryofjustice/repository/docker/ministryofjustice/port-forward">ministryofjustice/port-forward</a> for this example.</p>
-<p>NB: <strong>The cluster pod security policy (PSP) will prevent any images from running a process as the <code>root</code> user, so docker images which expect to do this will not work.</strong></p>
+</code></pre></div><h3 id="1-run-a-port-forward-pod">1. Run a port-forward pod</h3><p>There are several docker images designed to forward network traffic, but you need one which does not run as <code>root</code>.</p>
+
+<blockquote>
+<p>The cluster pod security policy (PSP) will prevent any images from running a process as the <code>root</code> user, so docker images which expect to do this will not work.</p>
+</blockquote>
+<p>We will use <a href="https://cloud.docker.com/u/ministryofjustice/repository/docker/ministryofjustice/port-forward">ministryofjustice/port-forward</a> for this example.</p>
 <div class="highlight"><pre class="highlight plaintext"><code>kubectl \
   -n [your namespace] \
   run port-forward-pod \
@@ -156,11 +164,11 @@ the following steps:</p>
   --env="REMOTE_PORT=5432"
 </code></pre></div>
 <blockquote>
-<p>This creates a pod in your namespace, but without a deployment to manage it.
-Manually-created pods (i.e. those which are not part of a <a href="https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/">deployment</a>) block
+<p>This creates a pod in your namespace, but without a deployment to manage it.</p>
+<p>Manually-created pods (i.e. those which are not part of a <a href="https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/">deployment</a>) block
 some cluster operations such as <a href="https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/#use-kubectl-drain-to-remove-a-node-from-service">draining a node</a> in order to replace it. For
-this reason, we have set up an automated process which will delete any such
-pods after 48 hours. If you need a port-forward pod to persist longer than
+this reason, we have set up an automated process which will <strong>delete any such
+pods after 24 hours</strong>. If you need a port-forward pod to persist longer than
 this, please make it part of a <a href="https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/">deployment</a>.</p>
 </blockquote>
 <h3 id="2-forward-local-traffic-to-the-port-forward-pod">2. Forward local traffic to the port-forward-pod</h3><p>Now you need to forward network traffic from a port on your local machine to the port-forward pod inside the cluster.</p>
@@ -184,20 +192,20 @@ this, please make it part of a <a href="https://kubernetes.io/docs/tasks/run-app
   --username [your database username] \
   --password
 </code></pre></div><p>(You will be prompted to enter the database password, which you should get (and then base64 decode) from your kubernetes secret)</p>
-<p>Please remember to delete the port-forwarding pod when you have finished.</p>
+<h3 id="4-delete-the-port-forward-pod">4. Delete the port-forward pod</h3><p>Please remember to delete the port-forwarding pod when you have finished.</p>
 <div class="highlight"><pre class="highlight plaintext"><code>kubectl delete pod port-forward-pod -n [your namespace]
 </code></pre></div>
 
-              <div data-module='page-expiry' data-last-reviewed-on="2020-04-13">
+              <div data-module='page-expiry' data-last-reviewed-on="2020-07-27">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 13 January 2020.
+      This page was last reviewed on 27 April 2020.
 
-        It needs to be reviewed again on 13 April 2020
+        It needs to be reviewed again on 27 July 2020
 .
     </div>
 
     <div class='page-expiry--expired'>
-      This page was set to be reviewed before 13 April 2020.
+      This page was set to be reviewed before 27 July 2020.
       This might mean the content is out of date.
     </div>
   </div>

@@ -127,7 +127,7 @@
           <main id="content" class="technical-documentation" data-module="anchored-headings">
               <h1 id="deploying-to-the-cloud-platform">Deploying to the Cloud Platform</h1><h2 id="declarative-not-imperative">Declarative, not Imperative</h2><p>Deploying to kubernetes is done <strong>declaratively</strong> rather than imperatively. So,
 instead of defining a list of instructions to be carried out (e.g. &ldquo;install
-these gems, then run this install script&rdquo;), instead you tell the cluster what
+these gems, then run this install script&rdquo;), you tell the cluster what
 state it should be in, and then leave it to the cluster to do whatever is
 necessary to get from the state it&rsquo;s in to the state you want it to be in.</p>
 <p>By &lsquo;state&rsquo; here, we usually mean something like <em>&ldquo;there should be 4 pods, each
@@ -137,25 +137,25 @@ service called &#39;rails-app&rsquo; distributing inbound traffic to them.&rdquo
 via kubernetes deployment objects. You can learn more about deployments, and
 see an example, <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment">here</a>.</p>
 <h2 id="use-image-tags">Use image tags</h2><p>You specify the docker images which comprise your application like this:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>image: my-awesome-app:0.8.1
+<div class="highlight"><pre class="highlight plaintext"><code>image: ministryofjustice/my-awesome-app:0.8.1
 </code></pre></div><p>The <code>0.8.1</code> above refers to the <strong>tag</strong> of the named docker image. This is
 often a semantic version number, as above, but it could also be the hash of a
 specific commit in the underlying software repo.</p>
-<div class="highlight"><pre class="highlight plaintext"><code>image: my-awesome-app:c135228626f0d647d699ecb3e9572dbd3750ec3d
+<div class="highlight"><pre class="highlight plaintext"><code>image: ministryofjustice/my-awesome-app:c135228626f0d647d699ecb3e9572dbd3750ec3d
 </code></pre></div><p>It is possible to omit the tag altogether:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>image: my-awesome-app
+<div class="highlight"><pre class="highlight plaintext"><code>image: ministryofjustice/my-awesome-app
 </code></pre></div><p>If you do this, you will get the <code>latest</code> version of the image (<code>latest</code> is the
 default tag value that all docker images have, assigned to the last version
 pushed to the image repository).</p>
 <p>We strongly advise against deploying the <code>latest</code> version of any images.
 Doing this makes it difficult or impossible to reproduce a known state, for
-example if you wanted to roll back a deployment to an earlier version. <strong>Always
-specify specific tagged versions of your docker images.</strong></p>
+example if you wanted to roll back a deployment to an earlier version.</p>
+<p><strong>Always specify specific tagged versions of your docker images.</strong></p>
 <h2 id="multiple-replicas">Multiple replicas</h2><p>Kubernetes makes it trivially simple to deploy your services in a
 high-availability configuration.  All you need to do is set the value of
 <code>replicas</code> in your <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment">deployments</a> to a value higher than
 1. For production services, we recommend 4 as a sensible number of replicas.</p>
-<p>This means that, in the event that a <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment">worker node</a> dies, taking one of your
+<p>This means that, in the event that a <a href="https://kubernetes.io/docs/concepts/architecture/nodes/">worker node</a> dies, taking one of your
 replicas with it, the remaining replicas will handle all application traffic,
 so that there is no downtime for your service while the missing replica is
 replaced.</p>
@@ -171,7 +171,7 @@ app. is always available to service web requests. But, for some types of
 workload, such as background job processing, it might make sense to ensure that
 you have zero or one instances, rather than one or more. An example of this
 would be a job processing tasks which <strong>must</strong> be handled in FIFO order -
-running multiple replicas in this case would mean tasks would be processed out
+running multiple replicas in this case would mean tasks could be processed out
 of order. For workloads like this, consider a <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#recreate-deployment">Recreate</a> deployment strategy.</p>
 <h2 id="zero-downtime-deploys">Zero Downtime Deploys</h2><p>This is another feature you get &#39;for free&rsquo; from kubernetes.</p>
 <p>Your <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment">deployments</a> have a <code>strategy</code> section, which
@@ -199,7 +199,7 @@ meet your current computational needs. This can be done by setting up Horizontal
 The metrics you specify in the <code>HorizontalPodAutoscaler manifest</code> will determine the number 
 of pods needed, and set the thresholds at which pods should be created or removed.</p>
 <p>The usual metrics are CPU and memory usage, but you can also specify your own custom metrics.</p>
-<p>To create the horizontal pod autoscaler for your deployment, create a <code>hpa-myapp.yaml</code> similar to:</p>
+<p>To create the horizontal pod autoscaler for your deployment, create a <code>hpa-myapp.yaml</code> similar to this:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
@@ -220,20 +220,20 @@ horizontalpodautoscaler.autoscaling/hpa-myapp autoscaled
 <code>
 kubectl get hpa -n my-namespace
 </code>
-When the CPU comsumption has increased more than 50%, you can see your deployment getting resized to the number of replicas required.</p>
-<p>For more examples and how to use custom metrics, see <a href="https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough">Horizontal Pod Autoscaler Walkthrough</a></p>
+When the CPU consumption has increased more than 50%, you will see your deployment get resized to the number of replicas required.</p>
+<p>For more examples and how to use custom metrics, see this <a href="https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough">Horizontal Pod Autoscaler Walkthrough</a></p>
 
 
-              <div data-module='page-expiry' data-last-reviewed-on="2020-04-02">
+              <div data-module='page-expiry' data-last-reviewed-on="2020-08-04">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 2 January 2020.
+      This page was last reviewed on 4 May 2020.
 
-        It needs to be reviewed again on 2 April 2020
+        It needs to be reviewed again on 4 August 2020
 .
     </div>
 
     <div class='page-expiry--expired'>
-      This page was set to be reviewed before 2 April 2020.
+      This page was set to be reviewed before 4 August 2020.
       This might mean the content is out of date.
     </div>
   </div>

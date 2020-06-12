@@ -124,9 +124,6 @@
             <a href="#application-logging">Application logging</a>
           </li>
           <li>
-            <a href="#migrating-from-live-0-to-live-1">Migrating from Live-0 to Live-1</a>
-          </li>
-          <li>
             <a href="#other-topics">Other topics</a>
           </li>
         </ul>
@@ -151,9 +148,15 @@
 
         <div class="app-pane__content toc-open-disabled">
           <main id="content" class="technical-documentation" data-module="anchored-headings">
-              <h1 id="cloud-platform-user-guide">Cloud platform user guide</h1><h2 id="who-is-this-user-guide-for">Who is this user guide for?</h2><p>This user guide is for the teams who deployed their applications in Ministry of Justice Cloud platform or
-want/migrate to deploy and manage their applications on the cloud platform. The platform manages the infrastructure that your application runs on and provides tooling for teams to deploy and manage their applications on that infrastructure.</p>
-<h2 id="quickstart">Quickstart</h2><p><a href="/documentation/deploying-an-app/helloworld-app-deploy.html">Deploy your first Hello World application</a></p>
+              <h1 id="cloud-platform-user-guide">Cloud platform user guide</h1><h2 id="who-is-this-user-guide-for">Who is this user guide for?</h2><p>This user guide is for service teams with applications deployed, or intending
+to deploy, to the Ministry of Justice Cloud Platform. The platform manages the
+infrastructure that your application runs on and provides tooling for teams to
+deploy and manage their applications on that infrastructure.</p>
+<h2 id="quickstart">Quickstart</h2>
+<ul>
+<li><a href="/documentation/concepts/cp-overview.html">Overview of the Cloud Platform</a></li>
+<li><a href="/documentation/deploying-an-app/helloworld-app-deploy.html">Deploy your first Hello World application</a></li>
+</ul>
 <h2 id="how-to-guides">How-to guides</h2>
 <ul>
 <li><a href="/documentation/getting-started/kubectl-config.html">How to use <code>kubectl</code> to connect to the cluster</a></li>
@@ -179,7 +182,7 @@ want/migrate to deploy and manage their applications on the cloud platform. The 
 <h3 id="deploying-with-helm-and-circleci">Deploying with Helm and CircleCI</h3>
 <ul>
 <li><a href="/documentation/deploying-an-app/prerequisite.html">Prerequisite for Live-1 deployment</a></li>
-<li><a href="/documentation/deploying-an-app/use-circleci-to-upgrade-app.html">Continuous Deployment of an application using CircleCI and Helm</a></li>
+<li><a href="/documentation/deploying-an-app/using-circleci-for-continuous-deployment.html">Continuous Deployment of an application using CircleCI and Helm</a></li>
 <li><a href="/documentation/deploying-an-app/app-deploy-helm.html">Deploying an application to the Cloud Platform with Helm</a></li>
 </ul>
 <h3 id="monitoring-applications">Monitoring applications</h3>
@@ -188,15 +191,12 @@ want/migrate to deploy and manage their applications on the cloud platform. The 
 <li><a href="/documentation/monitoring-an-app/prometheus.html">Using the Cloud Platform Prometheus, AlertManager and Grafana</a></li>
 <li><a href="/documentation/monitoring-an-app/how-to-create-alarms.html">Creating your own custom alerts</a></li>
 <li><a href="/documentation/monitoring-an-app/how-to-create-pingdom-checks.html">Creating Pingdom checks</a></li>
+<li><a href="/documentation/monitoring-an-app/how-to-use-cloudwatch-datasource.html">Using the CloudWatch data source in Grafana</a></li>
 </ul>
 <h3 id="application-logging">Application logging</h3>
 <ul>
 <li><a href="/documentation/logging-an-app/log-collection-and-storage.html">Application Log Collection and Storage</a></li>
 <li><a href="/documentation/logging-an-app/access-logs.html">Accessing Application Log Data</a></li>
-</ul>
-<h3 id="migrating-from-live-0-to-live-1">Migrating from Live-0 to Live-1</h3>
-<ul>
-<li><a href="/documentation/other-topics/live1-migration-guide.html">Live-1 migration guide</a></li>
 </ul>
 <h3 id="other-topics">Other topics</h3>
 <ul>
@@ -211,9 +211,8 @@ want/migrate to deploy and manage their applications on the cloud platform. The 
 <li><a href="/documentation/other-topics/TZ-Cronjobs.html">Time Zone Cronjobs</a></li>
 <li><a href="/documentation/other-topics/decommission-unused-template-deploy-services.html">How to decommission unused template deploy services</a></li>
 <li><a href="/documentation/other-topics/git-crypt-setup.html">Git-Crypt</a></li>
-<li><a href="/documentation/other-topics/custom-default-backend.html">Custom default-backend</a></li>
 <li><a href="/documentation/other-topics/Cronjobs.html">Kubernetes Cronjobs</a></li>
-<li><a href="/documentation/other-topics/ip-whitelisting.html">IP Whitelisting</a></li>
+<li><a href="/documentation/other-topics/ip-filtering.html">IP Filtering</a></li>
 <li><a href="/documentation/other-topics/maintenance-page.html">Applying a Maintenance Page</a></li>
 <li><a href="/documentation/other-topics/quick-reference.html">Kubectl quick reference</a></li>
 <li><a href="/documentation/other-topics/statefulsets.html">StatefulSets (Pods with Persistent Volumes)</a></li>
@@ -227,6 +226,7 @@ want/migrate to deploy and manage their applications on the cloud platform. The 
 <li><a href="/documentation/other-topics/s3-bucket-migration.html">Migrating an S3 bucket</a></li>
 <li><a href="/documentation/other-topics/kibana-circleci-monitoring-dashboards.html">Kibana Circleci Monitoring Dashboards</a></li>
 <li><a href="/documentation/concepts/namespace-limits.html">Namespace/Container Resource Limits</a></li>
+<li><a href="/documentation/other-topics/apiversion-changes-k8s-1-16.html">Removing Deprecated APIs for Kubernetes version 1.16</a></li>
 </ul>
 <h2 id="reference">Reference</h2>
 <ul>
@@ -245,16 +245,16 @@ the &ldquo;GithHub&rdquo; link at the top right will take you to the repository 
 guide.</p>
 
 
-              <div data-module='page-expiry' data-last-reviewed-on="2020-03-09">
+              <div data-module='page-expiry' data-last-reviewed-on="2020-06-09">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 9 December 2019.
+      This page was last reviewed on 9 March 2020.
 
-        It needs to be reviewed again on 9 March 2020
+        It needs to be reviewed again on 9 June 2020
 .
     </div>
 
     <div class='page-expiry--expired'>
-      This page was set to be reviewed before 9 March 2020.
+      This page was set to be reviewed before 9 June 2020.
       This might mean the content is out of date.
     </div>
   </div>
