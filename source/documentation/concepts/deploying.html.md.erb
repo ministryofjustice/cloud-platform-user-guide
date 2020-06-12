@@ -1,6 +1,6 @@
 ---
 title: Deploying to the Cloud Platform
-last_reviewed_on: 2020-05-04
+last_reviewed_on: 2020-06-12
 review_in: 3 months
 ---
 
@@ -152,7 +152,7 @@ Run the following command to apply:
 kubectl apply -f hpa-myapp.yaml -n my-namespace
 horizontalpodautoscaler.autoscaling/hpa-myapp autoscaled
 ```
-To check the current status of the autoscalar run:
+Run the following to describe the status of the pod autoscaler:
 
 ```
 kubectl describe hpa -n my-namespace my-app-name
@@ -183,9 +183,6 @@ For the above, the current use is 10% of the resource limit, if/when the CPU con
 It is also possible to use custom metrics with the horizontal pod-autoscaler. However. this requires a bit more input from the development and Cloud-Platform team. If this is something you may be interested in, please speak to a member of the team on #ask-cloud-platform
 
 Click [HERE](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough) for the official Kubernetes documentation on the horizontal pod autoscaler walkthrough. 
-When the CPU consumption has increased more than 50%, you will see your deployment get resized to the number of replicas required.
-
-For more examples and how to use custom metrics, see this [Horizontal Pod Autoscaler Walkthrough]
 
 [kubernetes deployments]: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment
 [worker node]: https://kubernetes.io/docs/concepts/architecture/nodes/
