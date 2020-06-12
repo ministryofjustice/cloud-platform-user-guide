@@ -53,7 +53,7 @@ curl https://myapp.cloud-platform/metrics
 
 ### Add Service endpoint and ServiceMonitor
 
-We need to expose the metrics endpoint with a `Service` and tell the Cloud Platform Prometheus to scrape the endpoint with a `ServiceMonitor` object in Kubernetes. A `ServiceMonitor` is a custom resource definition ([CRD](https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions/)) that allows you to automatically generate Prometheus scrape configuration based on a specified resource.
+We need to expose the metrics endpoint with a `Service` and tell the Cloud Platform Prometheus to scrape the endpoint with a `ServiceMonitor` object in Kubernetes. A `ServiceMonitor` is a custom resource definition ([CRD](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#customresourcedefinitions/)) that allows you to automatically generate Prometheus scrape configuration based on a specified resource.
 
 In this example, we're using the same port to expose both our application and metrics endpoint so we'll need to query our existing `Service` for the current port name. However, if you're exposing a different port you'll need to either amend your current `Service` or create a new one. 
 
