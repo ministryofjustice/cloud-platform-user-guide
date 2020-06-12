@@ -112,13 +112,14 @@ downtime deployments in [this article].
 
 ## Horizontal Pod Autoscaling
 
-The Horizontal Pod Autoscaler is a built-in Kubernetes feature that allows to horizontally scale applications based on one or more monitored metric such as cpu or memory.
+The Horizontal Pod Autoscaler is a built-in Kubernetes feature that allows you to horizontally scale applications based on one or more monitored metrics such as cpu or memory.
 
 The metrics you specify in the `HorizontalPodAutoscaler` manifest will determine the minimum and maximum number of pods needed, and set the thresholds at which pods should be created or removed. 
 
 The Horizontal Pod Autoscaler can ensure that critical applications are elastic and can scale out to meet increasing demand as well scale down to ensure optimal resource usage, it is also a great tool in saving money by auto-scaling down non-production work loads when not in use, such as overnight or the weekend.
 
 #### Important aspects of the HorizontalPodAutoscaler to be aware of:
+
 * Resource Limits - You need to set resource limits otherwise HPA will not work, as it will not have a value to quantify from.
 * 15 seconds - The HPA controller checks the value of the metric used every 15 seconds per pod. 
 * 3 minutes - The HPA scales up pods if the metric threshold has been continually exceeded for 3 mins. 
