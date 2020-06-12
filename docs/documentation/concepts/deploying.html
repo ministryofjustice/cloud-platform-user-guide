@@ -113,6 +113,10 @@
       </li>
       <li>
         <a href="#horizontal-pod-autoscaling">Horizontal Pod Autoscaling</a>
+        <ul>
+          <li>
+          </li>
+        </ul>
       </li>
     </ul>
   </li>
@@ -194,11 +198,16 @@ then take care of launching new pods and deleting old ones.</p>
 <p>More information about deployment strategies is available in the <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment">kubernetes
 documentation</a>, and there is more discussion of zero
 downtime deployments in <a href="/documentation/other-topics/zero-downtime-deployment.html">this article</a>.</p>
-<h2 id="horizontal-pod-autoscaling">Horizontal Pod Autoscaling</h2><p>Kubernetes make it easy to ensure you have the right number of pod replicas to 
-meet your current computational needs. This can be done by setting up Horizontal Pod Autoscaler. 
-The metrics you specify in the <code>HorizontalPodAutoscaler manifest</code> will determine the number 
-of pods needed, and set the thresholds at which pods should be created or removed.</p>
-<p>The usual metrics are CPU and memory usage, but you can also specify your own custom metrics.</p>
+<h2 id="horizontal-pod-autoscaling">Horizontal Pod Autoscaling</h2><p>The Horizontal Pod Autoscaler is a built-in Kubernetes feature that allows you to horizontally scale applications based on one or more monitored metrics such as cpu or memory.</p>
+<p>The metrics you specify in the <code>HorizontalPodAutoscaler</code> manifest will determine the minimum and maximum number of pods needed, and set the thresholds at which pods should be created or removed.</p>
+<p>The Horizontal Pod Autoscaler can ensure that critical applications are elastic and can scale out to meet increasing demand as well scale down to ensure optimal resource usage, it is also a great tool in saving money by auto-scaling down non-production work loads when not in use, such as overnight or the weekend.</p>
+<h4 id="important-aspects-of-the-horizontalpodautoscaler-to-be-aware-of">Important aspects of the HorizontalPodAutoscaler to be aware of:</h4>
+<ul>
+<li>Resource Limits - You need to set resource limits otherwise HPA will not work, as it will not have a value to quantify from.</li>
+<li>15 seconds - The HPA controller checks the value of the metric used every 15 seconds per pod. </li>
+<li>3 minutes - The HPA scales up pods if the metric threshold has been continually exceeded for 3 mins. </li>
+<li>5 minutes - The HPA scales down pods if the metric threshold has not been exceeded for 5 mins. </li>
+</ul>
 <p>To create the horizontal pod autoscaler for your deployment, create a <code>hpa-myapp.yaml</code> similar to this:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
@@ -213,27 +222,44 @@ spec:
   minReplicas: 1
   maxReplicas: 5
   targetCPUUtilizationPercentage: 50
-</code></pre></div><p>issue the following command:</p>
+</code></pre></div><p>The above manifest will ensure a minimum of 1 replica is available for the deployment called my-app-name, but will increase replicas up to 5 when the CPU utilization is above 50%.</p>
+<p>Run the following command to apply:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>kubectl apply -f hpa-myapp.yaml -n my-namespace
 horizontalpodautoscaler.autoscaling/hpa-myapp autoscaled
-</code></pre></div><p>To check the current status of the autoscalar run:
-<code>
-kubectl get hpa -n my-namespace
-</code>
-When the CPU consumption has increased more than 50%, you will see your deployment get resized to the number of replicas required.</p>
-<p>For more examples and how to use custom metrics, see this <a href="https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough">Horizontal Pod Autoscaler Walkthrough</a></p>
+</code></pre></div><p>Run the following to describe the status of the pod autoscaler:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>kubectl describe hpa -n my-namespace my-app-name
+</code></pre></div><div class="highlight"><pre class="highlight plaintext"><code>Name:                                                  my-app-name
+Namespace:                                             my-namespace
+Labels:                                                app=my-app-name
+Annotations:                                           &lt;none&gt;
+CreationTimestamp:                                     Tue, 01 Jun 2019 23:35:22 +0100
+Reference:                                             Deployment/my-app-name
+Metrics:                                               ( current / target )
+  resource cpu on pods  (as a percentage of request):  10% (1m) / 50%
+Min replicas:                                          1
+Max replicas:                                          5
+Deployment pods:                                       1 current / 1 desired
+Conditions:
+  Type            Status  Reason              Message
+  ----            ------  ------              -------
+  AbleToScale     True    ReadyForNewScale    recommended size matches current size
+  ScalingActive   True    ValidMetricFound    the HPA was able to successfully calculate a replica count from cpu resource utilization (percentage of request)
+  ScalingLimited  False   DesiredWithinRange  the desired count is within the acceptable range
+</code></pre></div><p>For the above, the current use is 10% of the resource limit, if/when the CPU consumption exceeds the threshold of 50% for more than 3 minutes, the deployment will scale up.</p>
+<p>It is also possible to use custom metrics with the horizontal pod-autoscaler. However. this requires a bit more input from the development and Cloud-Platform team. If this is something you may be interested in, please speak to a member of the team on #ask-cloud-platform</p>
+<p>Click <a href="https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough">HERE</a> for the official Kubernetes documentation on the horizontal pod autoscaler walkthrough.</p>
 
 
-              <div data-module='page-expiry' data-last-reviewed-on="2020-08-04">
+              <div data-module='page-expiry' data-last-reviewed-on="2020-09-12">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 4 May 2020.
+      This page was last reviewed on 12 June 2020.
 
-        It needs to be reviewed again on 4 August 2020
+        It needs to be reviewed again on 12 September 2020
 .
     </div>
 
     <div class='page-expiry--expired'>
-      This page was set to be reviewed before 4 August 2020.
+      This page was set to be reviewed before 12 September 2020.
       This might mean the content is out of date.
     </div>
   </div>
