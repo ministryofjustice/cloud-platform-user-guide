@@ -1,6 +1,6 @@
 ---
 title: Cloud platform user guide
-last_reviewed_on: 2020-03-09
+last_reviewed_on: 2020-06-15
 review_in: 3 months
 ---
 
@@ -20,11 +20,11 @@ deploy and manage their applications on that infrastructure.
 ## How-to guides
 - [How to use `kubectl` to connect to the cluster](documentation/getting-started/kubectl-config.html)
 - [Creating a Cloud Platform Environment](documentation/getting-started/env-create.html)
-- [Creating an ECR repository](documentation/getting-started/ecr-setup.html)
-- [Creating a Route 53 Hosted Zone](documentation/other-topics/route53-zone.html)
+- [Creating an ECR repository](documentation/getting-started/ecr-setup.html) for your docker images
+- [Creating a Route 53 Hosted Zone](documentation/other-topics/route53-zone.html) for your DNS records
 - [Adding AWS resources to your environment](documentation/deploying-an-app/add-aws-resources.html)
 - [How do I run Rails database migrations?](documentation/deploying-an-app/running-rails-migrations.html)
-- [Cleaning up your namespace](documentation/deploying-an-app/cleaning-up.html)
+- [Removing an unneeded namespace](documentation/deploying-an-app/cleaning-up.html)
 
 ## Concepts
 
@@ -43,8 +43,8 @@ deploy and manage their applications on that infrastructure.
  - [Deploying an application to the Cloud Platform with Helm](documentation/deploying-an-app/app-deploy-helm.html)
 
 ### Monitoring applications
-- [Getting application metrics into Prometheus](documentation/monitoring-an-app/application-metrics.html)
 - [Using the Cloud Platform Prometheus, AlertManager and Grafana](documentation/monitoring-an-app/prometheus.html)
+- [Getting application metrics into Prometheus](documentation/monitoring-an-app/application-metrics.html)
 - [Creating your own custom alerts](documentation/monitoring-an-app/how-to-create-alarms.html)
 - [Creating Pingdom checks](documentation/monitoring-an-app/how-to-create-pingdom-checks.html)
 - [Using the CloudWatch data source in Grafana](documentation/monitoring-an-app/how-to-use-cloudwatch-datasource.html)
@@ -94,8 +94,8 @@ deploy and manage their applications on that infrastructure.
 
 If there's something missing, please either let us know and we'll add a new
 article, or if you're comfortable writing one yourself, PRs will be gratefully
-received. Details on how to get in touch are in the "Getting Help" section, and
-the "GithHub" link at the top right will take you to the repository for this
+received. Details on how to get in touch are in the "Getting Help" section above, and
+the "GithHub" link at the top right of this page will take you to the repository for this
 guide.
 
 [tech-docs-template]: https://github.com/alphagov/tech-docs-template
