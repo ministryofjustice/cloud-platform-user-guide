@@ -153,11 +153,12 @@
 
         <div class="app-pane__content toc-open-disabled">
           <main id="content" class="technical-documentation" data-module="anchored-headings">
-              <h1 id="creating-a-cloud-platform-environment">Creating a Cloud Platform Environment</h1><h2 id="introduction">Introduction</h2><p>This is a guide to creating a environment on our Kubernetes cluster.</p>
+              <h1 id="creating-a-cloud-platform-environment">Creating a Cloud Platform Environment</h1><h2 id="introduction">Introduction</h2><p>This is a guide to creating a environment (i.e. a <code>namespace</code>) on our Kubernetes cluster.</p>
 <p>We define an environment as a Kubernetes <a href="https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/">namespace</a>
 with some key resources deployed in it. Each Kubernetes namespace creates a
 logical separation within our cluster that provides isolation from any other
-namespace.</p>
+namespace. You can think of a namespace as a separate portion of the cloud platform 
+set aside for your service.</p>
 <p>Once you have created an environment you will be able to perform actions using
 the <code>kubectl</code> tool in the namespace you have created.</p>
 <h2 id="objective">Objective</h2><p>By the end of this guide you&rsquo;ll have created a Kubernetes namespace ready for
@@ -347,16 +348,16 @@ spec:
           component: ingress-controllers
 </code></pre></div>
 
-              <div data-module='page-expiry' data-last-reviewed-on="2020-06-09">
+              <div data-module='page-expiry' data-last-reviewed-on="2020-09-16">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 9 March 2020.
+      This page was last reviewed on 16 June 2020.
 
-        It needs to be reviewed again on 9 June 2020
+        It needs to be reviewed again on 16 September 2020
 .
     </div>
 
     <div class='page-expiry--expired'>
-      This page was set to be reviewed before 9 June 2020.
+      This page was set to be reviewed before 16 September 2020.
       This might mean the content is out of date.
     </div>
   </div>
