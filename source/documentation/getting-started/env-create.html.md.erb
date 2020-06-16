@@ -1,6 +1,6 @@
 ---
 title: Creating a Cloud Platform Environment
-last_reviewed_on: 2020-03-09
+last_reviewed_on: 2020-06-16
 review_in: 3 months
 ---
 
@@ -9,12 +9,13 @@ review_in: 3 months
 
 ## Introduction
 
-This is a guide to creating a environment on our Kubernetes cluster.
+This is a guide to creating a environment (i.e. a `namespace`) on our Kubernetes cluster.
 
 We define an environment as a Kubernetes [namespace]
 with some key resources deployed in it. Each Kubernetes namespace creates a
 logical separation within our cluster that provides isolation from any other
-namespace.
+namespace. You can think of a namespace as a separate portion of the cloud platform 
+set aside for your service.
 
 Once you have created an environment you will be able to perform actions using
 the `kubectl` tool in the namespace you have created.
