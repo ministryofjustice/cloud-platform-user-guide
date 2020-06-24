@@ -48,22 +48,22 @@ metadata:
   name: circleci
   namespace: <YOUR-NAMESPACE>
 rules:
-  - apiGroups: ["", "extensions", "apps", "batch"]
+  - apiGroups:
+      - ""
     resources:
       - "pods/portforward"
       - "deployment"
       - "secrets"
       - "services"
       - "pods"
-      - "jobs"
+      - "jobs"	
     verbs:
       - "patch"
       - "get"
       - "create"
       - "delete"
       - "list"
-  - apiGroups:
-      - "extensions"
+  - apiGroups: [extensions, apps, networking.k8s.io]
     resources:
       - "deployments"
       - "ingresses"
