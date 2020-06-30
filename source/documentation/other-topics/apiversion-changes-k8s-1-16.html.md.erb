@@ -25,6 +25,33 @@ before we upgrade the cluster to kubernetes version 1.16.
 - `podsecuritypolicies` resources under `extensions/v1beta1` - use `policy/v1beta1` instead
 - `ingress` resources will no longer be served from `extensions/v1beta1` in v1.20. - use `networking.k8s.io/v1beta1` instead
 
+### Service accounts
+With the above changes in place any service accounts (for CI pipelines such as CircleCI) will
+need to be given access to the new APIs.
+
+Check for any `serviceaccount.yml` in the namespace and add the new APIs, as below
+
+<pre>
+  apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: circleci
+    namespace: your-namespace
+
+  ---
+  kind: Role
+  apiVersion: rbac.authorization.k8s.io/v1beta1
+  metadata:
+    name: circleci
+    namespace: your-namespace
+  rules:
+    ....
+    - apiGroups:
+        - "extensions"
+        <b>- "apps"</b>
+        <b>- "networking.k8s.io"</b>
+</pre>
+
 ### Resources deployed using helm charts
 
 If you have used helm version < 2.16.3, then the generated manifests will use the deprecated APIs. 

@@ -102,6 +102,9 @@
       <li>
         <ul>
           <li>
+            <a href="#service-accounts">Service accounts</a>
+          </li>
+          <li>
             <a href="#resources-deployed-using-helm-charts">Resources deployed using helm charts</a>
           </li>
         </ul>
@@ -147,6 +150,30 @@ before we upgrade the cluster to kubernetes version 1.16.</p>
 <li><code>podsecuritypolicies</code> resources under <code>extensions/v1beta1</code> - use <code>policy/v1beta1</code> instead</li>
 <li><code>ingress</code> resources will no longer be served from <code>extensions/v1beta1</code> in v1.20. - use <code>networking.k8s.io/v1beta1</code> instead</li>
 </ul>
+<h3 id="service-accounts">Service accounts</h3><p>With the above changes in place any service accounts (for CI pipelines such as CircleCI) will
+need to be given access to the new APIs.</p>
+<p>Check for any <code>serviceaccount.yml</code> in the namespace and add the new APIs, as below</p>
+
+<pre>
+  apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: circleci
+    namespace: your-namespace
+
+  ---
+  kind: Role
+  apiVersion: rbac.authorization.k8s.io/v1beta1
+  metadata:
+    name: circleci
+    namespace: your-namespace
+  rules:
+    ....
+    - apiGroups:
+        - "extensions"
+        <b>- "apps"</b>
+        <b>- "networking.k8s.io"</b>
+</pre>
 <h3 id="resources-deployed-using-helm-charts">Resources deployed using helm charts</h3><p>If you have used helm version &lt; 2.16.3, then the generated manifests will use the deprecated APIs. 
 It is therefore <strong>mandatory</strong> to update the manifest with replacement APIs. 
 We also suggest upgrading your helm version to &gt; 2.16.3, ideally to <a href="/documentation/deploying-an-app/app-deploy-helm.html#migrate-from-helm-v2-to-helm-v3">Helm 3</a> so the helm
