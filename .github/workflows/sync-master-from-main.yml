@@ -1,0 +1,13 @@
+name: Keep master in sync wrt. main
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - run: git checkout -b master
+      - run: git push origin master --force
