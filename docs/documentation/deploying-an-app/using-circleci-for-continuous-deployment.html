@@ -184,22 +184,22 @@ use the below as an example:</p>
   <span class="na">name</span><span class="pi">:</span> <span class="s">circleci</span>
   <span class="na">namespace</span><span class="pi">:</span> <span class="s">&lt;YOUR-NAMESPACE&gt;</span>
 <span class="na">rules</span><span class="pi">:</span>
-  <span class="pi">-</span> <span class="na">apiGroups</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">extensions"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">apps"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">batch"</span><span class="pi">]</span>
+  <span class="pi">-</span> <span class="na">apiGroups</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">"</span>
     <span class="na">resources</span><span class="pi">:</span>
       <span class="pi">-</span> <span class="s2">"</span><span class="s">pods/portforward"</span>
       <span class="pi">-</span> <span class="s2">"</span><span class="s">deployment"</span>
       <span class="pi">-</span> <span class="s2">"</span><span class="s">secrets"</span>
       <span class="pi">-</span> <span class="s2">"</span><span class="s">services"</span>
       <span class="pi">-</span> <span class="s2">"</span><span class="s">pods"</span>
-      <span class="pi">-</span> <span class="s2">"</span><span class="s">jobs"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">jobs"</span>  
     <span class="na">verbs</span><span class="pi">:</span>
       <span class="pi">-</span> <span class="s2">"</span><span class="s">patch"</span>
       <span class="pi">-</span> <span class="s2">"</span><span class="s">get"</span>
       <span class="pi">-</span> <span class="s2">"</span><span class="s">create"</span>
       <span class="pi">-</span> <span class="s2">"</span><span class="s">delete"</span>
       <span class="pi">-</span> <span class="s2">"</span><span class="s">list"</span>
-  <span class="pi">-</span> <span class="na">apiGroups</span><span class="pi">:</span>
-      <span class="pi">-</span> <span class="s2">"</span><span class="s">extensions"</span>
+  <span class="pi">-</span> <span class="na">apiGroups</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">extensions</span><span class="pi">,</span> <span class="nv">apps</span><span class="pi">,</span> <span class="nv">networking.k8s.io</span><span class="pi">]</span>
     <span class="na">resources</span><span class="pi">:</span>
       <span class="pi">-</span> <span class="s2">"</span><span class="s">deployments"</span>
       <span class="pi">-</span> <span class="s2">"</span><span class="s">ingresses"</span>
