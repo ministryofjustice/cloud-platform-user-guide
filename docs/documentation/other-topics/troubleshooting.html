@@ -279,20 +279,25 @@ spec:
 <li> Your application is no longer responding correctly to the Probe - Is your database misconfigured?</li>
 </ul>
 <h4 id="i-get-the-error-39-container-is-unhealthy-it-will-be-killed-and-re-created-39-solution">Solution</h4><p>Once a change has been made to either your application or Probe, a fresh deployment should succeed.</p>
-<h3 id="i-get-the-error-39-error-from-server-forbidden-39-when-trying-to-run-kubectl-commands">I get the error &#39;Error from server (Forbidden)&rsquo; when trying to run kubectl commands</h3><h4 id="i-get-the-error-39-error-from-server-forbidden-39-when-trying-to-run-kubectl-commands-situation">Situation</h4><p>When attempting to use a command such as <code>kubectl get pods -n &lt;namespace&gt;</code> the following error occurs:</p>
-<p><code>Error from server (Forbidden): pods is forbidden: User &quot;https://justice-cloud-platform.eu.auth0.com/#&lt;username&gt;&quot; cannot list resource &quot;pods&quot; in API group &quot;&quot; in the namespace &quot;&lt;namespace&gt;&quot;</code></p>
-<h4 id="i-get-the-error-39-error-from-server-forbidden-39-when-trying-to-run-kubectl-commands-cause">Cause</h4><p>This is usually one of two things:</p>
+<h3 id="i-get-the-error-39-error-from-server-forbidden-39-when-trying-to-run-kubectl-commands">I get the error &#39;Error from server (Forbidden)&rsquo; when trying to run kubectl commands</h3><h4 id="i-get-the-error-39-error-from-server-forbidden-39-when-trying-to-run-kubectl-commands-situation">Situation</h4><p>When attempting to use a command such as <code>kubectl get pods -n &lt;namespace&gt;</code> something like the following error occurs:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>Error from server (Forbidden): pods is forbidden:
+User "https://justice-cloud-platform.eu.auth0.com/#&lt;username&gt;"
+cannot list resource "pods" in API group "" in the namespace "&lt;namespace&gt;"
+</code></pre></div><h4 id="i-get-the-error-39-error-from-server-forbidden-39-when-trying-to-run-kubectl-commands-cause">Cause</h4><p>Possible causes include:</p>
 
 <ul>
-<li>Your token has expired and you need to re-authenticate.</li>
-<li>You don&rsquo;t belong to the GitHub team assigned to the namespace you&rsquo;re attempting to communicate with.</li>
+<li>Your kubernetes token has expired.</li>
+<li>You&rsquo;re not a member of the GitHub team which owns the namespace you&rsquo;re attempting to communicate with (or, you weren&rsquo;t when you authenticated to the cluster).</li>
+<li>Your GitHub team memberships have not been included in your kubernetes id-token.</li>
 </ul>
-<h4 id="i-get-the-error-39-error-from-server-forbidden-39-when-trying-to-run-kubectl-commands-troubleshooting">Troubleshooting</h4><p>First check if you&rsquo;re a member of the GitHub team assigned in your <a href="https://github.com/ministryofjustice/cloud-platform-environments/blob/master/namespaces/live-1.cloud-platform.service.justice.gov.uk/hmpps-book-secure-move-api-production/01-rbac.yaml#L8">rbac.yaml</a> file, which is located in the <a href="https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces">cloud-platform-environments</a> repository.</p>
-<h4 id="i-get-the-error-39-error-from-server-forbidden-39-when-trying-to-run-kubectl-commands-solution">Solution</h4><p>Depending on the cause of your issue you&rsquo;ll need to do one of the following:</p>
-
+<h4 id="solutions">Solutions</h4>
 <ul>
-<li>Re-authenticate to the cluster using the <a href="/documentation/getting-started/kubectl-config.html#authentication">cloud-platform user-guide</a>.</li>
-<li>Ask a team member to <a href="https://help.github.com/en/github/setting-up-and-managing-organizations-and-teams/adding-organization-members-to-a-team">add your GitHub user account</a> to the correct team (please note, the Cloud Platform team cannot do this for you).</li>
+<li>First confirm that you&rsquo;re a member of the GitHub team assigned in your <a href="https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live-1.cloud-platform.service.justice.gov.uk/hmpps-book-secure-move-api-production/01-rbac.yaml#L8">rbac.yaml</a> file, which is located in the <a href="https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces">cloud-platform-environments</a> repository.</li>
+<li>If you&rsquo;re not a member, get someone in the team to <a href="https://help.github.com/en/github/setting-up-and-managing-organizations-and-teams/adding-organization-members-to-a-team">add you to it</a> (please note, the Cloud Platform team cannot do this for you), and then <a href="/documentation/getting-started/kubectl-config.html#authentication">re-authenticate</a> to the cluster.</li>
+<li>If you&rsquo;re already in the right github teams, try to <a href="/documentation/getting-started/kubectl-config.html#authentication">re-authenticate</a> to the cluster.</li>
+<li>If that doesn&rsquo;t work, <a href="/documentation/other-topics/check-id-token.html">check that your github team memberships are recorded in your id-token</a>.</li>
+<li><p>If they aren&rsquo;t, <a href="/documentation/getting-started/kubectl-config.html#authentication">re-authenticate</a> to the cluster <strong>using an icognito/private browsing window</strong>.</p>
+<p>Sometimes browser caching seems to cause problems with the authentication process, and using an icognito browser window usually resolves the problem.</p></li>
 </ul>
 
 
