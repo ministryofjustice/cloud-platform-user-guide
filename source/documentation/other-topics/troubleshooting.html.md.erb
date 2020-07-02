@@ -250,26 +250,38 @@ Once a change has been made to either your application or Probe, a fresh deploym
 ### I get the error 'Error from server (Forbidden)' when trying to run kubectl commands
 
 #### Situation
-When attempting to use a command such as `kubectl get pods -n <namespace>` the following error occurs:
 
-`Error from server (Forbidden): pods is forbidden: User "https://justice-cloud-platform.eu.auth0.com/#<username>" cannot list resource "pods" in API group "" in the namespace "<namespace>"`
+When attempting to use a command such as `kubectl get pods -n <namespace>` something like the following error occurs:
 
+```
+Error from server (Forbidden): pods is forbidden:
+User "https://justice-cloud-platform.eu.auth0.com/#<username>"
+cannot list resource "pods" in API group "" in the namespace "<namespace>"
+```
 
 #### Cause
-This is usually one of two things:
 
-  - Your token has expired and you need to re-authenticate.
-  - You don't belong to the GitHub team assigned to the namespace you're attempting to communicate with.
+Possible causes include:
 
-#### Troubleshooting
-First check if you're a member of the GitHub team assigned in your [rbac.yaml](https://github.com/ministryofjustice/cloud-platform-environments/blob/master/namespaces/live-1.cloud-platform.service.justice.gov.uk/hmpps-book-secure-move-api-production/01-rbac.yaml#L8) file, which is located in the [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces) repository.
+* Your kubernetes token has expired.
+* You're not a member of the GitHub team which owns the namespace you're attempting to communicate with (or, you weren't when you authenticated to the cluster).
+* Your GitHub team memberships have not been included in your kubernetes id-token.
 
-#### Solution
-Depending on the cause of your issue you'll need to do one of the following:
+#### Solutions
 
-  - Re-authenticate to the cluster using the [cloud-platform user-guide](/documentation/getting-started/kubectl-config.html#authentication).
-  - Ask a team member to [add your GitHub user account](https://help.github.com/en/github/setting-up-and-managing-organizations-and-teams/adding-organization-members-to-a-team) to the correct team (please note, the Cloud Platform team cannot do this for you).
+* First confirm that you're a member of the GitHub team assigned in your [rbac.yaml] file, which is located in the [cloud-platform-environments] repository.
+* If you're not a member, get someone in the team to [add you to it][add-to-team] (please note, the Cloud Platform team cannot do this for you), and then [re-authenticate] to the cluster.
+* If you're already in the right github teams, try to [re-authenticate] to the cluster.
+* If that doesn't work, [check that your github team memberships are recorded in your id-token][token-groups].
+* If they aren't, [re-authenticate] to the cluster **using an icognito/private browsing window**.
+
+    Sometimes browser caching seems to cause problems with the authentication process, and using an icognito browser window usually resolves the problem.
 
 [Kibana]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/kibana#/home?_g=()
 [application logging]: /documentation/logging-an-app/access-logs.html#accessing-application-log-data
 [visual guide]: https://learnk8s.io/troubleshooting-deployments
+[re-authenticate]: /documentation/getting-started/kubectl-config.html#authentication
+[token-groups]: /documentation/other-topics/check-id-token.html
+[add-to-team]: https://help.github.com/en/github/setting-up-and-managing-organizations-and-teams/adding-organization-members-to-a-team
+[rbac.yaml]: https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live-1.cloud-platform.service.justice.gov.uk/hmpps-book-secure-move-api-production/01-rbac.yaml#L8
+[cloud-platform-environments]: https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces
