@@ -17,7 +17,7 @@ A network policy allows connection based on `PodSelector` and/or `NamespaceSelec
 ## Namespace Label 
 
 Any namespace label can be used in the network policy.   
-For clarity, and to avoid overlap with other namespaces, let's make our label key: 
+For clarity, and to avoid overlap with other namespaces, let's make our label key:   
    `cloud-platform.justice.gov.uk/namespace`
 
 
@@ -29,9 +29,9 @@ kind: Namespace
 metadata:
   name: source-namespace
   labels:
+    cloud-platform.justice.gov.uk/namespace: "source-namespace"  # this is the label 
     cloud-platform.justice.gov.uk/is-production: "false"
     cloud-platform.justice.gov.uk/environment-name: "dev"
-    cloud-platform.justice.gov.uk/namespace: "source-namespace"  # this is the label we will use in the policy
   annotations:
     cloud-platform.justice.gov.uk/business-unit: "HMPPS"
     cloud-platform.justice.gov.uk/application: "court-probation"
