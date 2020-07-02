@@ -9,7 +9,7 @@ review_in: 3 months
 # Overview 
 
 Network Policies are used to regulate connectivity between Kubernetes namespaces.  
-Every namespace in the cluster has network policies only allowing inbound traffic from the Ingress Controllers.  
+Every namespace in the cluster has network policies only allowing inbound traffic from the _ingress controllers_ namespace.  
 
 
 A network policy allows connection based on `PodSelector` and/or `NamespaceSelector`.  The policy will then filter requests based on namespace or pod labels.
@@ -17,12 +17,13 @@ A network policy allows connection based on `PodSelector` and/or `NamespaceSelec
 ## Namespace Label 
 
 Any namespace label can be used in the network policy.   
-For clarity, and to avoid overlap with other namespaces, let's use the `cloud-platform.justice.gov.uk/namespace` as the label key.
+For clarity, and to avoid overlap with other namespaces, let's make our label key: 
+   `cloud-platform.justice.gov.uk/namespace`
 
 
 ```
 # 00-namepace.yaml
-
+---
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -39,16 +40,16 @@ metadata:
 ```
 
 
-##  Network Policy 
+##  Network Policy  
 
-Once the relevant label has been added to the namespace, the policy can be create.  
+Once the relevant label has been added to the namespace, the policy can be create.   
 The policy below allows all traffic from `source-namespace` to `target-namespace`
 
 
 ```
 # 04-networkpolicy.yaml
 # allow-source-namespace.yaml
-
+---
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:
@@ -73,4 +74,7 @@ Note: For more complex usecase, or if the policy is going to be specific to a Po
 
 To access a service in the target namespace, we won't be able to simply use the service name anymore. 
 
-We have to use `<serviceName>.<namespaceName>`
+We have to use `<serviceName>.<namespaceName>`.  
+
+Example : 
+```curl myservice.target-namespace ```
