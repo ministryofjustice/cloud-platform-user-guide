@@ -1,0 +1,76 @@
+---
+title: Checking the GitHub groups in your ID token
+last_reviewed_on: 2020-07-02
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+This guide explains how you can confirm that the token in your `~/.kube/config` file lists the correct github groups.
+
+## JWT decoder
+
+Inside your `~/.kube/config` file there is an `id-token` value. This token is the credential that the cluster uses to decide which operations you are authorised to do.
+
+In particular, the token contains a list of the github groups you are in, and this is used to grant/block access to specific namespaces in the cluster.
+
+The token is a [JWT](https://en.wikipedia.org/wiki/JSON_Web_Token) and you can check that the correct github groups are listed by decoding it to view the contents.
+
+> Please do not paste your ID token into an online JWT decoder. Your token is an important security credential and needs to be kept secret, just like passwords or AWS keypairs.
+
+You can use this code snippet to create a function that will decode your ID token.
+
+```bash
+function jwt() {
+  for part in 1 2; do
+    b64="$(cut -f$part -d. <<< "$1" | tr '_-' '/+')"
+    len=${#b64}
+    n=$((len % 4))
+    if [[ 2 -eq n ]]; then
+      b64="${b64}=="
+    elif [[ 3 -eq n ]]; then
+      b64="${b64}="
+    fi
+    d="$(openssl enc -base64 -d -A <<< "$b64")"
+    echo "$d"
+    # don't decode further if this is an encrypted JWT (JWE)
+    if [[ 1 -eq part ]] && grep '"enc":' <<< "$d" >/dev/null ; then
+        exit 0
+    fi
+  done
+}
+```
+(from [this article](https://www.jvt.me/posts/2019/06/13/pretty-printing-jwt-openssl/))
+
+Paste the code above into a file (e.g. `jwt.sh`) and then run `. jwt.sh` to define the function in your current shell (these instructions are for `bash` - you may need to adapt them if you use a different shell).
+
+You can now decode your id-token like this:
+
+```bash
+jwt $(grep id-token ~/.kube/config | sed 's/.*id-token: //') | jq
+```
+
+In this case, we are using [jq](https://stedolan.github.io/jq/) to pretty-print the JSON output. Just remove the ` | jq` if you don't have jq installed.
+
+You should see a few lines of output including something similar to this:
+
+```json
+...
+{
+  "https://k8s.integration.dsd.io/groups": [
+    "github:webops",
+    "github:technical-architects",
+    "github:moj-cjse"
+  ],
+  "nickname": "digitalronin",
+  "name": "David Salgado",
+...
+```
+
+If you do not see the github group corresponding to the namespace you are trying to work on, you will get:
+
+```
+Error from server (Forbidden)...
+```
+
+...when you try to run commands using `kubectl`.
