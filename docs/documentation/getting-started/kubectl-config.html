@@ -136,11 +136,13 @@
 
 <ol>
 <li>Click on <a href="https://login.cloud-platform.service.justice.gov.uk/">this link</a></li>
-<li>Go through the &#39;Sign in with GitHub&rsquo; process</li>
-<li>Authorise &#39;live-1:kubernetes&rsquo; to access your &#39;justice-cloud-platform&rsquo; tenant</li>
-<li>Use the &#39;Download Config File&rsquo; button</li>
-<li>Rename the downloaded file to <code>~/.kube/config</code></li>
-<li>Run this command:</li>
+<li><p>Go through the &#39;Sign in with GitHub&rsquo; process</p>
+<p>NB: Be careful when you reach the authorization step:</p>
+<p><a href="/images/github-authorize-moj.png" target="_blank" rel="noopener noreferrer"><img src="/images/github-authorize-moj.png" alt="GitHub Authorize MoJ" /></a></p></li>
+<li><p>Authorise &#39;live-1:kubernetes&rsquo; to access your &#39;justice-cloud-platform&rsquo; tenant</p></li>
+<li><p>Use the &#39;Download Config File&rsquo; button</p></li>
+<li><p>Rename the downloaded file to <code>~/.kube/config</code></p></li>
+<li><p>Run this command:</p></li>
 </ol>
 <div class="highlight"><pre class="highlight plaintext"><code>kubectl config use-context live-1.cloud-platform.service.justice.gov.uk
 </code></pre></div><p>You should now be able to run <code>kubectl</code> commands. Try running <code>kubectl get namespaces</code> to list the namespaces in the cluster.</p>
