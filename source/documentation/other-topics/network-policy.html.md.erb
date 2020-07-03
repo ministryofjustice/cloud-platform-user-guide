@@ -1,0 +1,80 @@
+---
+title: Network Policies
+last_reviewed_on: 2020-07-02
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+# Overview 
+
+Network Policies are used to regulate connectivity between Kubernetes namespaces.  
+Every namespace in the cluster has network policies only allowing inbound traffic from the _ingress controllers_ namespace.  
+
+
+A network policy allows connection based on `PodSelector` and/or `NamespaceSelector`.  The policy will then filter requests based on namespace or pod labels.
+
+## Namespace Label 
+
+Any namespace label can be used in the network policy.   
+For clarity, and to avoid overlap with other namespaces, let's make our label key:   
+   `cloud-platform.justice.gov.uk/namespace`
+
+
+```
+# 00-namepace.yaml
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: source-namespace
+  labels:
+    cloud-platform.justice.gov.uk/namespace: "source-namespace"  # this is the label 
+    cloud-platform.justice.gov.uk/is-production: "false"
+    cloud-platform.justice.gov.uk/environment-name: "dev"
+  annotations:
+    cloud-platform.justice.gov.uk/business-unit: "HMPPS"
+    cloud-platform.justice.gov.uk/application: "court-probation"
+    cloud-platform.justice.gov.uk/owner: "andy.marke@digital.justice.gov.uk: andy.marke@digital.justice.gov.uk"
+    cloud-platform.justice.gov.uk/source-code: "https://github.com/ministryofjustice/court-probation-service"
+```
+
+
+##  Network Policy  
+
+Once the relevant label has been added to the namespace, the policy can be create.   
+The policy below allows all traffic from `source-namespace` to `target-namespace`
+
+
+```
+# 04-networkpolicy.yaml
+# allow-source-namespace.yaml
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-source-namespace
+  namespace: target-namespace
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          cloud-platform.justice.gov.uk/namespace: "source-namespace'
+
+```
+
+Note: For more complex usecase, or if the policy is going to be specific to a Pod, see [here](https://kubernetes.io/docs/concepts/services-networking/network-policies/#behavior-of-to-and-from-selectors)
+
+
+## Accessing the service
+
+To access a service in the target namespace, we won't be able to simply use the service name anymore. 
+
+We have to use `<serviceName>.<namespaceName>`.  
+
+Example : 
+```curl myservice.target-namespace ```
