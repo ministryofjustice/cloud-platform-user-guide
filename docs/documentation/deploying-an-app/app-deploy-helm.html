@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en" class="govuk-template no-js">
+  <head>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+      <meta name="robots" content="noindex">
+
+    <title>Deploying an application to the Cloud Platform with Helm - Cloud Platform User Guide</title>
+
+    <link href="/stylesheets/manifest.css" rel="stylesheet" />
+
+    <link rel="canonical" href="user-guide2.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/app-deploy-helm.html">
+
+
+      <meta property="og:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="og:site_name" content="Cloud Platform User Guide" />
+      <meta property="og:title" content="Deploying an application to the Cloud Platform with Helm" />
+      <meta property="og:type" content="object" />
+      <meta property="og:url" content="user-guide2.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/app-deploy-helm.html" />
+      <meta property="twitter:card" content="summary" />
+      <meta property="twitter:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="twitter:title" content="Deploying an application to the Cloud Platform with Helm - Cloud Platform User Guide" />
+      <meta property="twitter:url" content="user-guide2.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/app-deploy-helm.html" />
+
+    
+  </head>
+
+  <body class="govuk-template__body">
+    <script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
+
+    <div class="app-pane">
+      <div class="app-pane__header toc-open-disabled">
+        <a href="#content" class="govuk-skip-link">Skip to main content</a>
+
+        <header class="govuk-header app-header" role="banner" data-module="govuk-header">
+  <div class="govuk-header__container govuk-header__container--full-width">
+    <div class="govuk-header__logo">
+      <a href="/" class="govuk-header__link govuk-header__link--homepage">
+        <span class="govuk-header__product-name">
+          Cloud Platform User Guide
+        </span>
+      </a>
+        <strong class="govuk-tag">INTERNAL</strong>
+    </div>
+    <div class="govuk-header__content">
+      <button type="button" class="govuk-header__menu-button govuk-js-header-toggle" aria-controls="navigation" aria-label="Show or hide Top Level Navigation">Menu</button>
+      <nav>
+        <ul id="navigation" class="govuk-header__navigation govuk-header__navigation--end" aria-label="Top Level Navigation">
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="mailto:platforms+user-guide@digital.justice.gov.uk?subject=User+guide+feedback">Feedback / Report a problem</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="/">Documentation</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub</a>
+            </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      </div>
+
+        <div id="toc-heading" class="toc-show fixedsticky">
+          <a href="#toc" class="toc-show__label js-toc-show" aria-controls="toc">
+            Table of contents <span class="toc-show__icon"></span>
+          </a>
+        </div>
+
+      <div class="app-pane__body" data-module="in-page-navigation">
+          <div class="app-pane__toc">
+            <div class="toc" data-module="table-of-contents">
+              <div class="search" data-module="search">
+  <form action="https://www.google.co.uk/search" method="get" role="search">
+    <input type="hidden" name="as_sitesearch" value="user-guide2.cloud-platform.service.justice.gov.uk"/>
+    <label class="govuk-label search__label" for="search">
+      Search (via Google)
+    </label>
+    <input class="govuk-input govuk-!-margin-bottom-4" id="search" name="q" type="text" aria-controls="search-results" placeholder="Search">
+  </form>
+  <div id="search-results" class="search-results" aria-hidden="true" role="dialog" aria-labelledby="search-results-title">
+    <div class="search-results__inner">
+      <button class="search-results__close">Close<span class="search-results__close-label"> search results</span></button>
+      <h2 id="search-results-title" class="search-results__title" aria-live="polite">Results</h2>
+      <div class="search-results__content"></div>
+    </div>
+  </div>
+</div>
+
+              <a href="#" class="toc__close js-toc-close" aria-controls="toc" aria-label="Hide table of contents"></a>
+              <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading">
+                      <ul>
+  <li>
+    <a href="#deploying-an-application-to-the-cloud-platform-with-helm"><span>Deploying an application to the Cloud Platform with Helm</span></a>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <a href="#introduction"><span>Introduction</span></a>
+          </li>
+          <li>
+            <a href="#deploy-the-app"><span>Deploy the app</span></a>
+          </li>
+          <li>
+            <a href="#next-steps"><span>Next steps</span></a>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="#migrate-from-helm-v2-to-helm-v3"><span>Migrate from Helm v2 to Helm v3</span></a>
+        <ul>
+          <li>
+            <a href="#helm-v3-cli-binary"><span>Helm v3 CLI Binary</span></a>
+          </li>
+          <li>
+            <a href="#helm-2to3-plugin"><span>Helm-2TO3 Plugin</span></a>
+          </li>
+          <li>
+            <a href="#migrate-helm-v2-configuration"><span>Migrate helm v2 Configuration</span></a>
+          </li>
+          <li>
+            <a href="#migrate-helm-v2-releases"><span>Migrate helm v2 releases</span></a>
+          </li>
+          <li>
+            <a href="#clean-up-of-helm-v2-data"><span>Clean up of helm v2 data</span></a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
+              </nav>
+            </div>
+          </div>
+
+        <div class="app-pane__content toc-open-disabled">
+          <main id="content" class="technical-documentation" data-module="anchored-headings">
+              <h1 id="deploying-an-application-to-the-cloud-platform-with-helm">Deploying an application to the Cloud Platform with Helm</h1><h3 id="introduction">Introduction</h3><p>This document will act as a guide to your first application deployment into the Cloud Platform. If you have any issues completing the objective or have any suggestions please feel free to drop use a line in the <code>#ask-cloud-platform</code> slack channel.</p>
+<h4 id="objective">Objective</h4><p>By the end of this guide you&rsquo;ll have deployed a <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/">Multi-container demo app</a> to a cluster using the Kubernetes package manager <a href="https://helm.sh/">Helm</a>.</p>
+<p><em>Disclaimer: You&rsquo;ll see fairly quickly that the application is not fit for production. A perfect example of this is the <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/helm_deploy/multi-container-app/container-postgres-secrets.yaml">plaintext secrets file</a>. For the demo application we&rsquo;ve left this file in plaintext but it <strong>must</strong> be encrypted when writing your own manifests for production/non-production work in the MoJ.</em></p>
+<h4 id="requirements">Requirements</h4><p>It is assumed you have the following:</p>
+
+<ul>
+<li>You have a basic understanding of what <a href="https://kubernetes.io/">Kubernetes</a> is.</li>
+<li>You have <a href="/documentation/getting-started/env-create.html#creating-a-cloud-platform-environment">created an environment for your application</a></li>
+<li>You have installed <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/">Kubectl</a> on your local machine.</li>
+<li>You have <a href="/documentation/getting-started/kubectl-config.html#authentication">authenticated</a> to the cloud-platform-live-1 cluster.</li>
+</ul>
+<h3 id="deploy-the-app">Deploy the app</h3><p>The multi-container demo application we&rsquo;re going to use is a very simple Ruby application with an on-cluster Postgresql database.</p>
+
+<blockquote>
+<p>Note: The default installation include all components (API server, postgres, worker, rails app) of this application. 
+Even though the postgresql database will be installed within the Kubernetes cluster, when deploying to <a href="https://github.com/ministryofjustice/cloud-platform">cloud platform</a>, this can be disabled and setup a RDS instance using the <a href="https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance">terraform module</a> which is recommended if running in production.</p>
+</blockquote>
+<p>The Helm deployment manifests have been pre-written for this exercise. But if you wish to know more about these files and what they do have a quick browse of the <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/helm_deploy/multi-container-app/README.md">README</a>.</p>
+<h4 id="set-up">Set up</h4><p>First we need to clone our Multi-container demo application and change directory:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ git clone https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app.git
+$ cd cloud-platform-multi-container-demo-app
+</code></pre></div><p>You now have a functioning git repository that contains a multi-container ruby application. Have a browse around and get familiar with the directory structure.</p>
+<h4 id="browse-the-cluster">Browse the cluster</h4><p>Let&rsquo;s make use of the command line tool <code>kubectl</code> to browse around the cluster to see what it looks like before we deploy our application:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl get pods --namespace &lt;namespace-name&gt;
+</code></pre></div><p><em>The <code>&lt;namespace-name&gt;</code> here is the environment you created, listed in the requirements section at the beginning of the document.</em></p>
+<p>If you receive the below error message then you&rsquo;ve either not typed in your namespace correctly or you don&rsquo;t have permission to perform a <code>get pods</code> command. Either way, you&rsquo;ll need to go back and review the <a href="/documentation/getting-started/env-create.html#creating-a-cloud-platform-environment">Creating an Environment</a> document previously mentioned.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ Error from server (Forbidden): pods is forbidden: User "test-user" cannot list pods in the namespace "demo"
+</code></pre></div><h4 id="using-helm">Using Helm</h4><p>Helm allows you to manage application deployment to Kubernetes using Charts. You can read about of some of the many features of <a href="https://helm.sh/docs/topics/charts/">Helm Charts</a>. 
+We&rsquo;ve chosen to use Helm as the default way to deploy applications to the Cloud Platform as it provides useful tooling as an interface to the YAML files that Kubernetes uses to run.</p>
+<h5 id="installing-and-configuring-helm">Installing and configuring Helm</h5><p>Install the client via Homebrew or by other <a href="https://docs.helm.sh/using_helm/#installing-helm">means</a>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ brew install helm
+</code></pre></div><p>When succesful, you&rsquo;ll be greeted with the message:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>Happy Helming
+</code></pre></div><p>This is an indication we&rsquo;re ready to deploy our applicaton.</p>
+<h5 id="application-install">Application install</h5><p>To deploy the application with Helm first change directory so we can focus on the app we need:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ cd helm_deploy/multi-container-app/
+</code></pre></div><p>Values for our application are stored in the <code>values.yaml</code> at the root of our directory. Configurations such as &lsquo;number of pods running&rsquo; and which image repository to use is stored here in this file. Open this file and get familiar with our application layout.</p>
+<p>If you want to use the postgres database deployed in the container,</p>
+
+<ol>
+<li>apply the secrets required for the posgres database by modifying and applying <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/helm_deploy/multi-container-app/container-postgres-secrets.yaml">this file</a></li>
+<li><p>create another <a href="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/add-secrets-to-deployment.html#creating-the-secret">secret file</a> secrets.yaml to store the database url with key called <code>url</code>. 
+The database url should be in the format</p>
+<div class="highlight"><pre class="highlight plaintext"><code>postgres://&lt;USERNAME&gt;:&lt;ADD-PASSWORD-HERE&gt;@&lt;DB-SERVICE-NAME&gt;:5432/&lt;DATABASE_NAME&gt;
+</code></pre></div><p>For this helm deployment, the url will look like this:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>postgres://postgres:&lt;ADD-PASSWORD-HERE&gt;@multi-container-app-postgresql:5432/multi_container_demo_app
+</code></pre></div><p>Update the <code>&lt;ADD-PASSWORD-HERE&gt;</code> with the password you mentioned in <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/helm_deploy/multi-container-app/container-postgres-secrets.yaml">this secret file</a></p></li>
+<li><p>Encode the secret</p>
+<div class="highlight"><pre class="highlight plaintext"><code>echo -n 'postgres://postgres:&lt;ADD-PASSWORD-HERE&gt;@multi-container-app-postgresql:5432/multi_container_demo_app' | base64 -b0
+</code></pre></div></li>
+<li><p>Apply the secret file to your environment</p></li>
+</ol>
+<div class="highlight"><pre class="highlight plaintext"><code>  kubectl apply -f secrets.yaml -n &lt;namespace-name&gt;
+</code></pre></div><p>Update the values.yaml file for</p>
+
+<ul>
+<li><code>&lt;DATABASE-URL-SECRET-NAME&gt;</code> with the name of the secret where you stored the database url</li>
+<li><code>&lt;DNS-PREFIX&gt;</code> with the your own name.</li>
+</ul>
+<p>Run the following (replacing <code>&lt;namespace-name&gt;</code> with your environment name:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>helm install multi-container-app . \
+--values values.yaml \
+--namespace &lt;namespace-name&gt; 
+</code></pre></div>
+<blockquote>
+<p>Note: We&rsquo;re naming it like this as app names and host names have to be unique on the cluster.</p>
+</blockquote>
+<p>You&rsquo;ll see quite a lot of output as the various components are created.</p>
+<h4 id="viewing-your-application">Viewing your application</h4><p>Congratulations on getting this far. If all went well your pods are now deployed and is now being served on your specified URL.</p>
+<p>Let&rsquo;s check:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl get pods --namespace &lt;namespace-name&gt; 
+</code></pre></div><p>If the deploy was successful you should be greeted with something similar to the below:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>NAME                                           READY     STATUS    RESTARTS   AGE
+content-api-7cf4588945-vk46w            1/1     Running                      0          2m34s
+multi-container-app-postgresql-0        1/1     Running                      0          2m34s
+rails-app-59bd9f9b64-tsn8w              1/1     Running                      0          2m34s
+rails-migrations-kwldv                  0/1     Completed                    1          2m34s
+worker-874774c95-q4frp                  1/1     Running                      0          2m34s
+</code></pre></div><p>You should have a postgres pod, 3 app pods <strong>ready</strong> with the status <strong>running</strong> and 1 migration job completed.</p>
+<p>(There&rsquo;s also a line for a pod which ran the initial database migrations, but that&rsquo;s completed and no longer running so we&rsquo;ll ignore it.)</p>
+<p>Let&rsquo;s check your host has a URL by running:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl get ingress --namespace &lt;namespace-name&gt;
+</code></pre></div><p>This will return the URL of your given app. Open it using your favourite browser.</p>
+<p>You can also secure the application with http basic authentication. For more information on how to setup, see <a href="/documentation/deploying-an-app/helloworld-app-deploy.html#add-http-basic-authentication">this topic</a>.</p>
+<p>You should be met with an Demo app with the title, <em>&lsquo;Hello from Rails&rsquo;</em> with a cat image. If you refresh the page, you should see a different cat picture (the URL of which the rails-app fetches from the content-api component).</p>
+<h4 id="view-the-logs">View the logs</h4><p>Each pod will generate logs that can be viewed via the API. Let&rsquo;s have a browse of our application logs.</p>
+<p>First grab the pod name:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl get pods --namespace &lt;namespace-name&gt;
+</code></pre></div><p>Then copy the name of a pod that isn&rsquo;t postgresql.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>   NAME                                           READY     STATUS    RESTARTS   AGE
+   content-api-7cf4588945-vk46w            1/1     Running                      0          2m34s
+*  rails-app-59bd9f9b64-tsn8w              1/1     Running                      0          2m34s
+   worker-874774c95-q4frp                  1/1     Running                      0          2m34s
+</code></pre></div><p>We&rsquo;re going to follow the log, so we&rsquo;ll run:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl logs rails-app-59bd9f9b64-tsn8w --namespace &lt;namespace-name&gt; -f
+</code></pre></div><p>As you can see, this tails the log and you should see our health checks giving a HTTP 200.</p>
+<p>Read more about Kubernetes logging <a href="https://kubernetes.io/docs/concepts/cluster-administration/logging/">here</a>.</p>
+<h4 id="scale-the-application">Scale the application</h4><p>You now have our application up and running but you decide two pods aren&rsquo;t enough. Say you want to run three. This is simply a case of changing the replicaCount value in the values.yaml and then running the <code>helm upgrade</code> command.</p>
+<p>Edit <code>values.yaml</code> and change <code>replicaCount</code> from 1 to 3. Save the file, then run:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ helm upgrade multi-container-app . --namespace &lt;namespace-name&gt;
+$ helm upgrade multi-container-app -f values.yaml . --namespace &lt;namespace-name&gt;
+</code></pre></div><p>This command spins up another pod to bring the total number to 3.</p>
+<p>If we run the familiar command we&rsquo;ve been using:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl get pods --namespace &lt;env-var&gt;
+</code></pre></div><p>You&rsquo;ll see the pod replication in progress.</p>
+<h4 id="tear-it-all-down">Tear it all down</h4><p>Finally, we have built are app and deployed to the cluster. There is only one thing left to do. Destroy it.</p>
+<p>To delete the deployment you simply run:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ helm del multi-container-app --namespace &lt;namespace-name&gt;
+</code></pre></div><p>And then confirm the pods are terminating as expected:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl get pods --namespace &lt;namespace-name&gt;
+</code></pre></div><h3 id="next-steps">Next steps</h3><p>The next step will be to create your own Helm Chart. You can try this with an application of your own or run through <a href="https://docs.bitnami.com/kubernetes/how-to/create-your-first-helm-chart/">Bitnami&rsquo;s excellent guide</a> on how to build using a simple quickstart.</p>
+<h2 id="migrate-from-helm-v2-to-helm-v3">Migrate from Helm v2 to Helm v3</h2><p>One of the most important parts of upgrading to a new major release of Helm is the migration of data. This is especially true of Helm v2 to v3 considering the <a href="https://helm.sh/blog/helm-3-released/#what-changed-in-helm-3">architectural changes</a> between the releases. This is where the <code>helm-2to3</code> plugin comes in.</p>
+<p>It helps with this migration by supporting:</p>
+
+<ul>
+<li>Migration of Helm v2 configuration.</li>
+<li>Migration of Helm v2 releases.</li>
+<li>Clean up Helm v2 configuration, release data and Tiller deployment.</li>
+</ul>
+<h3 id="helm-v3-cli-binary">Helm v3 CLI Binary</h3><p>As we do not want to overwrite Helm v2 CLI binary, we need to perform an additional step to ensure that both CLI versions can co-exist until we are ready to remove the Helm v2 CLI and all it’s related data:</p>
+<p>Download latest Helm v3 release from <a href="https://github.com/helm/helm/releases">here</a>, rename the binary to helm3 and store it in your path.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>mv helm /usr/local/bin/helm3
+</code></pre></div><p>You should now be able to check the version of helm v3 by running:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>helm3 version --short
+</code></pre></div><p>helm v3 does not install with any repositories including the <code>stable</code> repo, you can confirm this by running:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>helm3 repo list
+</code></pre></div><p>You should see the message <code>Error: no repositories to show</code></p>
+<h3 id="helm-2to3-plugin">Helm-2TO3 Plugin</h3><p><code>helm-2to3</code> plugin will allow us to migrate and cleanup helm v2 configuration and releases to helm v3 in-place.</p>
+<p>Installed Kubernetes objects will not be modified or removed.</p>
+<p>To install the plugin:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>helm3 plugin install https://github.com/helm/helm-2to3 -n &lt;namespace-name&gt;
+Downloading and installing helm-2to3 v0.3.0 ...
+https://github.com/helm/helm-2to3/releases/download/v0.3.0/helm-2to3_0.3.0_darwin_amd64.tar.gz
+Installed plugin: 2to3
+</code></pre></div><div class="highlight"><pre class="highlight plaintext"><code>helm3 plugin list
+NAME    VERSION DESCRIPTION
+2to3    0.3.0   migrate and cleanup Helm v2 configuration and releases in-place to Helm v3
+</code></pre></div><h3 id="migrate-helm-v2-configuration">Migrate helm v2 Configuration</h3><p>First we need to migrate Helm v2 config and data folders.</p>
+<p>It will migrate:</p>
+
+<ul>
+<li>Chart starters</li>
+<li>Repositories</li>
+<li>Plugins</li>
+</ul>
+<p>The safest way is to start with –dry-run flag:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>helm3 2to3 move config --dry-run
+</code></pre></div><p>This will show you all the commands and files that will be moving to helm3. To run the actual migration, run without the &ndash;dry-run flag:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>helm3 2to3 move config
+</code></pre></div><p>If you now run the helm3 repo list, you should get back the <code>stable</code> repo, and any other you have used in helm v2:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>helm3 repo list
+NAME        URL
+stable      https://kubernetes-charts.storage.googleapis.com
+</code></pre></div><h3 id="migrate-helm-v2-releases">Migrate helm v2 releases</h3><p>The migration is conducted per release, you can get a list of all releases by running:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>helm list --tiller-namespace &lt;namespace-name&gt;
+</code></pre></div><p>The safest way to run the convert is to again use the &ndash;dry-run flag:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>helm3 2to3 convert &lt;release-name&gt; --tiller-ns &lt;namespace-name&gt; --dry-run
+</code></pre></div><p>To run the actual migration, run without the &ndash;dry-run flag:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>helm3 2to3 convert &lt;release-name&gt; --tiller-ns &lt;namespace-name&gt;
+</code></pre></div><p>To view if it was successful and a part of helm3, run a helm3 list:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>helm3 list -n &lt;namespace-name&gt;
+</code></pre></div><p>You have now migrated your release from helm v2 to helm v3. (If required, please migrate any other releases). However, the release is still listed on helm v2 and needs to be cleaned up.</p>
+<h3 id="clean-up-of-helm-v2-data">Clean up of helm v2 data</h3><p>The last step is cleaning up the old data.</p>
+<p>It will clean:</p>
+
+<ul>
+<li>Configuration (Helm home directory) </li>
+<li>v2 release data </li>
+<li>Tiller deployment</li>
+</ul>
+<div class="highlight"><pre class="highlight plaintext"><code>helm3 2to3 cleanup --tiller-ns &lt;namespace-name&gt; --dry-run
+</code></pre></div><p>It will show what releases going to be deleted, Tiller service to be removed from your namespace and Helm v2 home folder will be deleted.</p>
+<p><code>NOTE:</code> The cleanup command will remove the Helm v2 Configuration, Release Data and Tiller Deployment. It cleans up all releases managed by Helm v2. It will not be possible to restore them if you haven’t made a backup of the releases. Helm v2 will not be usable afterwards.</p>
+<p>To run the actual cleanup, run without the &ndash;dry-run flag:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>helm3 2to3 cleanup --tiller-ns &lt;namespace-name&gt;
+</code></pre></div><h4 id="tiller-rbac-configuration-removal">Tiller RBAC Configuration Removal</h4><p>The Tiller Service Account resource created using your 01-rbac.yaml file in the cloud-platform-environments repo is no longer required.</p>
+<p>Please create a PR to remove the <code>Tiller Service Account and RoleBinding</code> from the 01-rbac.yaml file.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tiller
+  namespace: myapp-dev ### Your namespace
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: tiller
+  namespace: myapp-dev ### Your namespace 
+subjects:
+- kind: ServiceAccount
+  name: tiller
+  namespace: myapp-dev ### Your namespace 
+roleRef:
+  kind: ClusterRole
+  name: admin
+  apiGroup: rbac.authorization.k8s.io
+</code></pre></div><p>A member of the Cloud-Platform team will <code>manually delete the Rolebinding</code> before this is applied, as the concourse pipeline is not able to delete Rolebindings currently.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>kubectl -n &lt;namespace-name&gt; delete rolebindings tiller
+</code></pre></div>
+
+              <div data-module='page-expiry' data-last-reviewed-on="2020-08-14">
+    <div class='page-expiry--not-expired'>
+      This page was last reviewed on 14 May 2020.
+
+        It needs to be reviewed again on 14 August 2020
+.
+    </div>
+
+    <div class='page-expiry--expired'>
+      This page was set to be reviewed before 14 August 2020.
+      This might mean the content is out of date.
+    </div>
+  </div>
+
+          </main>
+
+          <aside>
+              <ul class="contribution-banner">
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/documentation/deploying-an-app/app-deploy-helm.html.md.erb">View source</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'Deploying%20an%20application%20to%20the%20Cloud%20Platform%20with%20Helm'&amp;body=Problem%20with%20'Deploying%20an%20application%20to%20the%20Cloud%20Platform%20with%20Helm'%20(user-guide2.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/app-deploy-helm.html)">Report problem</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub Repo</a></li>
+              </ul>
+          </aside>
+
+          <footer class="govuk-footer app-footer" role="contentinfo">
+  <div class="govuk-footer__meta">
+    <div class="govuk-footer__meta-item govuk-footer__meta-item--grow">
+
+
+      <svg
+        aria-hidden="true"
+        focusable="false"
+        class="govuk-footer__licence-logo"
+        xmlns="http://www.w3.org/2000/svg"
+        viewbox="0 0 483.2 195.7"
+        height="17"
+        width="41"
+      >
+        <path
+          fill="currentColor"
+          d="M421.5 142.8V.1l-50.7 32.3v161.1h112.4v-50.7zm-122.3-9.6A47.12 47.12 0 0 1 221 97.8c0-26 21.1-47.1 47.1-47.1 16.7 0 31.4 8.7 39.7 21.8l42.7-27.2A97.63 97.63 0 0 0 268.1 0c-36.5 0-68.3 20.1-85.1 49.7A98 98 0 0 0 97.8 0C43.9 0 0 43.9 0 97.8s43.9 97.8 97.8 97.8c36.5 0 68.3-20.1 85.1-49.7a97.76 97.76 0 0 0 149.6 25.4l19.4 22.2h3v-87.8h-80l24.3 27.5zM97.8 145c-26 0-47.1-21.1-47.1-47.1s21.1-47.1 47.1-47.1 47.2 21 47.2 47S123.8 145 97.8 145"
+        />
+      </svg>
+      <span class="govuk-footer__licence-description">
+        All content is available under the
+        <a
+          class="govuk-footer__link"
+          href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+          rel="license"
+        >Open Government Licence v3.0</a>, except where otherwise stated
+      </span>
+    </div>
+    <div class="govuk-footer__meta-item">
+      <a
+        class="govuk-footer__link govuk-footer__copyright-logo"
+        href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/"
+      >© Crown copyright</a>
+    </div>
+  </div>
+</footer>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <script src="/javascripts/application.js"></script>
+  </body>
+</html>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138188246-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-138188246-1');
+</script>
+
+<script>
+  // Add the current window.location to the body of the
+  // feedback email message.
+  function sendFeedback(mailto, event) {
+    event.preventDefault();
+
+    var body = "Feedback/Problem on page: " + window.location + "\n";
+    var href = mailto + '&body=' + encodeURIComponent(body);
+
+    window.location = href;
+  }
+
+  $(document).ready(function() {
+    var feedbackLink = $('a[href^="mailto:"]:contains("Feedback")')[0];
+    var mailto = feedbackLink.href;
+    $(feedbackLink).on('click', function(event) { sendFeedback(mailto, event); });
+  });
+</script>

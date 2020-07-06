@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en" class="govuk-template no-js">
+  <head>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+      <meta name="robots" content="noindex">
+
+    <title>Continuous Deployment of an application using CircleCI and Helm - Cloud Platform User Guide</title>
+
+    <link href="/stylesheets/manifest.css" rel="stylesheet" />
+
+    <link rel="canonical" href="user-guide2.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/using-circleci-for-continuous-deployment.html">
+
+
+      <meta property="og:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="og:site_name" content="Cloud Platform User Guide" />
+      <meta property="og:title" content="Continuous Deployment of an application using CircleCI and Helm" />
+      <meta property="og:type" content="object" />
+      <meta property="og:url" content="user-guide2.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/using-circleci-for-continuous-deployment.html" />
+      <meta property="twitter:card" content="summary" />
+      <meta property="twitter:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="twitter:title" content="Continuous Deployment of an application using CircleCI and Helm - Cloud Platform User Guide" />
+      <meta property="twitter:url" content="user-guide2.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/using-circleci-for-continuous-deployment.html" />
+
+    
+  </head>
+
+  <body class="govuk-template__body">
+    <script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
+
+    <div class="app-pane">
+      <div class="app-pane__header toc-open-disabled">
+        <a href="#content" class="govuk-skip-link">Skip to main content</a>
+
+        <header class="govuk-header app-header" role="banner" data-module="govuk-header">
+  <div class="govuk-header__container govuk-header__container--full-width">
+    <div class="govuk-header__logo">
+      <a href="/" class="govuk-header__link govuk-header__link--homepage">
+        <span class="govuk-header__product-name">
+          Cloud Platform User Guide
+        </span>
+      </a>
+        <strong class="govuk-tag">INTERNAL</strong>
+    </div>
+    <div class="govuk-header__content">
+      <button type="button" class="govuk-header__menu-button govuk-js-header-toggle" aria-controls="navigation" aria-label="Show or hide Top Level Navigation">Menu</button>
+      <nav>
+        <ul id="navigation" class="govuk-header__navigation govuk-header__navigation--end" aria-label="Top Level Navigation">
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="mailto:platforms+user-guide@digital.justice.gov.uk?subject=User+guide+feedback">Feedback / Report a problem</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="/">Documentation</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub</a>
+            </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      </div>
+
+        <div id="toc-heading" class="toc-show fixedsticky">
+          <a href="#toc" class="toc-show__label js-toc-show" aria-controls="toc">
+            Table of contents <span class="toc-show__icon"></span>
+          </a>
+        </div>
+
+      <div class="app-pane__body" data-module="in-page-navigation">
+          <div class="app-pane__toc">
+            <div class="toc" data-module="table-of-contents">
+              <div class="search" data-module="search">
+  <form action="https://www.google.co.uk/search" method="get" role="search">
+    <input type="hidden" name="as_sitesearch" value="user-guide2.cloud-platform.service.justice.gov.uk"/>
+    <label class="govuk-label search__label" for="search">
+      Search (via Google)
+    </label>
+    <input class="govuk-input govuk-!-margin-bottom-4" id="search" name="q" type="text" aria-controls="search-results" placeholder="Search">
+  </form>
+  <div id="search-results" class="search-results" aria-hidden="true" role="dialog" aria-labelledby="search-results-title">
+    <div class="search-results__inner">
+      <button class="search-results__close">Close<span class="search-results__close-label"> search results</span></button>
+      <h2 id="search-results-title" class="search-results__title" aria-live="polite">Results</h2>
+      <div class="search-results__content"></div>
+    </div>
+  </div>
+</div>
+
+              <a href="#" class="toc__close js-toc-close" aria-controls="toc" aria-label="Hide table of contents"></a>
+              <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading">
+                      <ul>
+  <li>
+    <a href="#continuous-deployment-of-an-application-using-circleci-and-helm"><span>Continuous Deployment of an application using CircleCI and Helm</span></a>
+    <ul>
+      <li>
+        <a href="#introduction"><span>Introduction</span></a>
+        <ul>
+          <li>
+            <a href="#objective"><span>Objective</span></a>
+          </li>
+          <li>
+            <a href="#requirements"><span>Requirements</span></a>
+          </li>
+          <li>
+            <a href="#creating-a-service-account-for-circleci"><span>Creating a Service Account for CircleCI</span></a>
+          </li>
+          <li>
+            <a href="#retrieving-the-service-account-credentials"><span>Retrieving the Service Account credentials</span></a>
+          </li>
+          <li>
+            <a href="#linking-repository-to-circleci"><span>Linking Repository to CircleCI</span></a>
+          </li>
+          <li>
+            <a href="#add-variables-to-circleci"><span>Add variables to CircleCI</span></a>
+          </li>
+          <li>
+            <a href="#creating-the-config-yml"><span>Creating the config.yml</span></a>
+          </li>
+          <li>
+            <a href="#upload-to-ecr"><span>Upload to ECR</span></a>
+          </li>
+          <li>
+            <a href="#deploy-to-kubernetes"><span>Deploy to Kubernetes</span></a>
+          </li>
+          <li>
+            <a href="#complete-config-file"><span>Complete config file</span></a>
+          </li>
+          <li>
+            <a href="#triggering-the-pipeline"><span>Triggering the Pipeline</span></a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
+              </nav>
+            </div>
+          </div>
+
+        <div class="app-pane__content toc-open-disabled">
+          <main id="content" class="technical-documentation" data-module="anchored-headings">
+              <h1 id="continuous-deployment-of-an-application-using-circleci-and-helm">Continuous Deployment of an application using CircleCI and Helm</h1><h2 id="introduction">Introduction</h2><p>This document covers how to continuously deploy your application in the Cloud Platform.</p>
+
+<blockquote>
+<p>Note: This document is specific to using <a href="https://circleci.com/">CircleCI</a> as the Continuous Integration method.</p>
+</blockquote>
+<h3 id="objective">Objective</h3><p>By the end of the tutorial, you will have done the following:</p>
+
+<ul>
+<li>Created a Service Account for CircleCI in your namespace</li>
+<li>Generated a CircleCI configuration file in your application repository. The configuration file will authenticate with your chosen cluster, build a docker image and push it to ECR and upgrade your helm deployment with the new docker image.</li>
+<li>Have an automated CircleCI pipeline that upgrades your helm deployment when a new change is pushed to your master branch</li>
+</ul>
+<h3 id="requirements">Requirements</h3><p>It is assumed you have the following:</p>
+
+<ul>
+<li>You have <a href="/documentation/getting-started/env-create.html#creating-a-cloud-platform-environment">created an environment for your application</a></li>
+<li>You have deployed the <a href="/documentation/deploying-an-app/multicontainer-app-deploy.html">multi-container rails app</a> to the &lsquo;live-1&rsquo; cluster.</li>
+<li>You have created an <a href="/documentation/getting-started/ecr-setup.html#creating-an-ecr-repository">ECR repository</a></li>
+</ul>
+<h3 id="creating-a-service-account-for-circleci">Creating a Service Account for CircleCI</h3><p>As part of the CircleCI deployment pipeline, CircleCI will need to authenticate with the Kubernetes cluster. In order to do so, Kubernetes uses <a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/">Service Accounts</a>. Service Accounts provide an identity for processes that run in a cluster allowing the process to access the API server.</p>
+<p>A Service Account is created in the <a href="https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces">namespace creation github repository</a>.</p>
+<p>If you have not created a CircleCI service account along with the role / rolebinding then you may
+use the below as an example:</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">ServiceAccount</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">circleci</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">&lt;YOUR-NAMESPACE&gt;</span>
+
+<span class="nn">---</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Role</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io/v1beta1</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">circleci</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">&lt;YOUR-NAMESPACE&gt;</span>
+<span class="na">rules</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">apiGroups</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">"</span>
+    <span class="na">resources</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">pods/portforward"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">deployment"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">secrets"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">services"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">pods"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">jobs"</span>  
+    <span class="na">verbs</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">patch"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">get"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">create"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">delete"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">list"</span>
+  <span class="pi">-</span> <span class="na">apiGroups</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">extensions</span><span class="pi">,</span> <span class="nv">apps</span><span class="pi">,</span> <span class="nv">networking.k8s.io</span><span class="pi">]</span>
+    <span class="na">resources</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">deployments"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">ingresses"</span>
+    <span class="na">verbs</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">get"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">update"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">delete"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">create"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">patch"</span>
+
+<span class="nn">---</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">RoleBinding</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io/v1beta1</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">circleci</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">&lt;YOUR-NAMESPACE&gt;</span>
+<span class="na">subjects</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="na">kind</span><span class="pi">:</span> <span class="s">ServiceAccount</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">circleci</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">&lt;YOUR-NAMESPACE&gt;</span>
+<span class="na">roleRef</span><span class="pi">:</span>
+  <span class="na">kind</span><span class="pi">:</span> <span class="s">Role</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">circleci</span>
+  <span class="na">apiGroup</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io</span>
+</code></pre></div><p>Remember to replace <code>&lt;YOUR-NAMESPACE&gt;</code> with your namespace. Save the above as &lsquo;serviceaccount-circleci.yaml&rsquo; under your <a href="https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces">namespace folder</a>.</p>
+<p>Raise a PR for your service account creation. Once approved you should then see your new CircleCI service account in your namespace.</p>
+<div class="highlight"><pre class="highlight yaml"><code>  <span class="s">$ kubectl get serviceaccounts --namespace $ns</span>
+  <span class="s">NAME       SECRETS   AGE</span>
+  <span class="s">circleci   1         3h</span>
+
+  <span class="s">$ kubectl get serviceaccounts/circleci --namespace reference-app -o yaml</span>
+  <span class="s">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+  <span class="na">kind</span><span class="pi">:</span> <span class="s">ServiceAccount</span>
+  <span class="s">...</span>
+  <span class="na">secrets</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">circleci-token-prlkp</span>
+
+  <span class="s">$ kubectl get secrets --namespace $ns</span>
+  <span class="s">NAME                   TYPE                                  DATA      AGE</span>
+  <span class="s">circleci-token-prlkp   kubernetes.io/service-account-token   3         3h</span>
+
+  <span class="s">$ kubectl get secrets/circleci-token-prlkp --namespace $ns -o yaml</span>
+  <span class="s">...</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">cm..cA==</span>
+  <span class="na">token</span><span class="pi">:</span> <span class="s">ZX...EE=</span>
+</code></pre></div><p>There will be a secret for the CircleCI service account. The secret contains the ca.crt and token which we will make available to the CircleCI image container as environment variables. This will allow it to authenticate against the cluster.
+Access to the cluster is scoped for the namespace the service account was created in.</p>
+<h3 id="retrieving-the-service-account-credentials">Retrieving the Service Account credentials</h3><p>Once the CircleCI service account is created above, you can grab the ca.crt as follows:</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="s">k get secret &lt;NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET&gt; -o yaml -n &lt;NAMESPACE | grep ca.crt</span>
+</code></pre></div><p>Likewise grab the CircleCI service accont token as follows:</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="s">k get secret &lt;NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET&gt; -o yaml -n &lt;NAMESPACE | grep token</span>
+
+<span class="na">The token will need to be decoded as follows</span><span class="pi">:</span>
+
+<span class="s">echo &lt;ENCODED_TOKEN&gt; | base 64 --decode</span>
+</code></pre></div><p>Both the ca.crt and token will be added as environment variables by creating a context in the CircleCI console, that holds these values as shown below.</p>
+<h3 id="linking-repository-to-circleci">Linking Repository to CircleCI</h3><p>MoJ has as an account with CircleCI, please login to <a href="https://circleci.com">CircleCI</a> using GitHub credentials. Select project, and if config.yml is in the repo CircleCI will build and run tests.</p>
+<h3 id="add-variables-to-circleci">Add variables to CircleCI</h3><p>There is a number of environment variables that you will need to set on your CircleCI project in order to build a docker image, push it to the ECR and trigger a deployment in your environment. On the project page, click the cog icon in the left pane. Click on &lsquo;Contexts&rsquo;. Click &lsquo;Create Context&rsquo;.
+Enter your preferred name for your context. Would make sense to add the environment as prefix to the context, i.e dev or prod.
+The context will hold your environment variables and later be used by the docker executor of the pipeline.</p>
+<p>Your context should look like as follows:</p>
+<p><a href="/images/circleci_context.png" target="_blank" rel="noopener noreferrer"><img src="/images/circleci_context.png" alt="CircleCI Context Environment Variables" /></a></p>
+<p>Add the following environment variables:</p>
+<h4 id="aws-credentials">AWS credentials</h4><p>To authenticate with ECR, you will need to set:</p>
+
+<ul>
+<li><code>AWS_DEFAULT_REGION</code> - would be <code>eu-west-2</code> for Cloud Platform clusters unless specified otherwise</li>
+<li><code>AWS_ACCESS_KEY_ID</code></li>
+<li><code>AWS_SECRET_ACCESS_KEY</code></li>
+<li><code>ECR_ENDPOINT</code> is optional but useful if you want to avoid having to hardcode the full hostname of the registry</li>
+</ul>
+<h4 id="kubernetes-serviceaccount-credentials">Kubernetes <code>ServiceAccount</code> credentials</h4><p>Since a single CircleCI project will need to access multiple namespaces in kubernetes (the environments), it will also need to handle multiple credentials. To simplify authentication, we provide a helper script in our supported <a href="https://github.com/ministryofjustice/cloud-platform-tools-image">build image</a>. For a usage example, see <a href="/documentation/deploying-an-app/using-circleci-for-continuous-deployment.html#deploy-to-kubernetes">Deploy To Kubernetes</a> below.</p>
+<p>There are four different variables that CircleCI will need to access the cluster:</p>
+
+<ul>
+<li><code>K8S_CLUSTER_NAME</code> - the full name of the cluster (eg.: <code>live-1.cloud-platform.service.justice.gov.uk</code>)</li>
+<li><code>K8S_NAMESPACE</code> - the name of the <code>Namespace</code> (see <a href="/documentation/getting-started/env-create.html#creating-a-cloud-platform-environment">Create a namespace</a>)</li>
+<li><code>K8S_CLUSTER_CERT</code> - the CA Certificate for the cluster, can be acquired from the <code>Secret</code> that is generated for the <code>ServiceAccount</code></li>
+<li><code>K8S_TOKEN</code> - the access token generated for the <code>ServiceAccount</code>. Please note, you should first base64 decode the token value you retrieve from the secret <a href="/documentation/deploying-an-app/using-circleci-for-continuous-deployment.html#creating-a-service-account-for-circleci">in the previous section</a>, e.g. <code>echo &lt;thereallylongstringthatyougetback&gt; | base64 --decode</code>.</li>
+</ul>
+<h3 id="creating-the-config-yml">Creating the config.yml</h3><p>CircleCI uses a YAML file to identify how you want your testing environment set up and what tests you want to run. On CircleCI 2.0, this file must be called <code>config.yml</code> and must be in a hidden folder called <code>.circleci</code> .</p>
+<p><a href="https://circleci.com/docs/2.0/tutorials/">Tutorial</a> on creating a config.yml file. As long as you are building a Docker image you can configure CircleCI however you wish. The only additional configuration you will need to add is to upload an image to ECR and deploy to Kubernetes:</p>
+<h3 id="upload-to-ecr">Upload to ECR</h3><p>Below is an example how you can build and push an image to ECR:</p>
+<div class="highlight"><pre class="highlight yaml"><code>
+<span class="na">version</span><span class="pi">:</span> <span class="m">2.1</span>
+
+<span class="na">workflows</span><span class="pi">:</span>
+  <span class="na">test-env-vars</span><span class="pi">:</span>
+    <span class="na">jobs</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">build</span><span class="pi">:</span>
+          <span class="na">context</span><span class="pi">:</span> <span class="s">&lt;CONTEXT&gt;</span>
+<span class="na">jobs</span><span class="pi">:</span>
+  <span class="na">build</span><span class="pi">:</span>
+    <span class="na">docker</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">image</span><span class="pi">:</span> <span class="s">${ECR_ENDPOINT}/cloud-platform/tools:circleci-internal</span>
+      <span class="na">environment</span><span class="pi">:</span>
+        <span class="na">IMAGE_URI</span><span class="pi">:</span> <span class="s">${ECR_ENDPOINT}/&lt;REPO-NAME&gt;</span>
+    <span class="na">steps</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="s">checkout</span>
+    <span class="pi">-</span> <span class="s">setup_remote_docker</span>
+    <span class="pi">-</span> <span class="na">run</span><span class="pi">:</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s">Build application Docker image and push to ECR</span>
+        <span class="na">command</span><span class="pi">:</span> <span class="pi">|</span>
+          <span class="s">$(aws ecr get-login --no-include-email)</span>
+          <span class="s">docker build -t ${ECR_ENDPOINT}/&lt;REPO-NAME&gt; rails-app</span>
+          <span class="s">docker push ${ECR_ENDPOINT}/&lt;REPO-NAME&gt;</span>
+</code></pre></div><h3 id="deploy-to-kubernetes">Deploy to Kubernetes</h3><p>Below is example of how you can first authenticate and then deploy to kubernetes</p>
+<div class="highlight"><pre class="highlight yaml"><code>
+    <span class="pi">-</span> <span class="na">run</span><span class="pi">:</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s">Authenticate with cluster</span>
+        <span class="na">command</span><span class="pi">:</span> <span class="pi">|</span>
+          <span class="s">echo -n ${K8S_CLUSTER_CERT} | base64 -d &gt; ./ca.crt</span>
+          <span class="s">kubectl config set-cluster ${K8S_CLUSTER_NAME} --certificate-authority=./ca.crt --server=https://api.${K8S_CLUSTER_NAME}</span>
+          <span class="s">kubectl config set-credentials circleci --token=${K8S_TOKEN}</span>
+          <span class="s">kubectl config set-context ${K8S_CLUSTER_NAME} --cluster=${K8S_CLUSTER_NAME} --user=circleci --namespace=${K8S_NAMESPACE}</span>
+          <span class="s">kubectl config use-context ${K8S_CLUSTER_NAME}</span>
+    <span class="pi">-</span> <span class="na">run</span><span class="pi">:</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s">Install demo helm chart</span>
+        <span class="na">command</span><span class="pi">:</span> <span class="pi">|</span>
+          <span class="s">if [ "${CIRCLE_BRANCH}" == "master" ]; th en</span>
+            <span class="s">helm upgrade demo helm_deploy --install --namespace=${K8S_NAMESPACE}</span>
+          <span class="s">fi</span>
+          <span class="s">kubectl --namespace=${K8S_NAMESPACE} get pods</span>
+</code></pre></div><h3 id="complete-config-file">Complete config file</h3><p>Below is the complete config file</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="na">version</span><span class="pi">:</span> <span class="m">2.1</span>
+
+<span class="na">workflows</span><span class="pi">:</span>
+  <span class="na">test-env-vars</span><span class="pi">:</span>
+    <span class="na">jobs</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">build</span><span class="pi">:</span>
+          <span class="na">context</span><span class="pi">:</span> <span class="s">&lt;CONTEXT&gt;</span>
+
+<span class="na">jobs</span><span class="pi">:</span>
+  <span class="na">build</span><span class="pi">:</span>
+    <span class="na">docker</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">image</span><span class="pi">:</span> <span class="s">${ECR_ENDPOINT}/cloud-platform/tools:circleci-internal</span>
+      <span class="na">environment</span><span class="pi">:</span>
+        <span class="na">IMAGE_URI</span><span class="pi">:</span> <span class="s">${ECR_ENDPOINT}/&lt;REPO-NAME&gt;</span>
+    <span class="na">steps</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="s">checkout</span>
+    <span class="pi">-</span> <span class="s">setup_remote_docker</span>
+    <span class="pi">-</span> <span class="na">run</span><span class="pi">:</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s">Build application Docker image and push to ECR</span>
+        <span class="na">command</span><span class="pi">:</span> <span class="pi">|</span>
+          <span class="s">$(aws ecr get-login --no-include-email)</span>
+          <span class="s">docker build -t ${ECR_ENDPOINT}/&lt;REPO-NAME&gt; rails-app</span>
+          <span class="s">docker push ${ECR_ENDPOINT}/&lt;REPO-NAME&gt;</span>
+    <span class="pi">-</span> <span class="na">run</span><span class="pi">:</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s">Authenticate with cluster</span>
+        <span class="na">command</span><span class="pi">:</span> <span class="pi">|</span>
+          <span class="s">echo -n ${K8S_CLUSTER_CERT} | base64 -d &gt; ./ca.crt</span>
+          <span class="s">kubectl config set-cluster ${K8S_CLUSTER_NAME} --certificate-authority=./ca.crt --server=https://api.${K8S_CLUSTER_NAME}</span>
+          <span class="s">kubectl config set-credentials circleci --token=${K8S_TOKEN}</span>
+          <span class="s">kubectl config set-context ${K8S_CLUSTER_NAME} --cluster=${K8S_CLUSTER_NAME} --user=circleci --namespace=${K8S_NAMESPACE}</span>
+          <span class="s">kubectl config use-context ${K8S_CLUSTER_NAME}</span>
+    <span class="pi">-</span> <span class="na">run</span><span class="pi">:</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s">Install demo helm chart</span>
+        <span class="na">command</span><span class="pi">:</span> <span class="pi">|</span>
+          <span class="s">if [ "${CIRCLE_BRANCH}" == "master" ]; th en</span>
+            <span class="s">helm upgrade demo helm_deploy --install --namespace=${K8S_NAMESPACE}</span>
+          <span class="s">fi</span>
+          <span class="s">kubectl --namespace=${K8S_NAMESPACE} get pods</span>
+</code></pre></div><p>In the above config.yml replace <code>&lt;CONTEXT&gt;</code> with the name of the context you created. Also replace <code>&lt;REPO-NAME&gt;</code> with the name of your ECR repo excluding the tag name.</p>
+<p>For example if my repo name is myteam/myrepo and my image tag is rails then I would replace <code>&lt;REPO-NAME&gt;</code> with myteam/myrepo:rails with the full repo URL being:</p>
+<div class="highlight"><pre class="highlight shell"><code>754256621582.dkr.ecr.eu-west-2.amazonaws.com/myteam/myrepo:rails
+</code></pre></div><p>The above config.yml needs to be saved in a folder called .circleci in the root of your application repository.
+For demo purposes you may use the <a href="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/multicontainer-app-deploy.html">multi-demo container repository</a></p>
+<p>In the &lsquo;jobs&rsquo; section we have a &lsquo;docker&rsquo; executor where we will execute the steps inside the specified docker image. In this case we will run our pipeline steps inside a circle ci docker image.</p>
+<p>We then have 3 key steps as follows:</p>
+<p>1) Build / Push our application docker image.</p>
+<p>The multi-container demo repo has a folder called &lsquo;rails-app&rsquo;. Inside this folder is a Dockerfile that defines the rail app. We run &lsquo;docker build..&rsquo;
+   inside this directory. The next command is to push the image into your ECR</p>
+<p>2) Authenticate with cluster</p>
+<p>In this step we issue a series of &lsquo;kubectl&rsquo; commands to authenticate against the cluster, scoped to the namespace to which the service account belongs.
+Earlier above we added the ${K8S_CLUSTER_CERT} and ${K8S_TOKEN} variables into our context in the CircleCI console. These variables are injected into the CircleCI image.
+The kubectl commands can then use these env variables to authenticate against the cluster.</p>
+<p>3) Run Helm Chart</p>
+<p>In the multi-container repo there is folder that contains the helm chart for the rails demo app. This step will run the helm charts and deploy the frontend.</p>
+<h3 id="triggering-the-pipeline">Triggering the Pipeline</h3><p>The pipeline will automatically be triggered when a change to the &lsquo;master&rsquo; is commmited. CircleCI will execute the latest config.yml and execute each step in the pipeline.</p>
+<p>Once all the above is complete make a change to the rails app. For example from the multi-container app repo you can amend the index html file located at
+&lsquo;/rails-app/app/views/home/index.html.erb&rsquo; by changing the title and commit to master. You should now see a new job created in CircleCI</p>
+<p>In CircleCI click on &lsquo;Jobs&rsquo; &gt; Click on your repo &gt; Click on the new job &gt; You shoud now see all your steps in the dashboard and their status</p>
+<p>After the job has finished your rails app should now be up and running. You can access the app by visiting the DNS you specified in your helm chart values for the rails app.</p>
+
+
+              <div data-module='page-expiry' data-last-reviewed-on="2020-07-22">
+    <div class='page-expiry--not-expired'>
+      This page was last reviewed on 22 April 2020.
+
+        It needs to be reviewed again on 22 July 2020
+.
+    </div>
+
+    <div class='page-expiry--expired'>
+      This page was set to be reviewed before 22 July 2020.
+      This might mean the content is out of date.
+    </div>
+  </div>
+
+          </main>
+
+          <aside>
+              <ul class="contribution-banner">
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/documentation/deploying-an-app/using-circleci-for-continuous-deployment.html.md.erb">View source</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'Continuous%20Deployment%20of%20an%20application%20using%20CircleCI%20and%20Helm'&amp;body=Problem%20with%20'Continuous%20Deployment%20of%20an%20application%20using%20CircleCI%20and%20Helm'%20(user-guide2.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/using-circleci-for-continuous-deployment.html)">Report problem</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub Repo</a></li>
+              </ul>
+          </aside>
+
+          <footer class="govuk-footer app-footer" role="contentinfo">
+  <div class="govuk-footer__meta">
+    <div class="govuk-footer__meta-item govuk-footer__meta-item--grow">
+
+
+      <svg
+        aria-hidden="true"
+        focusable="false"
+        class="govuk-footer__licence-logo"
+        xmlns="http://www.w3.org/2000/svg"
+        viewbox="0 0 483.2 195.7"
+        height="17"
+        width="41"
+      >
+        <path
+          fill="currentColor"
+          d="M421.5 142.8V.1l-50.7 32.3v161.1h112.4v-50.7zm-122.3-9.6A47.12 47.12 0 0 1 221 97.8c0-26 21.1-47.1 47.1-47.1 16.7 0 31.4 8.7 39.7 21.8l42.7-27.2A97.63 97.63 0 0 0 268.1 0c-36.5 0-68.3 20.1-85.1 49.7A98 98 0 0 0 97.8 0C43.9 0 0 43.9 0 97.8s43.9 97.8 97.8 97.8c36.5 0 68.3-20.1 85.1-49.7a97.76 97.76 0 0 0 149.6 25.4l19.4 22.2h3v-87.8h-80l24.3 27.5zM97.8 145c-26 0-47.1-21.1-47.1-47.1s21.1-47.1 47.1-47.1 47.2 21 47.2 47S123.8 145 97.8 145"
+        />
+      </svg>
+      <span class="govuk-footer__licence-description">
+        All content is available under the
+        <a
+          class="govuk-footer__link"
+          href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+          rel="license"
+        >Open Government Licence v3.0</a>, except where otherwise stated
+      </span>
+    </div>
+    <div class="govuk-footer__meta-item">
+      <a
+        class="govuk-footer__link govuk-footer__copyright-logo"
+        href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/"
+      >© Crown copyright</a>
+    </div>
+  </div>
+</footer>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <script src="/javascripts/application.js"></script>
+  </body>
+</html>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138188246-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-138188246-1');
+</script>
+
+<script>
+  // Add the current window.location to the body of the
+  // feedback email message.
+  function sendFeedback(mailto, event) {
+    event.preventDefault();
+
+    var body = "Feedback/Problem on page: " + window.location + "\n";
+    var href = mailto + '&body=' + encodeURIComponent(body);
+
+    window.location = href;
+  }
+
+  $(document).ready(function() {
+    var feedbackLink = $('a[href^="mailto:"]:contains("Feedback")')[0];
+    var mailto = feedbackLink.href;
+    $(feedbackLink).on('click', function(event) { sendFeedback(mailto, event); });
+  });
+</script>

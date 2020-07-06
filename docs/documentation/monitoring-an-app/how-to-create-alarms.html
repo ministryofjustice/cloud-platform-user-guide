@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en" class="govuk-template no-js">
+  <head>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+      <meta name="robots" content="noindex">
+
+    <title>Creating your own custom alerts - Cloud Platform User Guide</title>
+
+    <link href="/stylesheets/manifest.css" rel="stylesheet" />
+
+    <link rel="canonical" href="user-guide2.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html">
+
+
+      <meta property="og:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="og:site_name" content="Cloud Platform User Guide" />
+      <meta property="og:title" content="Creating your own custom alerts" />
+      <meta property="og:type" content="object" />
+      <meta property="og:url" content="user-guide2.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html" />
+      <meta property="twitter:card" content="summary" />
+      <meta property="twitter:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="twitter:title" content="Creating your own custom alerts - Cloud Platform User Guide" />
+      <meta property="twitter:url" content="user-guide2.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html" />
+
+    
+  </head>
+
+  <body class="govuk-template__body">
+    <script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
+
+    <div class="app-pane">
+      <div class="app-pane__header toc-open-disabled">
+        <a href="#content" class="govuk-skip-link">Skip to main content</a>
+
+        <header class="govuk-header app-header" role="banner" data-module="govuk-header">
+  <div class="govuk-header__container govuk-header__container--full-width">
+    <div class="govuk-header__logo">
+      <a href="/" class="govuk-header__link govuk-header__link--homepage">
+        <span class="govuk-header__product-name">
+          Cloud Platform User Guide
+        </span>
+      </a>
+        <strong class="govuk-tag">INTERNAL</strong>
+    </div>
+    <div class="govuk-header__content">
+      <button type="button" class="govuk-header__menu-button govuk-js-header-toggle" aria-controls="navigation" aria-label="Show or hide Top Level Navigation">Menu</button>
+      <nav>
+        <ul id="navigation" class="govuk-header__navigation govuk-header__navigation--end" aria-label="Top Level Navigation">
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="mailto:platforms+user-guide@digital.justice.gov.uk?subject=User+guide+feedback">Feedback / Report a problem</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="/">Documentation</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub</a>
+            </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      </div>
+
+        <div id="toc-heading" class="toc-show fixedsticky">
+          <a href="#toc" class="toc-show__label js-toc-show" aria-controls="toc">
+            Table of contents <span class="toc-show__icon"></span>
+          </a>
+        </div>
+
+      <div class="app-pane__body" data-module="in-page-navigation">
+          <div class="app-pane__toc">
+            <div class="toc" data-module="table-of-contents">
+              <div class="search" data-module="search">
+  <form action="https://www.google.co.uk/search" method="get" role="search">
+    <input type="hidden" name="as_sitesearch" value="user-guide2.cloud-platform.service.justice.gov.uk"/>
+    <label class="govuk-label search__label" for="search">
+      Search (via Google)
+    </label>
+    <input class="govuk-input govuk-!-margin-bottom-4" id="search" name="q" type="text" aria-controls="search-results" placeholder="Search">
+  </form>
+  <div id="search-results" class="search-results" aria-hidden="true" role="dialog" aria-labelledby="search-results-title">
+    <div class="search-results__inner">
+      <button class="search-results__close">Close<span class="search-results__close-label"> search results</span></button>
+      <h2 id="search-results-title" class="search-results__title" aria-live="polite">Results</h2>
+      <div class="search-results__content"></div>
+    </div>
+  </div>
+</div>
+
+              <a href="#" class="toc__close js-toc-close" aria-controls="toc" aria-label="Hide table of contents"></a>
+              <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading">
+                      <ul>
+  <li>
+    <a href="#creating-your-own-custom-alerts"><span>Creating your own custom alerts</span></a>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <a href="#overview"><span>Overview</span></a>
+          </li>
+          <li>
+            <a href="#prerequisites"><span>Prerequisites</span></a>
+          </li>
+          <li>
+            <a href="#create-a-slack-webhook-and-amend-alertmanager"><span>Create a slack webhook and amend Alertmanager</span></a>
+          </li>
+          <li>
+            <a href="#create-a-prometheusrule"><span>Create a PrometheusRule</span></a>
+          </li>
+          <li>
+            <a href="#prometheusrule-examples"><span>PrometheusRule examples</span></a>
+          </li>
+          <li>
+            <a href="#advisory-note-1-prometheusrules-status-incase-of-dr-requirement-for-a-new-prometheus-install"><span>Advisory Note 1: PrometheusRules status incase of DR/requirement for a new Prometheus Install</span></a>
+          </li>
+          <li>
+            <a href="#advisory-note-2-cputhrottlinghigh-alert"><span>Advisory Note 2: CPUThrottlingHigh Alert</span></a>
+          </li>
+          <li>
+            <a href="#further-reading"><span>Further reading</span></a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
+              </nav>
+            </div>
+          </div>
+
+        <div class="app-pane__content toc-open-disabled">
+          <main id="content" class="technical-documentation" data-module="anchored-headings">
+              <h1 id="creating-your-own-custom-alerts">Creating your own custom alerts</h1><h3 id="overview">Overview</h3><p>Alertmanager allows you define your own alert conditions based on <a href="https://prometheus.io/docs/prometheus/latest/querying/basics">Prometheus expression language</a> expressions.</p>
+<p>The aim of this document is to provide you with the necessary information to create and send application specific alerts to a Slack channel of your choosing.</p>
+<h3 id="prerequisites">Prerequisites</h3><p>This guide assumes the following:</p>
+
+<ul>
+<li>You have <a href="/documentation/getting-started/env-create.html#creating-a-cloud-platform-environment">created a namespace for your application</a></li>
+</ul>
+<h3 id="create-a-slack-webhook-and-amend-alertmanager">Create a slack webhook and amend Alertmanager</h3>
+<ol>
+<li><p>Create a <a href="https://slack.com/intl/en-gb/help/articles/115005265063-Incoming-webhooks-for-Slack">slack webhook</a> if you dont already have one for the channel you want to send the alerts.</p></li>
+<li><p>Create a <a href="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/add-secrets-to-deployment.html#adding-a-secret-to-an-application">kubernetes secret</a> to store the slack webhook.</p></li>
+<li><p>Create a ticket to request a new alert route in Alertmanager. The Cloud Platform team will need the following information:</p></li>
+</ol>
+
+<ul>
+<li>namespace name</li>
+<li>team name</li>
+<li>application name</li>
+<li>slack channel</li>
+<li>kubernetes secret name where the webhook url is stored</li>
+<li>severity level (warning/information)</li>
+</ul>
+<p>If you want an event/information type slack message for monitoring non-problem/non-failure type events 
+- e.g. a team wants to positively know something happened (like a database refresh, or app deployment etc), specify the severity level as <code>information</code></p>
+<p>The team will provide you with a &ldquo;<code>custom severity level</code>&rdquo; that&rsquo;ll need to be defined in the next step. Please copy it to your clipboard.</p>
+<h3 id="create-a-prometheusrule">Create a PrometheusRule</h3><p>A <code>PrometheusRule</code> is a custom resource that defines your triggered alert. This file will contain the alert name, promql expression and time of check.</p>
+<p>To create your own custom alert you&rsquo;ll need to fill in the template below and deploy it to your namespace (tip: you can check rules in your namespace by running <code>kubectl get prometheusrule -n &lt;namespace&gt;</code>).</p>
+
+<ul>
+<li>Create a file called <code>prometheus-custom-rules-&lt;application_name&gt;.yaml</code></li>
+<li>Copy in the template below and replace the bracket values, specifying the requirements of your alert. The <code>&lt;custom_severity_level&gt;</code> field is the value you were passed earlier.</li>
+</ul>
+<div class="highlight"><pre class="highlight yaml"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">monitoring.coreos.com/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">PrometheusRule</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">&lt;namespace&gt;</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">role</span><span class="pi">:</span> <span class="s">alert-rules</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">prometheus-custom-rules-&lt;application_name&gt;</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">groups</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">application-rules</span>
+    <span class="na">rules</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">alert</span><span class="pi">:</span> <span class="s">&lt;alert_name&gt;</span>
+      <span class="na">expr</span><span class="pi">:</span> <span class="s">&lt;alert_query&gt;</span>
+      <span class="na">for</span><span class="pi">:</span> <span class="s">&lt;check_time_length&gt;</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">severity</span><span class="pi">:</span> <span class="s">&lt;custom_severity_level&gt;</span>
+      <span class="na">annotations</span><span class="pi">:</span>
+        <span class="na">message</span><span class="pi">:</span> <span class="s">&lt;alert_message&gt;</span>
+        <span class="na">runbook_url</span><span class="pi">:</span> <span class="s">&lt;http://my-support-docs&gt;</span>
+</code></pre></div>
+<ul>
+<li>Run <code>kubectl apply -f prometheus-custom-rules-&lt;application_name&gt;.yaml -n &lt;namespace&gt;</code></li>
+</ul>
+<p>A working example of this would be:</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">monitoring.coreos.com/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">PrometheusRule</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">creationTimestamp</span><span class="pi">:</span> <span class="no">null</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">monitoring</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">role</span><span class="pi">:</span> <span class="s">alert-rules</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">prometheus-custom-rules-my-application</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">groups</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">node.rules</span>
+    <span class="na">rules</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">alert</span><span class="pi">:</span> <span class="s">Quota-Exceeded</span>
+      <span class="na">expr</span><span class="pi">:</span> <span class="s">100 * kube_resourcequota{job="kube-state-metrics",type="used",namespace="monitoring"} / ignoring(instance, job, type) (kube_resourcequota{job="kube-state-metrics",type="hard"} &gt; 0) &gt; </span><span class="m">90</span>
+      <span class="na">for</span><span class="pi">:</span> <span class="s">5m</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">severity</span><span class="pi">:</span> <span class="s">cp-team</span>
+      <span class="na">annotations</span><span class="pi">:</span>
+        <span class="na">message</span><span class="pi">:</span> <span class="s">Namespace {{ $labels.namespace }} is using {{ printf "%0.0f" $value}}% of its {{ $labels.resource }} quota.</span>
+        <span class="na">runbook_url</span><span class="pi">:</span> <span class="s">https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md###alert-name-kubequotaexceeded</span>
+</code></pre></div><p>The <code>alert</code> name, <code>message</code> and <code>runbook_url</code> annotations will be sent to the Slack channel when the rule has been triggered.</p>
+<p>For information type alerts, you can also add a label <code>status_icon: information</code> to have an information icon on the alert title.</p>
+<p>You can view the applied rules with the following command:</p>
+<div class="highlight"><pre class="highlight shell"><code>kubectl <span class="nt">-n</span> &lt;namespace&gt; describe prometheusrules prometheus-custom-rules-&lt;application_name&gt;
+</code></pre></div><h3 id="prometheusrule-examples">PrometheusRule examples</h3><p>If you&rsquo;re struggling for ideas on how and which alerts to setup, please see some examples <a href="https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/resources/prometheusrule-examples/application-alerts.yaml">here</a>.</p>
+<h3 id="advisory-note-1-prometheusrules-status-incase-of-dr-requirement-for-a-new-prometheus-install">Advisory Note 1: PrometheusRules status incase of DR/requirement for a new Prometheus Install</h3><p>The  <code>PrometheusRule</code> is a <a href="https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/##customresourcedefinitions">CRD</a> that declaratively defines a desired Prometheus rule to be consumed by Prometheus and applied using a YAML file. However, if for any reason Prometheus has to be uninstalled, <code>all PrometheusRules are removed with the CRD.</code></p>
+<p>We recommend all PrometheusRules to be added to the <a href="https://github.com/ministryofjustice/cloud-platform-environments">Environments Repo</a> within the namespace folder the rules refer to. This will ensure all rules are applied/present at all times.</p>
+<p>PrometheusRules can still be tested/amended/applied manually, then a PR can be created to add to the Environments Repo when ready.</p>
+<h3 id="advisory-note-2-cputhrottlinghigh-alert">Advisory Note 2: CPUThrottlingHigh Alert</h3><p>The <code>CPUThrottlingHigh</code> alert is configured as part of the default rules when installing prometheus-operator. The alert can trigger when containers have low cpu limits, spiky workloads but very low average usage. CPU throttling can activate during those spikes. CPU usage is based on <a href="https://en.wikipedia.org/wiki/Completely_Fair_Scheduler">CFS</a>.</p>
+<p>If you think this may be causing an issue with your application, we recommend raising your CPU limit, whilst keeping the container CPU request as close to the 95%-ile average usage as possible.</p>
+<h3 id="further-reading">Further reading</h3>
+<ul>
+<li><a href="https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/getting-started.md">Prometheus Operator - Getting Started</a></li>
+<li><a href="https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/alerting.md">Alerting</a></li>
+</ul>
+
+
+              <div data-module='page-expiry' data-last-reviewed-on="2020-07-27">
+    <div class='page-expiry--not-expired'>
+      This page was last reviewed on 27 April 2020.
+
+        It needs to be reviewed again on 27 July 2020
+.
+    </div>
+
+    <div class='page-expiry--expired'>
+      This page was set to be reviewed before 27 July 2020.
+      This might mean the content is out of date.
+    </div>
+  </div>
+
+          </main>
+
+          <aside>
+              <ul class="contribution-banner">
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/documentation/monitoring-an-app/how-to-create-alarms.html.md.erb">View source</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'Creating%20your%20own%20custom%20alerts'&amp;body=Problem%20with%20'Creating%20your%20own%20custom%20alerts'%20(user-guide2.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html)">Report problem</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub Repo</a></li>
+              </ul>
+          </aside>
+
+          <footer class="govuk-footer app-footer" role="contentinfo">
+  <div class="govuk-footer__meta">
+    <div class="govuk-footer__meta-item govuk-footer__meta-item--grow">
+
+
+      <svg
+        aria-hidden="true"
+        focusable="false"
+        class="govuk-footer__licence-logo"
+        xmlns="http://www.w3.org/2000/svg"
+        viewbox="0 0 483.2 195.7"
+        height="17"
+        width="41"
+      >
+        <path
+          fill="currentColor"
+          d="M421.5 142.8V.1l-50.7 32.3v161.1h112.4v-50.7zm-122.3-9.6A47.12 47.12 0 0 1 221 97.8c0-26 21.1-47.1 47.1-47.1 16.7 0 31.4 8.7 39.7 21.8l42.7-27.2A97.63 97.63 0 0 0 268.1 0c-36.5 0-68.3 20.1-85.1 49.7A98 98 0 0 0 97.8 0C43.9 0 0 43.9 0 97.8s43.9 97.8 97.8 97.8c36.5 0 68.3-20.1 85.1-49.7a97.76 97.76 0 0 0 149.6 25.4l19.4 22.2h3v-87.8h-80l24.3 27.5zM97.8 145c-26 0-47.1-21.1-47.1-47.1s21.1-47.1 47.1-47.1 47.2 21 47.2 47S123.8 145 97.8 145"
+        />
+      </svg>
+      <span class="govuk-footer__licence-description">
+        All content is available under the
+        <a
+          class="govuk-footer__link"
+          href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+          rel="license"
+        >Open Government Licence v3.0</a>, except where otherwise stated
+      </span>
+    </div>
+    <div class="govuk-footer__meta-item">
+      <a
+        class="govuk-footer__link govuk-footer__copyright-logo"
+        href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/"
+      >© Crown copyright</a>
+    </div>
+  </div>
+</footer>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <script src="/javascripts/application.js"></script>
+  </body>
+</html>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138188246-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-138188246-1');
+</script>
+
+<script>
+  // Add the current window.location to the body of the
+  // feedback email message.
+  function sendFeedback(mailto, event) {
+    event.preventDefault();
+
+    var body = "Feedback/Problem on page: " + window.location + "\n";
+    var href = mailto + '&body=' + encodeURIComponent(body);
+
+    window.location = href;
+  }
+
+  $(document).ready(function() {
+    var feedbackLink = $('a[href^="mailto:"]:contains("Feedback")')[0];
+    var mailto = feedbackLink.href;
+    $(feedbackLink).on('click', function(event) { sendFeedback(mailto, event); });
+  });
+</script>

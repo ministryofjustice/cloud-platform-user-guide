@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en" class="govuk-template no-js">
+  <head>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+      <meta name="robots" content="noindex">
+
+    <title>Deploying to the Cloud Platform - Cloud Platform User Guide</title>
+
+    <link href="/stylesheets/manifest.css" rel="stylesheet" />
+
+    <link rel="canonical" href="user-guide2.cloud-platform.service.justice.gov.uk/documentation/concepts/deploying.html">
+
+
+      <meta property="og:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="og:site_name" content="Cloud Platform User Guide" />
+      <meta property="og:title" content="Deploying to the Cloud Platform" />
+      <meta property="og:type" content="object" />
+      <meta property="og:url" content="user-guide2.cloud-platform.service.justice.gov.uk/documentation/concepts/deploying.html" />
+      <meta property="twitter:card" content="summary" />
+      <meta property="twitter:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="twitter:title" content="Deploying to the Cloud Platform - Cloud Platform User Guide" />
+      <meta property="twitter:url" content="user-guide2.cloud-platform.service.justice.gov.uk/documentation/concepts/deploying.html" />
+
+    
+  </head>
+
+  <body class="govuk-template__body">
+    <script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
+
+    <div class="app-pane">
+      <div class="app-pane__header toc-open-disabled">
+        <a href="#content" class="govuk-skip-link">Skip to main content</a>
+
+        <header class="govuk-header app-header" role="banner" data-module="govuk-header">
+  <div class="govuk-header__container govuk-header__container--full-width">
+    <div class="govuk-header__logo">
+      <a href="/" class="govuk-header__link govuk-header__link--homepage">
+        <span class="govuk-header__product-name">
+          Cloud Platform User Guide
+        </span>
+      </a>
+        <strong class="govuk-tag">INTERNAL</strong>
+    </div>
+    <div class="govuk-header__content">
+      <button type="button" class="govuk-header__menu-button govuk-js-header-toggle" aria-controls="navigation" aria-label="Show or hide Top Level Navigation">Menu</button>
+      <nav>
+        <ul id="navigation" class="govuk-header__navigation govuk-header__navigation--end" aria-label="Top Level Navigation">
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="mailto:platforms+user-guide@digital.justice.gov.uk?subject=User+guide+feedback">Feedback / Report a problem</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="/">Documentation</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub</a>
+            </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      </div>
+
+        <div id="toc-heading" class="toc-show fixedsticky">
+          <a href="#toc" class="toc-show__label js-toc-show" aria-controls="toc">
+            Table of contents <span class="toc-show__icon"></span>
+          </a>
+        </div>
+
+      <div class="app-pane__body" data-module="in-page-navigation">
+          <div class="app-pane__toc">
+            <div class="toc" data-module="table-of-contents">
+              <div class="search" data-module="search">
+  <form action="https://www.google.co.uk/search" method="get" role="search">
+    <input type="hidden" name="as_sitesearch" value="user-guide2.cloud-platform.service.justice.gov.uk"/>
+    <label class="govuk-label search__label" for="search">
+      Search (via Google)
+    </label>
+    <input class="govuk-input govuk-!-margin-bottom-4" id="search" name="q" type="text" aria-controls="search-results" placeholder="Search">
+  </form>
+  <div id="search-results" class="search-results" aria-hidden="true" role="dialog" aria-labelledby="search-results-title">
+    <div class="search-results__inner">
+      <button class="search-results__close">Close<span class="search-results__close-label"> search results</span></button>
+      <h2 id="search-results-title" class="search-results__title" aria-live="polite">Results</h2>
+      <div class="search-results__content"></div>
+    </div>
+  </div>
+</div>
+
+              <a href="#" class="toc__close js-toc-close" aria-controls="toc" aria-label="Hide table of contents"></a>
+              <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading">
+                      <ul>
+  <li>
+    <a href="#deploying-to-the-cloud-platform"><span>Deploying to the Cloud Platform</span></a>
+    <ul>
+      <li>
+        <a href="#declarative-not-imperative"><span>Declarative, not Imperative</span></a>
+      </li>
+      <li>
+        <a href="#use-image-tags"><span>Use image tags</span></a>
+      </li>
+      <li>
+        <a href="#multiple-replicas"><span>Multiple replicas</span></a>
+      </li>
+      <li>
+        <a href="#zero-downtime-deploys"><span>Zero Downtime Deploys</span></a>
+      </li>
+      <li>
+        <a href="#horizontal-pod-autoscaling"><span>Horizontal Pod Autoscaling</span></a>
+        <ul>
+          <li>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
+              </nav>
+            </div>
+          </div>
+
+        <div class="app-pane__content toc-open-disabled">
+          <main id="content" class="technical-documentation" data-module="anchored-headings">
+              <h1 id="deploying-to-the-cloud-platform">Deploying to the Cloud Platform</h1><h2 id="declarative-not-imperative">Declarative, not Imperative</h2><p>Deploying to kubernetes is done <strong>declaratively</strong> rather than imperatively. So,
+instead of defining a list of instructions to be carried out (e.g. &ldquo;install
+these gems, then run this install script&rdquo;), you tell the cluster what
+state it should be in, and then leave it to the cluster to do whatever is
+necessary to get from the state it&rsquo;s in to the state you want it to be in.</p>
+<p>By &lsquo;state&rsquo; here, we usually mean something like <em>&ldquo;there should be 4 pods, each
+running an instance of this docker image, listening on port 3000, with a
+service called &lsquo;rails-app&rsquo; distributing inbound traffic to them.&rdquo;</em></p>
+<p>Much of the configuration of your service on the cloud platform will be done
+via kubernetes deployment objects. You can learn more about deployments, and
+see an example, <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment">here</a>.</p>
+<h2 id="use-image-tags">Use image tags</h2><p>You specify the docker images which comprise your application like this:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>image: ministryofjustice/my-awesome-app:0.8.1
+</code></pre></div><p>The <code>0.8.1</code> above refers to the <strong>tag</strong> of the named docker image. This is
+often a semantic version number, as above, but it could also be the hash of a
+specific commit in the underlying software repo.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>image: ministryofjustice/my-awesome-app:c135228626f0d647d699ecb3e9572dbd3750ec3d
+</code></pre></div><p>It is possible to omit the tag altogether:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>image: ministryofjustice/my-awesome-app
+</code></pre></div><p>If you do this, you will get the <code>latest</code> version of the image (<code>latest</code> is the
+default tag value that all docker images have, assigned to the last version
+pushed to the image repository).</p>
+<p>We strongly advise against deploying the <code>latest</code> version of any images.
+Doing this makes it difficult or impossible to reproduce a known state, for
+example if you wanted to roll back a deployment to an earlier version.</p>
+<p><strong>Always specify specific tagged versions of your docker images.</strong></p>
+<h2 id="multiple-replicas">Multiple replicas</h2><p>Kubernetes makes it trivially simple to deploy your services in a
+high-availability configuration.  All you need to do is set the value of
+<code>replicas</code> in your <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment">deployments</a> to a value higher than
+1. For production services, we recommend 4 as a sensible number of replicas.</p>
+<p>This means that, in the event that a <a href="https://kubernetes.io/docs/concepts/architecture/nodes/">worker node</a> dies, taking one of your
+replicas with it, the remaining replicas will handle all application traffic,
+so that there is no downtime for your service while the missing replica is
+replaced.</p>
+
+<blockquote>
+<p>Note: Kubernetes will automatically try to schedule your replicas on
+different worker nodes, to minimise the impact of a node outage on all the
+services running in the cluster.</p>
+</blockquote>
+<p>NB: Running multiple replicas is usually sensible for things like web
+application servers, where you just want to be sure that an instance of your
+app. is always available to service web requests. But, for some types of
+workload, such as background job processing, it might make sense to ensure that
+you have zero or one instances, rather than one or more. An example of this
+would be a job processing tasks which <strong>must</strong> be handled in FIFO order -
+running multiple replicas in this case would mean tasks could be processed out
+of order. For workloads like this, consider a <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#recreate-deployment">Recreate</a> deployment strategy.</p>
+<h2 id="zero-downtime-deploys">Zero Downtime Deploys</h2><p>This is another feature you get &lsquo;for free&rsquo; from kubernetes.</p>
+<p>Your <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment">deployments</a> have a <code>strategy</code> section, which
+could look something like this:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 100%
+    maxUnavailable: 50%
+</code></pre></div><p><code>rollingUpdate</code> (the default deployment strategy) means that when your
+deployment is updated, or your pods need to be moved to another node, the
+cluster will create new instances before terminating the old ones. <code>maxSurge:
+100%</code> means that a complete additional copy of your deployment will be created
+before any of your old pods are terminated, and <code>maxUnavailable: 50%</code> means the
+cluster will only allow at most half of your pods being unavailable (e.g. if
+the new version of your service fails to deploy, for some reason).</p>
+<p>To redeploy your application with zero downtime, all you need to do is create
+an updated version of your deployment and apply it to the cluster, which will
+then take care of launching new pods and deleting old ones.</p>
+<p>More information about deployment strategies is available in the <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment">kubernetes
+documentation</a>, and there is more discussion of zero
+downtime deployments in <a href="/documentation/other-topics/zero-downtime-deployment.html">this article</a>.</p>
+<h2 id="horizontal-pod-autoscaling">Horizontal Pod Autoscaling</h2><p>The Horizontal Pod Autoscaler is a built-in Kubernetes feature that allows you to horizontally scale applications based on one or more monitored metrics such as cpu or memory.</p>
+<p>The metrics you specify in the <code>HorizontalPodAutoscaler</code> manifest will determine the minimum and maximum number of pods needed, and set the thresholds at which pods should be created or removed.</p>
+<p>The Horizontal Pod Autoscaler can ensure that critical applications are elastic and can scale out to meet increasing demand as well scale down to ensure optimal resource usage, it is also a great tool in saving money by auto-scaling down non-production work loads when not in use, such as overnight or the weekend.</p>
+<h4 id="important-aspects-of-the-horizontalpodautoscaler-to-be-aware-of">Important aspects of the HorizontalPodAutoscaler to be aware of:</h4>
+<ul>
+<li>Resource Limits - You need to set resource limits otherwise HPA will not work, as it will not have a value to quantify from.</li>
+<li>15 seconds - The HPA controller checks the value of the metric used every 15 seconds per pod. </li>
+<li>3 minutes - The HPA scales up pods if the metric threshold has been continually exceeded for 3 mins. </li>
+<li>5 minutes - The HPA scales down pods if the metric threshold has not been exceeded for 5 mins. </li>
+</ul>
+<p>To create the horizontal pod autoscaler for your deployment, create a <code>hpa-myapp.yaml</code> similar to this:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: my-app-name
+  namespace: my-namespace
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: my-app-name
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 50
+</code></pre></div><p>The above manifest will ensure a minimum of 1 replica is available for the deployment called my-app-name, but will increase replicas up to 5 when the CPU utilization is above 50%.</p>
+<p>Run the following command to apply:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>kubectl apply -f hpa-myapp.yaml -n my-namespace
+horizontalpodautoscaler.autoscaling/hpa-myapp autoscaled
+</code></pre></div><p>Run the following to describe the status of the pod autoscaler:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>kubectl describe hpa -n my-namespace my-app-name
+</code></pre></div><div class="highlight"><pre class="highlight plaintext"><code>Name:                                                  my-app-name
+Namespace:                                             my-namespace
+Labels:                                                app=my-app-name
+Annotations:                                           &lt;none&gt;
+CreationTimestamp:                                     Tue, 01 Jun 2019 23:35:22 +0100
+Reference:                                             Deployment/my-app-name
+Metrics:                                               ( current / target )
+  resource cpu on pods  (as a percentage of request):  10% (1m) / 50%
+Min replicas:                                          1
+Max replicas:                                          5
+Deployment pods:                                       1 current / 1 desired
+Conditions:
+  Type            Status  Reason              Message
+  ----            ------  ------              -------
+  AbleToScale     True    ReadyForNewScale    recommended size matches current size
+  ScalingActive   True    ValidMetricFound    the HPA was able to successfully calculate a replica count from cpu resource utilization (percentage of request)
+  ScalingLimited  False   DesiredWithinRange  the desired count is within the acceptable range
+</code></pre></div><p>For the above, the current use is 10% of the resource limit, if/when the CPU consumption exceeds the threshold of 50% for more than 3 minutes, the deployment will scale up.</p>
+<p>It is also possible to use custom metrics with the horizontal pod-autoscaler. However. this requires a bit more input from the development and Cloud-Platform team. If this is something you may be interested in, please speak to a member of the team on #ask-cloud-platform</p>
+<p>Click <a href="https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough">HERE</a> for the official Kubernetes documentation on the horizontal pod autoscaler walkthrough.</p>
+
+
+              <div data-module='page-expiry' data-last-reviewed-on="2020-09-12">
+    <div class='page-expiry--not-expired'>
+      This page was last reviewed on 12 June 2020.
+
+        It needs to be reviewed again on 12 September 2020
+.
+    </div>
+
+    <div class='page-expiry--expired'>
+      This page was set to be reviewed before 12 September 2020.
+      This might mean the content is out of date.
+    </div>
+  </div>
+
+          </main>
+
+          <aside>
+              <ul class="contribution-banner">
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/documentation/concepts/deploying.html.md.erb">View source</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'Deploying%20to%20the%20Cloud%20Platform'&amp;body=Problem%20with%20'Deploying%20to%20the%20Cloud%20Platform'%20(user-guide2.cloud-platform.service.justice.gov.uk/documentation/concepts/deploying.html)">Report problem</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub Repo</a></li>
+              </ul>
+          </aside>
+
+          <footer class="govuk-footer app-footer" role="contentinfo">
+  <div class="govuk-footer__meta">
+    <div class="govuk-footer__meta-item govuk-footer__meta-item--grow">
+
+
+      <svg
+        aria-hidden="true"
+        focusable="false"
+        class="govuk-footer__licence-logo"
+        xmlns="http://www.w3.org/2000/svg"
+        viewbox="0 0 483.2 195.7"
+        height="17"
+        width="41"
+      >
+        <path
+          fill="currentColor"
+          d="M421.5 142.8V.1l-50.7 32.3v161.1h112.4v-50.7zm-122.3-9.6A47.12 47.12 0 0 1 221 97.8c0-26 21.1-47.1 47.1-47.1 16.7 0 31.4 8.7 39.7 21.8l42.7-27.2A97.63 97.63 0 0 0 268.1 0c-36.5 0-68.3 20.1-85.1 49.7A98 98 0 0 0 97.8 0C43.9 0 0 43.9 0 97.8s43.9 97.8 97.8 97.8c36.5 0 68.3-20.1 85.1-49.7a97.76 97.76 0 0 0 149.6 25.4l19.4 22.2h3v-87.8h-80l24.3 27.5zM97.8 145c-26 0-47.1-21.1-47.1-47.1s21.1-47.1 47.1-47.1 47.2 21 47.2 47S123.8 145 97.8 145"
+        />
+      </svg>
+      <span class="govuk-footer__licence-description">
+        All content is available under the
+        <a
+          class="govuk-footer__link"
+          href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+          rel="license"
+        >Open Government Licence v3.0</a>, except where otherwise stated
+      </span>
+    </div>
+    <div class="govuk-footer__meta-item">
+      <a
+        class="govuk-footer__link govuk-footer__copyright-logo"
+        href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/"
+      >© Crown copyright</a>
+    </div>
+  </div>
+</footer>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <script src="/javascripts/application.js"></script>
+  </body>
+</html>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138188246-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-138188246-1');
+</script>
+
+<script>
+  // Add the current window.location to the body of the
+  // feedback email message.
+  function sendFeedback(mailto, event) {
+    event.preventDefault();
+
+    var body = "Feedback/Problem on page: " + window.location + "\n";
+    var href = mailto + '&body=' + encodeURIComponent(body);
+
+    window.location = href;
+  }
+
+  $(document).ready(function() {
+    var feedbackLink = $('a[href^="mailto:"]:contains("Feedback")')[0];
+    var mailto = feedbackLink.href;
+    $(feedbackLink).on('click', function(event) { sendFeedback(mailto, event); });
+  });
+</script>

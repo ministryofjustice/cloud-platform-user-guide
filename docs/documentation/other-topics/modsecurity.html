@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en" class="govuk-template no-js">
+  <head>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+      <meta name="robots" content="noindex">
+
+    <title>ModSecurity - Web Application Firewall - Cloud Platform User Guide</title>
+
+    <link href="/stylesheets/manifest.css" rel="stylesheet" />
+
+    <link rel="canonical" href="user-guide2.cloud-platform.service.justice.gov.uk/documentation/other-topics/modsecurity.html">
+
+
+      <meta property="og:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="og:site_name" content="Cloud Platform User Guide" />
+      <meta property="og:title" content="ModSecurity - Web Application Firewall" />
+      <meta property="og:type" content="object" />
+      <meta property="og:url" content="user-guide2.cloud-platform.service.justice.gov.uk/documentation/other-topics/modsecurity.html" />
+      <meta property="twitter:card" content="summary" />
+      <meta property="twitter:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="twitter:title" content="ModSecurity - Web Application Firewall - Cloud Platform User Guide" />
+      <meta property="twitter:url" content="user-guide2.cloud-platform.service.justice.gov.uk/documentation/other-topics/modsecurity.html" />
+
+    
+  </head>
+
+  <body class="govuk-template__body">
+    <script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
+
+    <div class="app-pane">
+      <div class="app-pane__header toc-open-disabled">
+        <a href="#content" class="govuk-skip-link">Skip to main content</a>
+
+        <header class="govuk-header app-header" role="banner" data-module="govuk-header">
+  <div class="govuk-header__container govuk-header__container--full-width">
+    <div class="govuk-header__logo">
+      <a href="/" class="govuk-header__link govuk-header__link--homepage">
+        <span class="govuk-header__product-name">
+          Cloud Platform User Guide
+        </span>
+      </a>
+        <strong class="govuk-tag">INTERNAL</strong>
+    </div>
+    <div class="govuk-header__content">
+      <button type="button" class="govuk-header__menu-button govuk-js-header-toggle" aria-controls="navigation" aria-label="Show or hide Top Level Navigation">Menu</button>
+      <nav>
+        <ul id="navigation" class="govuk-header__navigation govuk-header__navigation--end" aria-label="Top Level Navigation">
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="mailto:platforms+user-guide@digital.justice.gov.uk?subject=User+guide+feedback">Feedback / Report a problem</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="/">Documentation</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub</a>
+            </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      </div>
+
+        <div id="toc-heading" class="toc-show fixedsticky">
+          <a href="#toc" class="toc-show__label js-toc-show" aria-controls="toc">
+            Table of contents <span class="toc-show__icon"></span>
+          </a>
+        </div>
+
+      <div class="app-pane__body" data-module="in-page-navigation">
+          <div class="app-pane__toc">
+            <div class="toc" data-module="table-of-contents">
+              <div class="search" data-module="search">
+  <form action="https://www.google.co.uk/search" method="get" role="search">
+    <input type="hidden" name="as_sitesearch" value="user-guide2.cloud-platform.service.justice.gov.uk"/>
+    <label class="govuk-label search__label" for="search">
+      Search (via Google)
+    </label>
+    <input class="govuk-input govuk-!-margin-bottom-4" id="search" name="q" type="text" aria-controls="search-results" placeholder="Search">
+  </form>
+  <div id="search-results" class="search-results" aria-hidden="true" role="dialog" aria-labelledby="search-results-title">
+    <div class="search-results__inner">
+      <button class="search-results__close">Close<span class="search-results__close-label"> search results</span></button>
+      <h2 id="search-results-title" class="search-results__title" aria-live="polite">Results</h2>
+      <div class="search-results__content"></div>
+    </div>
+  </div>
+</div>
+
+              <a href="#" class="toc__close js-toc-close" aria-controls="toc" aria-label="Hide table of contents"></a>
+              <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading">
+                      <ul>
+  <li>
+    <a href="#modsecurity-web-application-firewall"><span>ModSecurity - Web Application Firewall</span></a>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <a href="#introduction"><span>Introduction</span></a>
+          </li>
+          <li>
+            <a href="#ingress-annotations"><span>Ingress Annotations</span></a>
+          </li>
+          <li>
+            <a href="#logging"><span>Logging</span></a>
+          </li>
+          <li>
+            <a href="#owasp-rules"><span>OWASP Rules</span></a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
+              </nav>
+            </div>
+          </div>
+
+        <div class="app-pane__content toc-open-disabled">
+          <main id="content" class="technical-documentation" data-module="anchored-headings">
+              <h1 id="modsecurity-web-application-firewall">ModSecurity - Web Application Firewall</h1><h3 id="introduction">Introduction</h3><h4 id="what-is-a-web-application-firewall-waf">What is a Web Application Firewall (WAF)?</h4><p>A Web Application Firewall or WAF helps protect web applications by filtering and monitoring HTTP traffic between a web application and the Internet. A WAF is a <a href="https://en.wikipedia.org/wiki/OSI_model">layer 7</a> defense and is one of the most common means of protecting against malicious web application security flaws at the application layer. However, it must be noted that a WAF is not designed and does not protect against all types of attacks.</p>
+<h4 id="modsecurity">ModSecurity</h4><p><a href="http://www.modsecurity.org/about.html">ModSecurity</a> is an open source, cross platform web application firewall (WAF) developed by Trustwave&rsquo;s SpiderLabs. It has a robust event-based programming language which provides protection from a range of attacks against web applications and allows for HTTP traffic monitoring and logging.</p>
+<p>For the Cloud Platform, ModSecurity has been configured as an opt-in feature. New and current applications will require a specific set of annotations to be added to their ingress manifest file.</p>
+<h3 id="ingress-annotations">Ingress Annotations</h3><p>To enable ModSecurity for your application, for following an annotations need to be added to the ingress manifest file:</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="s">nginx.ingress.kubernetes.io/enable-modsecurity</span><span class="pi">:</span> <span class="s2">"</span><span class="s">true"</span>
+</code></pre></div><p>This annotation enables ModSecurity for the ingress on the nginx ingress-controller in detection only mode. There is no disruptive action if a critical rule triggers, but it is logged in the nginx-ingress.log file. The <code>SecRuleEngine</code> is set to <code>Detection Only Mode</code>.</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="s">nginx.ingress.kubernetes.io/modsecurity-snippet</span><span class="pi">:</span> <span class="pi">|</span>
+      <span class="s">Include /etc/nginx/owasp-modsecurity-crs/nginx-modsecurity.conf</span>
+      <span class="s">SecRuleEngine On</span>
+</code></pre></div><p>This configures the nginx ingress-controller to use the <code>nginx-modsecurity.conf</code> file for the CRS settings.
+The <code>SecRuleEngine On</code> configures ModSecurity to actively block traffic classed as malicious using Anomaly Scoring.</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="s">nginx.ingress.kubernetes.io/modsecurity-transaction-id</span><span class="pi">:</span> <span class="s2">"</span><span class="s">$request_id"</span>
+</code></pre></div><p>The above annotation is optional, but it can be used to pass transactionIDs from nginx.</p>
+<p>Example:</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">networking.k8s.io/v1beta1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Ingress</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">app-ingress</span>
+  <span class="na">annotations</span><span class="pi">:</span>
+    <span class="s">kubernetes.io/ingress.class</span><span class="pi">:</span> <span class="s2">"</span><span class="s">nginx"</span>
+    <span class="s">nginx.ingress.kubernetes.io/enable-modsecurity</span><span class="pi">:</span> <span class="s2">"</span><span class="s">true"</span>
+    <span class="s">nginx.ingress.kubernetes.io/modsecurity-snippet</span><span class="pi">:</span> <span class="pi">|</span>
+      <span class="s">Include /etc/nginx/owasp-modsecurity-crs/nginx-modsecurity.conf</span>
+      <span class="s">SecRuleEngine On</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">tls</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">hosts</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="s">&lt;application_url&gt;</span> 
+  <span class="na">rules</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">host</span><span class="pi">:</span> <span class="s">&lt;application_url&gt;</span> 
+    <span class="na">http</span><span class="pi">:</span>
+      <span class="na">paths</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">path</span><span class="pi">:</span> <span class="s">/</span>
+        <span class="na">backend</span><span class="pi">:</span>
+          <span class="na">serviceName</span><span class="pi">:</span> <span class="s">app-service</span>
+          <span class="na">servicePort</span><span class="pi">:</span> <span class="m">8080</span>
+</code></pre></div><h3 id="logging">Logging</h3><p>All disruptive actions are logged in the ModSecurity audit log file and the error log for for nginx ingress-controller. 
+Fluentd is used to ship error logs into the Cloud Platform ELK stack. To view any possible logs, log into <a href="https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/">Kibana</a>, select <code>ingress-json</code> index and search for <code>ModSecurity</code>. You can filter down to a particular host using <code>nginx-ingress.log is &quot;host: &quot;test-ingress.url&quot;&quot;</code></p>
+<p>Error Log Example:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>2019/01/01 11:00:00 [warn] 12647#12647: *1158975 [client 12.123.1.12] ModSecurity: Access denied with code 403 (phase 2). Matched "Operator `Ge'
+ with parameter `5' against variable `TX:ANOMALY_SCORE' (Value: `5' ) [file "/etc/nginx/owasp-modsecurity-crs/rules/
+ REQUEST-949-BLOCKING-EVALUATION.conf"] [line "01"] [id "00001"] [rev ""] [msg "Inbound Anomaly Score Exceeded (Total Score: 5)"] [data ""] 
+ [severity "2"] [ver ""] [maturity "0"] [accuracy "0"] [tag "application-multi"] [tag "language-multi"] [tag "platform-multi"] [tag 
+ "attack-generic"] [hostname "12.123.1.12"] [uri "/"] [unique_id "12345678.12345"] [ref ""],
+client: 12.123.1.12, server: test-ingress.url, request: "GET /?exec=/bin/bash HTTP/2.0", host: "test-ingress.url"
+</code></pre></div><h3 id="owasp-rules">OWASP Rules</h3><p>The <a href="https://coreruleset.org/faq/">OWASP ModSecurity Core Rule Set (CRS)</a> is a set of generic attack detection rules for use with ModSecurity. The CRS aims to protect web applications from a wide range of attacks, including the OWASP Top Ten, with a minimum of false alerts. The CRS provides protection against many common attack categories, including:</p>
+
+<ul>
+<li>SQL Injection (SQLi)</li>
+<li>Cross Site Scripting (XSS)</li>
+<li>Local File Inclusion (LFI)</li>
+<li>Remote File Inclusion (RFI)</li>
+<li>PHP Code Injection</li>
+<li>Shellshock</li>
+<li>Unix/Windows Shell Injection</li>
+<li>Session Fixation</li>
+<li>Scripting/Scanner/Bot Detection</li>
+<li>Metadata/Error Leakages</li>
+</ul>
+<h4 id="paranoia-level">Paranoia Level</h4><p>The Paranoia Level (PL) setting allows you to choose the desired level of rule checks. For the Cloud Platform implementation, this has been set to PL1. For more information on Paranoia Levels, please go to the <code>What are paranoia levels, and which level should I choose?</code> section <a href="https://coreruleset.org/faq/">here</a></p>
+<h4 id="anomaly-scoring-mode">Anomaly Scoring Mode</h4><p>Traditional Detection or Passive Mode is the most basic operating mode where all of the rules are run as individual entities. In this mode no intelligence is shared between rules and each rule has no information about any previous rule matches. That is to say, in this mode, if a rule triggers, it will execute any disruptive/logging actions specified on the current rule.</p>
+<p>Anomaly scoring mode implements the concept of Collaborative Detection and Delayed Blocking. Rule logic has been set to decouple the inspection/detection from the blocking functionality. The individual rules can be run so that the detection remains, however instead of applying any disruptive action at that point, the rules will contribute to a transactional anomaly score collection. In addition, each rule will also store meta-data about each rule match (such as the Rule ID, Attack Category, Matched Location and Matched Data) for later logging. 
+For more information in anomaly scoring, click <a href="https://www.modsecurity.org/CRS/Documentation/anomaly.html#anomaly-scoring-mode">here</a></p>
+
+
+              <div data-module='page-expiry' data-last-reviewed-on="2020-08-06">
+    <div class='page-expiry--not-expired'>
+      This page was last reviewed on 6 May 2020.
+
+        It needs to be reviewed again on 6 August 2020
+.
+    </div>
+
+    <div class='page-expiry--expired'>
+      This page was set to be reviewed before 6 August 2020.
+      This might mean the content is out of date.
+    </div>
+  </div>
+
+          </main>
+
+          <aside>
+              <ul class="contribution-banner">
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/documentation/other-topics/modsecurity.html.md.erb">View source</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'ModSecurity%20-%20Web%20Application%20Firewall'&amp;body=Problem%20with%20'ModSecurity%20-%20Web%20Application%20Firewall'%20(user-guide2.cloud-platform.service.justice.gov.uk/documentation/other-topics/modsecurity.html)">Report problem</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub Repo</a></li>
+              </ul>
+          </aside>
+
+          <footer class="govuk-footer app-footer" role="contentinfo">
+  <div class="govuk-footer__meta">
+    <div class="govuk-footer__meta-item govuk-footer__meta-item--grow">
+
+
+      <svg
+        aria-hidden="true"
+        focusable="false"
+        class="govuk-footer__licence-logo"
+        xmlns="http://www.w3.org/2000/svg"
+        viewbox="0 0 483.2 195.7"
+        height="17"
+        width="41"
+      >
+        <path
+          fill="currentColor"
+          d="M421.5 142.8V.1l-50.7 32.3v161.1h112.4v-50.7zm-122.3-9.6A47.12 47.12 0 0 1 221 97.8c0-26 21.1-47.1 47.1-47.1 16.7 0 31.4 8.7 39.7 21.8l42.7-27.2A97.63 97.63 0 0 0 268.1 0c-36.5 0-68.3 20.1-85.1 49.7A98 98 0 0 0 97.8 0C43.9 0 0 43.9 0 97.8s43.9 97.8 97.8 97.8c36.5 0 68.3-20.1 85.1-49.7a97.76 97.76 0 0 0 149.6 25.4l19.4 22.2h3v-87.8h-80l24.3 27.5zM97.8 145c-26 0-47.1-21.1-47.1-47.1s21.1-47.1 47.1-47.1 47.2 21 47.2 47S123.8 145 97.8 145"
+        />
+      </svg>
+      <span class="govuk-footer__licence-description">
+        All content is available under the
+        <a
+          class="govuk-footer__link"
+          href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+          rel="license"
+        >Open Government Licence v3.0</a>, except where otherwise stated
+      </span>
+    </div>
+    <div class="govuk-footer__meta-item">
+      <a
+        class="govuk-footer__link govuk-footer__copyright-logo"
+        href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/"
+      >© Crown copyright</a>
+    </div>
+  </div>
+</footer>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <script src="/javascripts/application.js"></script>
+  </body>
+</html>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138188246-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-138188246-1');
+</script>
+
+<script>
+  // Add the current window.location to the body of the
+  // feedback email message.
+  function sendFeedback(mailto, event) {
+    event.preventDefault();
+
+    var body = "Feedback/Problem on page: " + window.location + "\n";
+    var href = mailto + '&body=' + encodeURIComponent(body);
+
+    window.location = href;
+  }
+
+  $(document).ready(function() {
+    var feedbackLink = $('a[href^="mailto:"]:contains("Feedback")')[0];
+    var mailto = feedbackLink.href;
+    $(feedbackLink).on('click', function(event) { sendFeedback(mailto, event); });
+  });
+</script>

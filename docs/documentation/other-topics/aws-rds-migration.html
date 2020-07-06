@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en" class="govuk-template no-js">
+  <head>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+      <meta name="robots" content="noindex">
+
+    <title>Migrating an RDS instance - Cloud Platform User Guide</title>
+
+    <link href="/stylesheets/manifest.css" rel="stylesheet" />
+
+    <link rel="canonical" href="user-guide2.cloud-platform.service.justice.gov.uk/documentation/other-topics/aws-rds-migration.html">
+
+
+      <meta property="og:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="og:site_name" content="Cloud Platform User Guide" />
+      <meta property="og:title" content="Migrating an RDS instance" />
+      <meta property="og:type" content="object" />
+      <meta property="og:url" content="user-guide2.cloud-platform.service.justice.gov.uk/documentation/other-topics/aws-rds-migration.html" />
+      <meta property="twitter:card" content="summary" />
+      <meta property="twitter:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="twitter:title" content="Migrating an RDS instance - Cloud Platform User Guide" />
+      <meta property="twitter:url" content="user-guide2.cloud-platform.service.justice.gov.uk/documentation/other-topics/aws-rds-migration.html" />
+
+    
+  </head>
+
+  <body class="govuk-template__body">
+    <script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
+
+    <div class="app-pane">
+      <div class="app-pane__header toc-open-disabled">
+        <a href="#content" class="govuk-skip-link">Skip to main content</a>
+
+        <header class="govuk-header app-header" role="banner" data-module="govuk-header">
+  <div class="govuk-header__container govuk-header__container--full-width">
+    <div class="govuk-header__logo">
+      <a href="/" class="govuk-header__link govuk-header__link--homepage">
+        <span class="govuk-header__product-name">
+          Cloud Platform User Guide
+        </span>
+      </a>
+        <strong class="govuk-tag">INTERNAL</strong>
+    </div>
+    <div class="govuk-header__content">
+      <button type="button" class="govuk-header__menu-button govuk-js-header-toggle" aria-controls="navigation" aria-label="Show or hide Top Level Navigation">Menu</button>
+      <nav>
+        <ul id="navigation" class="govuk-header__navigation govuk-header__navigation--end" aria-label="Top Level Navigation">
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="mailto:platforms+user-guide@digital.justice.gov.uk?subject=User+guide+feedback">Feedback / Report a problem</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="/">Documentation</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub</a>
+            </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      </div>
+
+        <div id="toc-heading" class="toc-show fixedsticky">
+          <a href="#toc" class="toc-show__label js-toc-show" aria-controls="toc">
+            Table of contents <span class="toc-show__icon"></span>
+          </a>
+        </div>
+
+      <div class="app-pane__body" data-module="in-page-navigation">
+          <div class="app-pane__toc">
+            <div class="toc" data-module="table-of-contents">
+              <div class="search" data-module="search">
+  <form action="https://www.google.co.uk/search" method="get" role="search">
+    <input type="hidden" name="as_sitesearch" value="user-guide2.cloud-platform.service.justice.gov.uk"/>
+    <label class="govuk-label search__label" for="search">
+      Search (via Google)
+    </label>
+    <input class="govuk-input govuk-!-margin-bottom-4" id="search" name="q" type="text" aria-controls="search-results" placeholder="Search">
+  </form>
+  <div id="search-results" class="search-results" aria-hidden="true" role="dialog" aria-labelledby="search-results-title">
+    <div class="search-results__inner">
+      <button class="search-results__close">Close<span class="search-results__close-label"> search results</span></button>
+      <h2 id="search-results-title" class="search-results__title" aria-live="polite">Results</h2>
+      <div class="search-results__content"></div>
+    </div>
+  </div>
+</div>
+
+              <a href="#" class="toc__close js-toc-close" aria-controls="toc" aria-label="Hide table of contents"></a>
+              <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading">
+                      <ul>
+  <li>
+    <a href="#migrating-an-rds-instance"><span>Migrating an RDS instance</span></a>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <a href="#overview"><span>Overview</span></a>
+          </li>
+          <li>
+            <a href="#step-0-pod"><span>Step 0 - Pod</span></a>
+          </li>
+          <li>
+            <a href="#step-1-pre-data"><span>Step 1 - Pre-Data</span></a>
+          </li>
+          <li>
+            <a href="#step-2-sequences"><span>Step 2 - Sequences</span></a>
+          </li>
+          <li>
+            <a href="#step-3-data"><span>Step 3 - Data</span></a>
+          </li>
+          <li>
+            <a href="#step-4-post-data"><span>Step 4 - Post-Data</span></a>
+          </li>
+          <li>
+            <a href="#step-5-data-validation-very-important"><span>Step 5 - Data Validation (Very Important)</span></a>
+          </li>
+          <li>
+            <a href="#step-6-clean-up"><span>Step 6 - Clean up</span></a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
+              </nav>
+            </div>
+          </div>
+
+        <div class="app-pane__content toc-open-disabled">
+          <main id="content" class="technical-documentation" data-module="anchored-headings">
+              <h1 id="migrating-an-rds-instance">Migrating an RDS instance</h1><p>This guide covers one way of migrating an RDS instance from one AWS account to another.
+This is a standard approach using<code>pg_dump</code> and <code>psql</code>.</p>
+<p>This guide assumes the migration complies with the following :</p>
+
+<ul>
+<li>The migration happens from a <em>source</em> postresql RDS instance to a <em>target</em> postresql RDS instance</li>
+<li>Elevated &amp; short-lived sets of postgres credentials are available for both <em>source</em> and <em>target</em></li>
+</ul>
+<h3 id="overview">Overview</h3><h4 id="postgres-utilities">Postgres utilities</h4><p>It is possible to do a full database migration using only official CLI tools, provided by Postgres. 
+Using <code>pg_dump</code> and <code>psql</code>, this document describes the migration process.</p>
+<p><a href="https://www.postgresql.org/docs/9.4/app-pgdump.html">pg_dump</a></p>
+<p><strong>Using this tooling implies having <em>source</em> database downtime</strong>. (As you don&rsquo;t want data being written to it while migrating it.)</p>
+<p>The steps will always be the same; on one side we export from source, on the target side we restore.</p>
+<h4 id="pre-data-data-post-data">Pre-Data, Data, Post-Data</h4><p><code>pg_dump</code> can be used to export one big archive that can then be restored with <code>pg_restore</code>.
+One issue with that approach is the difficulty of troubleshooting migration issues.</p>
+<p>Since we are trying to make this process as clear as possible, the following guide decomposes <code>pg_dump</code> into its three components:</p>
+
+<ul>
+<li>Pre-data: The table structures, functions.</li>
+<li>Data: data</li>
+<li>Post-data: indexes, triggers, rules, and constraints</li>
+</ul>
+<p>With that deconstructed process, it is easier to debug issues (and get help from the Cloud Platform team) and most importantly your team can perform validation/testing incrementally.</p>
+<h3 id="step-0-pod">Step 0 - Pod</h3><p>In order to run postgresql commands against both of those endpoints, you need access to both.</p>
+<p>This is solved by launching a pod on the live1 kubernetes cluster, in the team&rsquo;s namespace. 
+The migration steps outlined below have been tested from a pod running the <code>bitnami/postgresql</code> Docker image.</p>
+<p>Network access requirements:</p>
+
+<ul>
+<li>The <em>source</em> RDS needs to have its <code>public accessibility</code> config turned on.</li>
+<li>The RDS security group needs to be opened to the Cluster. For that, add inbound rules from the NAT gateways&rsquo; IP addresses to port 5432.<br></li>
+<li>The RDS instance needs to support SSL connections.</li>
+</ul>
+<h3 id="step-1-pre-data">Step 1 - Pre-Data</h3><p>First, to export,  we run:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>pg_dump -U source_username \
+     -h source_endpoint \
+     -d source_database \
+     -O \
+     --section=pre-data &gt; pre-data.sql
+</code></pre></div><p>Here, <code>-O</code> tells RDS to export the table structure without owners.
+The command above stores the data in a local file.</p>
+<p>Then to restore this into the <em>target</em>, we use <code>psql</code>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>psql -U target_username \
+     -h target_endpoint \
+     -d target_database \
+     -f pre-data.sql
+</code></pre></div><p>If using a local file is problematic, those two commands can be piped together (<code>|</code>)</p>
+<h3 id="step-2-sequences">Step 2 - Sequences</h3><p>Sequences are essential for your database to know what the latest increment of the primary keys is. Sequences are held in special tables that will not be migrated during step 1.</p>
+<p>First, to export,  we run :</p>
+<div class="highlight"><pre class="highlight plaintext"><code>pg_dump -U source_username \
+     -h source_endpoint \
+     -d source_database \
+     -t '*_seq' &gt; sequences.sql
+</code></pre></div><p>Here, <code>-t &#39;*_seq&#39;</code> indicates to <code>pg_dump</code> that we only want to export tables with names ending in <code>_seq</code>, which are the sequences.</p>
+<p>Then to restore this into the <em>target</em>, we use <code>psql</code>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>psql -U target_username \
+     -h target_endpoint \
+     -d target_database \
+     -f sequences.sql
+</code></pre></div><p>If using a local file is problematic, those two commands can be piped together (<code>|</code>)</p>
+<h3 id="step-3-data">Step 3 - Data</h3><p>First, to export,  we run :</p>
+<div class="highlight"><pre class="highlight plaintext"><code>pg_dump -U source_username \
+     -h source_endpoint \
+     -d source_database \
+     -O \
+     --section=data &gt; data.sql
+</code></pre></div><p>Here, <code>-O</code> tells RDS to export the table structure without owners.
+The command above stores the data in a local file.</p>
+<p>Then to restore this into the <em>target</em>, we use <code>psql</code>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>psql -U target_username \
+     -h target_endpoint \
+     -d target_database \
+     -f data.sql
+</code></pre></div><p>If using a local file is problematic, those two commands can be piped together (<code>|</code>)</p>
+<h3 id="step-4-post-data">Step 4 - Post-Data</h3><p>Any constraints, indexes and foreign keys are also a special kind of metadata that would not be migrated during any of the steps above. 
+All of data is contained within the <code>post-data</code> section.</p>
+<p>The process is almost identical to Step 1:</p>
+<p>First, to export,  we run:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>pg_dump -U source_username \
+     -h source_endpoint \
+     -d source_database \
+     -O \
+     --section=post-data &gt; post-data.sql
+</code></pre></div><p>Then to restore this into the <em>target</em>, we use <code>psql</code>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>psql -U target_username \
+     -h target_endpoint \
+     -d target_database \
+     -f post-data.sql
+</code></pre></div><p>If using a local file is problematic, those two commands can be piped together (<code>|</code>)</p>
+<h3 id="step-5-data-validation-very-important">Step 5 - Data Validation (Very Important)</h3><p>After a migration, <strong>it is your team&rsquo;s responsibility</strong> to ensure the data, its integrity and anything required by your application to operate properly have been preserved.</p>
+<p>Even though the process above migrates the data and the metadata, it is essential for you to have a <em>data validation strategy</em> to confirm everything is in order.</p>
+<p>The Cloud Platform team can&rsquo;t provide a how-to guide on data validation, as each service&rsquo;s database migration is different.</p>
+<h3 id="step-6-clean-up">Step 6 - Clean up</h3><p>After a successful migration, we can clean up by:</p>
+
+<ul>
+<li>Deleting the pod from STEP 1 </li>
+<li>Disabling the network access from the live-1 cluster to the <em>source</em> RDS</li>
+<li>Revoking the temporary credentials created for the migration</li>
+</ul>
+
+
+              <div data-module='page-expiry' data-last-reviewed-on="2020-08-07">
+    <div class='page-expiry--not-expired'>
+      This page was last reviewed on 7 May 2020.
+
+        It needs to be reviewed again on 7 August 2020
+.
+    </div>
+
+    <div class='page-expiry--expired'>
+      This page was set to be reviewed before 7 August 2020.
+      This might mean the content is out of date.
+    </div>
+  </div>
+
+          </main>
+
+          <aside>
+              <ul class="contribution-banner">
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/documentation/other-topics/aws-rds-migration.html.md.erb">View source</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'Migrating%20an%20RDS%20instance'&amp;body=Problem%20with%20'Migrating%20an%20RDS%20instance'%20(user-guide2.cloud-platform.service.justice.gov.uk/documentation/other-topics/aws-rds-migration.html)">Report problem</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub Repo</a></li>
+              </ul>
+          </aside>
+
+          <footer class="govuk-footer app-footer" role="contentinfo">
+  <div class="govuk-footer__meta">
+    <div class="govuk-footer__meta-item govuk-footer__meta-item--grow">
+
+
+      <svg
+        aria-hidden="true"
+        focusable="false"
+        class="govuk-footer__licence-logo"
+        xmlns="http://www.w3.org/2000/svg"
+        viewbox="0 0 483.2 195.7"
+        height="17"
+        width="41"
+      >
+        <path
+          fill="currentColor"
+          d="M421.5 142.8V.1l-50.7 32.3v161.1h112.4v-50.7zm-122.3-9.6A47.12 47.12 0 0 1 221 97.8c0-26 21.1-47.1 47.1-47.1 16.7 0 31.4 8.7 39.7 21.8l42.7-27.2A97.63 97.63 0 0 0 268.1 0c-36.5 0-68.3 20.1-85.1 49.7A98 98 0 0 0 97.8 0C43.9 0 0 43.9 0 97.8s43.9 97.8 97.8 97.8c36.5 0 68.3-20.1 85.1-49.7a97.76 97.76 0 0 0 149.6 25.4l19.4 22.2h3v-87.8h-80l24.3 27.5zM97.8 145c-26 0-47.1-21.1-47.1-47.1s21.1-47.1 47.1-47.1 47.2 21 47.2 47S123.8 145 97.8 145"
+        />
+      </svg>
+      <span class="govuk-footer__licence-description">
+        All content is available under the
+        <a
+          class="govuk-footer__link"
+          href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+          rel="license"
+        >Open Government Licence v3.0</a>, except where otherwise stated
+      </span>
+    </div>
+    <div class="govuk-footer__meta-item">
+      <a
+        class="govuk-footer__link govuk-footer__copyright-logo"
+        href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/"
+      >© Crown copyright</a>
+    </div>
+  </div>
+</footer>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <script src="/javascripts/application.js"></script>
+  </body>
+</html>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138188246-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-138188246-1');
+</script>
+
+<script>
+  // Add the current window.location to the body of the
+  // feedback email message.
+  function sendFeedback(mailto, event) {
+    event.preventDefault();
+
+    var body = "Feedback/Problem on page: " + window.location + "\n";
+    var href = mailto + '&body=' + encodeURIComponent(body);
+
+    window.location = href;
+  }
+
+  $(document).ready(function() {
+    var feedbackLink = $('a[href^="mailto:"]:contains("Feedback")')[0];
+    var mailto = feedbackLink.href;
+    $(feedbackLink).on('click', function(event) { sendFeedback(mailto, event); });
+  });
+</script>

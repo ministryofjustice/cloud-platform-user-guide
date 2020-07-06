@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en" class="govuk-template no-js">
+  <head>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+      <meta name="robots" content="noindex">
+
+    <title>How to use `kubectl` to connect to the cluster - Cloud Platform User Guide</title>
+
+    <link href="/stylesheets/manifest.css" rel="stylesheet" />
+
+    <link rel="canonical" href="user-guide2.cloud-platform.service.justice.gov.uk/documentation/getting-started/kubectl-config.html">
+
+
+      <meta property="og:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="og:site_name" content="Cloud Platform User Guide" />
+      <meta property="og:title" content="How to use `kubectl` to connect to the cluster" />
+      <meta property="og:type" content="object" />
+      <meta property="og:url" content="user-guide2.cloud-platform.service.justice.gov.uk/documentation/getting-started/kubectl-config.html" />
+      <meta property="twitter:card" content="summary" />
+      <meta property="twitter:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="twitter:title" content="How to use `kubectl` to connect to the cluster - Cloud Platform User Guide" />
+      <meta property="twitter:url" content="user-guide2.cloud-platform.service.justice.gov.uk/documentation/getting-started/kubectl-config.html" />
+
+    
+  </head>
+
+  <body class="govuk-template__body">
+    <script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
+
+    <div class="app-pane">
+      <div class="app-pane__header toc-open-disabled">
+        <a href="#content" class="govuk-skip-link">Skip to main content</a>
+
+        <header class="govuk-header app-header" role="banner" data-module="govuk-header">
+  <div class="govuk-header__container govuk-header__container--full-width">
+    <div class="govuk-header__logo">
+      <a href="/" class="govuk-header__link govuk-header__link--homepage">
+        <span class="govuk-header__product-name">
+          Cloud Platform User Guide
+        </span>
+      </a>
+        <strong class="govuk-tag">INTERNAL</strong>
+    </div>
+    <div class="govuk-header__content">
+      <button type="button" class="govuk-header__menu-button govuk-js-header-toggle" aria-controls="navigation" aria-label="Show or hide Top Level Navigation">Menu</button>
+      <nav>
+        <ul id="navigation" class="govuk-header__navigation govuk-header__navigation--end" aria-label="Top Level Navigation">
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="mailto:platforms+user-guide@digital.justice.gov.uk?subject=User+guide+feedback">Feedback / Report a problem</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="/">Documentation</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub</a>
+            </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      </div>
+
+        <div id="toc-heading" class="toc-show fixedsticky">
+          <a href="#toc" class="toc-show__label js-toc-show" aria-controls="toc">
+            Table of contents <span class="toc-show__icon"></span>
+          </a>
+        </div>
+
+      <div class="app-pane__body" data-module="in-page-navigation">
+          <div class="app-pane__toc">
+            <div class="toc" data-module="table-of-contents">
+              <div class="search" data-module="search">
+  <form action="https://www.google.co.uk/search" method="get" role="search">
+    <input type="hidden" name="as_sitesearch" value="user-guide2.cloud-platform.service.justice.gov.uk"/>
+    <label class="govuk-label search__label" for="search">
+      Search (via Google)
+    </label>
+    <input class="govuk-input govuk-!-margin-bottom-4" id="search" name="q" type="text" aria-controls="search-results" placeholder="Search">
+  </form>
+  <div id="search-results" class="search-results" aria-hidden="true" role="dialog" aria-labelledby="search-results-title">
+    <div class="search-results__inner">
+      <button class="search-results__close">Close<span class="search-results__close-label"> search results</span></button>
+      <h2 id="search-results-title" class="search-results__title" aria-live="polite">Results</h2>
+      <div class="search-results__content"></div>
+    </div>
+  </div>
+</div>
+
+              <a href="#" class="toc__close js-toc-close" aria-controls="toc" aria-label="Hide table of contents"></a>
+              <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading">
+                      <ul>
+  <li>
+    <a href="#how-to-use-kubectl-to-connect-to-the-cluster"><span>How to use kubectl to connect to the cluster</span></a>
+    <ul>
+      <li>
+        <a href="#installation"><span>Installation</span></a>
+      </li>
+      <li>
+        <a href="#authentication"><span>Authentication</span></a>
+        <ul>
+          <li>
+            <a href="#how-do-i-connect-to-the-kubernetes-cluster"><span>How do I connect to the kubernetes cluster?</span></a>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="#where-to-go-from-here"><span>Where to go from here?</span></a>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
+              </nav>
+            </div>
+          </div>
+
+        <div class="app-pane__content toc-open-disabled">
+          <main id="content" class="technical-documentation" data-module="anchored-headings">
+              <h1 id="how-to-use-kubectl-to-connect-to-the-cluster">How to use <code>kubectl</code> to connect to the cluster</h1><p>The aim of this guide is to help you install and configure <code>kubectl</code>, the official command-line tool for Kubernetes.</p>
+<p><code>kubectl</code> is used to deploy and manage applications on Kubernetes and is fundamental for anyone who wants to interact with the Cloud Platform.</p>
+<p>After working through this guide you should be able to use kubectl to query and update your namespace(s) on the Cloud Platform.</p>
+<h2 id="installation">Installation</h2><p>Please read the <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl">official documentation</a> on how to install <code>kubectl</code>.</p>
+<h2 id="authentication">Authentication</h2><p>After installing kubectl, you need to authenticate to the Cloud Platform.</p>
+<p>To do this, you must have a GitHub account to which your <code>...@digital.justice.gov.uk</code> email address has been added.</p>
+<p>The Cloud Platform uses GitHub for authentication and authorisation, and access to different namespaces (e.g. <code>pvb-production</code>, <code>cla-staging</code>) is granted according to GitHub team membership (e.g. &lsquo;PVB&rsquo; and &lsquo;CLA&rsquo; teams).</p>
+<p>Your account must be a member of the Ministry of Justice Organisation on GitHub. If you are not already in the organisation, you can add yourself (provided you have added your MoJ email address to your GitHub account) using <a href="https://github.com/orgs/ministryofjustice/sso">this link</a>.</p>
+<h3 id="how-do-i-connect-to-the-kubernetes-cluster">How do I connect to the kubernetes cluster?</h3><p>We use <a href="https://www.auth0.com">Auth0</a> to bridge between GitHub&rsquo;s <a href="https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2">OAuth2</a>, and <a href="https://kubernetes.io/docs/reference/access-authn-authz/authentication/#openid-connect-tokens">OIDC</a> authentication, which Kubernetes supports. <a href="https://github.com/negz/kuberos">Kuberos</a> generates a config file, containing access credentials. You need to download this file and store it on your laptop, as <code>~/.kube/config</code></p>
+
+<ol>
+<li>Click on <a href="https://login.cloud-platform.service.justice.gov.uk/">this link</a></li>
+<li><p>Go through the &lsquo;Sign in with GitHub&rsquo; process</p>
+<p>NB: Be careful when you reach the authorization step:</p>
+<p><a href="/images/github-authorize-moj.png" target="_blank" rel="noopener noreferrer"><img src="/images/github-authorize-moj.png" alt="GitHub Authorize MoJ" /></a></p></li>
+<li><p>Authorise &lsquo;live-1:kubernetes&rsquo; to access your &lsquo;justice-cloud-platform&rsquo; tenant</p></li>
+<li><p>Use the &lsquo;Download Config File&rsquo; button</p></li>
+<li><p>Rename the downloaded file to <code>~/.kube/config</code></p></li>
+<li><p>Run this command:</p></li>
+</ol>
+<div class="highlight"><pre class="highlight plaintext"><code>kubectl config use-context live-1.cloud-platform.service.justice.gov.uk
+</code></pre></div><p>You should now be able to run <code>kubectl</code> commands. Try running <code>kubectl get namespaces</code> to list the namespaces in the cluster.</p>
+<h4 id="troubleshooting-quot-current-quot-context">Troubleshooting: &ldquo;current&rdquo; context</h4><p>If you see an error like this when executing <code>kubectl</code> commands:
+<code>
+The connection to the server localhost:8080 was refused
+</code></p>
+<p>Check that your &ldquo;current&rdquo; context is set, by running:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>kubectl config get-contexts
+</code></pre></div><p>If the output looks like this (i.e. there is no <code>*</code> indicating that the live-1 context is set as the <code>current</code> context:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>CURRENT   NAME                                           CLUSTER                                        AUTHINFO                 NAMESPACE
+          live-1.cloud-platform.service.justice.gov.uk   live-1.cloud-platform.service.justice.gov.uk   &lt;your github e-mail&gt;
+</code></pre></div><p>Then you need to set the context with the <code>use-context</code> command mentioned above.</p>
+<h2 id="where-to-go-from-here">Where to go from here?</h2><p>Now that you&rsquo;ve setup <code>kubectl</code>, you might want to look at this handy <a href="https://kubernetes.io/docs/reference/kubectl/cheatsheet/">cheatsheet</a>.</p>
+<p>Once you are ready to deploy applications you will need to <a href="/documentation/getting-started/env-create.html">create a namespace</a> first.</p>
+
+
+              <div data-module='page-expiry' data-last-reviewed-on="2020-07-28">
+    <div class='page-expiry--not-expired'>
+      This page was last reviewed on 28 April 2020.
+
+        It needs to be reviewed again on 28 July 2020
+.
+    </div>
+
+    <div class='page-expiry--expired'>
+      This page was set to be reviewed before 28 July 2020.
+      This might mean the content is out of date.
+    </div>
+  </div>
+
+          </main>
+
+          <aside>
+              <ul class="contribution-banner">
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/documentation/getting-started/kubectl-config.html.md.erb">View source</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'How%20to%20use%20`kubectl`%20to%20connect%20to%20the%20cluster'&amp;body=Problem%20with%20'How%20to%20use%20`kubectl`%20to%20connect%20to%20the%20cluster'%20(user-guide2.cloud-platform.service.justice.gov.uk/documentation/getting-started/kubectl-config.html)">Report problem</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub Repo</a></li>
+              </ul>
+          </aside>
+
+          <footer class="govuk-footer app-footer" role="contentinfo">
+  <div class="govuk-footer__meta">
+    <div class="govuk-footer__meta-item govuk-footer__meta-item--grow">
+
+
+      <svg
+        aria-hidden="true"
+        focusable="false"
+        class="govuk-footer__licence-logo"
+        xmlns="http://www.w3.org/2000/svg"
+        viewbox="0 0 483.2 195.7"
+        height="17"
+        width="41"
+      >
+        <path
+          fill="currentColor"
+          d="M421.5 142.8V.1l-50.7 32.3v161.1h112.4v-50.7zm-122.3-9.6A47.12 47.12 0 0 1 221 97.8c0-26 21.1-47.1 47.1-47.1 16.7 0 31.4 8.7 39.7 21.8l42.7-27.2A97.63 97.63 0 0 0 268.1 0c-36.5 0-68.3 20.1-85.1 49.7A98 98 0 0 0 97.8 0C43.9 0 0 43.9 0 97.8s43.9 97.8 97.8 97.8c36.5 0 68.3-20.1 85.1-49.7a97.76 97.76 0 0 0 149.6 25.4l19.4 22.2h3v-87.8h-80l24.3 27.5zM97.8 145c-26 0-47.1-21.1-47.1-47.1s21.1-47.1 47.1-47.1 47.2 21 47.2 47S123.8 145 97.8 145"
+        />
+      </svg>
+      <span class="govuk-footer__licence-description">
+        All content is available under the
+        <a
+          class="govuk-footer__link"
+          href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+          rel="license"
+        >Open Government Licence v3.0</a>, except where otherwise stated
+      </span>
+    </div>
+    <div class="govuk-footer__meta-item">
+      <a
+        class="govuk-footer__link govuk-footer__copyright-logo"
+        href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/"
+      >© Crown copyright</a>
+    </div>
+  </div>
+</footer>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <script src="/javascripts/application.js"></script>
+  </body>
+</html>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138188246-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-138188246-1');
+</script>
+
+<script>
+  // Add the current window.location to the body of the
+  // feedback email message.
+  function sendFeedback(mailto, event) {
+    event.preventDefault();
+
+    var body = "Feedback/Problem on page: " + window.location + "\n";
+    var href = mailto + '&body=' + encodeURIComponent(body);
+
+    window.location = href;
+  }
+
+  $(document).ready(function() {
+    var feedbackLink = $('a[href^="mailto:"]:contains("Feedback")')[0];
+    var mailto = feedbackLink.href;
+    $(feedbackLink).on('click', function(event) { sendFeedback(mailto, event); });
+  });
+</script>
