@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en" class="govuk-template no-js">
+  <head>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+      <meta name="robots" content="noindex">
+
+    <title>Migrating to the Cloud Platform from Template Deploy - Cloud Platform User Guide</title>
+
+    <link href="/stylesheets/manifest.css" rel="stylesheet" />
+
+    <link rel="canonical" href="user-guide2.cloud-platform.service.justice.gov.uk/documentation/concepts/migrate-from-td.html">
+
+
+      <meta property="og:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="og:site_name" content="Cloud Platform User Guide" />
+      <meta property="og:title" content="Migrating to the Cloud Platform from Template Deploy" />
+      <meta property="og:type" content="object" />
+      <meta property="og:url" content="user-guide2.cloud-platform.service.justice.gov.uk/documentation/concepts/migrate-from-td.html" />
+      <meta property="twitter:card" content="summary" />
+      <meta property="twitter:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="twitter:title" content="Migrating to the Cloud Platform from Template Deploy - Cloud Platform User Guide" />
+      <meta property="twitter:url" content="user-guide2.cloud-platform.service.justice.gov.uk/documentation/concepts/migrate-from-td.html" />
+
+    
+  </head>
+
+  <body class="govuk-template__body">
+    <script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
+
+    <div class="app-pane">
+      <div class="app-pane__header toc-open-disabled">
+        <a href="#content" class="govuk-skip-link">Skip to main content</a>
+
+        <header class="govuk-header app-header" role="banner" data-module="govuk-header">
+  <div class="govuk-header__container govuk-header__container--full-width">
+    <div class="govuk-header__logo">
+      <a href="/" class="govuk-header__link govuk-header__link--homepage">
+        <span class="govuk-header__product-name">
+          Cloud Platform User Guide
+        </span>
+      </a>
+        <strong class="govuk-tag">INTERNAL</strong>
+    </div>
+    <div class="govuk-header__content">
+      <button type="button" class="govuk-header__menu-button govuk-js-header-toggle" aria-controls="navigation" aria-label="Show or hide Top Level Navigation">Menu</button>
+      <nav>
+        <ul id="navigation" class="govuk-header__navigation govuk-header__navigation--end" aria-label="Top Level Navigation">
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="mailto:platforms+user-guide@digital.justice.gov.uk?subject=User+guide+feedback">Feedback / Report a problem</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="/">Documentation</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub</a>
+            </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      </div>
+
+        <div id="toc-heading" class="toc-show fixedsticky">
+          <a href="#toc" class="toc-show__label js-toc-show" aria-controls="toc">
+            Table of contents <span class="toc-show__icon"></span>
+          </a>
+        </div>
+
+      <div class="app-pane__body" data-module="in-page-navigation">
+          <div class="app-pane__toc">
+            <div class="toc" data-module="table-of-contents">
+              <div class="search" data-module="search">
+  <form action="https://www.google.co.uk/search" method="get" role="search">
+    <input type="hidden" name="as_sitesearch" value="user-guide2.cloud-platform.service.justice.gov.uk"/>
+    <label class="govuk-label search__label" for="search">
+      Search (via Google)
+    </label>
+    <input class="govuk-input govuk-!-margin-bottom-4" id="search" name="q" type="text" aria-controls="search-results" placeholder="Search">
+  </form>
+  <div id="search-results" class="search-results" aria-hidden="true" role="dialog" aria-labelledby="search-results-title">
+    <div class="search-results__inner">
+      <button class="search-results__close">Close<span class="search-results__close-label"> search results</span></button>
+      <h2 id="search-results-title" class="search-results__title" aria-live="polite">Results</h2>
+      <div class="search-results__content"></div>
+    </div>
+  </div>
+</div>
+
+              <a href="#" class="toc__close js-toc-close" aria-controls="toc" aria-label="Hide table of contents"></a>
+              <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading">
+                      <ul>
+  <li>
+    <a href="#migrating-to-the-cloud-platform-from-template-deploy"><span>Migrating to the Cloud Platform from Template Deploy</span></a>
+    <ul>
+      <li>
+        <a href="#production-infrastructure"><span>Production infrastructure</span></a>
+      </li>
+      <li>
+        <a href="#allowing-network-traffic-to-from-your-service"><span>Allowing network traffic to/from your service</span></a>
+      </li>
+      <li>
+        <a href="#dns-changes"><span>DNS changes</span></a>
+      </li>
+      <li>
+        <a href="#aws-access"><span>AWS access</span></a>
+      </li>
+      <li>
+        <a href="#aws-region"><span>AWS region</span></a>
+      </li>
+      <li>
+        <a href="#ssl"><span>SSL</span></a>
+      </li>
+      <li>
+        <a href="#connections-to-from-service-ips"><span>Connections to/from service IPs</span></a>
+      </li>
+      <li>
+        <a href="#application-architecture"><span>Application Architecture</span></a>
+      </li>
+      <li>
+        <a href="#additional-features"><span>Additional features</span></a>
+      </li>
+      <li>
+        <a href="#obsoleted-features"><span>Obsoleted features</span></a>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
+              </nav>
+            </div>
+          </div>
+
+        <div class="app-pane__content toc-open-disabled">
+          <main id="content" class="technical-documentation" data-module="anchored-headings">
+              <h1 id="migrating-to-the-cloud-platform-from-template-deploy">Migrating to the Cloud Platform from Template Deploy</h1><p>These are some of the things to think about when migrating your application from <a href="https://dsdmoj.atlassian.net/wiki/spaces/PLAT/pages/86310992/Template+Deploy">Template Deploy</a> (TD) to the <a href="https://github.com/ministryofjustice/cloud-platform">Cloud Platform</a> (CP).</p>
+<h2 id="production-infrastructure">Production infrastructure</h2><p>Any infrastructure resources, such as databases or cache servers, should be of the same size, and running the same software (e.g. postgres) version, for the CP version of your app. as for the TD version.</p>
+<h2 id="allowing-network-traffic-to-from-your-service">Allowing network traffic to/from your service</h2><p>The IP numbers from which your app&rsquo;s traffic originates will change. If your app. talks to any external services which care about its source IP addresses, you may need to arrange for those services to allow traffic from the cluster IPs.</p>
+<p>If you have configured your service to allow inbound traffic from any specific IPs, you will need to add the corresponding config to your kubernetes deploymnent files.</p>
+<p>This section of the user guide describes both of these procedures: <a href="/documentation/other-topics/ip-filtering.html">IP filtering</a>.</p>
+<h2 id="dns-changes">DNS changes</h2><p>When you are ready to switch from the TD version of your app. to the production version deployed in CP, the last step will be to change the <a href="https://en.wikipedia.org/wiki/Domain_Name_System">DNS</a> entries such that visitors to your app&rsquo;s domain are sent to the new CP version.</p>
+<p>It&rsquo;s important to plan this step carefully. Some things to think about include:</p>
+
+<ul>
+<li>Who controls DNS for your app&rsquo;s domain (MoJ? GDS?). For <code>*.service.gov.uk</code> domains, changing the DNS requires action from GDS, and you will need to plan for this.</li>
+<li>Do you have users on private networks (e.g. DOM1, Quantum)? How confident are you that they will get the correct address after the DNS change? Some networks (e.g. Quantum), are known to have problems with DNS changes, so you may need to engage with the network operator (e.g. Atos, Vodafone) ahead of time.</li>
+</ul>
+<h2 id="aws-access">AWS access</h2><p>All AWS resources in the Cloud Platform are in a separate, <code>moj-cp</code> AWS account. Access to this account is tightly restricted, so if you are accustomed to e.g. using the AWS web console to help operate your service, you will need to do things differently in the Cloud Platform.</p>
+<h2 id="aws-region">AWS region</h2><p>Everything for the Cloud Platform is in the <code>eu-west-2</code> (London) region.  TD generally uses <code>eu-west-1</code> (Ireland). For features not available in the London region (eg SES, at time of writing), cross-region links can be created and will be evaluated on request.</p>
+<h2 id="ssl">SSL</h2><p>DNS and SSL are managed by cluster-shared services (<a href="https://cert-manager.io/docs/">cert-manager</a> and <a href="https://github.com/kubernetes-sigs/external-dns">external-dns</a>)</p>
+
+<ul>
+<li>Validation and deployment are managed by a single pipeline.</li>
+<li>Renewals are automatic.</li>
+</ul>
+<p>Does your service have users who are stuck with very old browsers? If so, consider the following:</p>
+
+<ul>
+<li>CP SSL certificates are generated by <a href="https://letsencrypt.org/">LetsEncrypt</a>. If the user&rsquo;s browser does not recognise LetsEncrypt as a valid certificate authority, they may get security warnings when accessing your service, or they may not be permitted to access it at all.</li>
+<li>TLS version: Kubernetes supports a minimum TLS version of 1.2 If you have users with browsers that do not support TLS 1.2, they will not be able to access your service.</li>
+</ul>
+<h2 id="connections-to-from-service-ips">Connections to/from service IPs</h2><p>Inbound connections to service IPs are not possible, on the Cloud Platform. Access to your service must go via https to a URL, not by inbound access to an IP number.</p>
+<p>Connections <strong>to</strong> resources outside the cluster are allowed, and pods will be NATed to the IPs of the VPC gateways (the IP addresses are pinned in the #ask-cloud-platform channel).</p>
+
+<blockquote>
+<p>NB: UDP is not available at all.</p>
+</blockquote>
+<h2 id="application-architecture">Application Architecture</h2>
+<ol>
+<li><p>Applications must log their entire output to STDOUT/STDERR.</p>
+
+<ul>
+<li>A cluster-shared service (fluentd) automatically collects all the outputs and sends them to <a href="https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana">ElasticSearch</a> with no explicit configuration needed.</li>
+<li>Services that capture the output to re-format or send to a different destination can be run as multi-container pods, but may be superfluous.</li>
+</ul></li>
+<li><p>You don&rsquo;t need to run an <code>init</code> service (e.g. <code>runit</code>, or <code>systemd</code>) in your containers. Kubernetes will keep your services running, by itself.</p></li>
+<li><p>You don&rsquo;t need to run <code>cron</code> in your containers. Use <a href="https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/">kubernetes cron jobs</a>.</p></li>
+<li><p>Keep startup as quick as possible</p>
+
+<ul>
+<li>Initialisation tasks such as database migrations or loading seed data should be configured as separate <a href="https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/">kubernetes jobs</a>, not run as part of the initialisation of your main application. This is because, if your container takes too long to enter <code>ready</code> state, kubernetes will assume there&rsquo;s a problem and kill it.</li>
+</ul></li>
+<li><p>Don&rsquo;t use local disk storage. If you need to write to the filesystem, use a persistent volume or, better still, an S3 bucket.</p></li>
+<li><p>Monitoring is included with the Cloud Platform</p>
+
+<ul>
+<li>The recommended solution is the combination of <a href="/#monitoring-applications">Prometheus/AlertManager/Grafana</a></li>
+<li>You can still use <a href="https://sentry.service.dsd.io/mojds">Sentry</a></li>
+</ul></li>
+<li><p>Your application will be moved around, by kubernetes, from one worker node to another. i.e. your application should tolerate individual pods being killed and replaced.</p></li>
+<li><p>Always run at least 3 replicas of your core, user-facing services, to ensure users do not experience downtime when kubernetes moves your pods to another node</p></li>
+</ol>
+<h2 id="additional-features">Additional features</h2>
+<ol>
+<li><p>A shared, highly-available deployment of reverse-proxy instances based on AWS ELB and Nginx runs in front of all application instances and offers features like <a href="/documentation/other-topics/modsecurity.html#modsecurity-web-application-firewall">WAF</a>, custom <a href="https://github.com/ministryofjustice/cloud-platform-custom-error-pages">error pages</a> or <a href="/documentation/other-topics/ip-filtering.html">IP-based ACLs</a> user-configurable per application but independent from its running state.</p>
+
+<ul>
+<li><a href="/documentation/deploying-an-app/helloworld-app-deploy.html#add-http-basic-authentication">Basic auth</a> can be quickly turned on/off at ingress level, useful when deploying dev services.</li>
+</ul></li>
+<li><p>Several AWS resource types are tested and documented as <a href="/documentation/deploying-an-app/add-aws-resources.html#available-modules">Terraform modules</a>; they simplify deployment and default to best-practices options.</p></li>
+</ol>
+<h2 id="obsoleted-features">Obsoleted features</h2>
+<ol>
+<li><p>Salt and CloudFormation are no longer used to define a deployment, replaced by any of Helm or Kubectl (see several <a href="/documentation/deploying-an-app/helloworld-app-deploy.html#deploying-a-39-hello-world-39-application-to-the-cloud-platform">reference app</a> examples).</p></li>
+<li><p>Jenkins is no longer used to trigger deployments, teams are encouraged to <a href="/documentation/deploying-an-app/using-circleci-for-continuous-deployment.html">configure CircleCI</a> directly from their repositories.</p></li>
+<li><p>For application logs, the path <code>awslogs</code> + CloudWatch + Lambda is replaced by <code>fluentd</code>.</p></li>
+<li><p>Gandi and AWS ACM SSL certs are replaced by <a href="https://letsencrypt.org">Let&rsquo;s Encrypt</a></p></li>
+</ol>
+
+
+              <div data-module='page-expiry' data-last-reviewed-on="2020-08-06">
+    <div class='page-expiry--not-expired'>
+      This page was last reviewed on 6 May 2020.
+
+        It needs to be reviewed again on 6 August 2020
+.
+    </div>
+
+    <div class='page-expiry--expired'>
+      This page was set to be reviewed before 6 August 2020.
+      This might mean the content is out of date.
+    </div>
+  </div>
+
+          </main>
+
+          <aside>
+              <ul class="contribution-banner">
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/documentation/concepts/migrate-from-td.html.md.erb">View source</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'Migrating%20to%20the%20Cloud%20Platform%20from%20Template%20Deploy'&amp;body=Problem%20with%20'Migrating%20to%20the%20Cloud%20Platform%20from%20Template%20Deploy'%20(user-guide2.cloud-platform.service.justice.gov.uk/documentation/concepts/migrate-from-td.html)">Report problem</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub Repo</a></li>
+              </ul>
+          </aside>
+
+          <footer class="govuk-footer app-footer" role="contentinfo">
+  <div class="govuk-footer__meta">
+    <div class="govuk-footer__meta-item govuk-footer__meta-item--grow">
+
+
+      <svg
+        aria-hidden="true"
+        focusable="false"
+        class="govuk-footer__licence-logo"
+        xmlns="http://www.w3.org/2000/svg"
+        viewbox="0 0 483.2 195.7"
+        height="17"
+        width="41"
+      >
+        <path
+          fill="currentColor"
+          d="M421.5 142.8V.1l-50.7 32.3v161.1h112.4v-50.7zm-122.3-9.6A47.12 47.12 0 0 1 221 97.8c0-26 21.1-47.1 47.1-47.1 16.7 0 31.4 8.7 39.7 21.8l42.7-27.2A97.63 97.63 0 0 0 268.1 0c-36.5 0-68.3 20.1-85.1 49.7A98 98 0 0 0 97.8 0C43.9 0 0 43.9 0 97.8s43.9 97.8 97.8 97.8c36.5 0 68.3-20.1 85.1-49.7a97.76 97.76 0 0 0 149.6 25.4l19.4 22.2h3v-87.8h-80l24.3 27.5zM97.8 145c-26 0-47.1-21.1-47.1-47.1s21.1-47.1 47.1-47.1 47.2 21 47.2 47S123.8 145 97.8 145"
+        />
+      </svg>
+      <span class="govuk-footer__licence-description">
+        All content is available under the
+        <a
+          class="govuk-footer__link"
+          href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+          rel="license"
+        >Open Government Licence v3.0</a>, except where otherwise stated
+      </span>
+    </div>
+    <div class="govuk-footer__meta-item">
+      <a
+        class="govuk-footer__link govuk-footer__copyright-logo"
+        href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/"
+      >© Crown copyright</a>
+    </div>
+  </div>
+</footer>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <script src="/javascripts/application.js"></script>
+  </body>
+</html>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138188246-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-138188246-1');
+</script>
+
+<script>
+  // Add the current window.location to the body of the
+  // feedback email message.
+  function sendFeedback(mailto, event) {
+    event.preventDefault();
+
+    var body = "Feedback/Problem on page: " + window.location + "\n";
+    var href = mailto + '&body=' + encodeURIComponent(body);
+
+    window.location = href;
+  }
+
+  $(document).ready(function() {
+    var feedbackLink = $('a[href^="mailto:"]:contains("Feedback")')[0];
+    var mailto = feedbackLink.href;
+    $(feedbackLink).on('click', function(event) { sendFeedback(mailto, event); });
+  });
+</script>

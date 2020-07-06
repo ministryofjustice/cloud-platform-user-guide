@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en" class="govuk-template no-js">
+  <head>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+      <meta name="robots" content="noindex">
+
+    <title>Troubleshooting guide - Cloud Platform User Guide</title>
+
+    <link href="/stylesheets/manifest.css" rel="stylesheet" />
+
+    <link rel="canonical" href="user-guide2.cloud-platform.service.justice.gov.uk/documentation/other-topics/troubleshooting.html">
+
+
+      <meta property="og:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="og:site_name" content="Cloud Platform User Guide" />
+      <meta property="og:title" content="Troubleshooting guide" />
+      <meta property="og:type" content="object" />
+      <meta property="og:url" content="user-guide2.cloud-platform.service.justice.gov.uk/documentation/other-topics/troubleshooting.html" />
+      <meta property="twitter:card" content="summary" />
+      <meta property="twitter:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="twitter:title" content="Troubleshooting guide - Cloud Platform User Guide" />
+      <meta property="twitter:url" content="user-guide2.cloud-platform.service.justice.gov.uk/documentation/other-topics/troubleshooting.html" />
+
+    
+  </head>
+
+  <body class="govuk-template__body">
+    <script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
+
+    <div class="app-pane">
+      <div class="app-pane__header toc-open-disabled">
+        <a href="#content" class="govuk-skip-link">Skip to main content</a>
+
+        <header class="govuk-header app-header" role="banner" data-module="govuk-header">
+  <div class="govuk-header__container govuk-header__container--full-width">
+    <div class="govuk-header__logo">
+      <a href="/" class="govuk-header__link govuk-header__link--homepage">
+        <span class="govuk-header__product-name">
+          Cloud Platform User Guide
+        </span>
+      </a>
+        <strong class="govuk-tag">INTERNAL</strong>
+    </div>
+    <div class="govuk-header__content">
+      <button type="button" class="govuk-header__menu-button govuk-js-header-toggle" aria-controls="navigation" aria-label="Show or hide Top Level Navigation">Menu</button>
+      <nav>
+        <ul id="navigation" class="govuk-header__navigation govuk-header__navigation--end" aria-label="Top Level Navigation">
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="mailto:platforms+user-guide@digital.justice.gov.uk?subject=User+guide+feedback">Feedback / Report a problem</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="/">Documentation</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub</a>
+            </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      </div>
+
+        <div id="toc-heading" class="toc-show fixedsticky">
+          <a href="#toc" class="toc-show__label js-toc-show" aria-controls="toc">
+            Table of contents <span class="toc-show__icon"></span>
+          </a>
+        </div>
+
+      <div class="app-pane__body" data-module="in-page-navigation">
+          <div class="app-pane__toc">
+            <div class="toc" data-module="table-of-contents">
+              <div class="search" data-module="search">
+  <form action="https://www.google.co.uk/search" method="get" role="search">
+    <input type="hidden" name="as_sitesearch" value="user-guide2.cloud-platform.service.justice.gov.uk"/>
+    <label class="govuk-label search__label" for="search">
+      Search (via Google)
+    </label>
+    <input class="govuk-input govuk-!-margin-bottom-4" id="search" name="q" type="text" aria-controls="search-results" placeholder="Search">
+  </form>
+  <div id="search-results" class="search-results" aria-hidden="true" role="dialog" aria-labelledby="search-results-title">
+    <div class="search-results__inner">
+      <button class="search-results__close">Close<span class="search-results__close-label"> search results</span></button>
+      <h2 id="search-results-title" class="search-results__title" aria-live="polite">Results</h2>
+      <div class="search-results__content"></div>
+    </div>
+  </div>
+</div>
+
+              <a href="#" class="toc__close js-toc-close" aria-controls="toc" aria-label="Hide table of contents"></a>
+              <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading">
+                      <ul>
+  <li>
+    <a href="#troubleshooting-guide"><span>Troubleshooting guide</span></a>
+    <ul>
+      <li>
+        <a href="#pods-events"><span>Pods / Events</span></a>
+      </li>
+      <li>
+        <a href="#logs"><span>Logs</span></a>
+      </li>
+      <li>
+        <a href="#launching-a-shell"><span>Launching a shell</span></a>
+      </li>
+      <li>
+        <a href="#launching-a-new-container"><span>Launching a new container</span></a>
+      </li>
+      <li>
+        <a href="#specific-errors"><span>Specific Errors</span></a>
+        <ul>
+          <li>
+            <a href="#my-pod-shows-39-createcontainerconfigerror-39-after-deployment"><span>My pod shows ‘CreateContainerConfigError’ after deployment</span></a>
+          </li>
+          <li>
+            <a href="#my-pod-shows-crashloopbackoff-after-deployment"><span>My pod shows CrashLoopBackOff after deployment</span></a>
+          </li>
+          <li>
+            <a href="#my-pod-shows-imagepullbackoff-after-deployment"><span>My pod shows ImagePullBackOff after deployment</span></a>
+          </li>
+          <li>
+            <a href="#i-get-the-error-39-container-is-unhealthy-it-will-be-killed-and-re-created-39"><span>I get the error ‘container is unhealthy, it will be killed and re-created’</span></a>
+          </li>
+          <li>
+            <a href="#i-get-the-error-39-error-from-server-forbidden-39-when-trying-to-run-kubectl-commands"><span>I get the error ‘Error from server (Forbidden)’ when trying to run kubectl commands</span></a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
+              </nav>
+            </div>
+          </div>
+
+        <div class="app-pane__content toc-open-disabled">
+          <main id="content" class="technical-documentation" data-module="anchored-headings">
+              <h1 id="troubleshooting-guide">Troubleshooting guide</h1><p>When things are not working correctly, there are several techniques to help you figure out what&rsquo;s going wrong.</p>
+
+<blockquote>
+<p>You might find this <a href="https://learnk8s.io/troubleshooting-deployments">visual guide</a> to troubleshooting kubernetes deployments useful.</p>
+</blockquote>
+<h2 id="pods-events">Pods / Events</h2><p>Generally, the first step will be:</p>
+<p><code>kubectl -n [your namespace] get pods</code></p>
+
+<blockquote>
+<p>We&rsquo;ve used the namespace <code>dstest</code> as an example, in this guide. Wherever that appears in a command, please use the name of your namespace instead.</p>
+</blockquote>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl -n dstest get pods
+NAME                                 READY   STATUS                       RESTARTS   AGE
+helloworld-rubyapp-8795b9c56-58fbc   1/2     CreateContainerConfigError   0          13s
+helloworld-rubyapp-d58bdf7c4-2xqw7   1/1     Running                      0          21d
+helloworld-rubyapp-d58bdf7c4-x8ln7   1/1     Running                      0          21d
+</code></pre></div><p>Here, the <code>STATUS</code> value shows that there&rsquo;s a problem with one of the pods.</p>
+<p>Running <code>kubectl describe</code> on that pod will give us more information.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl -n dstest describe pod helloworld-rubyapp-8795b9c56-58fbc
+Name:               helloworld-rubyapp-8795b9c56-58fbc
+Namespace:          dstest
+
+...
+
+Events:
+  Type     Reason     Age                From                                                  Message
+  ----     ------     ----               ----                                                  -------
+  Normal   Scheduled  91s                default-scheduler                                     Successfully assigned dstest/helloworld-rubyapp-8795b9c56-58fbc to ip-172-20-60-236.eu-west-2.compute.internal
+  Normal   Pulling    87s                kubelet, ip-172-20-60-236.eu-west-2.compute.internal  pulling image "754256621582.dkr.ecr.eu-west-2.amazonaws.com/webops/dstest:latest"
+  Normal   Started    84s                kubelet, ip-172-20-60-236.eu-west-2.compute.internal  Started container
+  Normal   Pulled     84s                kubelet, ip-172-20-60-236.eu-west-2.compute.internal  Successfully pulled image "754256621582.dkr.ecr.eu-west-2.amazonaws.com/webops/dstest:latest"
+  Normal   Created    84s                kubelet, ip-172-20-60-236.eu-west-2.compute.internal  Created container
+  Normal   Pulling    21s (x7 over 90s)  kubelet, ip-172-20-60-236.eu-west-2.compute.internal  pulling image "nginx"
+  Normal   Pulled     20s (x7 over 87s)  kubelet, ip-172-20-60-236.eu-west-2.compute.internal  Successfully pulled image "nginx"
+  Warning  Failed     20s (x7 over 87s)  kubelet, ip-172-20-60-236.eu-west-2.compute.internal  Error: container has runAsNonRoot and image will run as root
+</code></pre></div><p>We&rsquo;ve omitted a lot of the detail, for clarity. The useful information, in this case, is at the bottom, in the <code>Events</code> section. On the last line:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>Error: container has runAsNonRoot and image will run as root
+</code></pre></div><p>You can also see events across the whole namespace like this:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>kubectl -n dstest get events
+</code></pre></div><p>Be aware that the ordering of events in the output of this command is a bit random.</p>
+<p>Events are only stored in the cluster for around 30 minutes, but all events are also stored in Elasticsearch, and available via <a href="https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/kibana#/home?_g=()">Kibana</a>. To find events in your namespace, click on &ldquo;Discover&rdquo; in the upper-left, and then enter a query like this:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>kubernetes.namespace_name:"logging" AND kubernetes.labels.app:"eventrouter" AND log:"dstest"
+</code></pre></div><p>(replace <code>dstest</code> with the name of your namespace)</p>
+<p>You can adjust the timeframe and other parameters via the Kibana web interface.</p>
+<h2 id="logs">Logs</h2><p>You can view the log output from a pod like this:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl -n dstest log helloworld-rubyapp-8795b9c56-58fbc
+Error from server (BadRequest): a container name must be specified for pod helloworld-rubyapp-8795b9c56-58fbc, choose one of: [nginx rubyapp]
+</code></pre></div><p>As you can see, that pod has two containers, and you need to specify which container&rsquo;s logs you want to see. If your pod only has a single container, you won&rsquo;t be prompted for its name.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl -n dstest log helloworld-rubyapp-8795b9c56-58fbc -c rubyapp
+[2019-11-26 14:12:16] INFO  WEBrick 1.4.2
+[2019-11-26 14:12:16] INFO  ruby 2.5.5 (2019-03-15) [x86_64-linux-musl]
+== Sinatra (v2.0.7) has taken the stage on 4567 for development with backup from WEBrick
+[2019-11-26 14:12:16] INFO  WEBrick::HTTPServer#start: pid=1 port=4567
+</code></pre></div><p>You can tail the logs by appending <code>--follow</code> to that command.</p>
+<p>Logs are also available via Kibana, as described <a href="/documentation/logging-an-app/access-logs.html#accessing-application-log-data">here</a>.</p>
+<h2 id="launching-a-shell">Launching a shell</h2><p>If your container has a shell installed (e.g. <code>bash</code>, <code>zsh</code>, or <code>sh</code>), you can exec onto the running container like this</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl -n dstest exec -it helloworld-rubyapp-8795b9c56-58fbc -c rubyapp sh
+/app $
+</code></pre></div><h2 id="launching-a-new-container">Launching a new container</h2><p>You might want to make network calls from within your namespace, to test different components of your service. If your deployed containers don&rsquo;t have the tools you need (e.g. <code>wget</code>, <code>curl</code>), you can launch a new pod into your namespace like this:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>kubectl -n dstest run --generator=run-pod/v1 shell --rm -i --tty --image ministryofjustice/cloud-platform-tools -- bash
+</code></pre></div><p>You could subtitute another image such as <code>busybox</code> or <code>alpine</code> instead of <code>ministryofjustice/cloud-platform-tools</code> if you prefer.</p>
+<p>Once we have a shell on our new container, we can access the services running in our namespace like this:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>bash-4.4# curl rubyapp-service:4567
+&lt;h1&gt;Hello, World!&lt;/h1&gt;
+</code></pre></div><p>You can get the names and ports of the services running in your namespace, from <strong>outside</strong> the new container, like this:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>$ kubectl -n dstest get service
+NAME              TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+rubyapp-service   ClusterIP   100.65.254.2   &lt;none&gt;        4567/TCP   28d
+</code></pre></div><h2 id="specific-errors">Specific Errors</h2><p>The remainder of this document covers particular errors you might encounter, and give advice on how to deal with them.</p>
+
+<ul>
+<li><a href="#my-pod-shows-39-createcontainerconfigerror-39-after-deployment">My pod shows &lsquo;CreateContainerConfigError&rsquo; after deployment</a></li>
+<li><a href="#my-pod-shows-crashloopbackoff-after-deployment">My pod shows &lsquo;CrashLoopBackOff&rsquo; after deployment</a></li>
+<li><a href="#my-pod-shows-imagepullbackoff-after-deployment">My pod shows &lsquo;ImagePullBackOff&rsquo; after deployment</a></li>
+<li><a href="#i-get-the-error-39-container-is-unhealthy-it-will-be-killed-and-re-created-39">I get the error &lsquo;container is unhealthy, it will be killed and re-created’</a></li>
+<li><a href="#i-get-the-error-39-error-from-server-forbidden-39-when-trying-to-run-kubectl-commands">I get the error &#39;Error from server (Forbidden)&rsquo; when trying to run kubectl commands</a></li>
+</ul>
+<h3 id="my-pod-shows-39-createcontainerconfigerror-39-after-deployment">My pod shows &lsquo;CreateContainerConfigError&rsquo; after deployment</h3><h4 id="scenario">Scenario</h4><p>You have deployed an application to the Cloud Platform and its status shows <code>CreateContainerConfigError</code> (you can get the status by running <code>kubect get pods -n &lt;namespace&gt;</code>).</p>
+<h4 id="cause">Cause</h4><p>There are a number of reasons why this error will appear but the most probable cause is a missing secret or environment variable.</p>
+<h4 id="troubleshooting">Troubleshooting</h4><p>To investigate this issue you&rsquo;ll want to look at the events of your pod. Run <code>kubectl -n &lt;namespace&gt; describe &lt;pod_name&gt;</code>, in the section titled <code>Events</code> you&rsquo;ll have something similar to:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>Events:
+  Type     Reason     Age                    From                                                   Message
+  ----     ------     ----                   ----                                                   -------
+  Normal   Scheduled  54m                    default-scheduler                                      Successfully assigned myapplication-namespace/myapplication to worker-node
+  Warning  Failed     49m (x8 over 53m)      kubelet, worker-node  Error: Couldn't find key postgresUser in Secret myapplication-dev/myapplication
+</code></pre></div>
+<blockquote>
+<p>Note: you can also find this out using <code>kubectl -n &lt;namespace&gt; get events</code></p>
+</blockquote>
+<h4 id="solution">Solution</h4><p>Ensure all secrets and environment variables have been defined.</p>
+<h3 id="my-pod-shows-crashloopbackoff-after-deployment">My pod shows <code>CrashLoopBackOff</code> after deployment</h3><h4 id="my-pod-shows-crashloopbackoff-after-deployment-scenario">Scenario</h4><p>Following the deployment of your application, you receive a status of <code>CrashLoopBackOff</code> when querying the pods in your namespace with <code>kubectl get pods -n &lt;namespace&gt;</code>.</p>
+<h4 id="my-pod-shows-crashloopbackoff-after-deployment-cause">Cause</h4><p>A <code>CrashloopBackOff</code> means that you have a pod starting, crashing, starting again, and then crashing again.</p>
+<p>A PodSpec has a restartPolicy field with possible values Always, OnFailure, and Never which applies to all containers in a pod. The default value is Always and the restartPolicy only refers to restarts of the containers by the kubelet on the same node (so the restart count will reset if the pod is rescheduled in a different node). Failed containers that are restarted by the kubelet are restarted with an exponential back-off delay (10s, 20s, 40s …) capped at five minutes, and is reset after ten minutes of successful execution. This is an example of a PodSpec with the restartPolicy field:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: v1
+kind: Pod
+metadata:
+  name: dummy-pod
+spec:
+  containers:
+    - name: dummy-pod
+      image: ubuntu
+  restartPolicy: Always
+</code></pre></div><p>The main causes of <code>CrashloopBackOff</code> are:</p>
+
+<ul>
+<li>The application inside the container keeps crashing.</li>
+<li>Some parameters of the pod or container have been configured incorrectly.</li>
+<li>An error has been made when deploying Kubernetes.</li>
+</ul>
+<h4 id="my-pod-shows-crashloopbackoff-after-deployment-troubleshooting">Troubleshooting</h4><p>As this issue is quite vague, you&rsquo;ll want to start by checking what your pod is printing to STDOUT using the command <code>kubectl -n &lt;namespace&gt; logs &lt;pod_name&gt;</code>. This should give you a clear understanding of whether the application has crashed. If your application is crashing, you need to identify the reason and try to fix it. Some possibilities are missing environment variables, insufficient resources, missing files or directories, or a lack of required permissions.</p>
+<h4 id="my-pod-shows-crashloopbackoff-after-deployment-solution">Solution</h4><p>Fix application or misconfiguration errors.</p>
+<h3 id="my-pod-shows-imagepullbackoff-after-deployment">My pod shows <code>ImagePullBackOff</code> after deployment</h3><h4 id="my-pod-shows-imagepullbackoff-after-deployment-scenario">Scenario</h4><p>You have deployed an application to the Cloud Platform and its status shows <code>ImagePullBackOff</code> (you can get the status by running <code>kubect get pods -n &lt;namespace&gt;</code>).</p>
+<h4 id="my-pod-shows-imagepullbackoff-after-deployment-cause">Cause</h4><p>This means the cluster is unable to fetch your docker image. There are three primary culprits besides network connectivity issues:</p>
+
+<ul>
+<li>The image tag is incorrect</li>
+<li>The image doesn&rsquo;t exist (or is in a different registry)</li>
+<li>Kubernetes doesn&rsquo;t have permissions to pull that image</li>
+</ul>
+<h4 id="my-pod-shows-imagepullbackoff-after-deployment-troubleshooting">Troubleshooting</h4><p>Again, utilising the <code>kubectl -n &lt;namespace&gt; describe &lt;pod_name&gt;</code> command you can see that the pod has failed to pull down the correct image:
+<code>
+  Normal   Pulling    10m (x4 over 12m)    kubelet, worker-node  pulling image &quot;redis:foobar&quot;
+  Warning  Failed     10m (x4 over 12m)    kubelet, worker-node  Error: ErrImagePull
+</code></p>
+<h4 id="my-pod-shows-imagepullbackoff-after-deployment-solution">Solution</h4><p>This can be corrected by amending the <code>image</code> in your deployment.</p>
+<h3 id="i-get-the-error-39-container-is-unhealthy-it-will-be-killed-and-re-created-39">I get the error &lsquo;container is unhealthy, it will be killed and re-created&rsquo;</h3><h4 id="situation">Situation</h4><p>Your pod appears to be jumping between an <code>error</code> and <code>ready</code> state. You describe the pod and get an error <code>container is unhealthy, it will be killed and re-created</code></p>
+<h4 id="i-get-the-error-39-container-is-unhealthy-it-will-be-killed-and-re-created-39-cause">Cause</h4><p>Kubernetes provides two essential features called <a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/">Liveness Probes and Readiness Probes</a>. Essentially, Liveness/Readiness Probes will periodically perform an action (e.g. make an HTTP request, open a tcp connection, or run a command in your container) to confirm that your application is working as intended.</p>
+<p>If the Liveness Probe fails, Kubernetes will kill your container and create a new one. If the Readiness Probe fails, that Pod will not be available as a Service endpoint, meaning no traffic will be sent to that Pod until it becomes Ready.</p>
+<h4 id="i-get-the-error-39-container-is-unhealthy-it-will-be-killed-and-re-created-39-troubleshooting">Troubleshooting</h4><p>Using the log output (<code>kubectl -n &lt;namespace&gt; &lt;pod_name&gt;</code>) you should see the cause of your Probe failure.</p>
+<p>There are likely three possibilities:</p>
+
+<ul>
+<li> Your Probes are now incorrect - Did the health URL change?</li>
+<li> Your Probes are too sensitive - Does your application take a while to start or respond?</li>
+<li> Your application is no longer responding correctly to the Probe - Is your database misconfigured?</li>
+</ul>
+<h4 id="i-get-the-error-39-container-is-unhealthy-it-will-be-killed-and-re-created-39-solution">Solution</h4><p>Once a change has been made to either your application or Probe, a fresh deployment should succeed.</p>
+<h3 id="i-get-the-error-39-error-from-server-forbidden-39-when-trying-to-run-kubectl-commands">I get the error &lsquo;Error from server (Forbidden)&rsquo; when trying to run kubectl commands</h3><h4 id="i-get-the-error-39-error-from-server-forbidden-39-when-trying-to-run-kubectl-commands-situation">Situation</h4><p>When attempting to use a command such as <code>kubectl get pods -n &lt;namespace&gt;</code> something like the following error occurs:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>Error from server (Forbidden): pods is forbidden:
+User "https://justice-cloud-platform.eu.auth0.com/#&lt;username&gt;"
+cannot list resource "pods" in API group "" in the namespace "&lt;namespace&gt;"
+</code></pre></div><h4 id="i-get-the-error-39-error-from-server-forbidden-39-when-trying-to-run-kubectl-commands-cause">Cause</h4><p>Possible causes include:</p>
+
+<ul>
+<li>Your kubernetes token has expired.</li>
+<li>You&rsquo;re not a member of the GitHub team which owns the namespace you&rsquo;re attempting to communicate with (or, you weren&rsquo;t when you authenticated to the cluster).</li>
+<li>Your GitHub team memberships have not been included in your kubernetes id-token.</li>
+</ul>
+<h4 id="solutions">Solutions</h4>
+<ul>
+<li>First confirm that you&rsquo;re a member of the GitHub team assigned in your <a href="https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live-1.cloud-platform.service.justice.gov.uk/hmpps-book-secure-move-api-production/01-rbac.yaml#L8">rbac.yaml</a> file, which is located in the <a href="https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces">cloud-platform-environments</a> repository.</li>
+<li>If you&rsquo;re not a member, get someone in the team to <a href="https://help.github.com/en/github/setting-up-and-managing-organizations-and-teams/adding-organization-members-to-a-team">add you to it</a> (please note, the Cloud Platform team cannot do this for you), and then <a href="/documentation/getting-started/kubectl-config.html#authentication">re-authenticate</a> to the cluster.</li>
+<li>If you&rsquo;re already in the right github teams, try to <a href="/documentation/getting-started/kubectl-config.html#authentication">re-authenticate</a> to the cluster.</li>
+<li>If that doesn&rsquo;t work, <a href="/documentation/other-topics/check-id-token.html">check that your github team memberships are recorded in your id-token</a>.</li>
+<li><p>If they aren&rsquo;t, <a href="/documentation/getting-started/kubectl-config.html#authentication">re-authenticate</a> to the cluster <strong>using an icognito/private browsing window</strong>.</p>
+<p>Sometimes browser caching seems to cause problems with the authentication process, and using an icognito browser window usually resolves the problem.</p></li>
+</ul>
+
+
+              <div data-module='page-expiry' data-last-reviewed-on="2020-07-20">
+    <div class='page-expiry--not-expired'>
+      This page was last reviewed on 20 April 2020.
+
+        It needs to be reviewed again on 20 July 2020
+.
+    </div>
+
+    <div class='page-expiry--expired'>
+      This page was set to be reviewed before 20 July 2020.
+      This might mean the content is out of date.
+    </div>
+  </div>
+
+          </main>
+
+          <aside>
+              <ul class="contribution-banner">
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/documentation/other-topics/troubleshooting.html.md.erb">View source</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'Troubleshooting%20guide'&amp;body=Problem%20with%20'Troubleshooting%20guide'%20(user-guide2.cloud-platform.service.justice.gov.uk/documentation/other-topics/troubleshooting.html)">Report problem</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub Repo</a></li>
+              </ul>
+          </aside>
+
+          <footer class="govuk-footer app-footer" role="contentinfo">
+  <div class="govuk-footer__meta">
+    <div class="govuk-footer__meta-item govuk-footer__meta-item--grow">
+
+
+      <svg
+        aria-hidden="true"
+        focusable="false"
+        class="govuk-footer__licence-logo"
+        xmlns="http://www.w3.org/2000/svg"
+        viewbox="0 0 483.2 195.7"
+        height="17"
+        width="41"
+      >
+        <path
+          fill="currentColor"
+          d="M421.5 142.8V.1l-50.7 32.3v161.1h112.4v-50.7zm-122.3-9.6A47.12 47.12 0 0 1 221 97.8c0-26 21.1-47.1 47.1-47.1 16.7 0 31.4 8.7 39.7 21.8l42.7-27.2A97.63 97.63 0 0 0 268.1 0c-36.5 0-68.3 20.1-85.1 49.7A98 98 0 0 0 97.8 0C43.9 0 0 43.9 0 97.8s43.9 97.8 97.8 97.8c36.5 0 68.3-20.1 85.1-49.7a97.76 97.76 0 0 0 149.6 25.4l19.4 22.2h3v-87.8h-80l24.3 27.5zM97.8 145c-26 0-47.1-21.1-47.1-47.1s21.1-47.1 47.1-47.1 47.2 21 47.2 47S123.8 145 97.8 145"
+        />
+      </svg>
+      <span class="govuk-footer__licence-description">
+        All content is available under the
+        <a
+          class="govuk-footer__link"
+          href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+          rel="license"
+        >Open Government Licence v3.0</a>, except where otherwise stated
+      </span>
+    </div>
+    <div class="govuk-footer__meta-item">
+      <a
+        class="govuk-footer__link govuk-footer__copyright-logo"
+        href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/"
+      >© Crown copyright</a>
+    </div>
+  </div>
+</footer>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <script src="/javascripts/application.js"></script>
+  </body>
+</html>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138188246-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-138188246-1');
+</script>
+
+<script>
+  // Add the current window.location to the body of the
+  // feedback email message.
+  function sendFeedback(mailto, event) {
+    event.preventDefault();
+
+    var body = "Feedback/Problem on page: " + window.location + "\n";
+    var href = mailto + '&body=' + encodeURIComponent(body);
+
+    window.location = href;
+  }
+
+  $(document).ready(function() {
+    var feedbackLink = $('a[href^="mailto:"]:contains("Feedback")')[0];
+    var mailto = feedbackLink.href;
+    $(feedbackLink).on('click', function(event) { sendFeedback(mailto, event); });
+  });
+</script>

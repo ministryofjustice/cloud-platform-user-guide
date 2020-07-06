@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en" class="govuk-template no-js">
+  <head>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+      <meta name="robots" content="noindex">
+
+    <title>Using a custom domain - Cloud Platform User Guide</title>
+
+    <link href="/stylesheets/manifest.css" rel="stylesheet" />
+
+    <link rel="canonical" href="user-guide2.cloud-platform.service.justice.gov.uk/documentation/other-topics/custom-domain-cert.html">
+
+
+      <meta property="og:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="og:site_name" content="Cloud Platform User Guide" />
+      <meta property="og:title" content="Using a custom domain" />
+      <meta property="og:type" content="object" />
+      <meta property="og:url" content="user-guide2.cloud-platform.service.justice.gov.uk/documentation/other-topics/custom-domain-cert.html" />
+      <meta property="twitter:card" content="summary" />
+      <meta property="twitter:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="twitter:title" content="Using a custom domain - Cloud Platform User Guide" />
+      <meta property="twitter:url" content="user-guide2.cloud-platform.service.justice.gov.uk/documentation/other-topics/custom-domain-cert.html" />
+
+    
+  </head>
+
+  <body class="govuk-template__body">
+    <script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
+
+    <div class="app-pane">
+      <div class="app-pane__header toc-open-disabled">
+        <a href="#content" class="govuk-skip-link">Skip to main content</a>
+
+        <header class="govuk-header app-header" role="banner" data-module="govuk-header">
+  <div class="govuk-header__container govuk-header__container--full-width">
+    <div class="govuk-header__logo">
+      <a href="/" class="govuk-header__link govuk-header__link--homepage">
+        <span class="govuk-header__product-name">
+          Cloud Platform User Guide
+        </span>
+      </a>
+        <strong class="govuk-tag">INTERNAL</strong>
+    </div>
+    <div class="govuk-header__content">
+      <button type="button" class="govuk-header__menu-button govuk-js-header-toggle" aria-controls="navigation" aria-label="Show or hide Top Level Navigation">Menu</button>
+      <nav>
+        <ul id="navigation" class="govuk-header__navigation govuk-header__navigation--end" aria-label="Top Level Navigation">
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="mailto:platforms+user-guide@digital.justice.gov.uk?subject=User+guide+feedback">Feedback / Report a problem</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="/">Documentation</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub</a>
+            </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      </div>
+
+        <div id="toc-heading" class="toc-show fixedsticky">
+          <a href="#toc" class="toc-show__label js-toc-show" aria-controls="toc">
+            Table of contents <span class="toc-show__icon"></span>
+          </a>
+        </div>
+
+      <div class="app-pane__body" data-module="in-page-navigation">
+          <div class="app-pane__toc">
+            <div class="toc" data-module="table-of-contents">
+              <div class="search" data-module="search">
+  <form action="https://www.google.co.uk/search" method="get" role="search">
+    <input type="hidden" name="as_sitesearch" value="user-guide2.cloud-platform.service.justice.gov.uk"/>
+    <label class="govuk-label search__label" for="search">
+      Search (via Google)
+    </label>
+    <input class="govuk-input govuk-!-margin-bottom-4" id="search" name="q" type="text" aria-controls="search-results" placeholder="Search">
+  </form>
+  <div id="search-results" class="search-results" aria-hidden="true" role="dialog" aria-labelledby="search-results-title">
+    <div class="search-results__inner">
+      <button class="search-results__close">Close<span class="search-results__close-label"> search results</span></button>
+      <h2 id="search-results-title" class="search-results__title" aria-live="polite">Results</h2>
+      <div class="search-results__content"></div>
+    </div>
+  </div>
+</div>
+
+              <a href="#" class="toc__close js-toc-close" aria-controls="toc" aria-label="Hide table of contents"></a>
+              <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading">
+                      <ul>
+  <li>
+    <a href="#using-a-custom-domain"><span>Using a custom domain</span></a>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <a href="#background"><span>Background</span></a>
+          </li>
+          <li>
+            <a href="#setup"><span>Setup</span></a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
+              </nav>
+            </div>
+          </div>
+
+        <div class="app-pane__content toc-open-disabled">
+          <main id="content" class="technical-documentation" data-module="anchored-headings">
+              <h1 id="using-a-custom-domain">Using a custom domain</h1><h3 id="background">Background</h3><p>Every application running on Cloud Platform is able to use a hostname for their
+HTTP endpoints, under a pre-defined domain. For example, on the <code>live-1</code>
+cluster, this would be <code>*.apps.live-1.cloud-platform.service.justice.gov.uk</code>. As
+long as it is defined on the <code>Ingress</code> resource, it works automatically, using a
+wildcard TLS certificate.</p>
+<p>However, most applications will typically need to be served on their own,
+application-specific <code>gov.uk</code> hostname. These hostnames (or usually, entire domains)
+are managed individually and there is a number of actions in order to set them
+up for usage.</p>
+<h3 id="setup">Setup</h3><p>Domains are managed inside DNS zones. You can read more about the structure of
+the Domain Name System in this <a href="https://en.wikipedia.org/wiki/Domain_Name_System#Structure">page</a>. It is recommended
+that applications use their own DNS zones, in order to aid with management and
+provide better isolation.</p>
+<h4 id="defining-the-dns-zone">Defining the DNS zone</h4><p>To create the zone, you simply need to define it as a resource in your
+environment. Make sure to read <a href="https://ministryofjustice.github.io/technical-guidance/standards/naming-domains/#naming-domains">the guidance on naming domains</a>
+first and follow the instructions to <a href="/documentation/other-topics/route53-zone.html#creating-a-route-53-hosted-zone">create the Route53 zone</a>.
+To simplify management, we recommend that you only define a single zone, as part
+of the resources for your production environment, if possible. You can still use
+subdomains of that zone for different environments.</p>
+<p>Once the zone is created, you will need to setup the necessary name server (NS)
+records in the parent DNS zone, before you&rsquo;re able to use it. For more
+information on how this delegation method works, you can read about authoritative
+name servers in this <a href="https://en.wikipedia.org/wiki/Name_server#Authoritative_name_server">page</a>.</p>
+<p>If your zone is for a subdomain of <code>service.justice.gov.uk</code> (eg.: <code>https://myapp.service.justice.gov.uk</code>),
+the Cloud Platform team can help you set it up; please <a href="http://goo.gl/msfGiS">create a support ticket</a>.</p>
+<p>For any other domains (including any subdomain of <code>gov.uk</code>, eg.: <code>https://myservice.gov.uk</code>),
+you will need to contact the parent zone&rsquo;s administrators to set this up. If in
+doubt, don&rsquo;t hesitate to get in touch with us in <code>#ask-cloud-platform</code>.</p>
+<p>Please note, once you setup the NS records, you&rsquo;ll be delegating control of the
+zone to the Cloud Platform. Hostnames used by your services (using <code>Ingresses</code>)
+will be automatically managed by the cluster.</p>
+<p>If you wish to create custom records in your zone you can do so by defining them
+in the <a href="https://github.com/ministryofjustice/cloud-platform-environments/">environments repository</a> using the terraform
+<a href="https://www.terraform.io/docs/providers/aws/r/route53_record.html"><code>aws_route53_record</code></a> resource.</p>
+<h4 id="obtaining-a-certificate">Obtaining a certificate</h4>
+<ol>
+<li>Create the <a href="https://cert-manager.io/docs/concepts/certificate/">Certificate</a> resource, filling in any placeholders with your
+details. The <code>secretName</code> attribute defines the name of a <code>Secret</code> in your
+namespace where the certificate and key material will be stored</li>
+</ol>
+<div class="highlight"><pre class="highlight plaintext"><code>   ---
+   apiVersion: cert-manager.io/v1alpha3
+   kind: Certificate
+   metadata:
+     name: &lt;my-cert&gt;
+     namespace: &lt;my-namespace&gt;
+   spec:
+     secretName: &lt;my-cert-secret&gt;
+     issuerRef:
+       name: letsencrypt-production
+       kind: ClusterIssuer
+     dnsNames:
+     - &lt;hostname&gt;
+</code></pre></div>
+<ol>
+<li>Make sure the certificate has been issued correctly, by checking its <code>Status</code>:</li>
+</ol>
+<div class="highlight"><pre class="highlight plaintext"><code>   $ kubectl describe certificate &lt;my-cert&gt;
+</code></pre></div><p>The certificate status of type <code>&quot;Ready&quot;</code> should be <code>True</code>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>   Status:
+     Conditions:
+       Last Transition Time:  2019-06-05T10:16:43Z
+       Message:               Certificate is up to date and has not expired
+       Reason:                Ready
+       Status:                True
+       Type:                  Ready
+     Not After:               2019-09-03T09:16:42Z
+   Events:
+     Type    Reason         Age   From          Message
+     ----    ------         ----  ----          -------
+     Normal  Generated      3m    cert-manager  Generated new private key
+     Normal  OrderCreated   3m    cert-manager  Created Order resource "&lt;my-cert&gt;-3189350212"
+     Normal  OrderComplete  1m    cert-manager  Order "&lt;my-cert&gt;-3189350212" completed successfully
+     Normal  CertIssued     1m    cert-manager  Certificate issued successfully
+</code></pre></div><p>It generally takes but a few minutes for the certificate to be prepared and
+   the events displayed should indicate if there is a problem or it simply needs
+   more time. If you cannot obtain a certificate, please get in touch with us in
+   <code>#ask-cloud-platform</code>.</p>
+
+<ol>
+<li>You will need to update your <code>Ingress</code> spec to include the new hostname.</li>
+</ol>
+<div class="highlight"><pre class="highlight plaintext"><code>     apiVersion: networking.k8s.io/v1beta1
+     kind: Ingress
+     metadata:
+       name: &lt;my-ingress&gt;
+       namespace: &lt;my-namespace&gt;
+     spec:
+       tls:
+       - hosts:
+         - my-app.apps.live-1.cloud-platform.service.justice.gov.uk
+   +   - hosts:
+   +     - &lt;hostname&gt;
+   +     secretName: &lt;my-cert-secret&gt;
+       rules:
+       - host: my-app.apps.live-1.cloud-platform.service.justice.gov.uk
+         http:
+           paths:
+           - path: /
+             backend:
+               serviceName: &lt;my-svc&gt;
+               servicePort: 80
+   +   - host: &lt;hostname&gt;
+   +     http:
+   +       paths:
+   +       - path: /
+   +         backend:
+   +           serviceName: &lt;my-svc&gt;
+   +           servicePort: 80
+</code></pre></div><p>Once you&rsquo;ve made the changes to your <code>Ingress</code>, the cluster (and more
+specifically, <code>external-dns</code>) will update the necessary records defined in it.
+This usually takes less than a minute before you are able to access your
+endpoint. However, depending on the DNS name servers your workstation uses, you
+might need to wait longer or try to &ldquo;flush&rdquo; your local DNS cache in order to
+speed up the process. You should search online for the proper method to do so,
+based on your operating system and/or browser.</p>
+
+
+              <div data-module='page-expiry' data-last-reviewed-on="2020-07-28">
+    <div class='page-expiry--not-expired'>
+      This page was last reviewed on 28 April 2020.
+
+        It needs to be reviewed again on 28 July 2020
+.
+    </div>
+
+    <div class='page-expiry--expired'>
+      This page was set to be reviewed before 28 July 2020.
+      This might mean the content is out of date.
+    </div>
+  </div>
+
+          </main>
+
+          <aside>
+              <ul class="contribution-banner">
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/documentation/other-topics/custom-domain-cert.html.md.erb">View source</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'Using%20a%20custom%20domain'&amp;body=Problem%20with%20'Using%20a%20custom%20domain'%20(user-guide2.cloud-platform.service.justice.gov.uk/documentation/other-topics/custom-domain-cert.html)">Report problem</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub Repo</a></li>
+              </ul>
+          </aside>
+
+          <footer class="govuk-footer app-footer" role="contentinfo">
+  <div class="govuk-footer__meta">
+    <div class="govuk-footer__meta-item govuk-footer__meta-item--grow">
+
+
+      <svg
+        aria-hidden="true"
+        focusable="false"
+        class="govuk-footer__licence-logo"
+        xmlns="http://www.w3.org/2000/svg"
+        viewbox="0 0 483.2 195.7"
+        height="17"
+        width="41"
+      >
+        <path
+          fill="currentColor"
+          d="M421.5 142.8V.1l-50.7 32.3v161.1h112.4v-50.7zm-122.3-9.6A47.12 47.12 0 0 1 221 97.8c0-26 21.1-47.1 47.1-47.1 16.7 0 31.4 8.7 39.7 21.8l42.7-27.2A97.63 97.63 0 0 0 268.1 0c-36.5 0-68.3 20.1-85.1 49.7A98 98 0 0 0 97.8 0C43.9 0 0 43.9 0 97.8s43.9 97.8 97.8 97.8c36.5 0 68.3-20.1 85.1-49.7a97.76 97.76 0 0 0 149.6 25.4l19.4 22.2h3v-87.8h-80l24.3 27.5zM97.8 145c-26 0-47.1-21.1-47.1-47.1s21.1-47.1 47.1-47.1 47.2 21 47.2 47S123.8 145 97.8 145"
+        />
+      </svg>
+      <span class="govuk-footer__licence-description">
+        All content is available under the
+        <a
+          class="govuk-footer__link"
+          href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+          rel="license"
+        >Open Government Licence v3.0</a>, except where otherwise stated
+      </span>
+    </div>
+    <div class="govuk-footer__meta-item">
+      <a
+        class="govuk-footer__link govuk-footer__copyright-logo"
+        href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/"
+      >© Crown copyright</a>
+    </div>
+  </div>
+</footer>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <script src="/javascripts/application.js"></script>
+  </body>
+</html>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138188246-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-138188246-1');
+</script>
+
+<script>
+  // Add the current window.location to the body of the
+  // feedback email message.
+  function sendFeedback(mailto, event) {
+    event.preventDefault();
+
+    var body = "Feedback/Problem on page: " + window.location + "\n";
+    var href = mailto + '&body=' + encodeURIComponent(body);
+
+    window.location = href;
+  }
+
+  $(document).ready(function() {
+    var feedbackLink = $('a[href^="mailto:"]:contains("Feedback")')[0];
+    var mailto = feedbackLink.href;
+    $(feedbackLink).on('click', function(event) { sendFeedback(mailto, event); });
+  });
+</script>

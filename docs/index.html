@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en" class="govuk-template no-js">
+  <head>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+      <meta name="robots" content="noindex">
+
+    <title>Cloud platform user guide - Cloud Platform User Guide</title>
+
+    <link href="/stylesheets/manifest.css" rel="stylesheet" />
+
+    <link rel="canonical" href="user-guide2.cloud-platform.service.justice.gov.uk/">
+
+
+      <meta property="og:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="og:site_name" content="Cloud Platform User Guide" />
+      <meta property="og:title" content="Cloud platform user guide" />
+      <meta property="og:type" content="object" />
+      <meta property="og:url" content="user-guide2.cloud-platform.service.justice.gov.uk/" />
+      <meta property="twitter:card" content="summary" />
+      <meta property="twitter:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="twitter:title" content="Cloud platform user guide - Cloud Platform User Guide" />
+      <meta property="twitter:url" content="user-guide2.cloud-platform.service.justice.gov.uk/" />
+
+    
+  </head>
+
+  <body class="govuk-template__body">
+    <script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
+
+    <div class="app-pane">
+      <div class="app-pane__header toc-open-disabled">
+        <a href="#content" class="govuk-skip-link">Skip to main content</a>
+
+        <header class="govuk-header app-header" role="banner" data-module="govuk-header">
+  <div class="govuk-header__container govuk-header__container--full-width">
+    <div class="govuk-header__logo">
+      <a href="/" class="govuk-header__link govuk-header__link--homepage">
+        <span class="govuk-header__product-name">
+          Cloud Platform User Guide
+        </span>
+      </a>
+        <strong class="govuk-tag">INTERNAL</strong>
+    </div>
+    <div class="govuk-header__content">
+      <button type="button" class="govuk-header__menu-button govuk-js-header-toggle" aria-controls="navigation" aria-label="Show or hide Top Level Navigation">Menu</button>
+      <nav>
+        <ul id="navigation" class="govuk-header__navigation govuk-header__navigation--end" aria-label="Top Level Navigation">
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="mailto:platforms+user-guide@digital.justice.gov.uk?subject=User+guide+feedback">Feedback / Report a problem</a>
+            </li>
+            <li class="govuk-header__navigation-item govuk-header__navigation-item--active">
+              <a class="govuk-header__link" href="/">Documentation</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub</a>
+            </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      </div>
+
+        <div id="toc-heading" class="toc-show fixedsticky">
+          <a href="#toc" class="toc-show__label js-toc-show" aria-controls="toc">
+            Table of contents <span class="toc-show__icon"></span>
+          </a>
+        </div>
+
+      <div class="app-pane__body" data-module="in-page-navigation">
+          <div class="app-pane__toc">
+            <div class="toc" data-module="table-of-contents">
+              <div class="search" data-module="search">
+  <form action="https://www.google.co.uk/search" method="get" role="search">
+    <input type="hidden" name="as_sitesearch" value="user-guide2.cloud-platform.service.justice.gov.uk"/>
+    <label class="govuk-label search__label" for="search">
+      Search (via Google)
+    </label>
+    <input class="govuk-input govuk-!-margin-bottom-4" id="search" name="q" type="text" aria-controls="search-results" placeholder="Search">
+  </form>
+  <div id="search-results" class="search-results" aria-hidden="true" role="dialog" aria-labelledby="search-results-title">
+    <div class="search-results__inner">
+      <button class="search-results__close">Close<span class="search-results__close-label"> search results</span></button>
+      <h2 id="search-results-title" class="search-results__title" aria-live="polite">Results</h2>
+      <div class="search-results__content"></div>
+    </div>
+  </div>
+</div>
+
+              <a href="#" class="toc__close js-toc-close" aria-controls="toc" aria-label="Hide table of contents"></a>
+              <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading">
+                      <ul>
+  <li>
+    <a href="#cloud-platform-user-guide"><span>Cloud platform user guide</span></a>
+    <ul>
+      <li>
+        <a href="#who-is-this-user-guide-for"><span>Who is this user guide for?</span></a>
+      </li>
+      <li>
+        <a href="#quickstart"><span>Quickstart</span></a>
+      </li>
+      <li>
+        <a href="#how-to-guides"><span>How-to guides</span></a>
+      </li>
+      <li>
+        <a href="#concepts"><span>Concepts</span></a>
+      </li>
+      <li>
+        <a href="#tutorials"><span>Tutorials</span></a>
+        <ul>
+          <li>
+            <a href="#deploying-with-helm-and-circleci"><span>Deploying with Helm and CircleCI</span></a>
+          </li>
+          <li>
+            <a href="#monitoring-applications"><span>Monitoring applications</span></a>
+          </li>
+          <li>
+            <a href="#application-logging"><span>Application logging</span></a>
+          </li>
+          <li>
+            <a href="#other-topics"><span>Other topics</span></a>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="#reference"><span>Reference</span></a>
+      </li>
+      <li>
+        <a href="#getting-help"><span>Getting help</span></a>
+      </li>
+      <li>
+        <a href="#adding-to-the-guide"><span>Adding to the guide</span></a>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
+              </nav>
+            </div>
+          </div>
+
+        <div class="app-pane__content toc-open-disabled">
+          <main id="content" class="technical-documentation" data-module="anchored-headings">
+              <h1 id="cloud-platform-user-guide">Cloud platform user guide</h1><h2 id="who-is-this-user-guide-for">Who is this user guide for?</h2><p>This user guide is for service teams with applications deployed, or intending
+to deploy, to the Ministry of Justice Cloud Platform. The platform manages the
+infrastructure that your application runs on and provides tooling for teams to
+deploy and manage their applications on that infrastructure.</p>
+<h2 id="quickstart">Quickstart</h2>
+<ul>
+<li><a href="/documentation/concepts/cp-overview.html">Overview of the Cloud Platform</a></li>
+<li><a href="/documentation/deploying-an-app/helloworld-app-deploy.html">Deploy your first Hello World application</a></li>
+</ul>
+<h2 id="how-to-guides">How-to guides</h2>
+<ul>
+<li><a href="/documentation/getting-started/kubectl-config.html">How to use <code>kubectl</code> to connect to the cluster</a></li>
+<li><a href="/documentation/getting-started/env-create.html">Creating a Cloud Platform Environment</a></li>
+<li><a href="/documentation/getting-started/ecr-setup.html">Creating an ECR repository</a> for your docker images</li>
+<li><a href="/documentation/other-topics/route53-zone.html">Creating a Route 53 Hosted Zone</a> for your DNS records</li>
+<li><a href="/documentation/deploying-an-app/add-aws-resources.html">Adding AWS resources to your environment</a></li>
+<li><a href="/documentation/deploying-an-app/running-rails-migrations.html">How do I run Rails database migrations?</a></li>
+<li><a href="/documentation/deploying-an-app/cleaning-up.html">Removing an unneeded namespace</a></li>
+</ul>
+<h2 id="concepts">Concepts</h2>
+<ul>
+<li><a href="/documentation/concepts/kubernetes.html">Kubernetes</a></li>
+<li><a href="/documentation/concepts/deploying.html">Deploying to the Cloud Platform</a></li>
+<li><a href="/documentation/concepts/migrate-from-td.html">Migrate from Template Deploy</a></li>
+<li><a href="/documentation/concepts/official-sensitive.html">OFFICIAL SENSITIVE - can my service be hosted on the Cloud Platform?</a></li>
+</ul>
+<h2 id="tutorials">Tutorials</h2>
+<ul>
+<li><a href="/documentation/deploying-an-app/helloworld-app-deploy.html">Deploying a <code>Hello World</code> application</a></li>
+<li><a href="/documentation/deploying-an-app/multicontainer-app-deploy.html">Deploying a multi-container application to the Cloud Platform</a></li>
+</ul>
+<h3 id="deploying-with-helm-and-circleci">Deploying with Helm and CircleCI</h3>
+<ul>
+<li><a href="/documentation/deploying-an-app/prerequisite.html">Prerequisite for Live-1 deployment</a></li>
+<li><a href="/documentation/deploying-an-app/using-circleci-for-continuous-deployment.html">Continuous Deployment of an application using CircleCI and Helm</a></li>
+<li><a href="/documentation/deploying-an-app/app-deploy-helm.html">Deploying an application to the Cloud Platform with Helm</a></li>
+</ul>
+<h3 id="monitoring-applications">Monitoring applications</h3>
+<ul>
+<li><a href="/documentation/monitoring-an-app/prometheus.html">Using the Cloud Platform Prometheus, AlertManager and Grafana</a></li>
+<li><a href="/documentation/monitoring-an-app/application-metrics.html">Getting application metrics into Prometheus</a></li>
+<li><a href="/documentation/monitoring-an-app/how-to-create-alarms.html">Creating your own custom alerts</a></li>
+<li><a href="/documentation/monitoring-an-app/how-to-create-pingdom-checks.html">Creating Pingdom checks</a></li>
+<li><a href="/documentation/monitoring-an-app/how-to-use-cloudwatch-datasource.html">Using the CloudWatch data source in Grafana</a></li>
+</ul>
+<h3 id="application-logging">Application logging</h3>
+<ul>
+<li><a href="/documentation/logging-an-app/log-collection-and-storage.html">Application Log Collection and Storage</a></li>
+<li><a href="/documentation/logging-an-app/access-logs.html">Accessing Application Log Data</a></li>
+</ul>
+<h3 id="other-topics">Other topics</h3>
+<ul>
+<li><a href="/documentation/deploying-an-app/add-secrets-to-deployment.html">Adding a secret to an application</a></li>
+<li><a href="/documentation/other-topics/cloud-platform-support.html">Cloud Platform Support</a></li>
+<li><a href="/documentation/other-topics/zero-downtime-deployment.html">Zero Downtime Deployments</a></li>
+<li><a href="/documentation/other-topics/custom-domain-cert.html">Using a custom domain</a></li>
+<li><a href="/documentation/other-topics/alert-rds.html">Creating alerts for RDS</a></li>
+<li><a href="/documentation/other-topics/rds-external-access.html">Accessing your RDS database</a></li>
+<li><a href="/documentation/other-topics/rds-snapshots.html">RDS Snapshots</a></li>
+<li><a href="/documentation/other-topics/Setup-postgres-container.html">Setup Postgres container</a></li>
+<li><a href="/documentation/other-topics/TZ-Cronjobs.html">Time Zone Cronjobs</a></li>
+<li><a href="/documentation/other-topics/decommission-unused-template-deploy-services.html">How to decommission unused template deploy services</a></li>
+<li><a href="/documentation/other-topics/git-crypt-setup.html">Git-Crypt</a></li>
+<li><a href="/documentation/other-topics/Cronjobs.html">Kubernetes Cronjobs</a></li>
+<li><a href="/documentation/other-topics/ip-filtering.html">IP Filtering</a></li>
+<li><a href="/documentation/other-topics/maintenance-page.html">Applying a Maintenance Page</a></li>
+<li><a href="/documentation/other-topics/quick-reference.html">Kubectl quick reference</a></li>
+<li><a href="/documentation/other-topics/statefulsets.html">StatefulSets (Pods with Persistent Volumes)</a></li>
+<li><a href="/documentation/other-topics/troubleshooting.html">Troubleshooting guide</a></li>
+<li><a href="/documentation/other-topics/route53-zone.html">Creating a Route 53 Hosted Zone</a></li>
+<li><a href="/documentation/other-topics/aws-rds-migration.html">Migrating an RDS instance</a></li>
+<li><a href="/documentation/other-topics/rds-ssl.html">SSL connections with RDS</a></li>
+<li><a href="/documentation/other-topics/secrets.html">Secrets overview</a></li>
+<li><a href="/documentation/other-topics/modsecurity.html">ModSecurity - Web Application Firewall</a></li>
+<li><a href="/documentation/other-topics/network-policy.html">Network Policies</a></li>
+<li><a href="/documentation/other-topics/persistent-volume-encryption-snapshot.html">Persistent-Volume encryption and snapshot</a></li>
+<li><a href="/documentation/other-topics/s3-bucket-migration.html">Migrating an S3 bucket</a></li>
+<li><a href="/documentation/other-topics/kibana-circleci-monitoring-dashboards.html">Kibana Circleci Monitoring Dashboards</a></li>
+<li><a href="/documentation/concepts/namespace-limits.html">Namespace/Container Resource Limits</a></li>
+<li><a href="/documentation/other-topics/apiversion-changes-k8s-1-16.html">Removing Deprecated APIs for Kubernetes version 1.16</a></li>
+<li><a href="/documentation/other-topics/check-id-token.html">Checking the GitHub groups in your ID token</a></li>
+</ul>
+<h2 id="reference">Reference</h2>
+<ul>
+<li><a href="/documentation/reference/operational-processes.html">Cloud Platform Operational Processes</a></li>
+<li><a href="/documentation/reference/cloud-platform-support.html">Cloud Platform Support</a></li>
+<li><a href="/documentation/reference/kubernetes.html">Kubernetes resources</a></li>
+</ul>
+<h2 id="getting-help">Getting help</h2>
+<ul>
+<li><a href="/documentation/reference/getting-help.html">Ask Cloud Platform</a></li>
+</ul>
+<h2 id="adding-to-the-guide">Adding to the guide</h2><p>If there&rsquo;s something missing, please either let us know and we&rsquo;ll add a new
+article, or if you&rsquo;re comfortable writing one yourself, PRs will be gratefully
+received. Details on how to get in touch are in the &ldquo;Getting Help&rdquo; section above, and
+the &ldquo;GithHub&rdquo; link at the top right of this page will take you to the repository for this
+guide.</p>
+
+
+              <div data-module='page-expiry' data-last-reviewed-on="2020-09-15">
+    <div class='page-expiry--not-expired'>
+      This page was last reviewed on 15 June 2020.
+
+        It needs to be reviewed again on 15 September 2020
+.
+    </div>
+
+    <div class='page-expiry--expired'>
+      This page was set to be reviewed before 15 September 2020.
+      This might mean the content is out of date.
+    </div>
+  </div>
+
+          </main>
+
+          <aside>
+              <ul class="contribution-banner">
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/index.html.md.erb">View source</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'Cloud%20platform%20user%20guide'&amp;body=Problem%20with%20'Cloud%20platform%20user%20guide'%20(user-guide2.cloud-platform.service.justice.gov.uk/)">Report problem</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub Repo</a></li>
+              </ul>
+          </aside>
+
+          <footer class="govuk-footer app-footer" role="contentinfo">
+  <div class="govuk-footer__meta">
+    <div class="govuk-footer__meta-item govuk-footer__meta-item--grow">
+
+
+      <svg
+        aria-hidden="true"
+        focusable="false"
+        class="govuk-footer__licence-logo"
+        xmlns="http://www.w3.org/2000/svg"
+        viewbox="0 0 483.2 195.7"
+        height="17"
+        width="41"
+      >
+        <path
+          fill="currentColor"
+          d="M421.5 142.8V.1l-50.7 32.3v161.1h112.4v-50.7zm-122.3-9.6A47.12 47.12 0 0 1 221 97.8c0-26 21.1-47.1 47.1-47.1 16.7 0 31.4 8.7 39.7 21.8l42.7-27.2A97.63 97.63 0 0 0 268.1 0c-36.5 0-68.3 20.1-85.1 49.7A98 98 0 0 0 97.8 0C43.9 0 0 43.9 0 97.8s43.9 97.8 97.8 97.8c36.5 0 68.3-20.1 85.1-49.7a97.76 97.76 0 0 0 149.6 25.4l19.4 22.2h3v-87.8h-80l24.3 27.5zM97.8 145c-26 0-47.1-21.1-47.1-47.1s21.1-47.1 47.1-47.1 47.2 21 47.2 47S123.8 145 97.8 145"
+        />
+      </svg>
+      <span class="govuk-footer__licence-description">
+        All content is available under the
+        <a
+          class="govuk-footer__link"
+          href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+          rel="license"
+        >Open Government Licence v3.0</a>, except where otherwise stated
+      </span>
+    </div>
+    <div class="govuk-footer__meta-item">
+      <a
+        class="govuk-footer__link govuk-footer__copyright-logo"
+        href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/"
+      >© Crown copyright</a>
+    </div>
+  </div>
+</footer>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <script src="/javascripts/application.js"></script>
+  </body>
+</html>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138188246-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-138188246-1');
+</script>
+
+<script>
+  // Add the current window.location to the body of the
+  // feedback email message.
+  function sendFeedback(mailto, event) {
+    event.preventDefault();
+
+    var body = "Feedback/Problem on page: " + window.location + "\n";
+    var href = mailto + '&body=' + encodeURIComponent(body);
+
+    window.location = href;
+  }
+
+  $(document).ready(function() {
+    var feedbackLink = $('a[href^="mailto:"]:contains("Feedback")')[0];
+    var mailto = feedbackLink.href;
+    $(feedbackLink).on('click', function(event) { sendFeedback(mailto, event); });
+  });
+</script>

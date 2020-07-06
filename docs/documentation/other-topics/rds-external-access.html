@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en" class="govuk-template no-js">
+  <head>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+      <meta name="robots" content="noindex">
+
+    <title>Accessing your RDS database - Cloud Platform User Guide</title>
+
+    <link href="/stylesheets/manifest.css" rel="stylesheet" />
+
+    <link rel="canonical" href="user-guide2.cloud-platform.service.justice.gov.uk/documentation/other-topics/rds-external-access.html">
+
+
+      <meta property="og:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="og:site_name" content="Cloud Platform User Guide" />
+      <meta property="og:title" content="Accessing your RDS database" />
+      <meta property="og:type" content="object" />
+      <meta property="og:url" content="user-guide2.cloud-platform.service.justice.gov.uk/documentation/other-topics/rds-external-access.html" />
+      <meta property="twitter:card" content="summary" />
+      <meta property="twitter:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="twitter:title" content="Accessing your RDS database - Cloud Platform User Guide" />
+      <meta property="twitter:url" content="user-guide2.cloud-platform.service.justice.gov.uk/documentation/other-topics/rds-external-access.html" />
+
+    
+  </head>
+
+  <body class="govuk-template__body">
+    <script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
+
+    <div class="app-pane">
+      <div class="app-pane__header toc-open-disabled">
+        <a href="#content" class="govuk-skip-link">Skip to main content</a>
+
+        <header class="govuk-header app-header" role="banner" data-module="govuk-header">
+  <div class="govuk-header__container govuk-header__container--full-width">
+    <div class="govuk-header__logo">
+      <a href="/" class="govuk-header__link govuk-header__link--homepage">
+        <span class="govuk-header__product-name">
+          Cloud Platform User Guide
+        </span>
+      </a>
+        <strong class="govuk-tag">INTERNAL</strong>
+    </div>
+    <div class="govuk-header__content">
+      <button type="button" class="govuk-header__menu-button govuk-js-header-toggle" aria-controls="navigation" aria-label="Show or hide Top Level Navigation">Menu</button>
+      <nav>
+        <ul id="navigation" class="govuk-header__navigation govuk-header__navigation--end" aria-label="Top Level Navigation">
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="mailto:platforms+user-guide@digital.justice.gov.uk?subject=User+guide+feedback">Feedback / Report a problem</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="/">Documentation</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub</a>
+            </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      </div>
+
+        <div id="toc-heading" class="toc-show fixedsticky">
+          <a href="#toc" class="toc-show__label js-toc-show" aria-controls="toc">
+            Table of contents <span class="toc-show__icon"></span>
+          </a>
+        </div>
+
+      <div class="app-pane__body" data-module="in-page-navigation">
+          <div class="app-pane__toc">
+            <div class="toc" data-module="table-of-contents">
+              <div class="search" data-module="search">
+  <form action="https://www.google.co.uk/search" method="get" role="search">
+    <input type="hidden" name="as_sitesearch" value="user-guide2.cloud-platform.service.justice.gov.uk"/>
+    <label class="govuk-label search__label" for="search">
+      Search (via Google)
+    </label>
+    <input class="govuk-input govuk-!-margin-bottom-4" id="search" name="q" type="text" aria-controls="search-results" placeholder="Search">
+  </form>
+  <div id="search-results" class="search-results" aria-hidden="true" role="dialog" aria-labelledby="search-results-title">
+    <div class="search-results__inner">
+      <button class="search-results__close">Close<span class="search-results__close-label"> search results</span></button>
+      <h2 id="search-results-title" class="search-results__title" aria-live="polite">Results</h2>
+      <div class="search-results__content"></div>
+    </div>
+  </div>
+</div>
+
+              <a href="#" class="toc__close js-toc-close" aria-controls="toc" aria-label="Hide table of contents"></a>
+              <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading">
+                      <ul>
+  <li>
+    <a href="#accessing-your-rds-database"><span>Accessing your RDS database</span></a>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <a href="#1-run-a-port-forward-pod"><span>1. Run a port-forward pod</span></a>
+          </li>
+          <li>
+            <a href="#2-forward-local-traffic-to-the-port-forward-pod"><span>2. Forward local traffic to the port-forward-pod</span></a>
+          </li>
+          <li>
+            <a href="#3-access-the-database"><span>3. Access the database</span></a>
+          </li>
+          <li>
+            <a href="#4-delete-the-port-forward-pod"><span>4. Delete the port-forward pod</span></a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
+              </nav>
+            </div>
+          </div>
+
+        <div class="app-pane__content toc-open-disabled">
+          <main id="content" class="technical-documentation" data-module="anchored-headings">
+              <h1 id="accessing-your-rds-database">Accessing your RDS database</h1><p>When you create an RDS instance using the <a href="https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance">RDS module</a>, it is created inside a
+virtual private cloud (VPC), which will only accept network connections from
+within the kubernetes cluster.  So, trying to connect to the RDS instance from
+your local machine will not work.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>+--------------+      outside      \ /       inside           +--------------+
+| Your machine | -------------------X-----------------------&gt; | RDS instance |
++--------------+                   / \                        +--------------+
+                               VPC Boundary
+</code></pre></div><p>If you need to access your database from outside the cluster (e.g. from your
+own development machine, or to perform a bulk data import), you can do so via
+the following steps:</p>
+
+<ol>
+<li>Run a pod inside the cluster to forward network traffic to your RDS instance</li>
+<li>Tell kubernetes to forward traffic from your local machine to the new pod</li>
+<li>Access the database as if it were running on your local machine</li>
+</ol>
+<p>So, the connection from your machine to the RDS instance works like this:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>+--------------+             +---------------------+          +--------------+
+| Your machine |------------&gt;| Port forwarding pod |---------&gt;| RDS instance |
++--------------+             +---------------------+          +--------------+
+</code></pre></div><h3 id="1-run-a-port-forward-pod">1. Run a port-forward pod</h3><p>There are several docker images designed to forward network traffic, but you need one which does not run as <code>root</code>.</p>
+
+<blockquote>
+<p>The cluster pod security policy (PSP) will prevent any images from running a process as the <code>root</code> user, so docker images which expect to do this will not work.</p>
+</blockquote>
+<p>We will use <a href="https://cloud.docker.com/u/ministryofjustice/repository/docker/ministryofjustice/port-forward">ministryofjustice/port-forward</a> for this example.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>kubectl \
+  -n [your namespace] \
+  run port-forward-pod \
+  --generator=run-pod/v1 \
+  --image=ministryofjustice/port-forward \
+  --port=5432 \
+  --env="REMOTE_HOST=[your database hostname]" \
+  --env="LOCAL_PORT=5432" \
+  --env="REMOTE_PORT=5432"
+</code></pre></div>
+<blockquote>
+<p>This creates a pod in your namespace, but without a deployment to manage it.</p>
+<p>Manually-created pods (i.e. those which are not part of a <a href="https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/">deployment</a>) block
+some cluster operations such as <a href="https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/#use-kubectl-drain-to-remove-a-node-from-service">draining a node</a> in order to replace it. For
+this reason, we have set up an automated process which will <strong>delete any such
+pods after 24 hours</strong>. If you need a port-forward pod to persist longer than
+this, please make it part of a <a href="https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/">deployment</a>.</p>
+</blockquote>
+<h3 id="2-forward-local-traffic-to-the-port-forward-pod">2. Forward local traffic to the port-forward-pod</h3><p>Now you need to forward network traffic from a port on your local machine to the port-forward pod inside the cluster.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>kubectl \
+  -n [your namespace] \
+  port-forward \
+  port-forward-pod 5432:5432
+</code></pre></div><p>You need to leave this running as long as you are accessing the database.</p>
+<h3 id="3-access-the-database">3. Access the database</h3><p>Now you can connect to the database as if it were running locally, on your machine.</p>
+<p>If you are exporting a database URL from your RDS kubernetes secret, it might have a value like this:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>postgres://cpDvquXO5B:R1eDN0xEUnaH6Aqr@cloud-platform-df3589e0e7acba37.cdwm328dlye6.eu-west-2.rds.amazonaws.com:5432/dbdf3589e0e7acba37
+
+</code></pre></div><p>You can use this URL to connect to your database via the port forward you have set up, but you need to replace the database hostname, (<code>cloud-platform-df3589e0e7acba37.cdwm328dlye6.eu-west-2.rds.amazonaws.com</code> in this example), with <code>localhost</code>.</p>
+<p>So, if you were starting from the database URL above, the database connection command you will run on your local machine would be:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>psql postgres://cpDvquXO5B:R1eDN0xEUnaH6Aqr@localhost:5432/dbdf3589e0e7acba37
+</code></pre></div><p>If you are exporting the database credentials separately, the command would be something like this:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>psql \
+  --host localhost \
+  --port 5432 \
+  --dbname [your database name] \
+  --username [your database username] \
+  --password
+</code></pre></div><p>(You will be prompted to enter the database password, which you should get (and then base64 decode) from your kubernetes secret)</p>
+<h3 id="4-delete-the-port-forward-pod">4. Delete the port-forward pod</h3><p>Please remember to delete the port-forwarding pod when you have finished.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>kubectl delete pod port-forward-pod -n [your namespace]
+</code></pre></div>
+
+              <div data-module='page-expiry' data-last-reviewed-on="2020-07-27">
+    <div class='page-expiry--not-expired'>
+      This page was last reviewed on 27 April 2020.
+
+        It needs to be reviewed again on 27 July 2020
+.
+    </div>
+
+    <div class='page-expiry--expired'>
+      This page was set to be reviewed before 27 July 2020.
+      This might mean the content is out of date.
+    </div>
+  </div>
+
+          </main>
+
+          <aside>
+              <ul class="contribution-banner">
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/documentation/other-topics/rds-external-access.html.md.erb">View source</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'Accessing%20your%20RDS%20database'&amp;body=Problem%20with%20'Accessing%20your%20RDS%20database'%20(user-guide2.cloud-platform.service.justice.gov.uk/documentation/other-topics/rds-external-access.html)">Report problem</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub Repo</a></li>
+              </ul>
+          </aside>
+
+          <footer class="govuk-footer app-footer" role="contentinfo">
+  <div class="govuk-footer__meta">
+    <div class="govuk-footer__meta-item govuk-footer__meta-item--grow">
+
+
+      <svg
+        aria-hidden="true"
+        focusable="false"
+        class="govuk-footer__licence-logo"
+        xmlns="http://www.w3.org/2000/svg"
+        viewbox="0 0 483.2 195.7"
+        height="17"
+        width="41"
+      >
+        <path
+          fill="currentColor"
+          d="M421.5 142.8V.1l-50.7 32.3v161.1h112.4v-50.7zm-122.3-9.6A47.12 47.12 0 0 1 221 97.8c0-26 21.1-47.1 47.1-47.1 16.7 0 31.4 8.7 39.7 21.8l42.7-27.2A97.63 97.63 0 0 0 268.1 0c-36.5 0-68.3 20.1-85.1 49.7A98 98 0 0 0 97.8 0C43.9 0 0 43.9 0 97.8s43.9 97.8 97.8 97.8c36.5 0 68.3-20.1 85.1-49.7a97.76 97.76 0 0 0 149.6 25.4l19.4 22.2h3v-87.8h-80l24.3 27.5zM97.8 145c-26 0-47.1-21.1-47.1-47.1s21.1-47.1 47.1-47.1 47.2 21 47.2 47S123.8 145 97.8 145"
+        />
+      </svg>
+      <span class="govuk-footer__licence-description">
+        All content is available under the
+        <a
+          class="govuk-footer__link"
+          href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+          rel="license"
+        >Open Government Licence v3.0</a>, except where otherwise stated
+      </span>
+    </div>
+    <div class="govuk-footer__meta-item">
+      <a
+        class="govuk-footer__link govuk-footer__copyright-logo"
+        href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/"
+      >© Crown copyright</a>
+    </div>
+  </div>
+</footer>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <script src="/javascripts/application.js"></script>
+  </body>
+</html>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138188246-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-138188246-1');
+</script>
+
+<script>
+  // Add the current window.location to the body of the
+  // feedback email message.
+  function sendFeedback(mailto, event) {
+    event.preventDefault();
+
+    var body = "Feedback/Problem on page: " + window.location + "\n";
+    var href = mailto + '&body=' + encodeURIComponent(body);
+
+    window.location = href;
+  }
+
+  $(document).ready(function() {
+    var feedbackLink = $('a[href^="mailto:"]:contains("Feedback")')[0];
+    var mailto = feedbackLink.href;
+    $(feedbackLink).on('click', function(event) { sendFeedback(mailto, event); });
+  });
+</script>

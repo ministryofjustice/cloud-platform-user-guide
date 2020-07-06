@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en" class="govuk-template no-js">
+  <head>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+      <meta name="robots" content="noindex">
+
+    <title>Deploying a multi-container application to the Cloud Platform - Cloud Platform User Guide</title>
+
+    <link href="/stylesheets/manifest.css" rel="stylesheet" />
+
+    <link rel="canonical" href="user-guide2.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/multicontainer-app-deploy.html">
+
+
+      <meta property="og:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="og:site_name" content="Cloud Platform User Guide" />
+      <meta property="og:title" content="Deploying a multi-container application to the Cloud Platform" />
+      <meta property="og:type" content="object" />
+      <meta property="og:url" content="user-guide2.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/multicontainer-app-deploy.html" />
+      <meta property="twitter:card" content="summary" />
+      <meta property="twitter:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="twitter:title" content="Deploying a multi-container application to the Cloud Platform - Cloud Platform User Guide" />
+      <meta property="twitter:url" content="user-guide2.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/multicontainer-app-deploy.html" />
+
+    
+  </head>
+
+  <body class="govuk-template__body">
+    <script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
+
+    <div class="app-pane">
+      <div class="app-pane__header toc-open-disabled">
+        <a href="#content" class="govuk-skip-link">Skip to main content</a>
+
+        <header class="govuk-header app-header" role="banner" data-module="govuk-header">
+  <div class="govuk-header__container govuk-header__container--full-width">
+    <div class="govuk-header__logo">
+      <a href="/" class="govuk-header__link govuk-header__link--homepage">
+        <span class="govuk-header__product-name">
+          Cloud Platform User Guide
+        </span>
+      </a>
+        <strong class="govuk-tag">INTERNAL</strong>
+    </div>
+    <div class="govuk-header__content">
+      <button type="button" class="govuk-header__menu-button govuk-js-header-toggle" aria-controls="navigation" aria-label="Show or hide Top Level Navigation">Menu</button>
+      <nav>
+        <ul id="navigation" class="govuk-header__navigation govuk-header__navigation--end" aria-label="Top Level Navigation">
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="mailto:platforms+user-guide@digital.justice.gov.uk?subject=User+guide+feedback">Feedback / Report a problem</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="/">Documentation</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub</a>
+            </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      </div>
+
+        <div id="toc-heading" class="toc-show fixedsticky">
+          <a href="#toc" class="toc-show__label js-toc-show" aria-controls="toc">
+            Table of contents <span class="toc-show__icon"></span>
+          </a>
+        </div>
+
+      <div class="app-pane__body" data-module="in-page-navigation">
+          <div class="app-pane__toc">
+            <div class="toc" data-module="table-of-contents">
+              <div class="search" data-module="search">
+  <form action="https://www.google.co.uk/search" method="get" role="search">
+    <input type="hidden" name="as_sitesearch" value="user-guide2.cloud-platform.service.justice.gov.uk"/>
+    <label class="govuk-label search__label" for="search">
+      Search (via Google)
+    </label>
+    <input class="govuk-input govuk-!-margin-bottom-4" id="search" name="q" type="text" aria-controls="search-results" placeholder="Search">
+  </form>
+  <div id="search-results" class="search-results" aria-hidden="true" role="dialog" aria-labelledby="search-results-title">
+    <div class="search-results__inner">
+      <button class="search-results__close">Close<span class="search-results__close-label"> search results</span></button>
+      <h2 id="search-results-title" class="search-results__title" aria-live="polite">Results</h2>
+      <div class="search-results__content"></div>
+    </div>
+  </div>
+</div>
+
+              <a href="#" class="toc__close js-toc-close" aria-controls="toc" aria-label="Hide table of contents"></a>
+              <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading">
+                      <ul>
+  <li>
+    <a href="#deploying-a-multi-container-application-to-the-cloud-platform"><span>Deploying a multi-container application to the Cloud Platform</span></a>
+    <ul>
+      <li>
+        <a href="#overview"><span>Overview</span></a>
+      </li>
+      <li>
+        <a href="#running-in-the-kubernetes-cluster"><span>Running in the Kubernetes Cluster</span></a>
+      </li>
+      <li>
+        <a href="#create-an-rds-instance"><span>Create an RDS instance</span></a>
+        <ul>
+          <li>
+            <a href="#connecting-to-your-rds-instance-from-your-local-machine"><span>Connecting to your RDS instance from your local machine</span></a>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="#build-docker-images-and-pushing-to-ecr"><span>Build docker images and pushing to ECR</span></a>
+      </li>
+      <li>
+        <a href="#kubernetes-configuration"><span>Kubernetes configuration</span></a>
+      </li>
+      <li>
+        <a href="#deploying-to-the-cluster"><span>Deploying to the cluster</span></a>
+      </li>
+      <li>
+        <a href="#interacting-with-the-application"><span>Interacting with the application</span></a>
+      </li>
+      <li>
+        <a href="#further-development"><span>Further Development</span></a>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
+              </nav>
+            </div>
+          </div>
+
+        <div class="app-pane__content toc-open-disabled">
+          <main id="content" class="technical-documentation" data-module="anchored-headings">
+              <h1 id="deploying-a-multi-container-application-to-the-cloud-platform">Deploying a multi-container application to the Cloud Platform</h1><h2 id="overview">Overview</h2><p>This section goes through the process of deploying a <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app">demo application</a> consisting of several components, each running in its own container.</p>
+<p>Please see the <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app#multi-container-demo-application">application README</a> for a description of the different components, and how they connect. You can also run the application locally via docker-compose to confirm that it works as it should.</p>
+<h2 id="running-in-the-kubernetes-cluster">Running in the Kubernetes Cluster</h2><p>In the <a href="https://github.com/ministryofjustice/cloud-platform">Cloud Platform</a> kubernetes cluster, the application will be set up like this:</p>
+<p><a href="/images/multi-container-k8s.png" target="_blank" rel="noopener noreferrer"><img src="/images/multi-container-k8s.png" alt="Multi-container architecture diagram" /></a></p>
+<p>Each container needs a <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/">Deployment</a> which will contain a <a href="https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/">Pod</a>. <a href="https://kubernetes.io/docs/concepts/services-networking/service/">Services</a> make pods available on the cluster&rsquo;s internal network, and an <a href="https://kubernetes.io/docs/concepts/services-networking/ingress/">Ingress</a> exposes one or more services to the outside world.</p>
+<h2 id="create-an-rds-instance">Create an RDS instance</h2><p>The application database will be an Amazon RDS instance. To create this, refer to the <a href="https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance">cloud platform RDS</a> repository, and create a terraform file in your sub-directory of the <a href="https://github.com/ministryofjustice/cloud-platform-environments">cloud platform environments</a> repository (you will need to raise a PR for this, and get the cloud platform team to approve it).</p>
+<p>For more information see <a href="/documentation/deploying-an-app/add-aws-resources.html#adding-aws-resources-to-your-environment">Adding AWS resources to your environment</a>.</p>
+<p>The <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app">demo application</a>, and this guide, assumes a DATABASE_URL environment variable, exported by the terraform RDS module as follows:</p>
+<div class="highlight"><pre class="highlight plaintext"><code># rds.tf
+...
+data {
+  url = postgres://${module.module_name.database_username}:${module.module_name.database_password}@${module.module_name.rds_instance_endpoint}/${module.module_name.database_name}
+}
+...
+</code></pre></div><p>Please ensure that your <code>rds.tf</code> file exports a database <code>url</code> value in this way (changing <code>module_name</code> to match the name you use in your <code>rds.tf</code> file).</p>
+<h3 id="connecting-to-your-rds-instance-from-your-local-machine">Connecting to your RDS instance from your local machine</h3><p>This is not required for this tutorial.</p>
+<p>If you need to access an RDS instance from your local machine, you can find instructions for doing so <a href="https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance#access-outside-the-cluster">here</a>.</p>
+<h2 id="build-docker-images-and-pushing-to-ecr">Build docker images and pushing to ECR</h2><p>As before, we need to build docker images which we will push to our <a href="https://aws.amazon.com/ecr/">Amazon ECR</a>.</p>
+<p>Please carry out the following steps on your own working copy of the <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app">demo application</a>.</p>
+<p>For <code>team_name</code> and <code>repo_name</code> please use the values from your <code>ecr.tf</code> file, when you <a href="/documentation/getting-started/ecr-setup.html#creating-an-ecr-repository">created your ECR</a>.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>cd rails-app
+docker build -t [team_name]/[repo_name]:rails-app .
+docker tag [team_name]/[repo_name]:rails-app 754256621582.dkr.ecr.eu-west-2.amazonaws.com/[team_name]/[repo_name]:rails-app-1.0
+docker push 754256621582.dkr.ecr.eu-west-2.amazonaws.com/[team_name]/[repo_name]:rails-app-1.0
+</code></pre></div><p>Note that we are overloading the tag value to push multiple different containers to a single Amazon ECR. This is because of a quirk in the way Amazon ECR refers to <code>image repositories</code> and <code>images</code>.</p>
+<p>Repeat the steps above for the <code>content-api</code> and <code>worker</code> sub-directories (changing <code>rails-app</code> as appropriate, in the commands).</p>
+<p>The <code>makefile</code> in the <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app">demo application</a> contains commands to make this process easier. Don&rsquo;t forget to edit the values for <code>TEAM_NAME</code>, <code>REPO_NAME</code> and <code>VERSION</code> appropriately.</p>
+<h2 id="kubernetes-configuration">Kubernetes configuration</h2><p>As per the diagram, we need to configure six objects in kubernetes - 3 deployments, 2 services and 1 ingress.</p>
+<p>You can see these YAML config files in the <code>kubernetes_deploy</code> directory of the <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app">demo application</a>.</p>
+
+<blockquote>
+<p>Note: The yaml files in the github repository refer to docker images from docker hub, e.g. <code>ministryofjustice/cloud-platform-multi-container-demo-app:worker-1.4</code> These will work, but in order to deploy the docker images you built in the earlier step, please change this to the full reference to your docker images.</p>
+</blockquote>
+<p>You also need to change the <code>host</code> entry in the <code>ingress.yaml</code> file, so that this instance of the application has a unique hostname (i.e. change <code>multi-container-demo.apps.live-1.cloud-platform.service.justice.gov.uk</code> to something like <code>[yourname]-demo.apps.live-1.cloud-platform.service.justice.gov.uk</code>)</p>
+<p>In <code>rails-app-deployment.yaml</code> and <code>worker-deployment.yaml</code> you can see the configuration for two environment variables:</p>
+
+<ul>
+<li><code>DATABASE_URL</code> is retrieved from the kubernetes secret which was created when the RDS instance was set up</li>
+<li><code>CONTENT_API_URL</code> uses the name and port defined in <code>content-api-service.yaml</code></li>
+</ul>
+<h2 id="deploying-to-the-cluster">Deploying to the cluster</h2><p>After you have built and pushed your docker images, and made the corresponding changes to the <code>kubernetes_deploy/*.yaml</code> files, you can apply the configuration to your namespace in the kubernetes cluster:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  kubectl apply --filename kubernetes_deploy --namespace [your namespace]
+</code></pre></div><h2 id="interacting-with-the-application">Interacting with the application</h2><p>You should be able to view the application in your browser at:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  https://multi-container-demo.apps.live-1.cloud-platform.service.justice.gov.uk/
+</code></pre></div><p>It should behave in the same way as when you were running it locally via docker-compose.</p>
+<h2 id="further-development">Further Development</h2><p>After you deployed and Interacting with multi-container application and would like to create Monitoring dashboard and Custom Alerts for your application use this working examples:</p>
+
+<ul>
+<li><p><strong>Grafana dashboard</strong> - Follow the <a href="/documentation/monitoring-an-app/prometheus.html#creating-dashboards">guide</a> on how to create a Grafana dashboard, make corresponding changes to <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/tree/grafana-dashboard-v1.0/k8s_additional_resources">monitoring-grafana-dashboard.yaml</a> file and apply the configmap to your namespace in the kubernetes cluster, which will show your Grafana-Dashboard <a href="https://grafana.cloud-platform.service.justice.gov.uk">here</a>.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  kubectl apply --filename monitoring-grafana-dashboard.yaml --namespace [your namespace]
+</code></pre></div></li>
+<li><p><strong>Custom Alerts</strong> - Follow the <a href="/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts">guide</a> on how to create Custom Alerts, make corresponding changes to <a href="https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/tree/custom-alerts-v1.0/k8s_additional_resources">prometheus-app-alert.yaml</a> file and apply the PrometheusRule to your namespace in the kubernetes cluster, this will create custom alerts for your application.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  kubectl apply --filename prometheus-app-alert.yaml --namespace [your namespace]
+</code></pre></div></li>
+</ul>
+
+
+              <div data-module='page-expiry' data-last-reviewed-on="2020-07-27">
+    <div class='page-expiry--not-expired'>
+      This page was last reviewed on 27 April 2020.
+
+        It needs to be reviewed again on 27 July 2020
+.
+    </div>
+
+    <div class='page-expiry--expired'>
+      This page was set to be reviewed before 27 July 2020.
+      This might mean the content is out of date.
+    </div>
+  </div>
+
+          </main>
+
+          <aside>
+              <ul class="contribution-banner">
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/documentation/deploying-an-app/multicontainer-app-deploy.html.md.erb">View source</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'Deploying%20a%20multi-container%20application%20to%20the%20Cloud%20Platform'&amp;body=Problem%20with%20'Deploying%20a%20multi-container%20application%20to%20the%20Cloud%20Platform'%20(user-guide2.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/multicontainer-app-deploy.html)">Report problem</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub Repo</a></li>
+              </ul>
+          </aside>
+
+          <footer class="govuk-footer app-footer" role="contentinfo">
+  <div class="govuk-footer__meta">
+    <div class="govuk-footer__meta-item govuk-footer__meta-item--grow">
+
+
+      <svg
+        aria-hidden="true"
+        focusable="false"
+        class="govuk-footer__licence-logo"
+        xmlns="http://www.w3.org/2000/svg"
+        viewbox="0 0 483.2 195.7"
+        height="17"
+        width="41"
+      >
+        <path
+          fill="currentColor"
+          d="M421.5 142.8V.1l-50.7 32.3v161.1h112.4v-50.7zm-122.3-9.6A47.12 47.12 0 0 1 221 97.8c0-26 21.1-47.1 47.1-47.1 16.7 0 31.4 8.7 39.7 21.8l42.7-27.2A97.63 97.63 0 0 0 268.1 0c-36.5 0-68.3 20.1-85.1 49.7A98 98 0 0 0 97.8 0C43.9 0 0 43.9 0 97.8s43.9 97.8 97.8 97.8c36.5 0 68.3-20.1 85.1-49.7a97.76 97.76 0 0 0 149.6 25.4l19.4 22.2h3v-87.8h-80l24.3 27.5zM97.8 145c-26 0-47.1-21.1-47.1-47.1s21.1-47.1 47.1-47.1 47.2 21 47.2 47S123.8 145 97.8 145"
+        />
+      </svg>
+      <span class="govuk-footer__licence-description">
+        All content is available under the
+        <a
+          class="govuk-footer__link"
+          href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+          rel="license"
+        >Open Government Licence v3.0</a>, except where otherwise stated
+      </span>
+    </div>
+    <div class="govuk-footer__meta-item">
+      <a
+        class="govuk-footer__link govuk-footer__copyright-logo"
+        href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/"
+      >© Crown copyright</a>
+    </div>
+  </div>
+</footer>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <script src="/javascripts/application.js"></script>
+  </body>
+</html>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138188246-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-138188246-1');
+</script>
+
+<script>
+  // Add the current window.location to the body of the
+  // feedback email message.
+  function sendFeedback(mailto, event) {
+    event.preventDefault();
+
+    var body = "Feedback/Problem on page: " + window.location + "\n";
+    var href = mailto + '&body=' + encodeURIComponent(body);
+
+    window.location = href;
+  }
+
+  $(document).ready(function() {
+    var feedbackLink = $('a[href^="mailto:"]:contains("Feedback")')[0];
+    var mailto = feedbackLink.href;
+    $(feedbackLink).on('click', function(event) { sendFeedback(mailto, event); });
+  });
+</script>

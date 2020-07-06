@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en" class="govuk-template no-js">
+  <head>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+      <meta name="robots" content="noindex">
+
+    <title>Removing Deprecated APIs for Kubernetes version 1.16 - Cloud Platform User Guide</title>
+
+    <link href="/stylesheets/manifest.css" rel="stylesheet" />
+
+    <link rel="canonical" href="user-guide2.cloud-platform.service.justice.gov.uk/documentation/other-topics/apiversion-changes-k8s-1-16.html">
+
+
+      <meta property="og:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="og:site_name" content="Cloud Platform User Guide" />
+      <meta property="og:title" content="Removing Deprecated APIs for Kubernetes version 1.16" />
+      <meta property="og:type" content="object" />
+      <meta property="og:url" content="user-guide2.cloud-platform.service.justice.gov.uk/documentation/other-topics/apiversion-changes-k8s-1-16.html" />
+      <meta property="twitter:card" content="summary" />
+      <meta property="twitter:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="twitter:title" content="Removing Deprecated APIs for Kubernetes version 1.16 - Cloud Platform User Guide" />
+      <meta property="twitter:url" content="user-guide2.cloud-platform.service.justice.gov.uk/documentation/other-topics/apiversion-changes-k8s-1-16.html" />
+
+    
+  </head>
+
+  <body class="govuk-template__body">
+    <script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
+
+    <div class="app-pane">
+      <div class="app-pane__header toc-open-disabled">
+        <a href="#content" class="govuk-skip-link">Skip to main content</a>
+
+        <header class="govuk-header app-header" role="banner" data-module="govuk-header">
+  <div class="govuk-header__container govuk-header__container--full-width">
+    <div class="govuk-header__logo">
+      <a href="/" class="govuk-header__link govuk-header__link--homepage">
+        <span class="govuk-header__product-name">
+          Cloud Platform User Guide
+        </span>
+      </a>
+        <strong class="govuk-tag">INTERNAL</strong>
+    </div>
+    <div class="govuk-header__content">
+      <button type="button" class="govuk-header__menu-button govuk-js-header-toggle" aria-controls="navigation" aria-label="Show or hide Top Level Navigation">Menu</button>
+      <nav>
+        <ul id="navigation" class="govuk-header__navigation govuk-header__navigation--end" aria-label="Top Level Navigation">
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="mailto:platforms+user-guide@digital.justice.gov.uk?subject=User+guide+feedback">Feedback / Report a problem</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="/">Documentation</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub</a>
+            </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      </div>
+
+        <div id="toc-heading" class="toc-show fixedsticky">
+          <a href="#toc" class="toc-show__label js-toc-show" aria-controls="toc">
+            Table of contents <span class="toc-show__icon"></span>
+          </a>
+        </div>
+
+      <div class="app-pane__body" data-module="in-page-navigation">
+          <div class="app-pane__toc">
+            <div class="toc" data-module="table-of-contents">
+              <div class="search" data-module="search">
+  <form action="https://www.google.co.uk/search" method="get" role="search">
+    <input type="hidden" name="as_sitesearch" value="user-guide2.cloud-platform.service.justice.gov.uk"/>
+    <label class="govuk-label search__label" for="search">
+      Search (via Google)
+    </label>
+    <input class="govuk-input govuk-!-margin-bottom-4" id="search" name="q" type="text" aria-controls="search-results" placeholder="Search">
+  </form>
+  <div id="search-results" class="search-results" aria-hidden="true" role="dialog" aria-labelledby="search-results-title">
+    <div class="search-results__inner">
+      <button class="search-results__close">Close<span class="search-results__close-label"> search results</span></button>
+      <h2 id="search-results-title" class="search-results__title" aria-live="polite">Results</h2>
+      <div class="search-results__content"></div>
+    </div>
+  </div>
+</div>
+
+              <a href="#" class="toc__close js-toc-close" aria-controls="toc" aria-label="Hide table of contents"></a>
+              <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading">
+                      <ul>
+  <li>
+    <a href="#removing-deprecated-apis-for-kubernetes-version-1-16"><span>Removing Deprecated APIs for Kubernetes version 1.16</span></a>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <a href="#resources-deployed-using-helm-charts"><span>Resources deployed using helm charts</span></a>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="#what-to-do"><span>What to do</span></a>
+        <ul>
+          <li>
+            <a href="#kubectl"><span>kubectl</span></a>
+          </li>
+          <li>
+            <a href="#helm-deployments"><span>Helm Deployments</span></a>
+          </li>
+          <li>
+            <a href="#getting-help"><span>Getting help</span></a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
+              </nav>
+            </div>
+          </div>
+
+        <div class="app-pane__content toc-open-disabled">
+          <main id="content" class="technical-documentation" data-module="anchored-headings">
+              <h1 id="removing-deprecated-apis-for-kubernetes-version-1-16">Removing Deprecated APIs for Kubernetes version 1.16</h1><p>The Cloud Platform kubernetes cluster has to be upgraded from <strong>1.15.10</strong> to <strong>1.16.10</strong>.</p>
+<p>As the Kubernetes API evolves, certain APIs are reorganized/upgraded or removed.
+Therefore before the upgrade can take place, a number of deprecated 
+APIs have to be removed from the manifests used to create kubernetes resources.</p>
+<p>The replacement APIs are already available within the current kubernetes version 1.15.10.</p>
+<p>Below are the details of the APIs that have been removed in this release, together with the related replacement APIs that should be used in their place.</p>
+<p>It is therefore <strong>mandatory</strong> to update affected manifests with the replacements shown below
+before we upgrade the cluster to kubernetes version 1.16.</p>
+
+<ul>
+<li>All resources under <code>apps/v1beta1</code> and <code>apps/v1beta2</code> - use <code>apps/v1</code> instead</li>
+<li><code>daemonsets</code>, <code>deployments</code>, <code>replicasets</code> resources under <code>extensions/v1beta1</code> - use <code>apps/v1</code> instead</li>
+<li><code>networkpolicies</code> resources under <code>extensions/v1beta1</code> - use <code>networking.k8s.io/v1</code> instead</li>
+<li><code>podsecuritypolicies</code> resources under <code>extensions/v1beta1</code> - use <code>policy/v1beta1</code> instead</li>
+<li><code>ingress</code> resources will no longer be served from <code>extensions/v1beta1</code> in v1.20. - use <code>networking.k8s.io/v1beta1</code> instead</li>
+</ul>
+<h3 id="resources-deployed-using-helm-charts">Resources deployed using helm charts</h3><p>If you have used helm version &lt; 2.16.3, then the generated manifests will use the deprecated APIs. 
+It is therefore <strong>mandatory</strong> to update the manifest with replacement APIs. 
+We also suggest upgrading your helm version to &gt; 2.16.3, ideally to <a href="/documentation/deploying-an-app/app-deploy-helm.html#migrate-from-helm-v2-to-helm-v3">Helm 3</a> so the helm
+  manifests are not generated with deprecated APIs.</p>
+<p>More detailed changes to kubernetes resources are explained in this <a href="https://kubernetes.io/blog/2019/07/18/api-deprecations-in-1-16/">kubernetes blog</a> and 
+the <a href="https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.16.md#deprecations-and-removals">1.16 CHANGELOG</a></p>
+<h2 id="what-to-do">What to do</h2><p>We have identified the list of affected resources on all namespaces in this <a href="https://docs.google.com/spreadsheets/d/1DY4PSZjmXqLcnqww0NetmIjMdw3p0hUqfv_ytJ304j4/edit?usp=sharing">google sheet</a></p>
+<p>Please make changes as follows:</p>
+
+<ul>
+<li><p><a href="#kubectl">If you deployed an application to the Cloud Platform with kubectl</a></p></li>
+<li><p><a href="#helm-deployments">If you deployed an application to the Cloud Platform with Helm</a></p></li>
+</ul>
+<h3 id="kubectl">kubectl</h3><h4 id="deployments">Deployments</h4><p>Issue the following command to see if you are using deprecated API versions:</p>
+<p><code>kubectl describe deployment -n &lt;namespace&gt; | egrep &#39;&quot;apiVersion&quot;:&quot;extensions/v1beta1&quot;|&quot;apiVersion&quot;:&quot;apps/v1beta1&quot;|&quot;apiVersion&quot;:&quot;apps/v1beta2&quot;&#39;</code></p>
+<p>If there is any output similar to that below, then you must change your manifest.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>
+{"apiVersion":"extensions/v1beta1","kind":"Deployment","metadata":{"annotations":{},"name":"helloworld-rubyapp","namespace":"dstest"}
+</code></pre></div><p>If your deployment manifest looks similar to this:</p>
+
+<pre>
+    apiVersion: <b>extensions/v1beta1</b> 
+(or apiVersion: <b>apps/v1beta1</b> or apiVersion: <b>apps/v1beta2</b>)
+    kind: Deployment
+    metadata:
+      name: helloworld-rubyapp
+    spec:
+      replicas: 1
+      template:
+        metadata:
+          labels:
+            app: helloworld-rubyapp
+        spec:
+          containers:
+</pre>
+<p>Migrate to use the <code>apps/v1</code> API version. The main changes are:</p>
+
+<ul>
+<li>Change the <code>apiVersion</code> to <code>apps/v1</code></li>
+<li>Add a <code>spec.selector</code> entry <strong>if there isn&rsquo;t one already</strong> and use the existing <code>spec.template.metadata.labels</code> as the selector</li>
+</ul>
+<p>The manifest above, after changes, would look like this:</p>
+
+<pre>
+    apiVersion: <b>apps/v1</b>
+    kind: Deployment
+    metadata:
+      name: helloworld-rubyapp
+    spec:
+      replicas: 1
+      <b>selector:
+        matchLabels:
+          app: helloworld-rubyapp</b>
+
+    template:
+        metadata:
+          labels:
+            app: helloworld-rubyapp
+        spec:
+          containers:
+</pre>
+<p>To apply your changes:</p>
+<p><code>kubectl apply --filename &lt;your yaml file&gt; --namespace &lt;namespace&gt;</code></p>
+<p>Issue the following command again (the list should decrease as you apply your changes):</p>
+<p><code>kubectl describe deployment -n &lt;namespace&gt; | egrep &#39;&quot;apiVersion&quot;:&quot;extensions/v1beta1&quot;|&quot;apiVersion&quot;:&quot;apps/v1beta1&quot;|&quot;apiVersion&quot;:&quot;apps/v1beta2&quot;&#39;</code></p>
+<h4 id="ingress">Ingress</h4><p>Issue the following command to see if you are using deprecated API versions:</p>
+<p><code>kubectl describe ingress --namespace &lt;namespace&gt; | grep &#39;&quot;apiVersion&quot;:&quot;extensions/v1beta1&quot;&#39;</code></p>
+<p>If your Ingress configuration looks similar to this:</p>
+
+<pre>
+    apiVersion: <b>extensions/v1beta1</b>
+    kind: Ingress
+    metadata:
+      name: helloworld-rubyapp-ingress
+    spec:
+      .................
+</pre>
+<p>Migrate to use the networking.k8s.io/v1beta1 API version. The main changes are:</p>
+
+<ul>
+<li>Change the <code>apiVersion</code> to <code>networking.k8s.io/v1beta1</code></li>
+</ul>
+<p>The Ingress configuration after changes will look like:
+<pre>
+    apiVersion: <b>networking.k8s.io/v1beta1</b>
+    kind: Ingress
+    metadata:
+      name: helloworld-rubyapp-ingress
+    spec:
+      .................
+</pre></p>
+<p>To apply your changes:</p>
+<p><code>kubectl apply --filename &lt;your ingress yaml file&gt; --namespace &lt;namespace&gt;</code></p>
+<p>Issue the following command again (the list should decrease as you apply your changes):</p>
+<p><code>kubectl describe ingress --namespace &lt;namespace&gt; | grep &#39;&quot;apiVersion&quot;:&quot;extensions/v1beta1&quot;&#39;</code></p>
+<p>See <strong>&ldquo;Notable changes&rdquo;</strong> section in the <a href="https://kubernetes.io/blog/2019/07/18/api-deprecations-in-1-16/">kubernetes blog</a>,
+if any other fields in your manifests are affected.</p>
+<h3 id="helm-deployments">Helm Deployments</h3><p>Prerequisite: Install <a href="https://github.com/FairwindsOps/pluto">pluto</a></p>
+<p><code>brew install FairwindsOps/tap/pluto</code></p>
+<p>You can use this to find out whether your helm templates have any of the deprecated APIs.</p>
+<h4 id="helm-2">Helm 2</h4><p>Issue the following command to see if you have applications deployed via Helm 2:</p>
+<p><code>pluto detect-helm --helm-version 2 -n &lt;namespace&gt;  -owide</code></p>
+<p>Here is an example output of a helm chart in the <code>cptest</code> namespace which has deprecated APIs, and the suggested replacement:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>NAME                                                 NAMESPACE    KIND          VERSION              REPLACEMENT                 DEPRECATED   DEPRECATED IN   REMOVED   REMOVED IN
+helloworld/helloworld-rubyapp-ingress                cptest   Ingress      extensions/v1beta1   networking.k8s.io/v1beta1   true         v1.14.0         false     v1.22.0
+helloworld/independent-bobcat-helloworld             cptest   Deployment   apps/v1beta2         apps/v1                     true         v1.9.0          true      v1.16.0
+</code></pre></div><p>Update the template manifests in your helm chart repo, making the required changes.</p>
+<p>You can test your source code directly using pluto by running:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>pluto detect-files -d &lt;DIRECTORY YOU WANT TO SCAN&gt;
+</code></pre></div><p>Upgrade your local helm version to &gt;v2.16.3, Ideally to <a href="/documentation/deploying-an-app/app-deploy-helm.html#migrate-from-helm-v2-to-helm-v3">Helm 3</a>. Check the user guide for more instructions on <a href="/documentation/deploying-an-app/app-deploy-helm.html#migrate-from-helm-v2-to-helm-v3">migrating to Helm 3</a></p>
+<p>If for any reason you cant upgrade to Helm 3:</p>
+
+<ul>
+<li>Update your local helm version to minimum v2.16.3</li>
+<li>Upgrade the tiller version in your namespace to minimum v2.16.3</li>
+</ul>
+<div class="highlight"><pre class="highlight plaintext"><code>   helm init --upgrade --tiller-namespace &lt;namespace&gt;
+</code></pre></div>
+<ul>
+<li>rollout the helm chart changes to the cluster</li>
+</ul>
+<p>Once updated issue the following command to check the changes were correctly deployed:</p>
+<p><code>pluto detect-helm --helm-version 2 -n &lt;namespace&gt;  -owide</code></p>
+<p>The output should say</p>
+<div class="highlight"><pre class="highlight plaintext"><code>APIVersions were found, but none were deprecated. Try --show-all.
+</code></pre></div><h4 id="helm-3">Helm 3</h4><p>Issue the following command to see if you have applications deployed via Helm 3:</p>
+<p><code>pluto detect-helm --helm-version 3 -n &lt;namespace&gt;  -owide</code></p>
+<p>Here is an example output of a helm chart in the <code>cptest</code> namespace which has deprecated APIs, and the suggested replacement:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>NAME                                                 NAMESPACE    KIND          VERSION              REPLACEMENT                 DEPRECATED   DEPRECATED IN   REMOVED   REMOVED IN
+helloworld/helloworld-rubyapp-ingress                cptest   Ingress      extensions/v1beta1   networking.k8s.io/v1beta1   true         v1.14.0         false     v1.22.0
+helloworld/independent-bobcat-helloworld             cptest   Deployment   apps/v1beta2         apps/v1                     true         v1.9.0          true      v1.16.0
+</code></pre></div><p>Update the template manifests in your helm chart repo with the required changes.</p>
+<p>You can test your source code directly using pluto by running:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>pluto detect-files -d &lt;DIRECTORY YOU WANT TO SCAN&gt;
+</code></pre></div><p>Deploy the helm chart changes to the cluster.</p>
+<p>Once updated, use the following command to check the changes were correctly deployed:</p>
+<p><code>pluto detect-helm --helm-version 3 -n &lt;namespace&gt;  -owide</code></p>
+<p>The output should say:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>APIVersions were found, but none were deprecated. Try --show-all.
+</code></pre></div><p><strong>NOTE: If you don&rsquo;t update your manifests to use the latest API versions you will get failures when deploying your applications after we upgrade the cluster to kubernetes 1.16</strong></p>
+<h3 id="getting-help">Getting help</h3><p>If you have any questions, please contact us on the <a href="https://mojdt.slack.com/messages/C57UPMZLY">#ask-cloud-platform</a> Slack channel.</p>
+
+
+              <div data-module='page-expiry' data-last-reviewed-on="2020-09-11">
+    <div class='page-expiry--not-expired'>
+      This page was last reviewed on 11 June 2020.
+
+        It needs to be reviewed again on 11 September 2020
+.
+    </div>
+
+    <div class='page-expiry--expired'>
+      This page was set to be reviewed before 11 September 2020.
+      This might mean the content is out of date.
+    </div>
+  </div>
+
+          </main>
+
+          <aside>
+              <ul class="contribution-banner">
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/documentation/other-topics/apiversion-changes-k8s-1-16.html.md.erb">View source</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'Removing%20Deprecated%20APIs%20for%20Kubernetes%20version%201.16'&amp;body=Problem%20with%20'Removing%20Deprecated%20APIs%20for%20Kubernetes%20version%201.16'%20(user-guide2.cloud-platform.service.justice.gov.uk/documentation/other-topics/apiversion-changes-k8s-1-16.html)">Report problem</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub Repo</a></li>
+              </ul>
+          </aside>
+
+          <footer class="govuk-footer app-footer" role="contentinfo">
+  <div class="govuk-footer__meta">
+    <div class="govuk-footer__meta-item govuk-footer__meta-item--grow">
+
+
+      <svg
+        aria-hidden="true"
+        focusable="false"
+        class="govuk-footer__licence-logo"
+        xmlns="http://www.w3.org/2000/svg"
+        viewbox="0 0 483.2 195.7"
+        height="17"
+        width="41"
+      >
+        <path
+          fill="currentColor"
+          d="M421.5 142.8V.1l-50.7 32.3v161.1h112.4v-50.7zm-122.3-9.6A47.12 47.12 0 0 1 221 97.8c0-26 21.1-47.1 47.1-47.1 16.7 0 31.4 8.7 39.7 21.8l42.7-27.2A97.63 97.63 0 0 0 268.1 0c-36.5 0-68.3 20.1-85.1 49.7A98 98 0 0 0 97.8 0C43.9 0 0 43.9 0 97.8s43.9 97.8 97.8 97.8c36.5 0 68.3-20.1 85.1-49.7a97.76 97.76 0 0 0 149.6 25.4l19.4 22.2h3v-87.8h-80l24.3 27.5zM97.8 145c-26 0-47.1-21.1-47.1-47.1s21.1-47.1 47.1-47.1 47.2 21 47.2 47S123.8 145 97.8 145"
+        />
+      </svg>
+      <span class="govuk-footer__licence-description">
+        All content is available under the
+        <a
+          class="govuk-footer__link"
+          href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+          rel="license"
+        >Open Government Licence v3.0</a>, except where otherwise stated
+      </span>
+    </div>
+    <div class="govuk-footer__meta-item">
+      <a
+        class="govuk-footer__link govuk-footer__copyright-logo"
+        href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/"
+      >© Crown copyright</a>
+    </div>
+  </div>
+</footer>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <script src="/javascripts/application.js"></script>
+  </body>
+</html>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138188246-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-138188246-1');
+</script>
+
+<script>
+  // Add the current window.location to the body of the
+  // feedback email message.
+  function sendFeedback(mailto, event) {
+    event.preventDefault();
+
+    var body = "Feedback/Problem on page: " + window.location + "\n";
+    var href = mailto + '&body=' + encodeURIComponent(body);
+
+    window.location = href;
+  }
+
+  $(document).ready(function() {
+    var feedbackLink = $('a[href^="mailto:"]:contains("Feedback")')[0];
+    var mailto = feedbackLink.href;
+    $(feedbackLink).on('click', function(event) { sendFeedback(mailto, event); });
+  });
+</script>

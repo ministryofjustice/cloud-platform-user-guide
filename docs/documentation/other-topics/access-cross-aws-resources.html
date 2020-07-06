@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en" class="govuk-template no-js">
+  <head>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+      <meta name="robots" content="noindex">
+
+    <title>Use IAM role to access resources in a different AWS account - Cloud Platform User Guide</title>
+
+    <link href="/stylesheets/manifest.css" rel="stylesheet" />
+
+    <link rel="canonical" href="user-guide2.cloud-platform.service.justice.gov.uk/documentation/other-topics/access-cross-aws-resources.html">
+
+
+      <meta property="og:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="og:site_name" content="Cloud Platform User Guide" />
+      <meta property="og:title" content="Use IAM role to access resources in a different AWS account" />
+      <meta property="og:type" content="object" />
+      <meta property="og:url" content="user-guide2.cloud-platform.service.justice.gov.uk/documentation/other-topics/access-cross-aws-resources.html" />
+      <meta property="twitter:card" content="summary" />
+      <meta property="twitter:image" content="user-guide2.cloud-platform.service.justice.gov.uk/images/govuk-large.png" />
+      <meta property="twitter:title" content="Use IAM role to access resources in a different AWS account - Cloud Platform User Guide" />
+      <meta property="twitter:url" content="user-guide2.cloud-platform.service.justice.gov.uk/documentation/other-topics/access-cross-aws-resources.html" />
+
+    
+  </head>
+
+  <body class="govuk-template__body">
+    <script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
+
+    <div class="app-pane">
+      <div class="app-pane__header toc-open-disabled">
+        <a href="#content" class="govuk-skip-link">Skip to main content</a>
+
+        <header class="govuk-header app-header" role="banner" data-module="govuk-header">
+  <div class="govuk-header__container govuk-header__container--full-width">
+    <div class="govuk-header__logo">
+      <a href="/" class="govuk-header__link govuk-header__link--homepage">
+        <span class="govuk-header__product-name">
+          Cloud Platform User Guide
+        </span>
+      </a>
+        <strong class="govuk-tag">INTERNAL</strong>
+    </div>
+    <div class="govuk-header__content">
+      <button type="button" class="govuk-header__menu-button govuk-js-header-toggle" aria-controls="navigation" aria-label="Show or hide Top Level Navigation">Menu</button>
+      <nav>
+        <ul id="navigation" class="govuk-header__navigation govuk-header__navigation--end" aria-label="Top Level Navigation">
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="mailto:platforms+user-guide@digital.justice.gov.uk?subject=User+guide+feedback">Feedback / Report a problem</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="/">Documentation</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub</a>
+            </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      </div>
+
+        <div id="toc-heading" class="toc-show fixedsticky">
+          <a href="#toc" class="toc-show__label js-toc-show" aria-controls="toc">
+            Table of contents <span class="toc-show__icon"></span>
+          </a>
+        </div>
+
+      <div class="app-pane__body" data-module="in-page-navigation">
+          <div class="app-pane__toc">
+            <div class="toc" data-module="table-of-contents">
+              <div class="search" data-module="search">
+  <form action="https://www.google.co.uk/search" method="get" role="search">
+    <input type="hidden" name="as_sitesearch" value="user-guide2.cloud-platform.service.justice.gov.uk"/>
+    <label class="govuk-label search__label" for="search">
+      Search (via Google)
+    </label>
+    <input class="govuk-input govuk-!-margin-bottom-4" id="search" name="q" type="text" aria-controls="search-results" placeholder="Search">
+  </form>
+  <div id="search-results" class="search-results" aria-hidden="true" role="dialog" aria-labelledby="search-results-title">
+    <div class="search-results__inner">
+      <button class="search-results__close">Close<span class="search-results__close-label"> search results</span></button>
+      <h2 id="search-results-title" class="search-results__title" aria-live="polite">Results</h2>
+      <div class="search-results__content"></div>
+    </div>
+  </div>
+</div>
+
+              <a href="#" class="toc__close js-toc-close" aria-controls="toc" aria-label="Hide table of contents"></a>
+              <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading">
+                      <ul>
+  <li>
+    <a href="#use-iam-role-to-access-resources-in-a-different-aws-account"><span>Use IAM role to access resources in a different AWS account</span></a>
+  </li>
+</ul>
+
+
+              </nav>
+            </div>
+          </div>
+
+        <div class="app-pane__content toc-open-disabled">
+          <main id="content" class="technical-documentation" data-module="anchored-headings">
+              <h1 id="use-iam-role-to-access-resources-in-a-different-aws-account">Use IAM role to access resources in a different AWS account</h1><p>This article explains how to use IAM role to connect and authorize from applications running in Cloud platform to 
+ access AWS resources in a different AWS account.</p>
+<p>Cloud Platform Infrastructure uses <a href="https://github.com/uswitch/kiam">KIAM</a> to allow secured access to AWS APIs by associating IAM roles to Pods.
+ By annotating the pod and the respective namespace, you can allow the application to assume a role and can get temporary credentials to access AWS resources.</p>
+<p>To acheive this, follow the steps below:</p>
+
+<ol>
+<li><p><strong>Create IAM role</strong></p>
+<p>Cloud Platform maintain these cross account roles in <a href="https://github.com/ministryofjustice/cloud-platform-infrastructure/tree/master/terraform/cross-account-IAM">cloud-platform-infrastructure</a> repo.</p>
+<p>Create a file (<namespace>.tf), update the below template with correct values and raise a PR.</p>
+
+<details><summary> Click here to see a template code block </summary>
+<p>
+
+&ldquo;`
+data &quot;aws_iam_policy_document&rdquo; &ldquo;<namespace>-kiam-trust-chain&rdquo; {
+  # KIAM trust chain to allow pods to assume roles defined below
+  statement {
+    principals {
+      type        = &ldquo;AWS&rdquo;
+      identifiers = [data.aws_iam_role.nodes.arn]
+    }
+    actions = [&ldquo;sts:AssumeRole&rdquo;]
+  }
+}
+
+variable &ldquo;<namespace>-tags&rdquo; {
+  type = map(string)
+  default = {
+    business-unit          = &ldquo;<Which part of the MoJ is responsible for this service? (e.g HMPPS, Legal Aid Agency)>&rdquo;
+    application            = &ldquo;<Application name>&rdquo;
+    is-production          = &ldquo;<true/false>&rdquo;
+    environment-name       = &ldquo;<dev/test/staging/prod>&rdquo;
+    owner                  = &ldquo;<team responsible for this application>&rdquo;
+    infrastructure-support = &ldquo;<Email address for contact/support>&rdquo;
+  }
+}
+
+resource &ldquo;aws_iam_role&rdquo; &ldquo;<namespace>-<role-name>&rdquo; {
+  name               = &ldquo;<namespace>-<role-name>&rdquo;
+  description        = &ldquo;IAM role for XXXX&rdquo;
+  tags               = var.<namespace>-tags
+  assume_role_policy = data.aws_iam_policy_document.<namespace>-kiam-trust-chain.json
+}
+
+resource &ldquo;kubernetes_secret&rdquo; &ldquo;<secret-name-in-your-namespace>&rdquo; {
+  metadata {
+    name      = &ldquo;<secret-name-in-your-namespace>&rdquo;
+    namespace = &ldquo;<namespace>&rdquo;
+  }
+
+  data = {
+    arn       = aws_iam_role.<namespace>-<role-name>.arn
+    name      = aws_iam_role.<namespace>-<role-name>.name
+    unique_id = aws_iam_role.<namespace>-<role-name>.unique_id
+  }
+}
+
+data &ldquo;aws_iam_policy_document&rdquo; &ldquo;<namespace>-<role-name>&rdquo; {
+
+  # allow pods to assume this role
+  statement {
+    actions   = [&ldquo;sts:AssumeRole&rdquo;]
+    resources = [aws_iam_role.<namespace>-<role-name>.arn]
+  }
+
+  # Provide list of permissions and target AWS account resources to allow access from
+  statement {
+    actions = [
+      &ldquo;<some action>&rdquo;,
+    ]
+    resources = [
+      &ldquo;<ARN of resource in target AWS account>/*&rdquo;,
+    ]
+  }
+}
+
+resource &ldquo;aws_iam_policy&rdquo; &ldquo;<namespace>-<policy-name>&rdquo; {
+  name   = &ldquo;<namespace>-<policy-name>&rdquo;
+  policy = data.aws_iam_policy_document.<namespace>-<policy-name>.json
+}
+
+resource &ldquo;aws_iam_role_policy_attachment&rdquo; &ldquo;<namespace>-<policy-name>&rdquo; {
+  role       = aws_iam_role.<namespace>-<role-name>.name
+  policy_arn = aws_iam_policy.<namespace>-<policy-name>.arn
+}
+&ldquo;`
+</p>
+</details>
+
+<details><summary> Here is an example code based on the template above with typical values provided </summary>
+<p>
+
+&rdquo;`
+data &ldquo;aws_iam_policy_document&rdquo; &ldquo;my-namespace-kiam-trust-chain&rdquo; {
+# KIAM trust chain to allow pods to assume roles defined below
+statement {
+  principals {
+    type        = &ldquo;AWS&rdquo;
+    identifiers = [data.aws_iam_role.nodes.arn]
+  }
+  actions = [&ldquo;sts:AssumeRole&rdquo;]
+}
+}
+
+variable &ldquo;my-namespace-tags&rdquo; {
+type = map(string)
+default = {
+  business-unit          = &ldquo;Cloud Platform&rdquo;
+  application            = &ldquo;My Application&rdquo;
+  is-production          = &ldquo;false&rdquo;
+  environment-name       = &ldquo;Development&rdquo;
+  owner                  = &ldquo;cloud-platform&rdquo;
+  infrastructure-support = &ldquo;platforms@digital.justice.gov.uk&rdquo;
+}
+}
+
+resource &ldquo;aws_iam_role&rdquo; &ldquo;my-namespace-app-iam-role&rdquo; {
+name               = &ldquo;my-namespace-app-iam-role&rdquo;
+description        = &ldquo;IAM role for My app to access s3 bucket - AAA in 11111 AWS account&rdquo;
+tags               = var.my-namespace-tags
+assume_role_policy = data.aws_iam_policy_document.my-namespace-kiam-trust-chain.json
+}
+
+resource &ldquo;kubernetes_secret&rdquo; &ldquo;iam-role-creds-my-app&rdquo; {
+metadata {
+  name      = &ldquo;iam-role-creds-my-app&rdquo;
+  namespace = &ldquo;my-namespace&rdquo;
+}
+
+data = {
+  arn       = aws_iam_role.my-namespace-app-iam-role.arn
+  name      = aws_iam_role.my-namespace-app-iam-role.name
+  unique_id = aws_iam_role.my-namespace-app-iam-role.unique_id
+}
+}
+
+data &ldquo;aws_iam_policy_document&rdquo; &ldquo;my-namespace-app-iam-role&rdquo; {
+
+# allow pods to assume this role
+statement {
+  actions   = [&ldquo;sts:AssumeRole&rdquo;]
+  resources = [aws_iam_role.my-namespace-app-iam-role.arn]
+}
+
+# Provide list of permissions and target AWS account resources to allow access from
+statement {
+  actions = [
+    &ldquo;s3.PutObject&rdquo;,
+  ]
+  resources = [
+    &ldquo;arn:aws:s3:::AAAAAAAA/AA-bucket/folder/*&rdquo;,
+  ]
+}
+}
+
+resource &ldquo;aws_iam_policy&rdquo; &ldquo;my-namespace-app-iam-policy&rdquo; {
+name   = &ldquo;my-namespace-app-iam-policy&rdquo;
+policy = data.aws_iam_policy_document.my-namespace-app-iam-policy.json
+}
+
+resource &ldquo;aws_iam_role_policy_attachment&rdquo; &ldquo;my-namespace-app-iam-policy&rdquo; {
+role       = aws_iam_role.my-namespace-app-iam-role.name
+policy_arn = aws_iam_policy.my-namespace-app-iam-policy.arn
+}
+&ldquo;`
+</p>
+</details></li>
+<li><p><strong>Annotate the pod with the IAM role</strong></p>
+<p>Once the PR in <strong>step 1</strong> is merged and applied, you will get the role ARN, name and id as a kubernetes secret in your namespace.</p>
+<p>Decode the role ARN and annotate the pod to indicate which role which will need access to resource in different AWS account. 
+A deployment with the Pod template annotated would look like below:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+  namespace: my-namespace
+  labels:
+    app: wordpress
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: wordpress
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: wordpress
+        tier: frontend
+        annotations:
+          iam.amazonaws.com/role: &lt;role-arn&gt;
+    spec:
+      containers:
+      - image: wordpressdemo/wpapp:1.1
+        name: wordpress
+</code></pre></div><p>An example role arn annotated in the deployment would look like this:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+  namespace: my-namespace
+  labels:
+    app: wordpress
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: wordpress
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: wordpress
+        tier: frontend
+        annotations:
+          iam.amazonaws.com/role: arn:aws:iam::11111111:role/my-namespace-app-iam-role
+    spec:
+      containers:
+      - image: wordpressdemo/wpapp:1.1
+        name: wordpress
+</code></pre></div></li>
+<li><p><strong>Annotate the namespace to allow the role to AssumeRole</strong></p>
+<p>Next, annotate the namespace to indicate which roles are permitted to be assumed within the namespace.</p>
+<p>Update the <code>annotations</code> section with the below code along with existing annotations list in <code>00-namespace.yaml</code> 
+for your namespace in the (cloud-platform-environments)[] repo and raise a PR.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: v1
+kind: Namespace
+metadata:
+  name: my-namespace
+  labels:
+    cloud-platform.justice.gov.uk/is-production: "false"
+    cloud-platform.justice.gov.uk/environment-name: "dev"
+  annotations:
+    cloud-platform.justice.gov.uk/business-unit: "Cloud Platform"
+    cloud-platform.justice.gov.uk/application: "my-test-application"
+    cloud-platform.justice.gov.uk/owner: "Cloud Platform: platforms@digital.justice.gov.uk"
+    cloud-platform.justice.gov.uk/source-code: "https://github.com/ministryofjustice/cloud-platform-mywpapp"
+    iam.amazonaws.com/permitted: "&lt;role-name&gt;"
+
+</code></pre></div><p>An example would look like this:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>apiVersion: v1
+kind: Namespace
+metadata:
+  name: my-namespace
+  labels:
+    cloud-platform.justice.gov.uk/is-production: "false"
+    cloud-platform.justice.gov.uk/environment-name: "dev"
+  annotations:
+    cloud-platform.justice.gov.uk/business-unit: "Cloud Platform"
+    cloud-platform.justice.gov.uk/application: "my-test-application"
+    cloud-platform.justice.gov.uk/owner: "Cloud Platform: platforms@digital.justice.gov.uk"
+    cloud-platform.justice.gov.uk/source-code: "https://github.com/ministryofjustice/cloud-platform-mywpapp"
+    iam.amazonaws.com/permitted: "my-namespace-app-iam-role"
+</code></pre></div></li>
+<li><p><strong>Use the IAM role in your application</strong></p>
+<p>There are several ways you can use the role created to access the resource in different AWS account.</p>
+<p>An example to call the AWS SDK for Ruby and get temporary AWS credentials as below:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>role_credentials = Aws::AssumeRoleCredentials.new(
+  role_arn: role_arn,
+  role_session_name: "myapp_session"
+) 
+</code></pre></div><p>The above call will return the <code>role_credentials</code> with a hash which consist of an access key ID, a secret access key, and a security token.</p>
+<p>For more details on using assumeRole check AWS documentation for <a href="https://docs.aws.amazon.com/cli/latest/reference/sts/assume-role.html">AWS assume-role CLI</a> 
+and <a href="https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/AssumeRoleCredentials.html">AW::AssumeRoleCredentials SDK</a></p></li>
+<li><p><strong>Allow the IAM role to permit access in the target AWS account</strong></p>
+<p>You also need to update the AWS resource policy of the target AWS account to allow permissions for the IAM role to perform actions.</p>
+<p>An example s3 bucket policy to allow the IAM role to perform specific actions as below:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>{
+"Version": "2012-10-17",
+"Statement": [
+  {
+    "Sid": "Cross IAM permissions",
+    "Effect": "Allow",
+    "Principal": {
+      "AWS": "arn:aws:iam::11111111:role/my-namespace-app-iam-role"
+    },
+    "Action": [
+      "s3:PutObject",
+      "s3:GetObject",
+    ],
+    "Resource": "arn:aws:s3:::target-s3-bucket/*"
+  }
+]
+}
+</code></pre></div></li>
+</ol>
+
+
+              <div data-module='page-expiry' data-last-reviewed-on="2020-05-24">
+    <div class='page-expiry--not-expired'>
+      This page was last reviewed on 24 February 2020.
+
+        It needs to be reviewed again on 24 May 2020
+.
+    </div>
+
+    <div class='page-expiry--expired'>
+      This page was set to be reviewed before 24 May 2020.
+      This might mean the content is out of date.
+    </div>
+  </div>
+
+          </main>
+
+          <aside>
+              <ul class="contribution-banner">
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/blob/master/source/documentation/other-topics/access-cross-aws-resources.html.md.erb">View source</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide/issues/new?labels=bug&amp;title=Re:%20'Use%20IAM%20role%20to%20access%20resources%20in%20a%20different%20AWS%20account'&amp;body=Problem%20with%20'Use%20IAM%20role%20to%20access%20resources%20in%20a%20different%20AWS%20account'%20(user-guide2.cloud-platform.service.justice.gov.uk/documentation/other-topics/access-cross-aws-resources.html)">Report problem</a></li>
+                <li><a href="https://github.com/ministryofjustice/cloud-platform-user-guide">GitHub Repo</a></li>
+              </ul>
+          </aside>
+
+          <footer class="govuk-footer app-footer" role="contentinfo">
+  <div class="govuk-footer__meta">
+    <div class="govuk-footer__meta-item govuk-footer__meta-item--grow">
+
+
+      <svg
+        aria-hidden="true"
+        focusable="false"
+        class="govuk-footer__licence-logo"
+        xmlns="http://www.w3.org/2000/svg"
+        viewbox="0 0 483.2 195.7"
+        height="17"
+        width="41"
+      >
+        <path
+          fill="currentColor"
+          d="M421.5 142.8V.1l-50.7 32.3v161.1h112.4v-50.7zm-122.3-9.6A47.12 47.12 0 0 1 221 97.8c0-26 21.1-47.1 47.1-47.1 16.7 0 31.4 8.7 39.7 21.8l42.7-27.2A97.63 97.63 0 0 0 268.1 0c-36.5 0-68.3 20.1-85.1 49.7A98 98 0 0 0 97.8 0C43.9 0 0 43.9 0 97.8s43.9 97.8 97.8 97.8c36.5 0 68.3-20.1 85.1-49.7a97.76 97.76 0 0 0 149.6 25.4l19.4 22.2h3v-87.8h-80l24.3 27.5zM97.8 145c-26 0-47.1-21.1-47.1-47.1s21.1-47.1 47.1-47.1 47.2 21 47.2 47S123.8 145 97.8 145"
+        />
+      </svg>
+      <span class="govuk-footer__licence-description">
+        All content is available under the
+        <a
+          class="govuk-footer__link"
+          href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+          rel="license"
+        >Open Government Licence v3.0</a>, except where otherwise stated
+      </span>
+    </div>
+    <div class="govuk-footer__meta-item">
+      <a
+        class="govuk-footer__link govuk-footer__copyright-logo"
+        href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/"
+      >© Crown copyright</a>
+    </div>
+  </div>
+</footer>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <script src="/javascripts/application.js"></script>
+  </body>
+</html>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138188246-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-138188246-1');
+</script>
+
+<script>
+  // Add the current window.location to the body of the
+  // feedback email message.
+  function sendFeedback(mailto, event) {
+    event.preventDefault();
+
+    var body = "Feedback/Problem on page: " + window.location + "\n";
+    var href = mailto + '&body=' + encodeURIComponent(body);
+
+    window.location = href;
+  }
+
+  $(document).ready(function() {
+    var feedbackLink = $('a[href^="mailto:"]:contains("Feedback")')[0];
+    var mailto = feedbackLink.href;
+    $(feedbackLink).on('click', function(event) { sendFeedback(mailto, event); });
+  });
+</script>
