@@ -1,6 +1,5 @@
 # Host to use for canonical URL generation (without trailing slash)
-# NB: user-guide2 is a temporary name, while I iron out any bugs
-host: https://user-guide2.cloud-platform.service.justice.gov.uk
+host: https://user-guide.cloud-platform.service.justice.gov.uk
 
 # Header-related options
 show_govuk_logo: false
