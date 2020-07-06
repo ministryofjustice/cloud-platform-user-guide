@@ -1,2 +1,4 @@
-.bundle
-.git
+.git/
+.bundle/
+source/
+docs/
