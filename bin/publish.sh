@@ -8,6 +8,9 @@
 
 set -euo pipefail
 
+# Check for internal and external broken links
+bundle exec htmlproofer ./docs --http-status-ignore 429 --allow-hash-href --url-swap "https?\:\/\/user-guide\.cloud-platform\.service\.justice\.gov\.uk:" ./docs
+
 # PUBLISHING_GIT_TOKEN is a secret in the source repository. It should contain a github personal access token
 # with `public_repo` scope, and MoJ SSO enabled.
 REPOSITORY_PATH="https://${PUBLISHING_GIT_TOKEN}@github.com/$GITHUB_PAGES_REPO_OWNER/$GITHUB_PAGES_REPO_NAME.git"
