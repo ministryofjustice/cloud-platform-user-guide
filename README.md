@@ -6,28 +6,20 @@ It explains how to deploy and run applications on the cloud platform.
 It's built using the [GDS Tech Docs Template][tech-docs], and hosted
 using [GitHub Pages][gh-pages].
 
-[tech-docs]: https://tdt-documentation.london.cloudapps.digital/
-[gh-pages]: https://pages.github.com/
-
 ## Pre-requisites
 
-You will need [Docker][] on your development machine.
-
-[Docker]: https://www.docker.com/
+* ruby 2.7.1
+* Install required gems using `bundle install`
 
 ## Previewing
 
 Preview changes locally by running this command:
 
 ```bash
-make server
+bundle exec middleman server
 ```
 
-This will build the docker image, if required, so the first time you
-run it, it will take some time. Subsequent invocations should be much
-faster.
-
-This will run a preview web server on http://127.0.0.1:4567
+This will run a preview web server on http://localhost:4567
 
 This is only accessible on your computer, and won't be accessible
 to anyone else. It's also set up to automatically update when we
@@ -45,10 +37,6 @@ GDS Tech Docs (and therefore this site) uses [kramdown][] for its
 Markdown processing.
 
 [kramdown]: https://kramdown.gettalong.org/syntax.html
-
-**Note: Do not edit the files in the `docs` directory.** This is the
-'compiled' version of the site, and any changes made in this
-directory will be overwritten during the build step.
 
 ## Composing & Ordering Pages
 
@@ -68,31 +56,25 @@ for a basic multipage site.
 
 ## Publishing changes
 
-There is a [CircleCI][] build pipeline which will publish your
-changes automatically, when your branch is merged into `master`
+There is a [Github Action][] which will publish your
+changes automatically, when your branch is merged into `main`
 
 So, you should not need to do anything else in order to update
 the user guide website.
 
-In the event that there is a problem with [CircleCI][], you can
-run the build stage manually:
-
-```bash
-make build
-```
-
-Then add, commit and push your changes (including the `docs`
-directory).
+The github action is defined in `.github/workflows/publish.yml`
 
 ## Updating the docker image
 
 If you need to make any changes to the docker image (i.e. if you make any
-changes to the Dockerfile or Gemfile), please run `make docker-push` to update
-the image on [Docker Hub][] (You will need to [login to
-dockerhub][docker-login] first).
+changes to the Dockerfile or Gemfile), please use the github web interface to
+create a new [release]. A github action will build the docker image and push
+it to docker hub, tagged with the release number.
 
 [branch protection]: https://help.github.com/articles/about-protected-branches/
 [tech-docs-multipage]: https://tdt-documentation.london.cloudapps.digital/multipage.html#repo-folder-structure
-[CircleCI]: https://circleci.com
-[Docker Hub]: https://hub.docker.com/
-[docker-login]: https://docs.docker.com/engine/reference/commandline/login/
+[release]: https://github.com/ministryofjustice/cloud-platform-user-guide/releases
+[Github Action]: https://github.com/features/actions
+[tech-docs]: https://tdt-documentation.london.cloudapps.digital/
+[gh-pages]: https://pages.github.com/
+
