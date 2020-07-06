@@ -59,6 +59,10 @@ for a basic multipage site.
 There is a [Github Action][] which will publish your
 changes automatically, when your branch is merged into `main`
 
+The markdown files in the `source` directory are compiled to HTML, and the
+resulting files are pushed to a [second repository] from where they are
+published via Github Pages.
+
 So, you should not need to do anything else in order to update
 the user guide website.
 
@@ -77,4 +81,4 @@ it to docker hub, tagged with the release number.
 [Github Action]: https://github.com/features/actions
 [tech-docs]: https://tdt-documentation.london.cloudapps.digital/
 [gh-pages]: https://pages.github.com/
-
+[second repository]: https://github.com/ministryofjustice/cloud-platform-user-guide-publish
