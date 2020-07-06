@@ -9,7 +9,7 @@ jobs:
   run:
     runs-on: ubuntu-latest
     container:
-      image: ministryofjustice/cloud-platform-tech-docs-publisher
+      image: ministryofjustice/cloud-platform-tech-docs-publisher:1.0
     steps:
     - uses: actions/checkout@v2
     - name: Build
