@@ -75,6 +75,8 @@ changes to the Dockerfile or Gemfile), please use the github web interface to
 create a new [release]. A github action will build the docker image and push
 it to docker hub, tagged with the release number.
 
+After changing the tag, you need to update the reference to the image in `.github/workflows/publish.yml`
+
 [branch protection]: https://help.github.com/articles/about-protected-branches/
 [tech-docs-multipage]: https://tdt-documentation.london.cloudapps.digital/multipage.html#repo-folder-structure
 [release]: https://github.com/ministryofjustice/cloud-platform-user-guide/releases
