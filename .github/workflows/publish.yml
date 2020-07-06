@@ -18,6 +18,7 @@ jobs:
       run: bin/publish.sh
       env:
         PUBLISHING_GIT_TOKEN: ${{ secrets.PUBLISHING_GIT_TOKEN }}
+        GITHUB_PAGES_REPO_OWNER: ministryofjustice
         GITHUB_PAGES_REPO_AUTHOR: cloud-platform-moj
         GITHUB_PAGES_REPO_AUTHOR_EMAIL: platforms@digital.justice.gov.uk
         GITHUB_PAGES_REPO_NAME: cloud-platform-user-guide-publish
