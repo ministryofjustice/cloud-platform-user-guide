@@ -6,7 +6,7 @@ on:
       - "tech-docs-2"
 
 jobs:
-  build:
+  run:
     runs-on: ubuntu-latest
     container:
       image: digitalronin/ug
