@@ -9,7 +9,7 @@ jobs:
   run:
     runs-on: ubuntu-latest
     container:
-      image: digitalronin/ug
+      image: ministryofjustice/cloud-platform-tech-docs-publisher
     steps:
     - uses: actions/checkout@v2
     - name: Build
