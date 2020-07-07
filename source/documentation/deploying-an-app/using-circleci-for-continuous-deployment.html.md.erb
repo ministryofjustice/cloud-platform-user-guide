@@ -96,7 +96,7 @@ Raise a PR for your service account creation. Once approved you should then see 
 
 
 ```yaml
-  $ kubectl get serviceaccounts --namespace $ns
+  $ kubectl get serviceaccounts --namespace <YOUR-NAMESPACE>
   NAME       SECRETS   AGE
   circleci   1         3h
 
@@ -107,11 +107,11 @@ Raise a PR for your service account creation. Once approved you should then see 
   secrets:
   - name: circleci-token-prlkp
 
-  $ kubectl get secrets --namespace $ns
+  $ kubectl get secrets --namespace <YOUR-NAMESPACE>
   NAME                   TYPE                                  DATA      AGE
   circleci-token-prlkp   kubernetes.io/service-account-token   3         3h
 
-  $ kubectl get secrets/circleci-token-prlkp --namespace $ns -o yaml
+  $ kubectl get secrets/circleci-token-prlkp --namespace <YOUR-NAMESPACE> -o yaml
   ...
   namespace: cm..cA==
   token: ZX...EE=
@@ -125,17 +125,17 @@ Access to the cluster is scoped for the namespace the service account was create
 Once the CircleCI service account is created above, you can grab the ca.crt as follows:
 
 ```yaml
-k get secret <NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET> -o yaml -n <NAMESPACE | grep ca.crt
+kubectl get secret <NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET> -o yaml -n <YOUR-NAMESPACE> | grep ca.crt
 ```
 
 Likewise grab the CircleCI service accont token as follows:
 
 ```yaml
-k get secret <NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET> -o yaml -n <NAMESPACE | grep token
+kubectl get secret <NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET> -o yaml -n <YOUR-NAMESPACE> | grep token
 
 The token will need to be decoded as follows:
 
-echo <ENCODED_TOKEN> | base 64 --decode
+echo <ENCODED_TOKEN> | base64 --decode
 ```
 
 Both the ca.crt and token will be added as environment variables by creating a context in the CircleCI console, that holds these values as shown below.
