@@ -128,13 +128,15 @@ Once the CircleCI service account is created above, you can grab the ca.crt as f
 kubectl get secret <NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET> -o yaml -n <YOUR-NAMESPACE> | grep ca.crt
 ```
 
-Likewise grab the CircleCI service accont token as follows:
+Likewise grab the CircleCI service account token as follows:
 
 ```yaml
 kubectl get secret <NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET> -o yaml -n <YOUR-NAMESPACE> | grep token
+```
 
 The token will need to be decoded as follows:
 
+```yaml
 echo <ENCODED_TOKEN> | base64 --decode
 ```
 
