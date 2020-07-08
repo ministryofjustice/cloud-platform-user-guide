@@ -1,11 +1,10 @@
 ---
 title: Adding AWS resources to your environment
-last_reviewed_on: 2020-04-06
+last_reviewed_on: 2020-07-07
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
-
 
 Through the [cloud-platform-environments][env-repo] repository, you can provision AWS resources for your environments. This is done using terraform and more specifically, terraform modules we provide for use on the Cloud Platform.
 
@@ -19,7 +18,7 @@ The updated list of terraform modules provided by the MoJ are available here: [T
 
 In each terraform module repository, you will find a directory named `example` which includes sample configuration for use in Cloud Platform.
 
-In your namespace's path in the [cloud-platform-environments][env-repo] repository, create a directory called `resources` (if you have not created one already) and refer to the module's example to define your resources.
+In your namespace's path in the [cloud-platform-environments][env-repo] repository, cd to the `resources` directory and refer to the module's example to define your resources.
 
 Each example will have some global configuration defined, however, this should only be declared once, regardless of the number of modules used:
 
@@ -33,7 +32,7 @@ provider "aws" {
 }
 ```
 
-Additionally, some example might define variables; again, these should only be declared once per namespace:
+Additionally, some examples might define variables; again, these should only be declared once per namespace:
 
 ```
 variable "cluster_name" {}
@@ -44,9 +43,12 @@ variable "cluster_state_bucket" {}
 The main README file of each module repository will list all the available configuration options that can be passed to the module.
 
 ### Outputs
-Each module will have its own outputs. These expose useful information, such as endpoints, credentials etc. The module examples all use a common approach: they employ the `kubernetes_secret` terraform resource to push the outputs straight into your environment in the form of a `Secret` which you could then extract information from or directly reference in `Pods`.
+
+Each module will have its own outputs. These expose useful information, such as endpoints, credentials etc. The module examples all use a common approach: they employ the `kubernetes_secret` terraform resource to push the outputs straight into your namespace in the form of a `Secret` which you could then extract information from or directly reference in `Pods`.
 
 This is currently the only supported way of accessing terraform outputs.
+
+See [this article](/documentation/deploying-an-app/add-secrets-to-deployment.html#using-the-secret-in-your-applications) for instructions on how to use these secrets in your applications.
 
 ### Versioning
 
@@ -71,8 +73,6 @@ All resources are monitored by AWS CloudWatch by default. We use [CloudWatch Exp
 To view the current set of metrics available: log into Prometheus  > Click on 'insert metric at cursor' > type 'aws_'
 
 You can view all metrics AWS make available [here](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/aws-services-cloudwatch-metrics.html)
-
-
 
 [env-repo]: https://github.com/ministryofjustice/cloud-platform-environments/
 [tf-modules-list]: https://github.com/ministryofjustice/cloud-platform#terraform-modules
