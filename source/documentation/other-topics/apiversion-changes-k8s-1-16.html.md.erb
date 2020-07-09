@@ -241,6 +241,27 @@ The output should say:
 APIVersions were found, but none were deprecated. Try --show-all.
 ```
 
+### Update ServiceAccount
+
+After updating your manifests to use the latest API versions, if you have any ServiceAccount's created for circleci, update them as shown [here][circleci-sa].
+
+```
+- apiGroups:
+    - "extensions"
+    - "apps"
+    - "networking.k8s.io"
+  resources:
+    - "deployments"
+    - "ingresses"
+  verbs:
+    - "get"
+    - "update"
+    - "delete"
+    - "create"
+    - "patch"
+
+```
+
 **NOTE: If you don't update your manifests to use the latest API versions you will get failures when deploying your applications after we upgrade the cluster to kubernetes 1.16**
 
 ### Getting help
@@ -248,3 +269,4 @@ APIVersions were found, but none were deprecated. Try --show-all.
 If you have any questions, please contact us on the [#ask-cloud-platform] Slack channel.
 
 [#ask-cloud-platform]: https://mojdt.slack.com/messages/C57UPMZLY
+[circleci-sa][https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/using-circleci-for-continuous-deployment.html#creating-a-service-account-for-circleci]

@@ -63,7 +63,10 @@ rules:
       - "create"
       - "delete"
       - "list"
-  - apiGroups: [extensions, apps, networking.k8s.io]
+  - apiGroups:
+      - "extensions"
+      - "apps"
+      - "networking.k8s.io"
     resources:
       - "deployments"
       - "ingresses"
