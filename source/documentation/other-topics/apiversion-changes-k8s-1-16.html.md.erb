@@ -246,7 +246,10 @@ APIVersions were found, but none were deprecated. Try --show-all.
 After updating your manifests to use the latest API versions, if you have any ServiceAccount's created for circleci, update them as shown [here][circleci-sa].
 
 ```
-- apiGroups: [extensions, apps, networking.k8s.io]
+- apiGroups:
+    - "extensions"
+    - "apps"
+    - "networking.k8s.io"
   resources:
     - "deployments"
     - "ingresses"
