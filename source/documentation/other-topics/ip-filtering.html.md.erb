@@ -56,6 +56,14 @@ Testing with the annotation set:
 curl -v -H "Host: my-app.apps.live-1.cloud-platform.service.justice.gov.uk" <HOST-IP>
 ```
 Will return a "403 forbidden" status
+             
+#### IP6 / IPv6
+             
+Currently, IPv6 is not supported for inbound IP filtering.
+
+It should be possible to add IPv6 support to the platform, but nobody has asked for this, so we haven't done it.
+
+If this is something you need, please raise a [support ticket] explaining your need.
 
 ### Outbound IP filtering
 
@@ -83,5 +91,5 @@ If we **plan** to change them (e.g. if we migrate to another kubernetes cluster)
 However, in the event of a catastrophic failure where we have to rebuild the platform from scratch (easier than it sounds, since everything is defined in source code), we will not be able to give any warning.
 
 
-
+[support ticket]: http://goo.gl/msfGiS
 [networks-are-bearers]: https://ministryofjustice.github.io/security-guidance/mythbusting/internet-v-psn/#networks-are-bearers
