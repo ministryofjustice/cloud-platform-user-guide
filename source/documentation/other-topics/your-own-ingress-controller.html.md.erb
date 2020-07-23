@@ -1,0 +1,85 @@
+---
+title: Having your own nginx ingress controller
+last_reviewed_on: 2020-07-23
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+### Background
+
+Cloud Platform ingress controller(s) are having performance issues due to the amount of ingresses
+handled. We are encouraging teams to host their own controllers so we don't have a single
+service managing all ingresses. 
+
+Having your own ingress controller allows you to customise multiple load balancer components (error pages, HTTP errors, 
+backends, etc). You are not able to do that by using the cloud-platform's controller.
+
+### Pre-Requisites
+
+This guide assumes you have an environment already created in `live-1` cluster and defined in the [cloud-platform-environments repository](https://github.com/ministryofjustice/cloud-platform-environments)
+
+### Considerations
+
+- Ingress controller's pods won't be visible because they're running inside a cloud-platform's namespace where teams don't have access to.
+- Ingress controller's deployment can only happen from [cloud-platform-environments repository](https://github.com/ministryofjustice/cloud-platform-environments).
+
+### Deploying
+
+```hcl
+module "ingress_controller" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-teams-ingress-controller?ref=0.0.2"
+
+  namespace = "<your-namespace>"
+}
+```
+
+### Using the custom controller
+
+By default, ingresses will always use cloud-platform's ingress controller
+unless indicated otherwise. In order to use the controller deployed 
+the following annotation must be added to your 
+[ingress object](https://kubernetes.io/docs/concepts/services-networking/ingress/):
+
+```yaml
+  annotations:
+    kubernetes.io/ingress.class: <your-namespace-name>
+```
+
+`kubernetes.io/ingress.class` specifies the controller name (which has the 
+same namespace name) which is going to claim that ingress. If nothing is specified
+it will use the default one ("nginx") which is the name hold by cloud-platform's controller.
+
+#### Defining custom `values.yaml` for the nginx ingress controller chart
+
+It might be the case that default values we provide won't fit your team's needs,
+adding [custom `values.yaml`](https://github.com/helm/charts/blob/master/stable/nginx-ingress/values.yaml)
+is possible using `custom_values` and `custom_values_content` variables:
+
+```hcl
+module "ingress_controller" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-teams-ingress-controller?ref=0.0.2"
+
+  namespace             = "<your-namespace>"
+  custom_values         = true
+  custom_values_content = <<EOF
+controller:
+  replicaCount: 1
+
+  ingressClass: mogaal-test:q
+  electionID: ingress-controller-leader-mogaal-test
+  scope:
+    enabled: true
+    namespace: test-mogaal
+EOF
+}
+```
+
+### Best practices
+
+- [Do not share Nginx Ingress for multiple environments](https://itnext.io/kubernetes-ingress-controllers-how-to-choose-the-right-one-part-1-41d3554978d2), deploy a controller per namespace
+- Try to stick with the default configuration provided so there is no need to maintain it and we'll keep it up to date for you.
+
+### More information
+
+[nginx ingress controller official helm chart]: https://github.com/helm/charts/tree/master/stable/nginx-ingress
