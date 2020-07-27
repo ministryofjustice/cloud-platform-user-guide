@@ -50,31 +50,6 @@ the following annotation must be added to your
 same namespace name) which is going to claim that ingress. If nothing is specified
 it will use the default one ("nginx") which is the name hold by cloud-platform's controller.
 
-#### Defining custom `values.yaml` for the nginx ingress controller chart
-
-It might be the case that default values we provide won't fit your team's needs,
-adding [custom `values.yaml`](https://github.com/helm/charts/blob/master/stable/nginx-ingress/values.yaml)
-is possible using `custom_values` and `custom_values_content` variables:
-
-```hcl
-module "ingress_controller" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-teams-ingress-controller?ref=0.0.2"
-
-  namespace             = "<your-namespace>"
-  custom_values         = true
-  custom_values_content = <<EOF
-controller:
-  replicaCount: 1
-
-  ingressClass: mogaal-test:q
-  electionID: ingress-controller-leader-mogaal-test
-  scope:
-    enabled: true
-    namespace: test-mogaal
-EOF
-}
-```
-
 ### Best practices
 
 - [Do not share Nginx Ingress for multiple environments](https://itnext.io/kubernetes-ingress-controllers-how-to-choose-the-right-one-part-1-41d3554978d2), deploy a controller per namespace
