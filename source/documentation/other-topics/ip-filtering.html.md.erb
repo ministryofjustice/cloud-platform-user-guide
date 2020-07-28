@@ -1,6 +1,6 @@
 ---
 title: Cloud Platform IP Addresses
-last_reviewed_on: 2020-04-24
+last_reviewed_on: 2020-07-28
 review_in: 3 months
 ---
 
@@ -18,7 +18,7 @@ Allowed client IP source ranges can be specified using the nginx.ingress.kuberne
 
 [kubernetes-annotations-whitelist-source-range]: https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#whitelist-source-range
 
-An example configuration using "nginx.ingress.kubernetes.io/whitelist-source-range: 1.1.1.1/24,10.0.0.0/24"
+An example configuration using `nginx.ingress.kubernetes.io/whitelist-source-range: 1.1.1.1/24,10.0.0.0/24`
 
    ```
 apiVersion: networking.k8s.io/v1beta1
@@ -67,7 +67,7 @@ If this is something you need, please raise a [support ticket] explaining your n
 
 ### Outbound IP filtering
 
-> Please note that these number are likely to change, and **should not be relied upon for authentication/authorisation**.
+> Please note that these numbers may change, and **should not be relied upon for authentication/authorisation**.
 
 #### NAT Gateways
 
@@ -86,7 +86,7 @@ Currently, these are the IPs from which traffic will appear to come:
              
 There is **no guarantee** that the origin IPs of traffic from the cloud platform will remain the same.
 
-If we **plan** to change them (e.g. if we migrate to another kubernetes cluster), we will provide as much notice as possible, via posts in #cloud-platform-update.
+If we **plan** to change them (e.g. if we migrate to another kubernetes cluster), we will provide as much notice as possible, via posts in the `#cloud-platform-update` slack channel.
 
 However, in the event of a catastrophic failure where we have to rebuild the platform from scratch (easier than it sounds, since everything is defined in source code), we will not be able to give any warning.
 
