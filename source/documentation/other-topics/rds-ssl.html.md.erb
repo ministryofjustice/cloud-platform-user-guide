@@ -1,14 +1,13 @@
 ---
 title: SSL connections with RDS
-last_reviewed_on: 2020-04-27
+last_reviewed_on: 2020-07-29
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
 
-
-RDS instances are configured to allow SSL connections by default and also the latest versions of the client (`psql`) and
-libraries (eg.: the `pg` ruby gem which builds on `libpq`) will establish an SSL connection by default.
+RDS instances are configured to allow SSL connections by default, and the latest versions of the postgres client (`psql`), and
+programming language libraries (e.g. the `pg` ruby gem which builds on `libpq`), will establish an SSL connection by default.
 
 ```
 $ psql "$url"
@@ -26,10 +25,11 @@ Where `$url` is of the form `postgres://user:pass@host:port/db`.
 Additionally, AWS [offer strong assurances][aws-sec-wp] that a malicious actor cannot spoof their traffic or sniff
 another tenant's traffic, even if they operate inside the same VPC.
 
-However, best practices dictate that an SSL connection should be explicitly forced. PostgreSQL implements various
-[modes of operation][libpq-ssl], each one offering a different level of security. Without any additional setup, we can
-establish an encrypted connection with `sslmode=require`, which forces an SSL connection but does not verify the server
-certificate.
+However, best practice is to be explicit about insisting on an SSL connection when you communicate with your database. 
+
+PostgreSQL implements various [modes of operation][libpq-ssl], each one offering a different level of security. Without 
+any additional setup, we can establish an encrypted connection by specifying `sslmode=require`, which forces an SSL connection 
+but does not verify the server certificate.
 
 ### Full verification of certificates
 
