@@ -56,9 +56,9 @@ Testing with the annotation set:
 curl -v -H "Host: my-app.apps.live-1.cloud-platform.service.justice.gov.uk" <HOST-IP>
 ```
 Will return a "403 forbidden" status
-             
+
 #### IP6 / IPv6
-             
+
 Currently, IPv6 is not supported for inbound IP filtering.
 
 It should be possible to add IPv6 support to the platform, but nobody has asked for this, so we haven't done it.
@@ -81,9 +81,9 @@ Currently, these are the IPs from which traffic will appear to come:
 3.8.51.207
 35.177.252.54
 ```
-             
+
 ##### Changes
-             
+
 There is **no guarantee** that the origin IPs of traffic from the cloud platform will remain the same.
 
 If we **plan** to change them (e.g. if we migrate to another kubernetes cluster), we will provide as much notice as possible, via posts in the `#cloud-platform-update` slack channel.
@@ -92,4 +92,4 @@ However, in the event of a catastrophic failure where we have to rebuild the pla
 
 
 [support ticket]: http://goo.gl/msfGiS
-[networks-are-bearers]: https://ministryofjustice.github.io/security-guidance/mythbusting/internet-v-psn/#networks-are-bearers
+[networks-are-bearers]: https://ministryofjustice.github.io/security-guidance/security_decisions/mythbusting/internet-v-psn
