@@ -1,6 +1,6 @@
 ---
 title: Kubernetes Cronjobs
-last_reviewed_on: 2020-07-28
+last_reviewed_on: 2020-08-31
 review_in: 3 months
 ---
 
@@ -26,6 +26,8 @@ metadata:
   name: hello
 spec:
   schedule: "1 2-14 * * 0-1,5-6"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
       template:
@@ -54,9 +56,15 @@ Verify the Cronjob is created:
       kubectl get cronjob --namespace [your namespace]
       ```
 
+### Clean up finished jobs
+
+Finished Jobs created by cronjobs are usually no longer needed in the system. Set the job [history limit][job-history] by using `successfulJobsHistoryLimit` and `failedJobsHistoryLimit`, to specify how much history you want to retain for completed and failed Jobs. 
+By default, they are set to 3 and 1 respectively. 
+
 > Note: Kubernetes uses UTC exclusively. Make sure you take that into account when you’re creating your schedule.
 
 [cronjob-yaml]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/tree/cronjob-example-v1.0/k8s_additional_resources
 [cron-jobs]: https://kubernetes.io/docs/tasks/job/automated-tasks-with-cron-jobs/#creating-a-cron-job
 [kubernetes-cronjobs]: https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
 [kubernetes-jobs]: https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/
+[job-history]: https://kubernetes.io/docs/tasks/job/automated-tasks-with-cron-jobs/#jobs-history-limits
