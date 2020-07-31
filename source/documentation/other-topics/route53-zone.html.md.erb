@@ -1,6 +1,6 @@
 ---
 title: Creating a Route 53 Hosted Zone
-last_reviewed_on: 2020-04-28
+last_reviewed_on: 2020-07-31
 review_in: 3 months
 ---
 
@@ -91,9 +91,11 @@ Make sure to replace the placeholders and example values above with relevant one
 Once approved, you can merge and the changes will be applied.
 Shortly after, to confirm the zone has been created, you should be able to access the `Zone_ID` as Secret on kubernetes in your namespace.
 
+## Support ticket
+
 Please raise a [support ticket] with the Cloud Platform.
 
-Provide them with the domain name, the Cloud Platform team will finalize the process **by creating a a matching NS record in the DSD account.**
+Provide them with the domain name, the Cloud Platform team will finalize the process **by creating a matching NS record in the DSD account.**
 
 [env-repo]: https://github.com/ministryofjustice/cloud-platform-environments
 [aws-hosted-zone]: https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/AboutHZWorkingWith.html
