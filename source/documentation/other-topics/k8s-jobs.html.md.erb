@@ -1,0 +1,63 @@
+---
+title: Kubernetes jobs
+last_reviewed_on: 2020-08-31
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+
+### Overview
+
+Kubernetes has the concept of [jobs][kubernetes-jobs]. Kubernetes Jobs are created to run pods for a short period of time which are running for completion as opposed to different objects in Kubernetes like Replicasets, Replication Controllers, Demonesets, which is run continuously.
+
+### Usage
+
+You can use a Kubernetes Job to run batch processes, ETL jobs, sending emails, scanning database keys, etc. Follow the [guide][jobs-spec] on writing a job spec.
+
+This example Job will start a busybox container that executes a bunch of shell commands.
+
+Example:
+
+```
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: job1
+spec:
+  template:
+    spec:
+      containers:
+        - name: job
+          image: busybox
+          args:
+            - /bin/sh
+            - -c
+            - date; echo sleeping....; sleep 90s; echo exiting...; date
+      restartPolicy: Never
+      ttlSecondsAfterFinished: 100
+```
+
+### Deploying a job to your Namespace
+
+You need a yaml file to define your job. You can either create your own, or use above example.
+
+      ```
+      kubectl apply -f [file-name].yaml --namespace [your namespace]
+      ```
+
+Verify the job is created:
+
+      ```
+      kubectl get job --namespace [your namespace]
+      ```
+
+### Clean up finished jobs
+
+When a Job completes Pods created by the Job are not deleted. Finished Jobs are usually no longer needed in the system. Use the [TTL mechanism][TTL-mechanism] for finished Jobs by using `ttlSecondsAfterFinished`, so that a Job can be cleaned up automatically some time after it finishes.
+
+> Note: Kubernetes uses UTC exclusively. Make sure you take that into account when you’re creating your schedule.
+
+[jobs-spec]: https://kubernetes.io/docs/concepts/workloads/controllers/job/#writing-a-job-spec
+[kubernetes-jobs]: https://kubernetes.io/docs/concepts/workloads/controllers/job/
+[TTL-mechanism]: https://kubernetes.io/docs/concepts/workloads/controllers/job/#ttl-mechanism-for-finished-jobs
