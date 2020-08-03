@@ -1,6 +1,6 @@
 ---
 title: Deploying a multi-container application to the Cloud Platform
-last_reviewed_on: 2020-04-27
+last_reviewed_on: 2020-08-03
 review_in: 3 months
 ---
 
@@ -71,7 +71,8 @@ As per the diagram, we need to configure six objects in kubernetes - 3 deploymen
 
 You can see these YAML config files in the `kubernetes_deploy` directory of the [demo application][multi-demo].
 
-> Note: The yaml files in the github repository refer to docker images from docker hub, e.g. `ministryofjustice/cloud-platform-multi-container-demo-app:worker-1.4` These will work, but in order to deploy the docker images you built in the earlier step, please change this to the full reference to your docker images.
+> Note: The yaml files in the github repository refer to docker images from docker hub, e.g. `ministryofjustice/cloud-platform-multi-container-demo-app:worker-1.6` 
+These will work, but in order to deploy the docker images you built in the earlier step, please change this to the full reference to your docker images.
 
 You also need to change the `host` entry in the `ingress.yaml` file, so that this instance of the application has a unique hostname (i.e. change `multi-container-demo.apps.live-1.cloud-platform.service.justice.gov.uk` to something like `[yourname]-demo.apps.live-1.cloud-platform.service.justice.gov.uk`)
 
@@ -79,6 +80,11 @@ In `rails-app-deployment.yaml` and `worker-deployment.yaml` you can see the conf
 
 * `DATABASE_URL` is retrieved from the kubernetes secret which was created when the RDS instance was set up
 * `CONTENT_API_URL` uses the name and port defined in `content-api-service.yaml`
+
+In the `kubernetes_deploy` directory of the [demo application][multi-demo], you will also see a migration job yaml config file.
+This will run the database migration to setup entries to the RDS database instance.
+
+Setup HTTP basic Authentication using the guidance [http-basic-authentication]: https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/helloworld-app-deploy.html#add-http-basic-authentication
 
 ## Deploying to the cluster
 
