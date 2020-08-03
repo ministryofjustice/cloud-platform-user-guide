@@ -53,6 +53,7 @@ This describes the current capabilities of the CLI tool.
 * [Create an environment](#create-an-environment)
 * [Add an ECR to your namespace](#add-an-ecr-to-your-namespace)
 * [Add an RDS to your namespace](#add-an-rds-to-your-namespace)
+* [Add a service account to your namespace](#add-a-service-account-to-your-namespace)
 * [Check your kubernetes config file](#check-your-kubernetes-config-file)
 
 ### Create an environment
@@ -120,6 +121,24 @@ you will need in order to access your database.
 your namespace folder, and that this defines all the variables which appear in
 the template `rds.tf` file. If this is not the case, you may need to amend the
 generated file.
+
+### Add a service account to your namespace
+
+* Start from the root of a working copy of the [environments repository]
+* Create a new branch
+* `cd` into your [namespace folder]
+* Run `cloud-platform environment serviceaccount create`
+
+    This will create a `05-serviceaccount.yaml` file in your working copy.
+
+* `git add` and `git commit` the new file, and raise a PR
+
+By default your service account name will be `cloud-platform-user`. If you'd like to specify the name of your service account resource, you can use the `-n` or `--name` flag followed by the name of your choice.
+
+After the cloud platform team have approved your PR, please merge it, and your
+service account resource will be created.
+
+You can query your new resource using the command `kubectl get serviceaccount -n <namespace>`.
 
 ### Check your kubernetes config file
 
