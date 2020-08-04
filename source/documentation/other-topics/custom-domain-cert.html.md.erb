@@ -1,51 +1,55 @@
 ---
 title: Using a custom domain
-last_reviewed_on: 2020-04-28
+last_reviewed_on: 2020-08-04
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
 
-
 ### Background
-Every application running on Cloud Platform is able to use a hostname for their
-HTTP endpoints, under a pre-defined domain. For example, on the `live-1`
-cluster, this would be `*.apps.live-1.cloud-platform.service.justice.gov.uk`. As
-long as it is defined on the `Ingress` resource, it works automatically, using a
-wildcard TLS certificate.
 
-However, most applications will typically need to be served on their own,
-application-specific `gov.uk` hostname. These hostnames (or usually, entire domains)
-are managed individually and there is a number of actions in order to set them
-up for usage.
+Every application running on the Cloud Platform is able to use a hostname for its
+HTTP endpoints, using a pre-defined domain:
+
+```
+*.apps.live-1.cloud-platform.service.justice.gov.uk
+```
+
+This works automatically, using a wildcard [TLS] certificate.
+
+Most applications will need their own, application-specific `gov.uk` hostname.
+These hostnames (or usually, entire domains) are managed individually and a
+number of actions are required to set them up.
 
 ### Setup
 
-Domains are managed inside DNS zones. You can read more about the structure of
-the Domain Name System in this [page][wiki-domain-structure]. It is recommended
-that applications use their own DNS zones, in order to aid with management and
-provide better isolation.
+Domains are managed inside [DNS zones]. You can read more about the structure
+of the Domain Name System in this [page][wiki-domain-structure]. It is
+recommended that applications use their own DNS zones, to provide better
+isolation, and make management simpler.
 
 #### Defining the DNS zone
 
-To create the zone, you simply need to define it as a resource in your
-environment. Make sure to read [the guidance on naming domains][naming-domains]
-first and follow the instructions to [create the Route53 zone][creating-zone].
+To create the zone, you define it as a resource in your environment. Make sure
+to read [the guidance on naming domains][naming-domains] first, and follow the
+instructions to [create the Route53 zone][creating-zone].
+
 To simplify management, we recommend that you only define a single zone, as part
 of the resources for your production environment, if possible. You can still use
 subdomains of that zone for different environments.
 
 Once the zone is created, you will need to setup the necessary name server (NS)
-records in the parent DNS zone, before you're able to use it. For more
+records in the parent DNS zone, before you can use it. For more
 information on how this delegation method works, you can read about authoritative
 name servers in this [page][wiki-nameservers].
 
 If your zone is for a subdomain of `service.justice.gov.uk` (eg.: `https://myapp.service.justice.gov.uk`),
 the Cloud Platform team can help you set it up; please [create a support ticket][support-ticket].
 
-For any other domains (including any subdomain of `gov.uk`, eg.: `https://myservice.gov.uk`),
-you will need to contact the parent zone's administrators to set this up. If in
-doubt, don't hesitate to get in touch with us in `#ask-cloud-platform`.
+For any other domains (including any subdomain of `gov.uk`, eg.:
+`https://myservice.gov.uk`), you will need to contact the parent zone's
+administrators (usually GDS) to set this up. If in doubt, don't hesitate to get
+in touch with us in `#ask-cloud-platform`.
 
 Please note, once you setup the NS records, you'll be delegating control of the
 zone to the Cloud Platform. Hostnames used by your services (using `Ingresses`)
@@ -58,8 +62,12 @@ in the [environments repository][env-repo] using the terraform
 #### Obtaining a certificate
 
 1. Create the [Certificate][cert-guidance] resource, filling in any placeholders with your
-details. The `secretName` attribute defines the name of a `Secret` in your
-namespace where the certificate and key material will be stored
+details. The `secretName` attribute defines the name of a [kubernetes secret] in your
+namespace where the certificate and key material will be stored.
+
+> Please add the certificate by defining it in your namespace folder in the
+> environments repository. Doing so means it will automatically be restored in
+> the event of any problems with our certificate/DNS systems.
 
    ```
    ---
@@ -103,8 +111,8 @@ namespace where the certificate and key material will be stored
      Normal  CertIssued     1m    cert-manager  Certificate issued successfully
    ```
 
-   It generally takes but a few minutes for the certificate to be prepared and
-   the events displayed should indicate if there is a problem or it simply needs
+   It generally takes just a few minutes for the certificate to be prepared and
+   the events displayed should indicate if there is a problem, or it simply needs
    more time. If you cannot obtain a certificate, please get in touch with us in
    `#ask-cloud-platform`.
 
@@ -142,7 +150,7 @@ namespace where the certificate and key material will be stored
 
 Once you've made the changes to your `Ingress`, the cluster (and more
 specifically, `external-dns`) will update the necessary records defined in it.
-This usually takes less than a minute before you are able to access your
+This usually takes less than a minute until you are able to access your
 endpoint. However, depending on the DNS name servers your workstation uses, you
 might need to wait longer or try to "flush" your local DNS cache in order to
 speed up the process. You should search online for the proper method to do so,
@@ -156,3 +164,6 @@ based on your operating system and/or browser.
 [wiki-nameservers]: https://en.wikipedia.org/wiki/Name_server#Authoritative_name_server
 [tf-route53-record]: https://www.terraform.io/docs/providers/aws/r/route53_record.html
 [cert-guidance]: https://cert-manager.io/docs/concepts/certificate/
+[TLS]: https://en.wikipedia.org/wiki/Transport_Layer_Security
+[DNS zones]: https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zones-working-with.html
+[kubernetes secret]: https://kubernetes.io/docs/concepts/configuration/secret
