@@ -1,6 +1,6 @@
 ---
 title: Creating a Cloud Platform Environment
-last_reviewed_on: 2020-06-16
+last_reviewed_on: 2020-08-06
 review_in: 3 months
 ---
 
@@ -29,7 +29,7 @@ you to [deploy an application][deploy-hello-world] into.
 
 ### Pre-requisites
 
-* Docker
+* Install the [Cloud Platform CLI] tool
 * Git
 * You must be a member of the `ministryofjustice` organisation on GitHub
 
@@ -45,14 +45,14 @@ $ git clone git@github.com:ministryofjustice/cloud-platform-environments.git
 $ cd cloud-platform-environments
 ```
 
-Then, run the script to create your namespace:
+Then, run this command to create your namespace:
 
 ```
-$ make namespace
+$ cloud-platform environment create
 ```
 
 You will be prompted to provide information about the new namespace, and the
-script will create the necessary YAML and Terraform files in the correct
+CLI tool will create the necessary YAML and Terraform files in the correct
 location in the repository.
 
 Please create a new branch, add the new files and raise a pull request. The
@@ -118,15 +118,18 @@ place on it so that we have security and resource allocation properties. We desc
 of these files [in more detail below](#00-namespace-yaml) in case you want to
 make future changes.
 
-In addition to the Kubernetes configuration files, we create a terraform config
-file:
+In addition to the Kubernetes configuration files, we create three terraform files:
 
-    resources/main.tf
+  * resources/main.tf
+  * resources/versions.tf
+  * resources/variables.tf
 
-This file defines the standard terraform backend and providers which you will
+These files define the standard terraform backend and providers which you will
 need when you add terraform modules to create the AWS resources your service
 will use (e.g. an [ECR][ecr-setup] for your docker images, [RDS
-databases][create-rds], and S3 buckets).
+databases][create-rds], and S3 buckets). The `resources/variables.tf` file
+contains attributes of your namespace which those later terraform files will
+refer to.
 
 ## Namespace YAML files
 
@@ -139,12 +142,17 @@ The `00-namespace.yaml` file defines the namespace so that the Kubernetes
 cluster knows to create the namespace and what to call it.
 
 ```YAML
+
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: myapp-dev ### This is where you will define your <servicename-env>
+  name: myapp-dev
   labels:
-    name: myapp-dev ### Also your <servicename-env>
+    cloud-platform.justice.gov.uk/is-production: "false"
+    cloud-platform.justice.gov.uk/environment-name: "development"
+  annotations:
+    cloud-platform.justice.gov.uk/application: "My Service"
+    ...
 ```
 
 The namespace is your (team's) 'private' part of the cluster. The name of
@@ -217,8 +225,8 @@ metadata:
 spec:
   limits:
   - default:
-      cpu: 50m
-      memory: 500Mi
+      cpu: 1000m
+      memory: 1000Mi
     defaultRequest:
       cpu: 10m
       memory: 100Mi
@@ -270,6 +278,7 @@ kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:
   name: allow-ingress-controllers
+  namespace: myapp-dev
 spec:
   podSelector: {}
   policyTypes:
@@ -294,3 +303,4 @@ spec:
 [access policies]: https://kubernetes.io/docs/admin/authorization/rbac/
 [LimitRange]: https://kubernetes.io/docs/tasks/administer-cluster/manage-resources/memory-default-namespace/
 [ResourceQuota]: https://kubernetes.io/docs/concepts/policy/resource-quotas/
+[Cloud Platform CLI]: cloud-platform-cli.html
