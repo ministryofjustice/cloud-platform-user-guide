@@ -1,6 +1,6 @@
 ---
 title: Creating an ECR repository
-last_reviewed_on: 2020-05-07
+last_reviewed_on: 2020-08-06
 review_in: 3 months
 ---
 
@@ -14,7 +14,9 @@ AWS resources are provisioned through the [cloud-platform-environments](https://
 
 ### Creating the registry
 
-1. In order to create the ECR Docker registry, git clone the environments repo and create a new branch.
+You need to have the [Cloud Platform CLI] tool installed.
+
+1. Clone the environments repo and create a new branch
 
 ```bash
 $ git clone git@github.com:ministryofjustice/cloud-platform-environments.git
@@ -22,45 +24,38 @@ $ cd cloud-platform-environments
 $ git checkout -b add_ecr
 ```
 
-2. You will need to navigate to your service's directory which is located in the namespaces directory. Create a directory named "resources".
+2. Navigate to your namespace directory
 
 ```bash
 $ cd namespaces/live-1.cloud-platform.service.justice.gov.uk/$your_service
-$ mkdir resources ### make directory called resources
-$ cd resources
 ```
 
-3. Create a terraform file within the resources directory.
+3. Use the CLI tool to create your ECR
 
 ```bash
-$ vi ecr.tf
+$ cloud-platform environment ecr create
 ```
 
-4. Adapt the definition from the example described in the [cloud-platform-terraform-ecr-credentials module](https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials/tree/main/examples); make sure you adjust the values of `team_name`, `repo_name` `name` and `namespace` to what is appropriate for your environment.
+This will create a `resources/ecr.tf` file in your namespace folder.
 
+4. git add, commit and push to your branch
 
-5. git add, commit and push to your branch.
+5. Raise a PR to have your change approved
 
-```bash
-$ git add ecr.tf
-$ git commit
-$ git push
-```
-
-6. Once your pull request has been approved and the branches are merged, it will trigger our build pipeline which will apply the Terraform module and create the resources.
+Once your pull request has been approved and merged, it will trigger our build pipeline which will create your ECR.
 
 For more information about the terraform module being used, please read the documentation [here](https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials).
 
 ## Accessing the credentials
 
-The end result will be a [Kubernetes secret] inside your environment, called `example-team-ecr-credentials-output` (or whatever you changed that to); the secret holds IAM access keys to authenticate with the registry and the actual repository URL.
+After your ECR has been created, there will be a [Kubernetes secret] in your namespace, called `ecr-repo-[your-namespace]`
 
-Note: For `example-team-ecr-credentials-output` you should put whatever you used as the value of the `name` property of the `kubernetes_secret` resource in the `ecr.tf` file you created previously.
+The secret stores the IAM access keys to authenticate with the registry, and the actual repository URL.
 
 To retrieve the credentials:
 
 ```
-kubectl -n <namespace_name> get secret example-team-ecr-credentials-output -o yaml
+kubectl -n <namespace_name> get secret ecr-repo-[your-namespace] -o yaml
 ```
 
 The values in kubernetes secrets are always `base64` encoded so you will have to decode them before you can use them outside kubernetes (inside your namespace, the base64 decoding is handled automatically). This can be done at the command line using the following:
@@ -91,3 +86,4 @@ Try [deploying an app][deploy-helm] with [Helm](https://helm.sh/), a Kubernetes 
 [custom-alerts]: /documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
 [ecr-metrics]: https://prometheus.cloud-platform.service.justice.gov.uk/graph?g0.range_input=1h&g0.expr=aws_ecr_repository_image_count&g0.tab=1
 [Kubernetes secret]: https://kubernetes.io/docs/concepts/configuration/secret/
+[Cloud Platform CLI]: cloud-platform-cli.html
