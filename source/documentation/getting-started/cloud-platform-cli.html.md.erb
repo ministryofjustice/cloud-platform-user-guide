@@ -53,6 +53,7 @@ This describes the current capabilities of the CLI tool.
 * [Create an environment](#create-an-environment)
 * [Add an ECR to your namespace](#add-an-ecr-to-your-namespace)
 * [Add an RDS to your namespace](#add-an-rds-to-your-namespace)
+* [Add an S3 Bucket to your namespace](#add-an-s3-bucket-to-your-namespace)
 * [Add a service account to your namespace](#add-a-service-account-to-your-namespace)
 * [Check your kubernetes config file](#check-your-kubernetes-config-file)
 
@@ -120,6 +121,29 @@ you will need in order to access your database.
 > The CLI tool assumes you already have a `resources/variables.tf` file below
 your namespace folder, and that this defines all the variables which appear in
 the template `rds.tf` file. If this is not the case, you may need to amend the
+generated file.
+
+### Add an S3 Bucket to your namespace
+
+* Start from the root of a working copy of the [environments repository]
+* Create a new branch
+* `cd` into your [namespace folder]
+* Run `cloud-platform environment s3 create`
+
+    This will create a `resources/s3.tf` file in your working copy.
+
+* `git add` and `git commit` the new file, and raise a PR
+
+After the cloud platform team have approved your PR, please merge it, and your
+S3 bucket will be created a little while later.
+
+When your S3 bucket has been created, you will see a new kubernetes secret in your
+namespace called `s3`. This secret contains the credentials
+you will need in order to access your s3 bucket.
+
+> The CLI tool assumes you already have a `resources/variables.tf` file below
+your namespace folder, and that this defines all the variables which appear in
+the template `s3.tf` file. If this is not the case, you may need to amend the
 generated file.
 
 ### Add a service account to your namespace
