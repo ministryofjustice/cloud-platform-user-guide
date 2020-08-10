@@ -1,6 +1,6 @@
 ---
 title: Migrating to the Cloud Platform from Template Deploy
-last_reviewed_on: 2020-05-06
+last_reviewed_on: 2020-08-10
 review_in: 3 months
 ---
 
@@ -31,7 +31,7 @@ It's important to plan this step carefully. Some things to think about include:
 
 ## AWS access
 
-All AWS resources in the Cloud Platform are in a separate, `moj-cp` AWS account. Access to this account is tightly restricted, so if you are accustomed to e.g. using the AWS web console to help operate your service, you will need to do things differently in the Cloud Platform.
+All AWS resources in the Cloud Platform are in a separate, `moj-cp` AWS account. Access to this account is tightly restricted, so if you are accustomed to using the AWS web console to help operate your service, you will need to do things differently in the Cloud Platform.
 
 ## AWS region
 
@@ -51,16 +51,16 @@ Does your service have users who are stuck with very old browsers? If so, consid
 
 ## Connections to/from service IPs
 
-Inbound connections to service IPs are not possible, on the Cloud Platform. Access to your service must go via https to a URL, not by inbound access to an IP number.
+Inbound connections to service IPs are not possible on the Cloud Platform. Access to your service must go via https to a URL, not by inbound access to an IP number.
 
-Connections **to** resources outside the cluster are allowed, and pods will be NATed to the IPs of the VPC gateways (the IP addresses are pinned in the #ask-cloud-platform channel).
+Connections **to** resources outside the cluster, using IP numbers rather than URLs, are allowed.
 
 > NB: UDP is not available at all.
 
 ## Application Architecture
 
 1. Applications must log their entire output to STDOUT/STDERR.
-   * A cluster-shared service (fluentd) automatically collects all the outputs and sends them to [ElasticSearch][kibana] with no explicit configuration needed.
+   * A cluster-shared service (fluentbit/fluentd) automatically collects all the outputs and sends them to [ElasticSearch][kibana] with no explicit configuration needed.
    * Services that capture the output to re-format or send to a different destination can be run as multi-container pods, but may be superfluous.
 
 1. You don't need to run an `init` service (e.g. `runit`, or `systemd`) in your containers. Kubernetes will keep your services running, by itself.
@@ -68,9 +68,9 @@ Connections **to** resources outside the cluster are allowed, and pods will be N
 1. You don't need to run `cron` in your containers. Use [kubernetes cron jobs].
 
 1. Keep startup as quick as possible
-  * Initialisation tasks such as database migrations or loading seed data should be configured as separate [kubernetes jobs], not run as part of the initialisation of your main application. This is because, if your container takes too long to enter `ready` state, kubernetes will assume there's a problem and kill it.
+  * Initialisation tasks such as database migrations or loading seed data should be configured as separate [kubernetes jobs], not run as part of the initialisation of your main application. This is because, if your container takes too long to enter `ready` state, kubernetes will assume there's a problem and kill it. This can lead to crash-looping, where your workloads never start successfully.
 
-1. Don't use local disk storage. If you need to write to the filesystem, use a persistent volume or, better still, an S3 bucket.
+1. Don't use local disk storage. If you need to write to the filesystem use a persistent volume or, better still, an S3 bucket.
 
 1. Monitoring is included with the Cloud Platform
    * The recommended solution is the combination of [Prometheus/AlertManager/Grafana][monitoring]
@@ -93,7 +93,7 @@ Connections **to** resources outside the cluster are allowed, and pods will be N
 
 1. Jenkins is no longer used to trigger deployments, teams are encouraged to [configure CircleCI][circleci] directly from their repositories.
 
-1. For application logs, the path `awslogs` + CloudWatch + Lambda is replaced by `fluentd`.
+1. For application logs, the path `awslogs` + CloudWatch + Lambda is replaced by `fluentbit/fluentd`.
 
 1. Gandi and AWS ACM SSL certs are replaced by [Let's Encrypt](https://letsencrypt.org)
 
