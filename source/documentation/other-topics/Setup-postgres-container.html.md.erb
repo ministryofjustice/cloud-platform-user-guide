@@ -1,29 +1,31 @@
 ---
 title: Create a Postgres container
-last_reviewed_on: 2020-05-06
+last_reviewed_on: 2020-08-07
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
 
-If you need a quick, ephemeral database for testing/development, you can create a pod in your namespace running postgres in a container. 
+If you need a quick, ephemeral database for testing/development, you can create a pod in your namespace running postgres in a container.
 
 The [Bitnami PostgreSQL][postgresql-chart] helm chart is the easiest way to get started with PostgreSQL on Kubernetes. This chart bootstraps a PostgreSQL deployment on a Kubernetes cluster using the Helm package manager.
 
-The [django-reference-application][django-app] uses Bitnami PostgreSQL Helm Chart to add a postgres instance, you can use the same Chart to setup postgres in your namespace.
-
 > Note: Using a postgres container is only recommended for ephemeral testing/development purposes. For any production, or long-lived development/testing environments, we strongly recommend using the [AWS RDS](https://aws.amazon.com/rds/) managed database service.
 
-#### Pre-requisites
+## Pre-requisites
 
  - You have [created an environment for your application][env-create]
  - You have installed [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) on your local machine
  - You have [Authenticated][auth-to-cluster] to the cloud platform
- - You have configured Helm
+ - You have installed [Helm] on your local machine
 
-#### Set up
+## Set up
 
-First copy the [values.yaml][postgresql-values] file to your working directory. 
+First copy this [values.yaml][postgresql-values] file to your working directory.
+
+```
+wget https://raw.githubusercontent.com/ministryofjustice/cloud-platform-reference-app/main/helm_deploy/django-app/charts/postgresql/values.yaml
+```
 
 You should edit the file to set your own values for:
 
@@ -31,55 +33,76 @@ You should edit the file to set your own values for:
 * `postgresqlPassword`
 * `postgresqlDatabase`
 
-Or, you can provide those as an argument to the installation command. Below, the `--set` values override the values in the `value.yaml` file:
+The postgres helm chart is in the "bitnami" chart repository, so you need to add that:
+
+```
+helm repo add bitnami https://charts.bitnami.com/bitnami
+```
+
+Then install the edited chart like this:
 
 ```bash
-$ helm install --name <YourName> -f values.yaml stable/postgresql \
-  --namespace <env-name> \
-  --set postgresqlUsername=postgres,postgresqlPassword=secretpassword,postgresqlDatabase=my-database \
-  --tiller-namespace <env-name>
+helm install mydb bitnami/postgresql -f values.yaml --namespace <your namespace>
 ```
+
+Change `mydb` to whatever name you want your pod to have.
 
 Check that the PostgreSQL Helm Chart is deployed sucessfully:
 
-    $ kubectl get pods --namespace <env-name>
+    kubectl get pods --namespace <your namespace>
 
 If the Installation was successful you should see something similar to this:
 
 ```
-NAME                              READY     STATUS    RESTARTS   AGE
-<YourName>-postgresql-0           1/1       Running   0          39m
+NAME                        READY     STATUS    RESTARTS   AGE
+mydb-postgresql-0           1/1       Running   0          39m
 ```
- 
+
 You should have a postgres pod with the status **running**. You can also check the logs of the PostgreSQL pod:
 
-    $ kubectl --namespace <env-name> logs <YourName>-postgresql-0
+    kubectl --namespace <your namespace> logs mydb-postgresql-0
 
 If the PostgreSQL setup was successful, the last line should be something like:
 
 ```
- 12:49:28.02 INFO  ==> ** PostgreSQL setup finished! **
+2020-08-07 14:32:58.158 GMT [1] LOG:  database system is ready to accept connections
 ```
 
-#### Accessing your PostgreSQL DB
+## Accessing your PostgreSQL DB
 
 PostgreSQL can be accessed via port 5432 on the following DNS name from within your cluster:
 
-    <YourName>-postgresql.<env-name>.svc.cluster.local - Read/Write connection
+```
+mydb-postgresql.<your namespace>.svc.cluster.local - Read/Write connection
+```
 
 The `postgresqlPassword` you have set will be stored as a secret in your namespace, to get the password for the `postgres` datase user, run:
 
-    export POSTGRES_PASSWORD=$(kubectl get secret --namespace <env-name> <YourName>-postgresql -o jsonpath="{.data.postgresql-password}" | base64 --decode)
-
+```
+export POSTGRES_PASSWORD=$(kubectl get secret --namespace <your namespace> mydb-postgresql -o jsonpath="{.data.postgresql-password}" | base64 --decode)
+```
 
 To connect to your database from outside the cluster execute the following commands:
 
-    kubectl port-forward --namespace <env-name> svc/<YourName>-postgresql 5432:5432 &
+```
+kubectl port-forward --namespace <your namespace> svc/mydb-postgresql 5432:5432 &
 
-    PGPASSWORD="$POSTGRES_PASSWORD" psql --host 127.0.0.1 -U postgres -d my-database -p 5432
+PGPASSWORD="$POSTGRES_PASSWORD" psql --host 127.0.0.1 -U postgres -d my-database -p 5432
+```
+
+## Cleaning up
+
+When you have finished with your postgres instance, you can get rid of it like this:
+
+```
+helm uninstall mydb --namespace <your namespace>
+```
+
+> If you used something other than `mydb` as the name of your installation, you
+> will need to use that name instead.
 
 [env-create]: /documentation/getting-started/env-create.html#creating-a-cloud-platform-environment
 [auth-to-cluster]: /documentation/getting-started/kubectl-config.html#authentication
-[django-app]: /documentation/deploying-an-app/app-deploy-helm.html#deploying-an-application-to-the-cloud-platform-with-helm
 [postgresql-chart]: https://github.com/helm/charts/tree/master/stable/postgresql
 [postgresql-values]: https://github.com/ministryofjustice/cloud-platform-reference-app/blob/master/helm_deploy/django-app/charts/postgresql/values.yaml
+[Helm]: https://helm.sh/
