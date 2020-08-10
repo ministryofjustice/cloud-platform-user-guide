@@ -1,18 +1,19 @@
 ---
 title: Creating alerts for RDS
-last_reviewed_on: 2020-05-07
+last_reviewed_on: 2020-08-10
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
 
-
 ### Overview
+
 Alertmanager allows you define your own alert conditions based on [Prometheus expression language](https://prometheus.io/docs/prometheus/latest/querying/basics) expressions.
 
 The aim of this document is cover the specifics of alerting for RDS
 
 ### Prerequisites
+
 This guide assumes the following:
 
 * You have created a namespace for your application
@@ -21,7 +22,8 @@ This guide assumes the following:
 * You know the RDS database identifier you want to monitor. It can be found in the RDS kubernetes secret in your namespace.
 
 ### RDS metrics
-Prometheus gathers and exposes a few RDS metrics. Here is the full lists :
+
+Prometheus gathers and exposes a few RDS metrics. Here is the full list:
 
 ```
 aws_rds_cpuutilization_average
@@ -38,7 +40,7 @@ aws_rds_write_latency_average
 
 ### An example 
 
-Below a an example of a PrometheusRule, that triggers an alert if the amount of free space of an RDS instance drops below 1Gb.
+This is an example of a PrometheusRule that triggers an alert if the amount of free space of an RDS instance drops below 1Gb:
 
 ```yaml
 apiVersion: monitoring.coreos.com/v1
@@ -61,4 +63,14 @@ spec:
           message: "[{{ environment|upper }}] RDS free storage space is less than 1GB"
 ```
 
-- Run `kubectl apply -f prometheus-custom-rules-<application_name>.yaml -n <namespace>`
+- Run 
+          
+After creating a YAML file containing your prometheus rule, you can apply it like this:
+
+```
+kubectl apply -f prometheus-custom-rules-<application_name>.yaml -n <namespace>
+```
+
+> We recommend keeping your prometheus rule definitions in your namespace folder in the [environments repository]. This ensures that your rules will be recreated in the event that we ever need to reinstall prometheus.
+          
+[environments repository]: https://github.com/ministryofjustice/cloud-platform-environments
