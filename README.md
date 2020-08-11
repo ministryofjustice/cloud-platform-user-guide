@@ -16,14 +16,13 @@ using [GitHub Pages][gh-pages].
 Preview changes locally by running this command:
 
 ```bash
-bundle exec middleman server
+make preview
 ```
 
 This will run a preview web server on http://localhost:4567
 
 This is only accessible on your computer, and won't be accessible
-to anyone else. It's also set up to automatically update when we
-make changes to the source files.
+to anyone else.
 
 ## Making changes
 
@@ -68,6 +67,15 @@ the user guide website.
 
 The github action is defined in `.github/workflows/publish.yml`
 
+## Link-checking
+
+The publishing process automatically checks both internal and external links in
+the site. If you want to do the same check locally, run:
+
+```
+make check
+```
+
 ## Updating the docker image
 
 If you need to make any changes to the docker image (i.e. if you make any
@@ -75,7 +83,8 @@ changes to the Dockerfile or Gemfile), please use the github web interface to
 create a new [release]. A github action will build the docker image and push
 it to docker hub, tagged with the release number.
 
-After changing the tag, you need to update the reference to the image in `.github/workflows/publish.yml`
+After changing the tag, you need to update the reference to the image in
+`.github/workflows/publish.yml` and the `makefile`.
 
 [branch protection]: https://help.github.com/articles/about-protected-branches/
 [tech-docs-multipage]: https://tdt-documentation.london.cloudapps.digital/multipage.html#repo-folder-structure
