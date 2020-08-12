@@ -1,6 +1,6 @@
 ---
 title: Application Log Collection and Storage
-last_reviewed_on: 2020-05-07
+last_reviewed_on: 2020-08-12
 review_in: 3 months
 ---
 
@@ -8,20 +8,21 @@ review_in: 3 months
 
 ### Overview
 
-The Cloud Platform automatically collects and stores your application logs, and lets you access them via an AWS-Hosted Kibana dashboard.
+The Cloud Platform automatically collects and stores your application logs, and lets you access them via an AWS-Hosted [Kibana dashboard].
 
-Logs are collected via [Fluentd][fluentd], and stored in an AWS-Hosted [ElasticSearch Cluster][elasticsearch].
+Logs are collected via [Fluentbit] and [Fluentd], and stored in an AWS-Hosted [ElasticSearch Cluster].
 
 ### Log Collection
 
-Fluentd is a cluster-wide log collection service.
+Fluentbit/Fluentd is a cluster-wide log collection service.
 
-The Fluentd application is configured with cluster-wide read permissions. The only requirement for Fluentd to start automatically collecting your application's logs is to have your application output logs to `stdout`.
+The Fluentbit and Fluentd applications are configured with cluster-wide read permissions. As long as your application logs to `stdout`, your logs will be collected.
 
 ### Log Storage
 
-The logs are shipped from Fluentd and stored in an AWS-Hosted ElasticSearch cluster. All application logs are retained for 30 days.
+The logs are shipped to an AWS-Hosted ElasticSearch cluster. All application logs are retained for 30 days.
 
-[fluentd]: https://www.fluentd.org/
-[kibana]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/kibana
-[elasticsearch]: https://aws.amazon.com/elasticsearch-service/
+[Fluentbit]: https://fluentbit.io/
+[Fluentd]: https://www.fluentd.org/
+[Kibana dashboard]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/kibana
+[ElasticSearch Cluster]: https://aws.amazon.com/elasticsearch-service/
