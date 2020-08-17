@@ -51,7 +51,7 @@ docker build -t [ECR Team Name]/[ECR Repository Name] .
 
 The `ECR Team Name` and `ECR Repository Name` must match the `team_name` and `repo_name` values you entered when you created the ECR via [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments) Github repository.
 
-You can find them in the file `namespaces/live-1.cloud-platform.service.justice.gov.uk/[YOUR ENVIRONMENT]/resources/ecr.tf`.
+You can find them in the environments repository, in the directory `namespaces/live-1.cloud-platform.service.justice.gov.uk/[YOUR ENVIRONMENT]/resources/`. The team name is in `variables.tf` and the ECR `repo_name` is in `ecr.tf`.
 
 ### Amazon ECR Terminology
 
