@@ -79,11 +79,19 @@ You can pipe the yaml through [this script][decode-script] in order to decode th
 
 Once you have your `access_key_id` and `secret_access_key`, set up an AWS profile using the AWS cli tool.
 
-      aws configure
+      aws configure --profile [namespace name]
 
-Supply your credentials when prompted.
+You can call the profile anything you want.
 
-This guide assumes you are using these credentials in your `default` AWS profile. If you have used a different name for this AWS profile, please add `--profile [YOUR PROFILE]` to all of the following AWS commands.
+Supply your credentials when prompted. For region, enter `eu-west-2` This is London, which is the region all cloud platform resources are in.
+
+When prompted for `Default output format [None]:`, just press enter.
+
+Now, tell the aws command-line tool to use these credentials by running:
+
+    export AWS_PROFILE=[profile name]
+
+Where `[profile name]` is whatever you entered for `--profile` in the `aws configure` command.
 
 ### Authenticating with the repository
 
@@ -117,11 +125,7 @@ Your specific ECR will be:
 
 Where `team_name` and `repo_name` are the values from your `ecr.tf` file.
 
-Ensure the Docker image for your application has been built and is stored locally on your machine.
-
-      docker build -t [team_name]/[repo_name] .
-
-Now we need to tag the image so it can be pushed into the correct repository.
+We need to tag the image you built earlier so it can be pushed into the correct repository.
 
       docker tag [team_name]/[repo_name]:latest 754256621582.dkr.ecr.eu-west-2.amazonaws.com/[team_name]/[repo_name]:latest
 
