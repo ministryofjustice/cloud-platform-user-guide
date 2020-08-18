@@ -125,6 +125,8 @@ Your specific ECR will be:
 
 Where `team_name` and `repo_name` are the values from your `ecr.tf` file.
 
+You can also see this as the value of `repo_url` in the kubernetes secret containing your ECR information.
+
 We need to tag the image you built earlier so it can be pushed into the correct repository.
 
       docker tag [team_name]/[repo_name]:latest 754256621582.dkr.ecr.eu-west-2.amazonaws.com/[team_name]/[repo_name]:latest
