@@ -28,6 +28,6 @@ git config --global user.email "${GITHUB_PAGES_REPO_AUTHOR_EMAIL}"
 git config --global user.name "${GITHUB_PAGES_REPO_AUTHOR}"
 git add .
 git commit -m "Published at $(date)"
-git push
+git push --force
 
 echo "Publishing complete"
