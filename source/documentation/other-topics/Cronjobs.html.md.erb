@@ -30,6 +30,7 @@ spec:
   failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
+      ttlSecondsAfterFinished: 100
       template:
         spec:
           containers:
@@ -58,13 +59,15 @@ Verify the Cronjob is created:
 
 ### Clean up finished jobs
 
-Finished Jobs created by cronjobs are usually no longer needed in the system. Set the job [history limit][job-history] by using `successfulJobsHistoryLimit` and `failedJobsHistoryLimit`, to specify how much history you want to retain for completed and failed Jobs. 
-By default, they are set to 3 and 1 respectively. 
+Finished Jobs created by cronjobs are usually no longer needed in the system. Use the [TTL mechanism][TTL-mechanism] for Cronjob by settting `ttlSecondsAfterFinished`, so that a Job can be cleaned up automatically some time after it finishes. 
 
-> Note: Kubernetes uses UTC exclusively. Make sure you take that into account when you’re creating your schedule.
+We have [delete-completed-jobs][concourse-job] setup to clean up all the completed jobs, which does not have `ttlSecondsAfterFinished`, deleting a completed Jobs will clean up the Pods it created. You can still see the logs of the deleted Pod in [kibana][kibana]
+
+> Note: Kubernetes uses UTC exclusively. Make sure you take that into account when you’re creating your schedule or setting up ttlSecondsAfterFinished.
 
 [cronjob-yaml]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/tree/cronjob-example-v1.0/k8s_additional_resources
 [cron-jobs]: https://kubernetes.io/docs/tasks/job/automated-tasks-with-cron-jobs/#creating-a-cron-job
 [kubernetes-cronjobs]: https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
 [kubernetes-jobs]: https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/
-[job-history]: https://kubernetes.io/docs/tasks/job/automated-tasks-with-cron-jobs/#jobs-history-limits
+[concourse-job]: https://concourse.cloud-platform.service.justice.gov.uk/teams/main/pipelines/maintenance/jobs/delete-completed-jobs
+[kibana]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana
