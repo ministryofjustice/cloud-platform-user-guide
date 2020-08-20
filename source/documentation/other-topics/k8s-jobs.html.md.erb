@@ -1,6 +1,6 @@
 ---
 title: Kubernetes jobs
-last_reviewed_on: 2020-07-31
+last_reviewed_on: 2020-08-20
 review_in: 3 months
 ---
 
@@ -54,10 +54,14 @@ Verify the job is created:
 
 ### Clean up finished jobs
 
-When a Job completes Pods created by the Job are not deleted. Finished Jobs are usually no longer needed in the system. Use the [TTL mechanism][TTL-mechanism] for finished Jobs by using `ttlSecondsAfterFinished`, so that a Job can be cleaned up automatically some time after it finishes.
+When a Job completes Pods created by the Job are not deleted. Finished Jobs are usually no longer needed in the system. Use the [TTL mechanism][TTL-mechanism] for Jobs by settting `ttlSecondsAfterFinished`, so that a Job can be cleaned up automatically some time after it finishes.
 
-> Note: Kubernetes uses UTC exclusively. Make sure you take that into account when you’re creating your schedule.
+We have [delete-completed-jobs][concourse-job] concourse pipleline setup to clean up all the completed jobs, which does not have `ttlSecondsAfterFinished`, deleting a completed Job will clean up the Pods it created. You can still see the logs of the deleted Pod in [kibana][kibana]
+
+> Note: Kubernetes uses UTC exclusively. Make sure you take that into account when you’re creating your schedule or setting up ttlSecondsAfterFinished.
 
 [jobs-spec]: https://kubernetes.io/docs/concepts/workloads/controllers/job/#writing-a-job-spec
 [kubernetes-jobs]: https://kubernetes.io/docs/concepts/workloads/controllers/job/
 [TTL-mechanism]: https://kubernetes.io/docs/concepts/workloads/controllers/job/#ttl-mechanism-for-finished-jobs
+[concourse-job]: https://concourse.cloud-platform.service.justice.gov.uk/teams/main/pipelines/maintenance/jobs/delete-completed-jobs
+[kibana]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana
