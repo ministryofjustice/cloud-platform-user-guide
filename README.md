@@ -76,6 +76,13 @@ the site. If you want to do the same check locally, run:
 make check
 ```
 
+> There is a problem where, if you have a single PR which both adds a new
+> page(s) *and* adds links to the page(s) from elsewhere in the site, the
+> link-checking part of the publishing process will break (because it believes
+> the link points to pages that don't exist). The workaround for this is to
+> make the changes in separate PRs - the first to add the new pages, and a
+> separate PR to add the links to the pages (which are now published).
+
 ## Updating the docker image
 
 If you need to make any changes to the docker image (i.e. if you make any
