@@ -15,8 +15,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build
-      run: bundle exec middleman build --build-dir docs
-    - name: Run the script
+      run: bin/build.sh
+    - name: Link checker
+      run: bin/check.sh
+    - name: Publish
       run: bin/publish.sh
       env:
         PUBLISHING_GIT_TOKEN: ${{ secrets.PUBLISHING_GIT_TOKEN }}
