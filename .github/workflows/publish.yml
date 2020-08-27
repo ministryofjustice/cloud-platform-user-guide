@@ -18,7 +18,7 @@ jobs:
       run: bin/build.sh
     - name: Link checker
       run: bin/check.sh
-    - name: Run the script
+    - name: Publish
       run: bin/publish.sh
       env:
         PUBLISHING_GIT_TOKEN: ${{ secrets.PUBLISHING_GIT_TOKEN }}
