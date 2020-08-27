@@ -15,7 +15,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build
-      run: bundle exec middleman build --build-dir docs
+      run: bin/build.sh
+    - name: Link checker
+      run: bin/check.sh
     - name: Run the script
       run: bin/publish.sh
       env:
