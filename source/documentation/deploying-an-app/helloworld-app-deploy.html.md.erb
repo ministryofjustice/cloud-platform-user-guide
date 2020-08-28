@@ -1,6 +1,6 @@
 ---
 title: Deploying a 'Hello World' application to the Cloud Platform
-last_reviewed_on: 2020-07-30
+last_reviewed_on: 2020-08-28
 review_in: 3 months
 ---
 
@@ -15,12 +15,19 @@ The aim of this guide is to walkthrough the process of deploying an application 
 
 This guide uses a pre-configured ["Hello World" application][rubyapp-github] as an example of how to deploy your own. This application merely returns a static HTML response, and has no dependencies. Later examples will use more representative applications.
 
-The process we will follow consists of the following stages:
+We will walk through these steps:
 
-* Build a docker image from the demo application
+* Create a namespace (aka an "environment") on the Cloud Platform
+* Deploy an instance of a pre-configured "Hello, World" application into your namespace
+
+Then we will demonstrate a typical software development cycle of making and
+deploying changes to the application:
+
+* Create and authenticate to an [ECR]
+* Make changes to the source code of the application
+* Build a new docker image from the demo application
 * Tag the image and push it to your ECR
-* Edit kubernetes config files
-* Apply the config files to make the cluster run our application
+* Update your kubernetes files to deploy the updated application
 
 The process of building an image and pushing it to an ECR will normally be carried out by a build pipeline. For this initial walkthrough, we will go through these steps manually. Later we will go through an example of setting up a [CircleCI][circleci] job to do this automatically. The steps are similar if you're using other CI/CD tools such as [TravisCI][travisci].
 
@@ -31,10 +38,14 @@ This guide assumes the following:
 * [Docker][docker] is installed and configured.
 * Kubectl is installed and configured (`brew install kubectl` on a Mac with [Homebrew][homebrew] installed, or [follow these instructions](https://kubernetes.io/docs/tasks/tools/install-kubectl/))
 * AWS CLI is installed (`brew install awscli` on a Mac with [Homebrew][homebrew] installed)
-* You have [created an environment for your application][env-create]
-* You have [created an Amazon ECR][ecr-setup] to host your docker image
+* You have installed the [Cloud Platform CLI]
 
-## Step 1 - Build your docker image
+## Step 1 - Create your namespace
+
+Follow [this guide][env-create] to create a namespace on the Cloud Platform
+(you don't need to do any of the "Next steps" from that guide).
+
+## Step 2 - Deploy the "Hello, World" application
 
 * Clone the [demo application](https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app)
 
@@ -43,27 +54,193 @@ git clone https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-ap
 cd cloud-platform-helloworld-ruby-app
 ```
 
-* Build the docker image
+The application has a `kubectl_deploy` folder containing YAML files which
+define an instance of the application for kubernetes.
 
-```bash
-docker build -t [ECR Team Name]/[ECR Repository Name] .
+Before we can deploy the application, we need to make some changes to run it in
+your new namespace.
+
+Edit your local copy of the `kubectl_deploy/ingress.yaml` file, and make the
+following changes:
+
+* Change the `kubernetes.io/ingress.class` annotation to the name of your namespace
+
+This tells kubernetes that we want the ingress-controller belonging to your
+namespace to handle traffic to your application. The ingress controller is
+created by the `resources/ingress.tf` file which formed part of the PR you
+raised to create your namespace.
+
+* Change the hostname for the application
+
+The current hostname for the demo application is:
+
+```
+helloworld-rubyapp.apps.live-1.cloud-platform.service.justice.gov.uk
 ```
 
-The `ECR Team Name` and `ECR Repository Name` must match the `team_name` and `repo_name` values you entered when you created the ECR via [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments) Github repository.
+We need a unique domain name for this instance of the application. There is a
+"wildcard" domain and SSL certificate available on the Cloud Platform, so we
+will stick to a domain name which matches:
 
-You can find them in the environments repository, in the directory `namespaces/live-1.cloud-platform.service.justice.gov.uk/[YOUR ENVIRONMENT]/resources/`. The team name is in `variables.tf` and the ECR `repo_name` is in `ecr.tf`.
+```
+*.apps.live-1.cloud-platform.service.justice.gov.uk
+```
 
-### Amazon ECR Terminology
+Choose a domain name for your application and replace the two instances of
+`helloworld-rubyapp` in the `kubectl_deploy/ingress.yaml` file with your chosen
+name.
 
-Amazon ECR uses the terms `repository` and `image` in a rather confusing way. Normally, you would think of a docker image repository as holding multiple images, each with a different name, where each image can have multiple tags. Amazon ECR conflates the repository and image - i.e. you can only push images with the same name to a given ECR.
+> If you want to use a domain name which doesn't match the default wildcard
+domain, you will need to make some more changes. More information on this is
+available [here][custom-domain-guide].
 
-So, if you created your ECR using the team_name `davids-dummy-team` and repo_name `davids-dummy-app`, then you can only push images to the ECR if they are named `davids-dummy-team/davids-dummy-app:[something]`. You are free to change the tag of the image (shown as [something], here), and some teams overload the tag value as a way to store multiple completely different docker images in a single ECR.
+Once you have saved your changes to the `kubectl_deploy/ingress.yaml` file, you
+can deploy the application using this command:
 
-## Step 2 - Push the image to your ECR
+```
+kubectl -n [namespace name] apply -f kubectl_deploy
+```
+
+This assumes that your current working directory is the root of your copy of
+the helloworld application repository.
+
+You can think of this command as meaning:
+
+"Hey, kubernetes. Please apply all the YAML files in the `kubectl_deploy`
+directory to the namespace called `my-namespace` (or whatever you called it)."
+
+A few seconds later, you should be able to visit:
+
+```
+https://[your domain name].apps.live-1.cloud-platform.service.justice.gov.uk
+```
+
+...in your web browser, and see the "Hello, World!" message.
+
+## The kubernetes YAML files
+
+This is how the YAML files link together:
+
+> You can find more deployment config info [in the kubernetes developer documentation](https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/).
+
+### `ingress.yaml`
+
+```Yaml
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: helloworld-rubyapp-ingress
+  annotations:
+    kubernetes.io/ingress.class: mynamespace
+spec:
+  tls:
+  - hosts:
+    - helloworld-rubyapp.apps.live-1.cloud-platform.service.justice.gov.uk
+  rules:
+  - host: helloworld-rubyapp.apps.live-1.cloud-platform.service.justice.gov.uk
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: rubyapp-service
+          servicePort: 4567
+```
+
+This tells the cluster that our ingress-controller (found by matching the
+ingress class annotation to the name in the `resources/ingress.tf` file) should
+accept web traffic to the hostname we defined, and should route that traffic to
+port 4567 of the "service" called `rubyapp-service`.
+
+### service.yaml
+
+```Yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: rubyapp-service
+  labels:
+    app: rubyapp-service
+spec:
+  ports:
+  - port: 4567
+    name: https
+    targetPort: 4567
+  selector:
+    app: helloworld-rubyapp
+```
+
+This defines the service called `rubyapp-service` which listens on port 4567
+and forwards web traffic to port 4567 of any pods whose `app` label is
+`helloworld-rubyapp`.
+
+### deployment.yaml
+
+```Yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloworld-rubyapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: helloworld-rubyapp
+  template:
+    metadata:
+      labels:
+        app: helloworld-rubyapp
+    spec:
+      containers:
+      - name: rubyapp
+        image: ministryofjustice/cloud-platform-helloworld-ruby:1.1
+        ports:
+        - containerPort: 4567
+```
+
+This creates a single instance (`replicas: 1`) of a docker container based on
+the docker image `ministryofjustice/cloud-platform-helloworld-ruby:1.1` (pulled
+from https://hub.docker.com, since no other source is mentioned), which listens
+on port 4567, and has the `app` label `helloworld-rubyapp`.
+
+## Updating the application
+
+To update our application, we need to:
+
+* Change the application source code
+* Create a new docker image from our updated code
+* Push the image to a repository that kubernetes can access
+* Update our `deployment.yaml` file with the new image details
+* Apply the updated yaml file to kubernetes
+
+## Step 3 - Create an Amazon ECR
+
+Our initial deployment of the Hello World application pulls a docker image from
+Docker Hub - a public docker image repository.
+
+Most projects hosted on the Cloud Platform use Amazon ECR - a service providing
+private docker image repositories, only accessible by a single team. So, we're
+going to use an ECR to store our updated docker image.
+
+Please follow [this guide][ecr-setup] to create an ECR for your namespace.
+
+## Step 4 - Change the application code
+
+Edit the `app.rb` file, and change "Hello, World!" to something else.
+
+### Build the docker image
+
+Now that we have updated the source code, we can build a new docker image
+(locally).
+
+```bash
+docker build -t myimage .
+```
+
+> You can replace `myimage` with any name you like for your new docker image. Don't forget the `.` at the end of the command.
 
 ### Authenticating to your docker image repository
 
-You must authenticate to the docker image repository before you can push an image to it.
+Before you can push the image to your ECR, you need to authenticate to it.
 
 To authenticate to your ECR, you will need the `access_key_id` and `secret_access_key` which were created for you when you created your ECR. To retrieve these, see the [this section][access-ecr-credentials] of this guide.
 
@@ -93,7 +270,7 @@ Now, tell the aws command-line tool to use these credentials by running:
 
 Where `[profile name]` is whatever you entered for `--profile` in the `aws configure` command.
 
-### Authenticating with the repository
+#### Login to the repository
 
 The command to login to Amazon ECR is slightly different, depending on your version of the `aws` command-line tool. You can find this out by running:
 
@@ -115,182 +292,56 @@ For either version of the aws cli, the output of the above should include `Login
 
 These credential are valid for 12 hours. So, if you are working through this example over a longer period, you will have to login again, e.g. the following day.
 
-### Pushing your docker image to the ECR
+### Tag the image and push it to your ECR
 
-All of the MoJ Digital docker images are stored within the same Cloud Platform AWS account (cloud-platform-aws).
+If you base64 decode the `repo_url` of the ECR secret in your namespace, you should get a value something like this:
 
-Your specific ECR will be:
-
-      754256621582.dkr.ecr.eu-west-2.amazonaws.com/[team_name]/[repo_name]
-
-Where `team_name` and `repo_name` are the values from your `ecr.tf` file.
-
-You can also see this as the value of `repo_url` in the kubernetes secret containing your ECR information.
-
-We need to tag the image you built earlier so it can be pushed into the correct repository.
-
-      docker tag [team_name]/[repo_name]:latest 754256621582.dkr.ecr.eu-west-2.amazonaws.com/[team_name]/[repo_name]:latest
-
-Finish by running the last command to push the image to your repository.
-
-    docker push 754256621582.dkr.ecr.eu-west-2.amazonaws.com/[team_name]/[repo_name]:latest
-
-## Step 3 - Configure your namespace in the Kubernetes Cluster
-
-To deploy an application to the Cloud Platform, a number of deployment files must first be configured. You can find examples of these in the `kubectl_deploy` directory of the [demo application][rubyapp-github], but you will need to edit your copy to replace some of the values to use your kubernetes cluster environment and docker image.
-
-*Tip:* You can find more deployment config info [in the kubernetes developer documentation](https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/).
-
-### deployment.yaml
-
-```Yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: helloworld-rubyapp
-spec:
-  strategy:
-    rollingUpdate:
-      maxSurge: 100%
-      maxUnavailable: 50%
-    type: RollingUpdate
-  replicas: 4
-  selector:
-  matchLabels:
-    app: helloworld-rubyapp
-  template:
-    metadata:
-      labels:
-        app: helloworld-rubyapp
-    spec:
-      containers:
-      - name: rubyapp
-        image: ministryofjustice/cloud-platform-helloworld-ruby:1.1
-        ports:
-        - containerPort: 4567
+```
+754256621582.dkr.ecr.eu-west-2.amazonaws.com/my-team/dstest-ecr
 ```
 
-Change the image value to refer to the image you pushed to your ECR in the earlier step.
+We need to tag our docker image with that URL in order to push it to our ECR.
 
-This file tells Kubernetes to run four pods (`replicas: 4`) containing a single container based on a specific docker image from your ECR. We recommend 4 replicas for most components of production services. Your application will be restarted when kubernetes moves workloads from one worker node to another, and having multiple replicas helps to ensure that your service doesn't have any downtime when this happens.
+> Amazon ECR uses the terms `repository` and `image` in a rather confusing way. Normally, you would think of a docker image repository as holding multiple images, each with a different name, where each image can have multiple tags. Amazon ECR conflates the repository and image - i.e. you can only push images with the same name to a given ECR.
 
-By default, the scheduler will try to [spread your pods across different worker nodes][assign pods to nodes] so that if a worker node dies only a single replica should be affected, leaving the others to handle traffic while the affected pod is automatically replaced.
+> So, you can only push an image whose name matches your ECR's `repo_url` value. You are free to change the tag of the image, and some teams overload the tag value as a way to store multiple completely different docker images in a single ECR.
 
-The `strategy` section means that, when it is moved, the cluster will create a complete new copy of your application first, before it starts killing the pods on the node you're being migrated away from. More information about deployment strategies is available [here][deployment-strategies]
+We need to tag the image you built earlier so it can be pushed to your ECR
 
-NB: This guidance about replicas doesn't apply for things where you must only have a single instance running (e.g. a background job processor where you must process jobs in FIFO order - if you were to run mutiple instances of that, you might have problems, so a Recreate strategy, with a single replica, might be better).
+      docker tag myimage 754256621582.dkr.ecr.eu-west-2.amazonaws.com/[team_name]/[repo_name]:1.0
 
-The `service.yaml` and `ingress.yaml` files make it possible to access your application from the outside world.
+Replace `myimage` with whatever you chose in the `docker build` command, and use the `repo_url` value from your namespace secret.
 
-### service.yaml
+Now we can push the image to your ECR:
 
-Service files are used to specify port and protocol information for your application and are also used to bundle together the set of pods created by the deployment.
+    docker push 754256621582.dkr.ecr.eu-west-2.amazonaws.com/[team_name]/[repo_name]:1.0
 
-This exposes port 4567 internally to your namespace. i.e. it enables pods and other objects within your namespace to connect to port 4567 of your container.
+## Step 5 - Deploy the application
 
-```Yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: rubyapp-service
-  labels:
-    app: rubyapp-service
-spec:
-  ports:
-  - port: 4567
-    name: https
-    targetPort: 4567
-  selector:
-    app: helloworld-rubyapp
+Now that we have a new docker image with our updated software, we can deploy it.
+
+Edit your `kubectl_deploy/deployment.yaml` and change the `image` from
+`ministryofjustice/cloud-platform-helloworld-ruby:1.1` to the same value you
+used in the `docker push` command above.
+
+After saving your changes, apply them to the cluster by repeating the kubectl
+apply command:
+
+```
+kubectl -n [namespace name] apply -f kubectl_deploy
 ```
 
-The value of `spec/selector/app` must be the same as `spec/template/metadata/labels/app` in the `deployment.yml` file.
+This will cause kubernetes to launch a new pod using the new docker image, and
+then delete the old one. In a few seconds, you should see your updated web
+page.
 
-*Tip:* You can find more info on service definition in the [kubernetes docs](https://kubernetes.io/docs/tasks/access-application-cluster/service-access-application-cluster/).
-
-### ingress.yaml
-
-Ingress files are to use to define external access to the application.
-
-This creates an [ingress controller](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/) to enable network connections from outside of the cluster.
-
-Note: Because we are specifying `http`, and we have a `tls` section, this ingress controller will expose port 443, and will redirect connections to port 4567 of the named service.
-
-```Yaml
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
-  name: helloworld-rubyapp-ingress
-spec:
-  tls:
-  - hosts:
-    - helloworld-rubyapp.apps.live-1.cloud-platform.service.justice.gov.uk
-  rules:
-  - host: helloworld-rubyapp.apps.live-1.cloud-platform.service.justice.gov.uk
-    http:
-      paths:
-      - path: /
-        backend:
-          serviceName: rubyapp-service
-          servicePort: 4567
-```
-
-The value of `serviceName` and `servicePort` must be the same as those specified in the `service.yml` file.
-
-Change the `helloworld-rubyapp` prefix of the `host` string to the value you want to use as the hostname part of the URL on which your application will be available to the world (do not change the `.apps.live-1.cloud-platform...` part).
-
-
-*Tip:* You can find more info on ingress in the [kubernetes docs][ingress-docs]
-
-## Step 4 - Deploy the application
-
-With all of the deployment files configured, you can now deploy your application to the Cloud Platform.
-
-Start by listing the namespaces on the cluster you are connected to:
-
-      kubectl get namespaces
-
-The list that gets returned should include the one you [created earlier][env-create], here we assume it is called `davids-dummy-dev`. Please change that to whatever your namespace (environment) is called, in all of the following commands.
-
-To deploy your application run the following command. This command assumes that the current directory is the root directory of your working copy of the [demo application][rubyapp-github]. i.e. `kubectl_deploy` points to the directory where the deployment files are stored.
-
-      kubectl apply --filename kubectl_deploy --namespace davids-dummy-dev
-
-You have to specify the namespace you want to deploy to, this should be the namespace of the environment you created.
-
-Confirm the deployment with:
-
-      kubectl get pods --namespace davids-dummy-dev
-
-## Interacting with the application
-
-With the application deployed into the Cloud Platform, there are a few ways of managing it:
-
-* **View pods** - `kubectl get pods --namespace davids-dummy-dev`
-* **Check host** - `kubectl get ingress --namespace davids-dummy-dev`
-* **Delete application** - `kubectl delete --filename kubectl_deploy --namespace davids-dummy-dev`
-* **Shell into container** - `kubectl exec --stdin --tty --namespace davids-dummy-dev [POD-NAME] -- /bin/sh`
-
-For `[POD-NAME]` use the value returned by the `kubectl get pods...` command
-
-
-*Tip:* You can find more about the `kubectl` command [here](https://kubernetes.io/docs/reference/kubectl/overview/)
-
-You should be able to view the app. at the following URL:
-
-      curl -L https://helloworld-rubyapp.apps.live-1.cloud-platform.service.justice.gov.uk
-
-Don't forget to change `helloworld-rubyapp` to whatever hostname you chose earlier.
-
-You need the `-L` flag to make curl follow the 308 redirect response that it will receive from the ingress controller. If you view the URL in a web browser, it should just work.
-
-If you are wondering why https 'just works', there is some magic behind the scenes whereby a LetsEncrypt SSL certificate is created for you, and applied to your ingress. A future user guide article will describe this in more detail.
+> On a real project the process of building and tagging a new image, pushing it to the image repository and updating your deployment.yaml file is usually taken care of by a CI/CD pipeline. We've worked through this whole process manually here, to show how it all fits together.
 
 ## Add HTTP Basic Authentication
 
 The application can be accessed from the internet at:
 
-    https://helloworld-rubyapp.apps.live-1.cloud-platform.service.justice.gov.uk
+    https://[your domain name].apps.live-1.cloud-platform.service.justice.gov.uk
 
 As per the [guidance for domain names], our application should have some authentication to prevent citizens accidentally mistaking development websites for live government services. Whilst this isn't much of a problem with a 'hello world' site, it could be an issue for sites using the GDS prototype kit, which look exactly like live services. So, let's add [http basic authentication] to our application.
 
@@ -347,6 +398,8 @@ Replace this:
 ...
 metadata:
   name: helloworld-rubyapp-ingress
+  annotations:
+    kubernetes.io/ingress.class: mynamespace
 spec:
 ...
 ```
@@ -358,6 +411,7 @@ spec:
 metadata:
   name: helloworld-rubyapp-ingress
   annotations:
+    kubernetes.io/ingress.class: mynamespace
     nginx.ingress.kubernetes.io/auth-type: basic
     nginx.ingress.kubernetes.io/auth-secret: basic-auth
 spec:
@@ -370,8 +424,8 @@ This tells the Ingress what kind of authentication to use, and which kubernetes 
 
 All that remains is to apply our updated yaml files in exactly the same way as we did before, when we deployed the application:
 
-```bash
-kubectl apply --filename kubectl_deploy --namespace davids-dummy-dev
+```
+kubectl -n [namespace name] apply -f kubectl_deploy
 ```
 
 You should see output like this:
@@ -395,10 +449,13 @@ Now, if you reload the browser page showing the 'Hello world' message from the a
 [docker]: https://www.docker.com
 [circleci]: https://circleci.com
 [travisci]: https://travis-ci.org
-[ecr-setup]: /documentation/getting-started/ecr-setup.html#creating-an-ecr-repository
+[ecr-setup]: ../getting-started/ecr-setup.html#creating-an-ecr-repository
 [access-ecr-credentials]: /documentation/getting-started/ecr-setup.html#accessing-the-credentials
 [env-create]: /documentation/getting-started/env-create.html#creating-a-cloud-platform-environment
 [decode-script]: https://github.com/ministryofjustice/cloud-platform-environments/blob/master/bin/decode.rb
 [deployment-strategies]: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
 [ingress-docs]: https://kubernetes.io/docs/concepts/services-networking/ingress/
 [assign pods to nodes]: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+[ECR]: https://aws.amazon.com/ecr/
+[Cloud Platform CLI]: ../getting-started/cloud-platform-cli.html
+[custom-domain-guide]: ../other-topics/custom-domain-cert.html
