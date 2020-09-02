@@ -124,6 +124,8 @@ namespace where the certificate and key material will be stored.
      metadata:
        name: <my-ingress>
        namespace: <my-namespace>
+       annotations:
+         kubernetes.io/ingress.class: <my-namespace>
      spec:
        tls:
        - hosts:
