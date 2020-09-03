@@ -6,12 +6,14 @@ review_in: 3 months
 
 # <%= current_page.data.title %>
 
-
 ![Deployment Process Diagram](/images/k8s-cluster-application-deployment-process.png)
 
 ## Overview
 
 The aim of this guide is to walkthrough the process of deploying an application into the Cloud Platform.
+
+Before working through this tutorial, we recommend reading this [cloud platform overview] page, which
+provides a high-level view of the software development lifecycle on the cloud platform.
 
 This guide uses a pre-configured ["Hello World" application][rubyapp-github] as an example of how to deploy your own. This application merely returns a static HTML response, and has no dependencies. Later examples will use more representative applications.
 
@@ -459,3 +461,4 @@ Now, if you reload the browser page showing the 'Hello world' message from the a
 [ECR]: https://aws.amazon.com/ecr/
 [Cloud Platform CLI]: ../getting-started/cloud-platform-cli.html
 [custom-domain-guide]: ../other-topics/custom-domain-cert.html
+[cloud platform overview]: ../concepts/cp-overview.html
