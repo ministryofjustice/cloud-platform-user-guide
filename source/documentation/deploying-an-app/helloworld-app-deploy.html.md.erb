@@ -62,19 +62,8 @@ define an instance of the application for kubernetes.
 Before we can deploy the application, we need to make some changes to run it in
 your new namespace.
 
-Edit your local copy of the `kubectl_deploy/ingress.yaml` file, and make the
-following changes:
-
-* Change the `kubernetes.io/ingress.class` annotation to the name of your namespace
-
-This tells kubernetes that we want the ingress-controller belonging to your
-namespace to handle traffic to your application. The ingress controller is
-created by the `resources/ingress.tf` file which formed part of the PR you
-raised to create your namespace.
-
-* Change the hostname for the application
-
-The current hostname for the demo application is:
+Edit your local copy of the `kubectl_deploy/ingress.yaml` file, and change the 
+hostname for the application. The current hostname for the demo application is:
 
 ```
 helloworld-rubyapp.apps.live-1.cloud-platform.service.justice.gov.uk
@@ -132,8 +121,6 @@ apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: helloworld-rubyapp-ingress
-  annotations:
-    kubernetes.io/ingress.class: mynamespace
 spec:
   tls:
   - hosts:
@@ -148,10 +135,9 @@ spec:
           servicePort: 4567
 ```
 
-This tells the cluster that our ingress-controller (found by matching the
-ingress class annotation to the name in the `resources/ingress.tf` file) should
-accept web traffic to the hostname we defined, and should route that traffic to
-port 4567 of the "service" called `rubyapp-service`.
+This tells the cluster that our ingress should accept web traffic to the hostname we 
+defined, and should route that traffic to port 4567 of the "service" called 
+`rubyapp-service`.
 
 ### service.yaml
 
@@ -400,8 +386,6 @@ Replace this:
 ...
 metadata:
   name: helloworld-rubyapp-ingress
-  annotations:
-    kubernetes.io/ingress.class: mynamespace
 spec:
 ...
 ```
@@ -413,7 +397,6 @@ spec:
 metadata:
   name: helloworld-rubyapp-ingress
   annotations:
-    kubernetes.io/ingress.class: mynamespace
     nginx.ingress.kubernetes.io/auth-type: basic
     nginx.ingress.kubernetes.io/auth-secret: basic-auth
 spec:
