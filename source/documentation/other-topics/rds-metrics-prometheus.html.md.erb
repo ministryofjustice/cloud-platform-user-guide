@@ -1,0 +1,44 @@
+---
+title: Viewing RDS Database Metrics
+last_reviewed_on: 2020-09-18
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+[Prometheus] collects metrics data on RDS instances via the [CloudWatch Exporter].
+
+The available metrics are listed [here][metrics list].
+
+You can view any of these metrics as a graph using the [Prometheus UI] by writing it as an expression like this:
+
+```
+aws_rds_free_storage_space_average{dbinstance_identifier="<YOUR DATABASE IDENTIFIER>"}
+```
+
+Put your expression into the `Expression` text field, then click the `Execute` button and view the `Graph` tab.
+
+Your database identifier is available from the kubernetes secrets which were created with your RDS instance.
+The string you want is the hostname part of your RDS instance address. So, if your RDS instance address is:
+
+```
+cloud-platform-ab10ab10ab10ab10.cdwm11111111.eu-west-2.rds.amazonaws.com
+```
+
+Then your database identifier for the Prometheus expression is:
+
+```
+cloud-platform-ab10ab10ab10ab10
+```
+
+And the full expression would be:
+
+```
+aws_rds_free_storage_space_average{dbinstance_identifier="cloud-platform-ab10ab10ab10ab10"}
+```
+
+You can use the various graph controls to adjust the time period and resolution of your graph.
+
+[Prometheus UI]: https://prometheus.cloud-platform.service.justice.gov.uk/
+[Prometheus]: ../monitoring-an-app/prometheus.html
+[CloudWatch Exporter]: ../monitoring-an-app/how-to-use-cloudwatch-datasource.html
