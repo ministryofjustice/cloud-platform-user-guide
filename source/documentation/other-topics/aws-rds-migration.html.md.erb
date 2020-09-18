@@ -14,6 +14,7 @@ This guide assumes the migration complies with the following :
  - The migration happens from a _source_ postresql RDS instance to a _target_ postresql RDS instance
  - Elevated & short-lived sets of postgres credentials are available for both _source_ and _target_
 
+> Generating these credentials for your source database depends on where it is. For the target database, in the Cloud Platform, if your regular credentials have enough access, you can use those, or post in #ask-cloud-platform when you're ready, and the team can generate credentials with elevated privileges and put them into a secret in your namespace.
 
 ### Overview 
 
