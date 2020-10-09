@@ -1,24 +1,32 @@
 ---
 title: Adding AWS resources to your environment
-last_reviewed_on: 2020-07-07
+last_reviewed_on: 2020-10-09
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
 
-Through the [cloud-platform-environments][env-repo] repository, you can provision AWS resources for your environments. This is done using terraform and more specifically, terraform modules we provide for use on the Cloud Platform.
+Through the [cloud-platform-environments][env-repo] repository, you can provision AWS resources for your environments. This is done using terraform and more specifically, terraform modules the Cloud Platform team provides.
 
-The documentation for the modules lives in each module's repository and you can find a list of the available ones below.
+The documentation for the modules lives in each module's repository.
 
 ## Available modules
 
-The updated list of terraform modules provided by the MoJ are available here: [Terraform Modules][tf-modules-list]
+The updated list of terraform modules provided by the Cloud Platform team is available here: [Terraform Modules][tf-modules-list]
 
 ## Usage
 
-In each terraform module repository, you will find a directory named `example` which includes sample configuration for use in Cloud Platform.
+In each terraform module repository, you will find a directory named `example` which includes sample configuration for use on the Cloud Platform.
 
 In your namespace's path in the [cloud-platform-environments][env-repo] repository, cd to the `resources` directory and refer to the module's example to define your resources.
+
+> Terraform configs for some AWS resources can be created using the [cloud-platform] CLI tool, e.g.
+>
+> ```
+> cloud-platform environment rds create
+> ```
+>
+> ...will create an `rds.tf` file in your resources directory.
 
 Each example will have some global configuration defined, however, this should only be declared once, regardless of the number of modules used:
 
@@ -52,7 +60,11 @@ See [this article](/documentation/deploying-an-app/add-secrets-to-deployment.htm
 
 ### Versioning
 
-All modules are versioned. This allows us to implement changes without breaking existing resources. To use a specific version of a module you need to define it in the `source` attribute by specifying the `ref` attribute in the query string of the source URL:
+Only the latest version of a Cloud Platform terraform module may be used.
+
+The Cloud Platform team will upgrade all existing instances of a module, whenever a new version is released, as per this [architecture decision record]
+
+Please check the version badge for the module you are using (visit the web page of the module's github repository - the version badge will be just below the heading), and make sure you are using the latest version of the module in your configuration, by specifying the `ref` attribute in the query string of the source URL:
 
 ```
 module "my_module" {
@@ -60,20 +72,23 @@ module "my_module" {
 }
 ```
 
-Please check the version badge for the module you are using (visit the web page of the module's github repository - the version badge will be just below the heading), and make sure you are using the latest version of the module in your configuration.
-
-Upgrading to a new major version usually means that the configured resource will have to be re-created by terraform.
-
 Refer to the [terraform documentation on modules][tf-modules-docs] for more information on usage.
 
 ### Monitoring AWS Resources
 
 All resources are monitored by AWS CloudWatch by default. We use [CloudWatch Exporter](https://github.com/prometheus/cloudwatch_exporter) to export a number of the metrics for the [Terraform Modules][tf-modules-list] we provide into Prometheus.
 
-To view the current set of metrics available: log into Prometheus  > Click on 'insert metric at cursor' > type 'aws_'
+To view the current set of metrics available: 
+
+* Log into [Prometheus]
+* Click on 'insert metric at cursor'
+* type 'aws_'
 
 You can view all metrics AWS make available [here](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/aws-services-cloudwatch-metrics.html)
 
 [env-repo]: https://github.com/ministryofjustice/cloud-platform-environments/
 [tf-modules-list]: https://github.com/ministryofjustice/cloud-platform#terraform-modules
 [tf-modules-docs]: http://terraform.io/docs/modules
+[cloud-platform]: ../getting-started/cloud-platform-cli.html
+[architecture decision record]: https://github.com/ministryofjustice/cloud-platform/blob/main/architecture-decision-record/015-Keeping-Terraform-modules-up-to-date.md#keeping-terraform-modules-up-to-date
+[Prometheus]: https://prometheus.cloud-platform.service.justice.gov.uk/graph
