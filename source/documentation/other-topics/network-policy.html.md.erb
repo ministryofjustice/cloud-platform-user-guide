@@ -1,6 +1,6 @@
 ---
 title: Network Policies
-last_reviewed_on: 2020-07-02
+last_reviewed_on: 2020-10-09
 review_in: 3 months
 ---
 
@@ -42,7 +42,7 @@ metadata:
 
 ##  Network Policy  
 
-Once the relevant label has been added to the namespace, the policy can be create.   
+Once the relevant label has been added to the namespace, the policy can be created.   
 The policy below allows all traffic from `source-namespace` to `target-namespace`
 
 
@@ -67,8 +67,7 @@ spec:
 
 ```
 
-Note: For more complex usecase, or if the policy is going to be specific to a Pod, see [here](https://kubernetes.io/docs/concepts/services-networking/network-policies/#behavior-of-to-and-from-selectors)
-
+Note: For more complex use-cases, or if the policy is going to be specific to a Pod, see [here](https://kubernetes.io/docs/concepts/services-networking/network-policies/#behavior-of-to-and-from-selectors)
 
 ## Accessing the service
 
