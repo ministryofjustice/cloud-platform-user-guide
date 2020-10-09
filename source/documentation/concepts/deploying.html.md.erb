@@ -1,6 +1,6 @@
 ---
 title: Deploying to the Cloud Platform
-last_reviewed_on: 2020-06-12
+last_reviewed_on: 2020-10-09
 review_in: 3 months
 ---
 
@@ -56,7 +56,7 @@ example if you wanted to roll back a deployment to an earlier version.
 
 ## Multiple replicas
 
-Kubernetes makes it trivially simple to deploy your services in a
+Kubernetes makes it very easy to deploy your services in a
 high-availability configuration.  All you need to do is set the value of
 `replicas` in your [deployments][kubernetes deployments] to a value higher than
 1. For production services, we recommend 4 as a sensible number of replicas.
@@ -66,17 +66,19 @@ replicas with it, the remaining replicas will handle all application traffic,
 so that there is no downtime for your service while the missing replica is
 replaced.
 
-> Note: Kubernetes will automatically try to schedule your replicas on
+> Kubernetes will automatically try to schedule your replicas on
 different worker nodes, to minimise the impact of a node outage on all the
 services running in the cluster.
 
-NB: Running multiple replicas is usually sensible for things like web
+Running multiple replicas is usually sensible for things like web
 application servers, where you just want to be sure that an instance of your
 app. is always available to service web requests. But, for some types of
 workload, such as background job processing, it might make sense to ensure that
-you have zero or one instances, rather than one or more. An example of this
+you have zero or one instances, rather than one or more. 
+
+An example of this
 would be a job processing tasks which **must** be handled in FIFO order -
-running multiple replicas in this case would mean tasks could be processed out
+running multiple replicas in this case could mean tasks get processed out
 of order. For workloads like this, consider a [Recreate] deployment strategy.
 
 ## Zero Downtime Deploys
@@ -112,11 +114,11 @@ downtime deployments in [this article].
 
 ## Horizontal Pod Autoscaling
 
-The Horizontal Pod Autoscaler is a built-in Kubernetes feature that allows you to horizontally scale applications based on one or more monitored metrics such as cpu or memory.
+The Horizontal Pod Autoscaler is a built-in Kubernetes feature that allows you to horizontally scale applications based on one or more monitored metrics such as cpu or memory usage.
 
 The metrics you specify in the `HorizontalPodAutoscaler` manifest will determine the minimum and maximum number of pods needed, and set the thresholds at which pods should be created or removed. 
 
-The Horizontal Pod Autoscaler can ensure that critical applications are elastic and can scale out to meet increasing demand as well scale down to ensure optimal resource usage, it is also a great tool in saving money by auto-scaling down non-production work loads when not in use, such as overnight or the weekend.
+The Horizontal Pod Autoscaler can ensure that critical applications are elastic and can scale out to meet increasing demand as well scale down to ensure optimal resource usage, it is also a great tool in saving money by auto-scaling down non-production work loads when not in use, such as overnight or at the weekend.
 
 #### Important aspects of the HorizontalPodAutoscaler to be aware of:
 
@@ -150,13 +152,13 @@ The above manifest will ensure a minimum of 1 replica is available for the deplo
 Run the following command to apply:
 
 ```
-kubectl apply -f hpa-myapp.yaml -n my-namespace
+$ kubectl apply -f hpa-myapp.yaml -n my-namespace
 horizontalpodautoscaler.autoscaling/hpa-myapp autoscaled
 ```
 Run the following to describe the status of the pod autoscaler:
 
 ```
-kubectl describe hpa -n my-namespace my-app-name
+$ kubectl describe hpa -n my-namespace my-app-name
 ```
  
 ```
@@ -183,7 +185,7 @@ For the above, the current use is 10% of the resource limit, if/when the CPU con
 
 It is also possible to use custom metrics with the horizontal pod-autoscaler. However. this requires a bit more input from the development and Cloud-Platform team. If this is something you may be interested in, please speak to a member of the team on #ask-cloud-platform
 
-Click [HERE](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough) for the official Kubernetes documentation on the horizontal pod autoscaler walkthrough. 
+Click [here](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough) for the official Kubernetes documentation on the horizontal pod autoscaler walkthrough. 
 
 [kubernetes deployments]: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment
 [worker node]: https://kubernetes.io/docs/concepts/architecture/nodes/
