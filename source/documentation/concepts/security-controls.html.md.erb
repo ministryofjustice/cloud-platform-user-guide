@@ -1,6 +1,6 @@
 ---
 title: Security Controls on the Cloud Platform
-last_reviewed_on: 2020-01-30
+last_reviewed_on: 2020-10-19
 review_in: 3 months
 ---
 
@@ -12,11 +12,15 @@ systems.
 
 ## Network architecture
 
-The Cloud Platform (CP) is hosted in [Amazon AWS], and consists of a single
-[kubernetes] cluster, inside which services are hosted in [namespaces], plus
-additional AWS managed services such as database instances, S3 buckets, etc.
+The Cloud Platform (CP) is hosted in [Amazon AWS], and consists of two [kubernetes] clusters:
 
-The cluster and all the AWS resources that services use are hosted in a single
+* live-1 - the "application" cluster, managed via [Kops], which runs all hosted services
+* manager - an [EKS] cluster which runs shared services such as monitoring and CI/CD pipelines
+
+...plus additional AWS managed services such as database instances, S3 buckets,
+etc.
+
+The clusters and all the AWS resources that services use are hosted in a single
 [VPC], which is only accessible to the outside world via either https
 connections, or via the kubernetes API and SSH through a bastion host (only the
 CP team have access to these).
@@ -41,7 +45,7 @@ It is not possible to use security groups in this way in the CP.
 The kubernetes cluster has a pool of [worker nodes] \(EC2 instances\) which are
 entirely interchangeable from the point of view of the services hosted in the
 cluster. Services do not know, and should not care, which worker nodes are
-hosting them at any given moment. So, network connections to for example an
+hosting them at any given moment. So, network connections to, for example, an
 RDS instance could come from **any** of the worker nodes in the cluster.
 
 Security groups work at the EC2 instance level. i.e. requests to an RDS
@@ -67,3 +71,5 @@ the namespaces in which the services run.
 [security groups]: https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html
 [worker nodes]: https://kubernetes.io/docs/concepts/architecture/nodes/
 [kubernetes secrets]: https://kubernetes.io/docs/concepts/configuration/secret/
+[Kops]: https://github.com/kubernetes/kops
+[EKS]: https://aws.amazon.com/eks/
