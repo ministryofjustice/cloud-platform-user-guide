@@ -73,7 +73,7 @@ For example:
     This allows the pipeline to create the new DB Instance from the snapshot, using the same name and settings as the original, and preserves the database endpoint and credentials. 
     
     >Sometimes pipeline throw error ``` InvalidParameterCombination: Cannot upgrade mariadb from 10.4.13 to 10.4.8```. This will happen if the AWS upgraded the minor version automatically 
-    >and terraform stored the lower db_engine_version in its state. To fix this, change the `db_engine_version` to the one AWS upgraded to, in this case `10.4.13` and do **step 4** again.
+    >and terraform stored the exact db_engine_version in its state. To fix this, change the `db_engine_version` from `10.4` to the one AWS upgraded to, in this case `10.4.13` and do **step 4** again.
     >Once the the terraform apply is successful and DB instance created, revert the changes made for `db_engine_version`.
 
 5. Merge the PR to master and check that the build pipeline creates the new DB instance with the same identifier and endpoints. The Cloud Platform team can also apply your changes manually if this is time critical.
