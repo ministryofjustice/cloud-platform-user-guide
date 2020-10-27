@@ -1,0 +1,181 @@
+---
+title: Upgrade an RDS database
+last_reviewed_on: 2020-10-27
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+This page describes how to upgrade your RDS instance to use a different **major** version of PostgreSQL. You might want to do this if you are bringing your application up to date, or if AWS have announced they will no longer support your current version of PostgreSQL.
+
+There are two ways to approach a database upgrade:
+
+## 1. Don't upgrade, migrate
+
+Instead of trying to upgrade your existing RDS instance:
+
+* Create a new RDS instance, using the PostgreSQL version you want
+* Migrate all your application data
+* Change your application configuration (environment variables) to use the new RDS instance
+* Delete your olds RDS instance
+
+### Advantages
+
+* Can be done with little or no downtime
+* Very predictable
+* Easily reversible at any stage
+
+### Disadvantages
+
+* Requires more planning and attention
+
+If you want to use this method, you can treat it like any other [database migration](aws-rds-migration.html) (but easier, because everything is in the same namespace).
+
+## 2. Upgrade your existing RDS instance
+
+The upgrade process involves these steps:
+
+* Ask the Cloud Platform team to pause the "apply" pipeline (so that subsequent changes aren't automatically reverted before your upgrade is complete)
+* Alter your RDS instance to use the default [parameter group] for your **current** PostgreSQL version
+* Raise and merge a PR to change your PostgreSQL version to the one you want - the pipeline will handle the upgrade for you
+* Tell the Cloud Platform team to unpause the apply pipeline
+
+### Advantages
+
+* Very easy to do
+
+### Disadvantages
+
+* Incurs some service downtime (in tests, an almost empty database upgrading from PostgreSQL 9.5 to 9.6 resulted in approx. 7 minutes downtime)
+* It is possible (although unlikely) that version-specific custom parameters could result in problems you don't see until the upgrade fails
+
+### Procedure
+
+The rest of this page will describe this process in detail.
+
+> If you have any read replicas, AWS will upgrade those as well, as soon as you upgrade the primary RDS instance. You will need to adjust the terraform code which defines your replicas, after the upgrade.
+
+#### Use the AWS CLI to get your existing database configuration
+
+When your RDS instance is created, an IAM user is also created, and the AWS credentials are stored as kubernetes secrets in your namespace.
+
+We will use these credentials with the [AWS CLI tool] to describe and then modify your RDS instance.
+
+##### Get your RDS instance identifier and IAM user credentials
+
+```
+kubectl -n [your namespace] get secret
+```
+
+This will give you a list of the secrets in your namespace. Identify the RDS instance secret via its name, and decode its contents:
+
+```
+kubectl -n [your namespace] get secret [secret name] -o yaml | ./bin/decode.rb
+```
+
+> The `bin/decode.rb` script is [here](https://github.com/ministryofjustice/cloud-platform-environments)
+
+Here is a redacted example:
+
+```
+$ kubectl -n dstest get secret rds-instance-output -o yaml | ./bin/decode.rb
+---
+apiVersion: v1
+data:
+  access_key_id: AKIAXXXXXXXXXXXXXXXX
+  database_name: db2axxxxxxxxxxxxxx
+  database_password: XXXXXXXXXXXXXXXX
+  database_username: xxxxxxxxxx
+  rds_instance_address: cloud-platform-1111111111111111.cdwm328dlye6.eu-west-2.rds.amazonaws.com
+  rds_instance_endpoint: cloud-platform-1111111111111111.cdwm328dlye6.eu-west-2.rds.amazonaws.com:5432
+  secret_access_key: qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
+  url: postgres://xxxxxxxxxx:XXXXXXXXXXXXXXXX@cloud-platform-1111111111111111.cdwm328dlye6.eu-west-2.rds.amazonaws.com:5432/db2axxxxxxxxxxxxxx
+kind: Secret
+metadata:
+  creationTimestamp: '2020-10-27T11:37:02Z'
+  name: rds-instance-output
+  namespace: dstest
+  resourceVersion: '416006008'
+  selfLink: "/api/v1/namespaces/dstest/secrets/rds-instance-output"
+  uid: 31a0ea23-f10c-4494-86fb-fbeb844d7f21
+type: Opaque
+```
+
+Use the values you see to set the following environment variables:
+
+```
+export db=db2axxxxxxxxxxxxxx
+export AWS_ACCESS_KEY_ID=AKIAXXXXXXXXXXXXXXXX
+export AWS_SECRET_ACCESS_KEY="qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"
+export AWS_REGION=eu-west-2
+```
+
+Now you can get the relevant configuration details of your RDS instance like this:
+
+```
+$ aws rds describe-db-instances --db-instance-identifier $db \
+  | jq ".DBInstances[] | {engine: .Engine, version: .EngineVersion, db_parameter_group: .DBParameterGroups[].DBParameterGroupName}"
+
+# Output should be something like this:
+
+{
+  "engine": "postgres",
+  "version": "9.5.22",
+  "db_parameter_group": "cloud-platform-cdd5540ee12aa320"
+}
+```
+
+##### Tell your RDS instance to (temporarily) use the default parameter group
+
+Your RDS instance's existing parameter group is tied to the `db_engine`. e.g. a PostgreSQL 9.5 parameter group cannot be used with a PostgreSQL 9.6 RDS instance. So, the existing parameter group must be deleted, and a new one created when your RDS instance is updated. But, you can't delete a parameter group if it has any RDS instances using it. So, the first step is to remove your RDS instance from its database parameter group.
+
+> If you have configured any specific PostgreSQL settings for your database, such that your application will not work using the default parameter group, you may need to create a new parameter group based on the new PostgreSQL version, and use that instead of the default parameter group here.
+
+This is the list of default parameter groups. Use the one matching the **current** database engine version of your RDS instance:
+
+```
+default.aurora-postgresql11
+default.aurora-postgresql9.6
+default.aurora5.6
+default.mariadb10.4
+default.mysql5.7
+default.postgres10
+default.postgres11
+default.postgres12
+default.postgres9.4
+default.postgres9.5
+default.postgres9.6
+```
+
+For example, to change to the default PostgreSQL 9.5 parameter group:
+
+```
+aws rds modify-db-instance --db-instance-identifier $db \
+  --db-parameter-group-name default.postgres9.5
+```
+
+This will output a few screenfuls of JSON, which you can ignore. After making the change, repeat the `describe-db-instances` command to confirm that the change has worked.
+
+> It is important that the apply pipeline is paused, at this point, or it will revert the above change, and your upgrade will fail.
+
+##### Upgrade your RDS instance
+
+After your RDS instance has been removed from the existing database parameter group, you can raise a PR in the environments repository to upgrade your RDS instance.
+
+e.g. To upgrade from PostgreSQL 9.5 to 9.6 (this is a [major version upgrade]), you would change your `resources/rds.tf` file like this:
+
+```
+-  db_engine_version          = "9.5"
++  db_engine_version          = "9.6"
+...
+-  rds_family = "postgres9.5"
++  rds_family = "postgres9.6"
+```
+
+When this PR is merged, the pipeline will upgrade your RDS instance.
+
+> In testing, data in the database was preserved, and the total downtime of the RDS instance was approx. 7 minutes. You need to carry out your own tests in your non-production namespace(s) to confirm that this behaviour is similar and acceptable, for your service.
+
+[major version upgrade]: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.PostgreSQL.html#USER_UpgradeDBInstance.PostgreSQL.MajorVersion
+[parameter group]: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithParamGroups.html
+[AWS CLI tool]: https://aws.amazon.com/cli/
