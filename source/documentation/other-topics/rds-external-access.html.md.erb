@@ -46,7 +46,7 @@ We will use [ministryofjustice/port-forward][port-forward-image] for this exampl
 kubectl \
   -n [your namespace] \
   run port-forward-pod \
-  --generator=run-pod/v1
+  --generator=run-pod/v1 \
   --image=ministryofjustice/port-forward \
   --port=5432 \
   --env="REMOTE_HOST=[your database hostname]" \
