@@ -1,16 +1,12 @@
 ---
 title: Persistent Volume encryption at rest and daily snapshots
-last_reviewed_on: 2020-07-28
+last_reviewed_on: 2020-10-29
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
 
-
-### Introduction
-
 This guide will give you an overview of how to set up encryption at rest for "[Persistent Volumes (PVs)][persistent-volumes]" and take daily snapshots to back up a PV.
-
 
 ### Encrypting Persistent Volumes
 
@@ -35,7 +31,6 @@ spec:
       - {key: environment, operator: In, values: [dev]}
 
 ```
-
 
 In the above PVC example, the cluster will [dynamically provision][dynamic-provisioning] a [Persistent Volume][persistent-volumes] for the PVC, using the `gp2-expand` [AWS EBS Storage Class][storage-class-aws-ebs], which will cause the PV to be encrypted using the [AWS Key Management Service (KMS)][amazon-kms].
 
@@ -75,6 +70,7 @@ resource "aws_dlm_lifecycle_policy" "persistentvolume_backup" {
         SnapshotCreator  = "DLM"
         application      = "test-application"
         environment-name = "testenvname"
+        namespace        = "my-namespace"
         team_name        = "example-repo"
         business-unit    = "example-bu"
         application      = "exampleapp"
