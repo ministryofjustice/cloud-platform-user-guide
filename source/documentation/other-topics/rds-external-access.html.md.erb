@@ -1,6 +1,6 @@
 ---
 title: Accessing your RDS database
-last_reviewed_on: 2020-07-28
+last_reviewed_on: 2020-10-29
 review_in: 3 months
 ---
 
@@ -46,6 +46,7 @@ We will use [ministryofjustice/port-forward][port-forward-image] for this exampl
 kubectl \
   -n [your namespace] \
   run port-forward-pod \
+  --generator=run-pod/v1 \
   --image=ministryofjustice/port-forward \
   --port=5432 \
   --env="REMOTE_HOST=[your database hostname]" \
