@@ -76,17 +76,18 @@ connections.
 
 ### Force SSL connections
 
-Ideally, we also want to completely disable unencrypted connections (by using the RDS `force_ssl` parameter) and always
-perform a full verification when connecting to the RDS endpoint.
+By default, RDS created on the Cloud Platform have SSL enabled.  
 
-In order to force using secure connections for your RDS instance, you'll need to set `force_ssl = true` in your module
-definition. See the [documentation][rds-module] for details. Once applied, you should no longer be able to establish
-a connection using `sslmode=disable`:
+This is done by having the field `force_ssl: true`, which completely disables unencrypted connections.
+
+It is possible to confirm the above by running a `psql` command, using `sslmode=disable`:  
 
 ```
 $ psql "$url?sslmode=disable"
 psql: FATAL:  no pg_hba.conf entry for host "172.20.32.241", user "fDsQgBlavX", database "dba02192a049ed7ce8", SSL off
 ```
+
+The parameter `force_ssl` can be overriden by changing the `db_parameter` when calling the module.
 
 [aws-sec-wp]: https://d1.awsstatic.com/whitepapers/aws-security-whitepaper.pdf
 [aws-rds-ssl]: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html#PostgreSQL.Concepts.General.SSL
