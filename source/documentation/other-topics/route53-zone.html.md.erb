@@ -37,6 +37,7 @@ Note: If you already have that file defined in your environment, do not recreate
 
 ### variable.tf
 
+This file declares the variables fields utilisised in the route53.tf file below<br>   
 Fill in the variable  _namespace_  field below with your existing kubernetes namespace.
 
 ```
@@ -71,8 +72,8 @@ variable "infrastructure-support" {
 variable "owner" {
   default     = "example-owner"
   }
-
 ```
+Note: If you already have that file defined in your environment, do not recreate it
 
 ### route53.tf
 
