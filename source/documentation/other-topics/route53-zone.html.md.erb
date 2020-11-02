@@ -1,6 +1,6 @@
 ---
 title: Creating a Route 53 Hosted Zone
-last_reviewed_on: 2020-07-31
+last_reviewed_on: 2020-11-02
 review_in: 3 months
 ---
 
@@ -21,6 +21,7 @@ Copy the Terraform resource code below and save it into the respective 2 files i
 
  * `main.tf`
  * `route53.tf`
+ * `variables.tf`
 
 ### main.tf
 ```
@@ -34,28 +35,70 @@ provider "aws" {
 ```
 Note: If you already have that file defined in your environment, do not recreate it.
 
+### variable.tf
+
+This file declares the variables fields utilisised in the route53.tf file below<br>   
+Fill in the variable  _namespace_  field below with your existing kubernetes namespace.
+
+```
+variable "namespace" {
+  default = "YOUR KUBERNETES NAMESPACE GOES HERE"
+}
+
+variable "business-unit" {
+  default = "example-bu"
+}
+
+variable "team_name" {
+  default = "example-team-name"
+}
+
+variable "application" {
+  default = "example-app"
+}
+
+variable "environment-name" {
+  default = "dev"
+}
+
+variable "is-production" {
+  default = "false"
+}
+
+variable "infrastructure-support" {
+  default     = "example@example.com"
+  }
+
+variable "owner" {
+  default     = "example-owner"
+  }
+```
+Note: If you already have that file defined in your environment, do not recreate it
+
 ### route53.tf
 
-Fill in the _name_ and the _namespace_ fields below, with your domain name & and your existing kubernetes namespace.
+Fill in the _name_  field below with your domain name.
 
 ```
 resource "aws_route53_zone" "example_team_route53_zone" {
   name = "YOUR DOMAIN GOES HERE"
 
   tags = {
-    business-unit          = "example-bu"
-    application            = "example-app"
-    is-production          = "false"
-    environment-name       = "dev"
-    owner                  = "example-owner"
-    infrastructure-support = "example@example.com"
+    team_name              = var.team_name
+    business-unit          = var.business-unit
+    application            = var.application
+    is-production          = var.is-production
+    environment-name       = var.environment-name
+    owner                  = var.owner    
+    infrastructure-support = var.infrastructure-support
+    namespace              = var.namespace
   }
 }
 
 resource "kubernetes_secret" "example_route53_zone_sec" {
   metadata {
     name      = "example-route53-zone-output"
-    namespace = "YOUR KUBERNETES NAMESPACE GOES HERE"
+    namespace = var.namespace
   }
 
   data = {
