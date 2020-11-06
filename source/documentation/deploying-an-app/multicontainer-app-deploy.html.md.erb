@@ -1,6 +1,6 @@
 ---
 title: Deploying a multi-container application to the Cloud Platform
-last_reviewed_on: 2020-08-03
+last_reviewed_on: 2020-11-06
 review_in: 3 months
 ---
 
@@ -71,10 +71,12 @@ As per the diagram, we need to configure six objects in kubernetes - 3 deploymen
 
 You can see these YAML config files in the `kubernetes_deploy` directory of the [demo application][multi-demo].
 
-> Note: The yaml files in the github repository refer to docker images from docker hub, e.g. `ministryofjustice/cloud-platform-multi-container-demo-app:worker-1.6` 
+> Note: The yaml files in the github repository refer to docker images from docker hub, e.g. `ministryofjustice/cloud-platform-multi-container-demo-app:worker-1.6`
 These will work, but in order to deploy the docker images you built in the earlier step, please change this to the full reference to your docker images.
 
 You also need to change the `host` entry in the `ingress.yaml` file, so that this instance of the application has a unique hostname (i.e. change `multi-container-demo.apps.live-1.cloud-platform.service.justice.gov.uk` to something like `[yourname]-demo.apps.live-1.cloud-platform.service.justice.gov.uk`)
+
+> The cluster will not allow you to deploy an ingress with the same hostname as an existing ingress, so it's important to ensure your hostname is unique.
 
 In `rails-app-deployment.yaml` and `worker-deployment.yaml` you can see the configuration for two environment variables:
 
@@ -82,9 +84,9 @@ In `rails-app-deployment.yaml` and `worker-deployment.yaml` you can see the conf
 * `CONTENT_API_URL` uses the name and port defined in `content-api-service.yaml`
 
 In the `kubernetes_deploy` directory of the [demo application][multi-demo], you will also see a migration job yaml config file.
-This will run the database migration to setup entries to the RDS database instance.
+This will run rails database migrations.
 
-Setup HTTP basic Authentication using the guidance [http-basic-authentication]: https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/helloworld-app-deploy.html#add-http-basic-authentication
+Setup HTTP basic Authentication using the guidance [here](helloworld-app-deploy.html#add-http-basic-authentication).
 
 ## Deploying to the cluster
 
@@ -96,26 +98,28 @@ After you have built and pushed your docker images, and made the corresponding c
 
 You should be able to view the application in your browser at:
 
-      https://multi-container-demo.apps.live-1.cloud-platform.service.justice.gov.uk/
+```
+https://<unique hostname you chose>.apps.live-1.cloud-platform.service.justice.gov.uk/
+```
 
 It should behave in the same way as when you were running it locally via docker-compose.
 
 ## Further Development
 
-After you deployed and Interacting with multi-container application and would like to create Monitoring dashboard and Custom Alerts for your application use this working examples:
+Once you have deployed a working application, you can create a monitoring dashboard and custom alerts using these examples:
 
-* **Grafana dashboard** - Follow the [guide][creating-dashboards] on how to create a Grafana dashboard, make corresponding changes to [monitoring-grafana-dashboard.yaml][dashboard-configmap] file and apply the configmap to your namespace in the kubernetes cluster, which will show your Grafana-Dashboard [here][Dashboard].     
+* **Grafana dashboard** - Follow the [guide][creating-dashboards] on how to create a Grafana dashboard, make corresponding changes to [monitoring-grafana-dashboard.yaml][dashboard-configmap] file and apply the configmap to your namespace in the kubernetes cluster, which will show your Grafana-Dashboard [here][Dashboard].
 
       ```
       kubectl apply --filename monitoring-grafana-dashboard.yaml --namespace [your namespace]
       ```
 
 * **Custom Alerts** - Follow the [guide][custom-alert] on how to create Custom Alerts, make corresponding changes to [prometheus-app-alert.yaml][alert-prometheusrule] file and apply the PrometheusRule to your namespace in the kubernetes cluster, this will create custom alerts for your application.
-      
+
       ```
       kubectl apply --filename prometheus-app-alert.yaml --namespace [your namespace]
       ```
-      
+
 [multi-demo]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app
 [multi-demo-readme]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app#multi-container-demo-application
 [cloudplatform]: https://github.com/ministryofjustice/cloud-platform
@@ -128,9 +132,9 @@ After you deployed and Interacting with multi-container application and would li
 [cp-env]: https://github.com/ministryofjustice/cloud-platform-environments
 [ecr-setup]: /documentation/getting-started/ecr-setup.html#creating-an-ecr-repository
 [add-aws-resources]: /documentation/deploying-an-app/add-aws-resources.html#adding-aws-resources-to-your-environment
-[rds-access-instructions]: https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance#access-outside-the-cluster
+[rds-access-instructions]: ../other-topics/rds-external-access.html
 [creating-dashboards]: /documentation/monitoring-an-app/prometheus.html#creating-dashboards
-[dashboard-configmap]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/tree/grafana-dashboard-v1.0/k8s_additional_resources
+[dashboard-configmap]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/grafana-dashboard-v1.0/k8s_additional_resources/monitoring-grafana-dashboard.yaml
 [custom-alert]: /documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
-[alert-prometheusrule]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/tree/custom-alerts-v1.0/k8s_additional_resources
+[alert-prometheusrule]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/custom-alerts-v1.0/k8s_additional_resources/prometheus-app-alert.yaml
 [Dashboard]: https://grafana.cloud-platform.service.justice.gov.uk
