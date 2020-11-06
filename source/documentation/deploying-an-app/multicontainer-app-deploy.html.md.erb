@@ -84,7 +84,7 @@ In `rails-app-deployment.yaml` and `worker-deployment.yaml` you can see the conf
 * `CONTENT_API_URL` uses the name and port defined in `content-api-service.yaml`
 
 In the `kubernetes_deploy` directory of the [demo application][multi-demo], you will also see a migration job yaml config file.
-This will run the database migration to setup entries to the RDS database instance.
+This will run rails database migrations.
 
 Setup HTTP basic Authentication using the guidance [http-basic-authentication]: https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/helloworld-app-deploy.html#add-http-basic-authentication
 
@@ -104,20 +104,20 @@ It should behave in the same way as when you were running it locally via docker-
 
 ## Further Development
 
-After you deployed and Interacting with multi-container application and would like to create Monitoring dashboard and Custom Alerts for your application use this working examples:
+Once you have deployed a working application, you can create a monitoring dashboard and custom alerts using these examples:
 
-* **Grafana dashboard** - Follow the [guide][creating-dashboards] on how to create a Grafana dashboard, make corresponding changes to [monitoring-grafana-dashboard.yaml][dashboard-configmap] file and apply the configmap to your namespace in the kubernetes cluster, which will show your Grafana-Dashboard [here][Dashboard].     
+* **Grafana dashboard** - Follow the [guide][creating-dashboards] on how to create a Grafana dashboard, make corresponding changes to [monitoring-grafana-dashboard.yaml][dashboard-configmap] file and apply the configmap to your namespace in the kubernetes cluster, which will show your Grafana-Dashboard [here][Dashboard].
 
       ```
       kubectl apply --filename monitoring-grafana-dashboard.yaml --namespace [your namespace]
       ```
 
 * **Custom Alerts** - Follow the [guide][custom-alert] on how to create Custom Alerts, make corresponding changes to [prometheus-app-alert.yaml][alert-prometheusrule] file and apply the PrometheusRule to your namespace in the kubernetes cluster, this will create custom alerts for your application.
-      
+
       ```
       kubectl apply --filename prometheus-app-alert.yaml --namespace [your namespace]
       ```
-      
+
 [multi-demo]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app
 [multi-demo-readme]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app#multi-container-demo-application
 [cloudplatform]: https://github.com/ministryofjustice/cloud-platform
