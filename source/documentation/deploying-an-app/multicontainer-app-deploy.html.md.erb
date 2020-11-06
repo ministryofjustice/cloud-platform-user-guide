@@ -86,7 +86,7 @@ In `rails-app-deployment.yaml` and `worker-deployment.yaml` you can see the conf
 In the `kubernetes_deploy` directory of the [demo application][multi-demo], you will also see a migration job yaml config file.
 This will run rails database migrations.
 
-Setup HTTP basic Authentication using the guidance [http-basic-authentication]: https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/helloworld-app-deploy.html#add-http-basic-authentication
+Setup HTTP basic Authentication using the guidance [here](helloworld-app-deploy.html#add-http-basic-authentication).
 
 ## Deploying to the cluster
 
@@ -132,9 +132,9 @@ Once you have deployed a working application, you can create a monitoring dashbo
 [cp-env]: https://github.com/ministryofjustice/cloud-platform-environments
 [ecr-setup]: /documentation/getting-started/ecr-setup.html#creating-an-ecr-repository
 [add-aws-resources]: /documentation/deploying-an-app/add-aws-resources.html#adding-aws-resources-to-your-environment
-[rds-access-instructions]: https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance#access-outside-the-cluster
+[rds-access-instructions]: ../other-topics/rds-external-access.html
 [creating-dashboards]: /documentation/monitoring-an-app/prometheus.html#creating-dashboards
-[dashboard-configmap]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/tree/grafana-dashboard-v1.0/k8s_additional_resources
+[dashboard-configmap]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/grafana-dashboard-v1.0/k8s_additional_resources/monitoring-grafana-dashboard.yaml
 [custom-alert]: /documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
-[alert-prometheusrule]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/tree/custom-alerts-v1.0/k8s_additional_resources
+[alert-prometheusrule]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/custom-alerts-v1.0/k8s_additional_resources/prometheus-app-alert.yaml
 [Dashboard]: https://grafana.cloud-platform.service.justice.gov.uk
