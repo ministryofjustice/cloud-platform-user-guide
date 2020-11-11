@@ -1,6 +1,6 @@
 ---
 title: Creating an ECR repository
-last_reviewed_on: 2020-08-06
+last_reviewed_on: 2020-11-11
 review_in: 3 months
 ---
 
@@ -55,18 +55,13 @@ The secret stores the IAM access keys to authenticate with the registry, and the
 To retrieve the credentials:
 
 ```
-kubectl -n <namespace_name> get secret ecr-repo-[your-namespace] -o yaml
-```
-
-The values in kubernetes secrets are always `base64` encoded so you will have to decode them before you can use them outside kubernetes (inside your namespace, the base64 decoding is handled automatically). This can be done at the command line using the following:
-
-```
-echo QWxhZGRpbjpvcGVuIHNlc2FtZQ== | base64 --decode; echo
+kubectl -n <namespace_name> get secrets/ecr-repo-[your-namespace] --template={{.data.access_key_id}} | base64 --decode
+kubectl -n <namespace_name> get secrets/ecr-repo-[your-namespace] --template={{.data.secret_access_key}} | base64 --decode
 ```
 
 ## Managing your ECR repository
 
-There is a maximum number of images per repository for Amazon Elastic Container Registry(ECR). If a new image is created and pushed to ECR on every code change, repositories can quickly fill up with new revisions. So it is important to regularly delete images which are no longer required.
+There is a maximum number of images per repository for Amazon Elastic Container Registry (ECR). If a new image is created and pushed to ECR on every code change, repositories can quickly fill up with new revisions. So it is important to regularly delete images which are no longer required.
 
 You can delete an image with the AWS CLI using this [guide][delete-ecr-image].
 
