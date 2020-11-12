@@ -1,6 +1,6 @@
 ---
 title: Creating a Cloud Platform Environment
-last_reviewed_on: 2020-08-06
+last_reviewed_on: 2020-11-12
 review_in: 3 months
 ---
 
@@ -18,7 +18,7 @@ namespace. You can think of a namespace as a separate portion of the cloud platf
 set aside for your service.
 
 Once you have created an environment you will be able to perform actions using
-the `kubectl` tool in the namespace you have created.
+the [kubectl] tool in the namespace you have created.
 
 ## Objective
 
@@ -31,10 +31,10 @@ you to [deploy an application][deploy-hello-world] into.
 
 * Install the [Cloud Platform CLI] tool
 * Git
-* You must be a member of the `ministryofjustice` organisation on GitHub
+* You must be a member of at least one team in the `ministryofjustice` organisation on GitHub
 
 You create an environment by adding the definition of the environment as YAML
-files in the following GitHub repository:
+files in the following GitHub repository, using the `cloud-platform` CLI tool:
 
 [cloud-platform-environments][env-repo]
 
@@ -304,3 +304,4 @@ spec:
 [LimitRange]: https://kubernetes.io/docs/tasks/administer-cluster/manage-resources/memory-default-namespace/
 [ResourceQuota]: https://kubernetes.io/docs/concepts/policy/resource-quotas/
 [Cloud Platform CLI]: cloud-platform-cli.html
+[kubectl]: https://kubernetes.io/docs/tasks/tools/install-kubectl/
