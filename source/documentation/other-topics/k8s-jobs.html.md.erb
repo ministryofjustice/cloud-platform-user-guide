@@ -1,15 +1,14 @@
 ---
 title: Kubernetes jobs
-last_reviewed_on: 2020-08-20
+last_reviewed_on: 2020-11-24
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
 
-
 ### Overview
 
-Kubernetes has the concept of [jobs][kubernetes-jobs]. Kubernetes Jobs are created to run pods for a short period of time which are running for completion as opposed to different objects in Kubernetes like Replicasets, Replication Controllers, Demonesets, which is run continuously.
+Kubernetes has the concept of [jobs][kubernetes-jobs]. Kubernetes Jobs are created to run pods for a short period of time, to complete a task; as opposed to other objects in Kubernetes like Replicasets, Replication Controllers, and Daemonesets, which run pods continuously.
 
 ### Usage
 
@@ -40,7 +39,7 @@ spec:
 
 ### Deploying a job to your Namespace
 
-You need a yaml file to define your job. You can either create your own, or use above example.
+You need a yaml file to define your job. You can either create your own, or copy and tweak the above example, then deploy it as usual:
 
       ```
       kubectl apply -f [file-name].yaml --namespace [your namespace]
@@ -56,9 +55,9 @@ Verify the job is created:
 
 When a Job completes Pods created by the Job are not deleted. Finished Jobs are usually no longer needed in the system. Use the [TTL mechanism][TTL-mechanism] for Jobs by settting `ttlSecondsAfterFinished`, so that a Job can be cleaned up automatically some time after it finishes.
 
-We have [delete-completed-jobs][concourse-job] concourse pipleline setup to clean up all the completed jobs, which does not have `ttlSecondsAfterFinished`, deleting a completed Job will clean up the Pods it created. You can still see the logs of the deleted Pod in [kibana][kibana]
+The Cloud Platform has this [delete-completed-jobs][concourse-job] concourse pipleline which will clean up any completed jobs which do not have `ttlSecondsAfterFinished` define. Deleting a completed Job will clean up any Pods it created. You can still see the logs of the deleted Pods in [kibana][kibana]
 
-> Note: Kubernetes uses UTC exclusively. Make sure you take that into account when you’re creating your schedule or setting up ttlSecondsAfterFinished.
+> Note: Kubernetes uses UTC exclusively. Make sure you take that into account when you’re creating your schedule or setting up `ttlSecondsAfterFinished`.
 
 [jobs-spec]: https://kubernetes.io/docs/concepts/workloads/controllers/job/#writing-a-job-spec
 [kubernetes-jobs]: https://kubernetes.io/docs/concepts/workloads/controllers/job/
