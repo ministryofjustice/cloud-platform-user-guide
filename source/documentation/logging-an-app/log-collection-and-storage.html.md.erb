@@ -1,6 +1,6 @@
 ---
 title: Application Log Collection and Storage
-last_reviewed_on: 2020-08-12
+last_reviewed_on: 2020-11-25
 review_in: 3 months
 ---
 
@@ -10,19 +10,16 @@ review_in: 3 months
 
 The Cloud Platform automatically collects and stores your application logs, and lets you access them via an AWS-Hosted [Kibana dashboard].
 
-Logs are collected via [Fluentbit] and [Fluentd], and stored in an AWS-Hosted [ElasticSearch Cluster].
+Logs are collected via [Fluentbit], and stored in an AWS-Hosted [ElasticSearch Cluster].
 
 ### Log Collection
 
-Fluentbit/Fluentd is a cluster-wide log collection service.
-
-The Fluentbit and Fluentd applications are configured with cluster-wide read permissions. As long as your application logs to `stdout`, your logs will be collected.
+Fluentbit is a cluster-wide log collection service, with read permissions across the whole cluster. As long as your application logs to `stdout`, your logs will be collected.
 
 ### Log Storage
 
 The logs are shipped to an AWS-Hosted ElasticSearch cluster. All application logs are retained for 30 days.
 
 [Fluentbit]: https://fluentbit.io/
-[Fluentd]: https://www.fluentd.org/
 [Kibana dashboard]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/kibana
 [ElasticSearch Cluster]: https://aws.amazon.com/elasticsearch-service/
