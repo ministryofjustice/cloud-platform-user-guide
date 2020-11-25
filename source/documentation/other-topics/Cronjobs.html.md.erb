@@ -1,23 +1,18 @@
 ---
 title: Kubernetes Cronjobs
-last_reviewed_on: 2020-08-20
+last_reviewed_on: 2020-11-25
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
 
-
-### Overview
-
-Kubernetes has the concept of [Cronjobs][kubernetes-cronjobs] which creates Jobs on a time-based schedule, you can use CronJobs to run tasks at a specific time or interval. CronJobs are a good choice for automatic tasks, such as backups, reporting, sending emails, or cleanup tasks.
+Kubernetes has the concept of [Cronjobs][kubernetes-cronjobs] which create Jobs according to a schedule. You can use CronJobs to run tasks at a specific time or interval. CronJobs are a good choice for automatic tasks such as backups, reporting, sending emails, or cleanup tasks.
 
 ### Usage
 
-CronJobs use [Job][kubernetes-jobs] objects to complete their tasks. A CronJob creates a Job object each time it runs. CronJobs are created, managed, scaled, and deleted in the same way as Jobs. Cron jobs require a config file, follow the [guide][cron-jobs] on creating a Cronjob.
+CronJobs use [Job][kubernetes-jobs] objects to complete their tasks. A CronJob creates a Job object each time it runs. CronJobs are created, managed, scaled, and deleted in the same way as Jobs. Cron jobs require a config file. Follow this [guide][cron-jobs] to create a Cronjob.
 
-This example cron job below prints the current time and a hello message every first minute of every hour from 0200 to 1400 UTC on Sunday, Monday, Friday, and Saturday
-
-example:
+The example cron job below prints the current time and a hello message every first minute of every hour from 0200 to 1400 UTC on Sunday, Monday, Friday, and Saturday:
 
 ```
 apiVersion: batch/v1beta1
@@ -47,23 +42,25 @@ spec:
 
 You need a yaml file to define your cronjob. You can either create your own, or use [this one][cronjob-yaml] as an example. This periodically deletes untagged images in the ECR docker image repository (to ensure we stay within the number of images we are allowed).
 
-      ```
-      kubectl apply --filename cronjob-ecr.yaml --namespace [your namespace]
-      ```
+```
+kubectl apply --filename cronjob-ecr.yaml --namespace [your namespace]
+```
 
 Verify the Cronjob is created:
 
-      ```
-      kubectl get cronjob --namespace [your namespace]
-      ```
+```
+kubectl get cronjob --namespace [your namespace]
+```
 
 ### Clean up finished jobs
 
-Finished Jobs created by cronjobs are usually no longer needed in the system. Use the [TTL mechanism][TTL-mechanism] for Cronjob by settting `ttlSecondsAfterFinished`, so that a Job can be cleaned up automatically some time after it finishes. 
+Jobs created by CronJobs are usually not needed after they have run to completion. Use the [TTL mechanism] to automatically clean them up by settting `ttlSecondsAfterFinished`, to tell kubernetes when it can delete the completed Job.
 
-We have [delete-completed-jobs][concourse-job] setup to clean up all the completed jobs, which does not have `ttlSecondsAfterFinished`, deleting a completed Jobs will clean up the Pods it created. You can still see the logs of the deleted Pod in [kibana][kibana]
+We also have a [delete-completed-jobs][concourse-job] concourse job which will clean up all completed jobs which do not have `ttlSecondsAfterFinished` defined. 
 
-> Note: Kubernetes uses UTC exclusively. Make sure you take that into account when you’re creating your schedule or setting up ttlSecondsAfterFinished.
+Deleting completed Jobs cleans up the Pods they create, which helps the kubernetes cluster to use its CPU and memory resources efficiently. You can still see the logs of the deleted Pod in [kibana][kibana].
+
+> Note: Kubernetes uses UTC exclusively. Make sure you take that into account when you’re creating your schedule or defining `ttlSecondsAfterFinished`.
 
 [cronjob-yaml]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/tree/cronjob-example-v1.0/k8s_additional_resources
 [cron-jobs]: https://kubernetes.io/docs/tasks/job/automated-tasks-with-cron-jobs/#creating-a-cron-job
@@ -71,3 +68,4 @@ We have [delete-completed-jobs][concourse-job] setup to clean up all the complet
 [kubernetes-jobs]: https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/
 [concourse-job]: https://concourse.cloud-platform.service.justice.gov.uk/teams/main/pipelines/maintenance/jobs/delete-completed-jobs
 [kibana]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana
+[TTL mechanism]: https://kubernetes.io/docs/concepts/workloads/controllers/ttlafterfinished/
