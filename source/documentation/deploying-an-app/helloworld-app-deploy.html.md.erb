@@ -1,6 +1,6 @@
 ---
 title: Deploying a 'Hello World' application to the Cloud Platform
-last_reviewed_on: 2020-08-28
+last_reviewed_on: 2020-11-30
 review_in: 3 months
 ---
 
@@ -38,7 +38,8 @@ The process of building an image and pushing it to an ECR will normally be carri
 This guide assumes the following:
 
 * [Docker][docker] is installed and configured.
-* Kubectl is installed and configured (`brew install kubectl` on a Mac with [Homebrew][homebrew] installed, or [follow these instructions](https://kubernetes.io/docs/tasks/tools/install-kubectl/))
+* Kubectl is installed (`brew install kubectl` on a Mac with [Homebrew][homebrew] installed, or [follow these instructions](https://kubernetes.io/docs/tasks/tools/install-kubectl/))
+* You have [authenticated to the live-1 cluster]
 * AWS CLI is installed (`brew install awscli` on a Mac with [Homebrew][homebrew] installed)
 * You have installed the [Cloud Platform CLI]
 
@@ -62,14 +63,14 @@ define an instance of the application for kubernetes.
 Before we can deploy the application, we need to make some changes to run it in
 your new namespace.
 
-Edit your local copy of the `kubectl_deploy/ingress.yaml` file, and change the 
+Edit your local copy of the `kubectl_deploy/ingress.yaml` file, and change the
 hostname for the application. The current hostname for the demo application is:
 
 ```
 helloworld-rubyapp.apps.live-1.cloud-platform.service.justice.gov.uk
 ```
 
-We need a unique domain name for this instance of the application. There is a
+We need a **unique** domain name for this instance of the application. There is a
 "wildcard" domain and SSL certificate available on the Cloud Platform, so we
 will stick to a domain name which matches:
 
@@ -77,9 +78,16 @@ will stick to a domain name which matches:
 *.apps.live-1.cloud-platform.service.justice.gov.uk
 ```
 
-Choose a domain name for your application and replace the two instances of
-`helloworld-rubyapp` in the `kubectl_deploy/ingress.yaml` file with your chosen
-name.
+Choose a domain name for your application.
+
+We suggest something nobody else is likely to be using, such as:
+
+```
+[your name]-helloworld.apps.live-1.cloud-platform.service.justice.gov.uk
+```
+
+Replace the two instances of `helloworld-rubyapp` in the
+`kubectl_deploy/ingress.yaml` file with your chosen name.
 
 > If you want to use a domain name which doesn't match the default wildcard
 domain, you will need to make some more changes. More information on this is
@@ -135,8 +143,8 @@ spec:
           servicePort: 4567
 ```
 
-This tells the cluster that our ingress should accept web traffic to the hostname we 
-defined, and should route that traffic to port 4567 of the "service" called 
+This tells the cluster that our ingress should accept web traffic to the hostname we
+defined, and should route that traffic to port 4567 of the "service" called
 `rubyapp-service`.
 
 ### service.yaml
@@ -199,6 +207,9 @@ To update our application, we need to:
 * Push the image to a repository that kubernetes can access
 * Update our `deployment.yaml` file with the new image details
 * Apply the updated yaml file to kubernetes
+
+> Everything but the first step will usually be done automatically by your
+> CI/CD pipeline, but it's worth understanding what's going on.
 
 ## Step 3 - Create an Amazon ECR
 
@@ -278,7 +289,7 @@ For AWS version 2.0, use this command:
 
 For either version of the aws cli, the output of the above should include `Login Succeeded` to confirm you have authenticated to the docker image repository.
 
-These credential are valid for 12 hours. So, if you are working through this example over a longer period, you will have to login again, e.g. the following day.
+These credential are valid for 12 hours. So, if you are working through this example over a longer period (e.g. the following day), you will have to login again.
 
 ### Tag the image and push it to your ECR
 
@@ -322,8 +333,6 @@ kubectl -n [namespace name] apply -f kubectl_deploy
 This will cause kubernetes to launch a new pod using the new docker image, and
 then delete the old one. In a few seconds, you should see your updated web
 page.
-
-> On a real project the process of building and tagging a new image, pushing it to the image repository and updating your deployment.yaml file is usually taken care of by a CI/CD pipeline. We've worked through this whole process manually here, to show how it all fits together.
 
 ## Add HTTP Basic Authentication
 
@@ -445,3 +454,4 @@ Now, if you reload the browser page showing the 'Hello world' message from the a
 [Cloud Platform CLI]: ../getting-started/cloud-platform-cli.html
 [custom-domain-guide]: ../other-topics/custom-domain-cert.html
 [cloud platform overview]: ../concepts/cp-overview.html
+[authenticated to the live-1 cluster]: ../getting-started/kubectl-config.html
