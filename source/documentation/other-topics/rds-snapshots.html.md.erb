@@ -1,22 +1,22 @@
 ---
 title: RDS Snapshots
-last_reviewed_on: 2020-08-24
+last_reviewed_on: 2020-12-01
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
 
-In RDS, snapshots have multiple purposes: migrations, backups, etc. When RDS DB instances are created using [Cloud Platform RDS terraform module](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance) an IAM user account is created for management purposes (e.g RDS snapshots) - allowing snapshot create, delete, copy, restore. 
+RDS snapshots have multiple purposes: migrations, backups, etc. When RDS DB instances are created using the [Cloud Platform RDS terraform module](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance) an IAM user account is created for management purposes. This user can create, delete, copy, and restore RDS snapshots.
 
-Examples about managing RDS DB snapshots using AWS CLI can be found in the [README](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance#4-managing-rds-snapshots---backups-and-restores) within the [RDS terraform module](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance)
+Examples of managing RDS DB snapshots using the AWS CLI can be found in the [README](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance#4-managing-rds-snapshots---backups-and-restores) within the [RDS terraform module](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance)
 
 ## Considerations
 
 - The amount of manual snapshots per AWS account is limited, so it's important to cleanup old snapshots
-- Daily snapshots are already happening out of the box. It's important to keep in mind that daily snapshots **are not related** with "Manual Snapshots"
+- Daily snapshots are provided "out of the box", and **do not count** towards the "Manual Snapshots" total
 - Managing snapshots is the teams' responsibility (as are snapshot restores), so teams are responsible for cleaning up unneeded manual snapshots in order to avoid hitting our AWS account limits
 
-## Restoring live services from a RDS DB snapshot
+## Restoring live services from an RDS DB snapshot
 
 If you want to restore your production RDS DB instance from a previous snapshot, either because the database is corrupted or the whole database was deleted, here is the procedure:
 
@@ -72,12 +72,12 @@ For example:
 
     This allows the pipeline to create the new DB Instance from the snapshot, using the same name and settings as the original, and preserves the database endpoint and credentials. 
     
-    >Sometimes pipeline throw error ``` InvalidParameterCombination: Cannot upgrade mariadb from 10.4.13 to 10.4.8```. This will happen if the AWS upgraded the minor version automatically 
+> Sometimes the pipeline throws an error: ``` InvalidParameterCombination: Cannot upgrade mariadb from 10.4.13 to 10.4.8```. This will happen if AWS upgraded the minor version automatically 
     >and terraform stored the exact db_engine_version in its state. To fix this, change the `db_engine_version` from `10.4` to the one AWS upgraded to, in this case `10.4.13` and do **step 4** again.
-    >Once the the terraform apply is successful and DB instance created, revert the changes made for `db_engine_version`.
+    >Once the the terraform apply is successful and DB instance has been created, revert the changes made for `db_engine_version`.
 
 5. Merge the PR to master and check that the build pipeline creates the new DB instance with the same identifier and endpoints. The Cloud Platform team can also apply your changes manually if this is time critical.
    
 Once the new DB instance is restored and available, your application should be able to access the database with the same database credentials and endpoint as before.
 
-After you have verified that your DB instance and the database is working as expected, let the Cloud Platform team know, so they can delete the renamed DB instance created in Step 4 above.
+After you have verified that your DB instance and the database is working as expected, let the Cloud Platform team know so they can delete the renamed DB instance created in Step 4 above.
