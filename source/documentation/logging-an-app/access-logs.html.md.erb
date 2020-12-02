@@ -35,9 +35,11 @@ As a quick example, we will filter down to the logs of a particular environment.
 
 1) On the Kibana dashboard, select the 'Discover' tab.
 
-2) Select 'Add a filter +'
+2) Ensure the index selected is `kubernetes_cluster*` (which is the default).
 
-3) Filter `kubernetes.[namespace_name]`, with operator `is` and the value equal to your environment name (without the []).
+3) Select 'Add a filter +'
+
+4) Filter `kubernetes.namespace_name`, with operator `is` and the value equal to your environment name.
 
 The log entries will contain any data that your pods wrote to STDOUT/STDERR.
 
