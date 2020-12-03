@@ -5,7 +5,12 @@ require "date"
 require "json"
 require "net/http"
 
-DOCS_PATH = "../docs/documentation"
+# This script spider a url and get all links to other pages,
+# subract with the list of files in the docs and give the list 
+# of orphaned files which are present in the docs/ folder but not linked
+# anywhere in the index or other html pages.
+
+DOCS_PATH = "docs/documentation"
 SITE_URL = "https://user-guide.cloud-platform.service.justice.gov.uk/"
 
 def page_urls(root_url)
@@ -63,10 +68,10 @@ end
 # use an alternative mechanism for passing the list of URLs
 sites = SITE_URL
 
-pages = sites.map { |url| page_urls(url) }.flatten
+pages = page_urls(SITE_URL).flatten
 
-files = Dir["#{DOCS_PATH}/**/*.html"].select { |f| f.slice!("../docs/") }
+files = Dir["#{DOCS_PATH}/**/*.html"].select { |f| f.slice!("docs") }
 
-files -= pages
+orphaned_files = files - pages
 
-puts files
+puts orphaned_files
