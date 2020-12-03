@@ -70,7 +70,7 @@ sites = SITE_URL
 
 pages = page_urls(SITE_URL).flatten
 
-files = Dir["#{DOCS_PATH}/**/*.html"].select { |f| f.slice!("docs") }
+files = Dir["#{DOCS_PATH}/**/*.html"].select { |f| f.slice!("/docs/") }
 
 orphaned_files = files - pages
 
