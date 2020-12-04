@@ -52,12 +52,13 @@ After your ECR has been created, there will be a [Kubernetes secret] in your nam
 
 The secret stores the IAM access keys to authenticate with the registry, and the actual repository URL.
 
-To retrieve the credentials:
+Use the [Cloud Platform CLI] to retrieve the credentials:
 
 ```
-kubectl -n <namespace_name> get secrets/ecr-repo-[your-namespace] --template={{.data.access_key_id}} | base64 --decode
-kubectl -n <namespace_name> get secrets/ecr-repo-[your-namespace] --template={{.data.secret_access_key}} | base64 --decode
+cloud-platform decode-secret -n <namespace_name> -s ecr-repo-[your-namespace]
 ```
+
+Look for the `access_key_id` and `secret_access_key` values.
 
 ## Managing your ECR repository
 

@@ -202,6 +202,42 @@ You should see output similar to this:
 The github teams are listed under `https://k8s.integration.dsd.io/groups` as
 above.
 
+### Base64 decode a kubernetes secret
+
+```bash
+cloud-platform decode-secret -n <namespace_name> -s <secret_name>
+```
+
+e.g.
+
+```bash
+cloud-platform decode-secret -n dstest -s rds-instance-output
+
+{
+    "apiVersion": "v1",
+    "data": {
+        "access_key_id": "AKIAXXXXXXXXXXXXXXXX",
+        "database_name": "db2axxxxxxxxxxxxxx",
+        "database_password": "xxxxxxxxxxxxxxxx",
+        "database_username": "xxxxxxxxxx",
+        "rds_instance_address": "cloud-platform-1111111111111111.cdwm328dlye6.eu-west-2.rds.amazonaws.com",
+        "rds_instance_endpoint": "cloud-platform-1111111111111111.cdwm328dlye6.eu-west-2.rds.amazonaws.com:3306",
+        "secret_access_key": "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq",
+        "url": "postgres://xxxxxxxxxx:XXXXXXXXXXXXXXXX@cloud-platform-1111111111111111.cdwm328dlye6.eu-west-2.rds.amazonaws.com:5432/db2axxxxxxxxxxxxxx"
+    },
+    "kind": "Secret",
+    "metadata": {
+        "creationTimestamp": "2020-06-19T13:43:31Z",
+        "name": "rds-instance-output",
+        "namespace": "dstest",
+        "resourceVersion": "276902169",
+        "selfLink": "/api/v1/namespaces/poornima-dev/secrets/rds-instance-output",
+        "uid": "1f4243d8-ee57-4756-af09-5a8084a89988"
+    },
+    "type": "Opaque"
+}
+```
+
 [cloud platform cli]: https://github.com/ministryofjustice/cloud-platform-cli#cloud-platform-tool-cli
 [releases]: https://github.com/ministryofjustice/cloud-platform-cli#cloud-platform-tool-cli/releases
 [golang]: https://golang.org
