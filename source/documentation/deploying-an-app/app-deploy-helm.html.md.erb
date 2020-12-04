@@ -1,6 +1,6 @@
 ---
 title: Deploying an application to the Cloud Platform with Helm
-last_reviewed_on: 2020-08-20
+last_reviewed_on: 2020-12-04
 review_in: 3 months
 ---
 
@@ -8,17 +8,15 @@ review_in: 3 months
 
 
 ### Introduction
-This document will act as a guide to your first application deployment into the Cloud Platform. If you have any issues completing the objective or have any suggestions please feel free to drop use a line in the `#ask-cloud-platform` slack channel.
+The intention of this document is to walk you through the process of deploying an application into the Cloud Platform using the [Helm tool](https://helm.sh/). In simple terms, Helm is a package manager for Kubernetes equivalent to yum or apt, that allows you to deploy charts (which you can think of as packaged applications) into your namespace. 
 
-#### Objective
-By the end of this guide you'll have deployed a [Multi-container demo app](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/) to a cluster using the Kubernetes package manager [Helm](https://helm.sh/).
+At the end of this document, you will have deployed a [Multi-container demo app](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/) to your namespace and now have the ability to scale the app using the Helm tool. If you have any questions or ways to improve this document, please feel free to post a message in the #ask-cloud-platform slack channel/
 
 _Disclaimer: You'll see fairly quickly that the application is not fit for production. A perfect example of this is the [plaintext secrets file](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/helm_deploy/multi-container-app/container-postgres-secrets.yaml). For the demo application we've left this file in plaintext but it **must** be encrypted when writing your own manifests for production/non-production work in the MoJ._
 
 #### Requirements
 It is assumed you have the following:
 
- - You have a basic understanding of what [Kubernetes](https://kubernetes.io/) is.
  - You have [created an environment for your application][env-create]
  - You have installed [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) on your local machine.
  - You have [authenticated][auth-to-cluster] to the cloud-platform-live-1 cluster.
@@ -204,9 +202,6 @@ And then confirm the pods are terminating as expected:
 ### Next steps
 The next step will be to create your own Helm Chart. You can try this with an application of your own or run through [Bitnami's excellent guide](https://docs.bitnami.com/kubernetes/how-to/create-your-first-helm-chart/) on how to build using a simple quickstart.
 
-[env-create]: /documentation/getting-started/env-create.html#creating-a-cloud-platform-environment
-[auth-to-cluster]: /documentation/getting-started/kubectl-config.html#authentication
-[basic-auth-topic]: /documentation/deploying-an-app/helloworld-app-deploy.html#add-http-basic-authentication
 
 ## Migrate from Helm v2 to Helm v3
 
@@ -378,3 +373,7 @@ A member of the Cloud-Platform team will `manually delete the Rolebinding` befor
 ```
 kubectl -n <namespace-name> delete rolebindings tiller
 ```
+
+[env-create]: /documentation/getting-started/env-create.html#creating-a-cloud-platform-environment
+[auth-to-cluster]: /documentation/getting-started/kubectl-config.html#authentication
+[basic-auth-topic]: /documentation/deploying-an-app/helloworld-app-deploy.html#add-http-basic-authentication
