@@ -1,6 +1,6 @@
 ---
 title: Viewing RDS Database Metrics
-last_reviewed_on: 2020-09-18
+last_reviewed_on: 2020-12-23
 review_in: 3 months
 ---
 
@@ -18,7 +18,7 @@ aws_rds_free_storage_space_average{dbinstance_identifier="<YOUR DATABASE IDENTIF
 
 Put your expression into the `Expression` text field, then click the `Execute` button and view the `Graph` tab.
 
-Your database identifier is available from the kubernetes secrets which were created with your RDS instance.
+Your database identifier is available from the kubernetes secret or configmap, which was created with your RDS instance.
 The string you want is the hostname part of your RDS instance address. So, if your RDS instance address is:
 
 ```
