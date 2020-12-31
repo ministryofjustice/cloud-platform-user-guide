@@ -1,0 +1,359 @@
+---
+title: Continuous Deployment of an application using Github Actions
+last_reviewed_on: 2020-12-30
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+This tutorial will walk through setting up continuous deployment (CD) of a github
+repository to a namespace on the cloud platform, using github actions.
+
+## Pre-requisites
+
+This guide assumes you have already created:
+
+* A [namespace](/documentation/getting-started/env-create.html)
+* An [ECR](/documentation/getting-started/ecr-setup.html) to store your docker images
+
+If you haven't done so already, please complete those steps and then resume
+this guide.
+
+> You're going to need a ServiceAccount later, so you can save a bit of time by
+also [creating your serviceaccount](#creating-a-serviceaccount) ahead of time.
+
+## Something to deploy
+
+To simulate a real project, we need to build our own docker image, and deploy
+it from our ECR. Once we have our CD system set up, we should be able to merge
+a PR in our github repository and see the change in our deployed application.
+
+We're going to use a customised nginx image for this. Create a new github
+repository, and add these files:
+
+* `index.html`
+
+```html
+<h1>Hello, World!</h1>
+```
+
+* `Dockerfile`
+
+```Dockerfile
+FROM bitnami/nginx:1.19
+COPY index.html /app/index.html
+```
+
+We can build and run this locally, like this:
+
+```bash
+docker build -t foo .
+docker run --rm -p 8080:8080 foo
+```
+
+Now visit `http://localhost:8080` and you should see "Hello, World!"
+
+> We could achieve the same result using the base image and a [ConfigMap], but
+the point is to have a simple project which has the same kind of build
+requirements as a "real" project.
+
+## Push to our ECR
+
+Before we setup our CD system, we're going to go once through the
+deployment/upgrade process manually.
+
+> You will need to change the AWS credentials and the `docker tag` URL below, using the values for your own ECR
+
+```bash
+export AWS_ACCESS_KEY_ID=xxxxxx
+export AWS_SECRET_ACCESS_KEY=xxxxxx
+docker tag foo 754256621582.dkr.ecr.eu-west-2.amazonaws.com/webops/dstest-ecr:1.0
+docker push 754256621582.dkr.ecr.eu-west-2.amazonaws.com/webops/dstest-ecr:1.0
+```
+
+## Deploy to kubernetes
+
+Now that you have a docker image in your ECR, you can launch it in the cluster.
+Add another file to your github repository:
+
+> * Replace the `image:` value with the one referring to your ECR
+> * Replace the `dstest` in `dstest.apps.live-1.cloud-platform.service.justice.gov.uk` with a hostname that is unique to your namespace
+
+* `kubernetes-deploy.yaml`
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloworld-nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webserver
+  template:
+    metadata:
+      labels:
+        app: webserver
+    spec:
+      containers:
+      - name: nginx
+        image: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/webops/dstest-ecr:1.0
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  labels:
+    app: nginx-service
+spec:
+  ports:
+  - port: 8080
+    name: http
+    targetPort: 8080
+  selector:
+    app: webserver
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: helloworld-nginx-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  tls:
+  - hosts:
+    - dstest.apps.live-1.cloud-platform.service.justice.gov.uk
+  rules:
+  - host: dstest.apps.live-1.cloud-platform.service.justice.gov.uk
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: nginx-service
+          servicePort: 8080
+```
+
+Deploy to the cluster like this:
+
+```bash
+kubectl -n <your namespace> apply -f kubernetes-deploy.yaml
+```
+
+After a few seconds, you should be able to visit the ingress URL and see "Hello, World!"
+
+To make a change to our project, we need to:
+
+* update the source code (in this case, by editing `index.html`)
+* rebuild the docker image
+* push it to the ECR with a new tag
+* update our kubernetes-deploy.yaml file with the new image tag
+* repeat the `kubectl apply` command to update the cluster with our changes
+
+This is the process we're going to automate using github actions.
+
+> You can try doing this manually if you want, to confirm it works.
+
+## Automatically build and push to ECR
+
+The github action running in your repository will need to be able to
+authenticate to your ECR, so it's going to need the AWS credentials.
+
+Add these to your github repository as secrets by going to the "Settings" for
+your repository and clicking "Secrets" in the left-hand navigation.
+
+Create new secrets with the following names, and the values for your ECR:
+
+* AWS_ACCESS_KEY_ID
+* AWS_SECRET_ACCESS_KEY
+
+Now add this github action to your repository:
+
+`.github/workflows/cd.yaml`
+
+```yaml
+name: Continuous Deployment
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - 'main'
+env:
+  KUBE_CLUSTER: live-1.cloud-platform.service.justice.gov.uk
+  NAMESPACE: dstest
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build
+        run: docker build -t foo .
+      - name: Push to ECR
+        id: ecr
+        uses: jwalton/gh-ecr-push@v1
+        with:
+          access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          region: eu-west-2
+          local-image: foo
+          image: webops/dstest-ecr:${{ github.sha }}
+```
+
+> The `workflow_dispatch` line allows you to trigger this action via the github web UI.
+> Replace `<your namespace>` with the name of your namespace.
+
+That takes care of building the docker image and pushing it to the ECR - in
+this case, tagged with the SHA hash of the last commit to the github
+repository.
+
+## Update manifest
+
+We need to update our manifest so that it deploys the appropriate tag version
+of the docker image. We can do this by turning our `kubernetes-deploy.yaml`
+file into a template, and interpolating the image tag at deployment time.
+
+We'll use
+[envsubst](https://manpages.ubuntu.com/manpages/trusty/man1/envsubst.1.html)
+for this.
+
+* Change the `image:` line of the `kubernetes-deploy.yaml` file to this
+(remembering to use your own value for the ECR reference):
+
+```yaml
+image: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/webops/dstest-ecr:${IMAGE_TAG}
+```
+
+* Rename the file from `kubernetes-deploy.yaml` to `kubernetes-deploy.tpl`
+
+* Then, add this step to the github action:
+
+```
+- name: Apply to kubernetes
+  run: export IMAGE_TAG=${{ github.sha }} && cat kubernetes-deploy.tpl | envsubst > kubernetes-deploy.yaml
+```
+
+## Applying to the cluster
+
+Your github action needs to be able to apply the manifest to the cluster (when
+you used `kubectl` earlier, it worked because **you** are authenticated to the
+cluster). For this, we'll use a [ServiceAccount].
+
+### Creating a ServiceAccount
+
+To create a serviceaccount for your namespace, you need to raise a PR against
+the [environments repository], using the [cloud platform cli].
+
+Change directories to your namespace folder in a checkout of the environments
+repository, e.g.
+`namespaces/live-1.cloud-platform.service.justice.gov.uk/dstest`, and run this:
+
+```bash
+cloud-platform environment serviceaccount create
+```
+
+This will create a file in your namespace folder, defining a serviceaccount.
+Create a branch and raise a PR to add this file, and continue when it has been
+approved and you have merged it.
+
+### ServiceAccount Credentials
+
+When the serviceaccount is created, there will be another secret in your namespace, with a name like
+
+```
+cloud-platform-user-token-xxxxx
+```
+
+> `cloud-platform-user` is the default name of the serviceaccount created by the CLI
+
+Find the exact name of the secret using:
+
+```bash
+kubectl -n <your namespace> get secret
+```
+
+Then decode it with:
+
+```bash
+cloud-platform decode-secret -n <your namespace> -s <secret name>
+```
+
+This will output the secret as JSON. We need the value of two keys:
+
+* `ca.crt`
+* `token`
+
+Take the value of `token`, and create a github secret called `KUBE_TOKEN`. Be
+careful not to include the enclosing `"` characters in the secret.
+
+The `ca.crt` value needs a bit of extra care. In the secret, you'll see it looks something like this:
+
+```
+"data": {
+    "ca.crt": "-----BEGIN CERTIFICATE-----\nMIIC0zCCAbugAwIBAgIMFYjQf
+EQ8uyuCm6PoMA0GCSqGSIb3DQEBCwUAMBUxEzAR\n...\nBgNVBAMTCmt1YmVybmV0ZXM
+wHhcNMTkwMzAyMTcwODIzWhcNMjkwMzAxMTcwODIz\nSH9qfuabKA==\n-----END CER
+TIFICATE-----\n",
+    "namespace": ...
+```
+
+You need the contents of the github secret to look like this:
+
+```
+-----BEGIN CERTIFICATE-----
+MIIC0zCCAbugAwIBAgIMFYjQfEQ8uyuCm6PoMA0GCSqGSIb3DQEBCwUAMBUxEzAR
+...
+BgNVBAMTCmt1YmVybmV0ZXMwHhcNMTkwMzAyMTcwODIzWhcNMjkwMzAxMTcwODIz
+SH9qfuabKA==
+-----END CERTIFICATE-----
+```
+
+That is, you need to replace all the `\n` with *actual* newlines, and get rid of the surrounding `"`
+
+You can do that with this command:
+
+```bash
+cloud-platform decode-secret -n <your namespace> -s <secret name> \
+  | grep ca.crt | sed 's/\\n/\
+/g' | sed 's/.*"//'
+```
+
+> You might have trouble copy/pasting this command, because of the escaped
+newline. If you can't get it to work, you can change the text in your editor.
+
+Create a github secret called `KUBE_CERT` containing the reformatted `ca.crt` value.
+
+### Using the credentials
+
+Add this step to get the github action to use the credentials to authenticate to the cluster:
+
+```yaml
+- name: Authenticate to the cluster
+  env:
+    KUBE_CERT: ${{ secrets.KUBE_CERT }}
+    KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
+  run: |
+    echo "${KUBE_CERT}" > ca.crt  # <-- The " here are very important
+    kubectl config set-cluster ${KUBE_CLUSTER} --certificate-authority=./ca.crt --server=https://api.${KUBE_CLUSTER}
+    kubectl config set-credentials deploy-user --token=${KUBE_TOKEN}
+    kubectl config set-context ${KUBE_CLUSTER} --cluster=${KUBE_CLUSTER} --user=deploy-user --namespace=${NAMESPACE}
+    kubectl config use-context ${KUBE_CLUSTER}
+```
+
+### Deploying the latest code
+
+The final step in the github action is to apply the yaml file like this:
+
+```yaml
+- name: Apply the updated manifest
+  run: |
+    kubectl -n ${NAMESPACE} apply -f kubernetes-deploy.yaml
+```
+
+[ConfigMap]: https://kubernetes.io/docs/concepts/configuration/configmap/
+[ServiceAccount]: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
+[environments repository]: https://github.com/ministryofjustice/cloud-platform-environments
+[cloud platform cli]: ../getting-started/cloud-platform-cli.html
