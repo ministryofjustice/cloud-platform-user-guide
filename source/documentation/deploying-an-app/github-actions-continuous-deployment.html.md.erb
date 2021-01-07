@@ -1,6 +1,6 @@
 ---
 title: Continuous Deployment of an application using Github Actions
-last_reviewed_on: 2021-01-04
+last_reviewed_on: 2021-01-07
 review_in: 3 months
 ---
 
@@ -284,7 +284,7 @@ The `ECR` environment variable exists already, so we just need to supply
 ```
 
 At this point, the updated docker image has been built and pushed to the ECR,
-and the kubernetes manifest has been update with the correct image tag. Now we
+and the kubernetes manifest has been updated with the correct image tag. Now we
 need to apply the updated manifest to the kubernetes cluster.
 
 ### Creating a ServiceAccount
