@@ -1,6 +1,6 @@
 ---
 title: Network Policies
-last_reviewed_on: 2020-10-09
+last_reviewed_on: 2021-01-13
 review_in: 3 months
 ---
 
@@ -9,12 +9,13 @@ review_in: 3 months
 # Overview 
 
 Network Policies are used to regulate connectivity between Kubernetes namespaces.  
-Every namespace in the cluster has network policies only allowing inbound traffic from the _ingress controllers_ namespace.  
-
+Every namespace in the cluster has network policies which only allow inbound traffic from the _ingress controllers_ namespace (so that incoming requests can be routed to your web applications).
 
 A network policy allows connection based on `PodSelector` and/or `NamespaceSelector`.  The policy will then filter requests based on namespace or pod labels.
 
-## Namespace Label 
+## Namespace Label
+
+This example demonstrates using a `namespaceSelector` to route traffic based on a namespace label.
 
 Any namespace label can be used in the network policy.   
 For clarity, and to avoid overlap with other namespaces, let's make our label key:   
@@ -43,8 +44,8 @@ metadata:
 ##  Network Policy  
 
 Once the relevant label has been added to the namespace, the policy can be created.   
-The policy below allows all traffic from `source-namespace` to `target-namespace`
 
+The policy below allows all traffic from namespaces which have a label called `cloud-platform.justice.gov.uk/namespace` with the the value `source-namespace` to route to the namespace called `target-namespace`.
 
 ```
 # 04-networkpolicy.yaml
@@ -71,9 +72,8 @@ Note: For more complex use-cases, or if the policy is going to be specific to a 
 
 ## Accessing the service
 
-To access a service in the target namespace, we won't be able to simply use the service name anymore. 
+To access a service in the target namespace **from the source namespace** we need to add the target namespace name to the domain name of the service, e.g:
 
-We have to use `<serviceName>.<namespaceName>`.  
-
-Example : 
-```curl myservice.target-namespace ```
+```
+curl myservice.target-namespace
+```
