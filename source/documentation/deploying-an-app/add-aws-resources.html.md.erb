@@ -1,6 +1,6 @@
 ---
 title: Adding AWS resources to your environment
-last_reviewed_on: 2020-10-09
+last_reviewed_on: 2021-01-13
 review_in: 3 months
 ---
 
@@ -12,23 +12,30 @@ The documentation for the modules lives in each module's repository.
 
 ## Available modules
 
-The updated list of terraform modules provided by the Cloud Platform team is available here: [Terraform Modules][tf-modules-list]
+The list of terraform modules provided by the Cloud Platform team is available here: [Terraform Modules][tf-modules-list]
 
 ## Usage
 
 In each terraform module repository, you will find a directory named `example` which includes sample configuration for use on the Cloud Platform.
 
-In your namespace's path in the [cloud-platform-environments][env-repo] repository, cd to the `resources` directory and refer to the module's example to define your resources.
+In your namespace's path in the [cloud-platform-environments][env-repo] repository, `cd` to the `resources` directory and refer to the module's example to define your resources.
 
-> Terraform configs for some AWS resources can be created using the [cloud-platform] CLI tool, e.g.
->
-> ```
-> cloud-platform environment rds create
-> ```
->
-> ...will create an `rds.tf` file in your resources directory.
+Terraform configs for some AWS resources can be created using the [cloud-platform] CLI tool, e.g.
 
-Each example will have some global configuration defined, however, this should only be declared once, regardless of the number of modules used:
+```
+cloud-platform environment rds create
+```
+
+...will create an `rds.tf` file in your resources directory.
+
+At time of writing, the following resources can be created by the CLI tool:
+
+* rds
+* s3
+* ecr
+* serviceaccount
+
+Each example will have some global terraform configuration defined, however, this should only be declared once, regardless of the number of modules used:
 
 ```
 terraform {
@@ -40,7 +47,7 @@ provider "aws" {
 }
 ```
 
-Additionally, some examples might define variables; again, these should only be declared once per namespace:
+Additionally, some examples might define variables. Again, these should only be declared once per namespace:
 
 ```
 variable "cluster_name" {}
@@ -64,7 +71,7 @@ Only the latest version of a Cloud Platform terraform module may be used.
 
 The Cloud Platform team will upgrade all existing instances of a module, whenever a new version is released, as per this [architecture decision record]
 
-Please check the version badge for the module you are using (visit the web page of the module's github repository - the version badge will be just below the heading), and make sure you are using the latest version of the module in your configuration, by specifying the `ref` attribute in the query string of the source URL:
+Please check the version badge for the module you are using (visit the web page of the module's github repository - the version badge will be just below the README heading), and make sure you are using the latest version of the module in your configuration, by specifying the `ref` attribute in the query string of the source URL:
 
 ```
 module "my_module" {
