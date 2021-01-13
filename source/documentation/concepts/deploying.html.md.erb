@@ -1,6 +1,6 @@
 ---
 title: Deploying to the Cloud Platform
-last_reviewed_on: 2020-10-09
+last_reviewed_on: 2021-01-13
 review_in: 3 months
 ---
 
@@ -14,7 +14,7 @@ these gems, then run this install script"), you tell the cluster what
 state it should be in, and then leave it to the cluster to do whatever is
 necessary to get from the state it's in to the state you want it to be in.
 
-By 'state' here, we usually mean something like *"there should be 4 pods, each
+> By 'state' here, we usually mean something like *"there should be 4 pods, each
 running an instance of this docker image, listening on port 3000, with a
 service called 'rails-app' distributing inbound traffic to them."*
 
@@ -48,7 +48,7 @@ If you do this, you will get the `latest` version of the image (`latest` is the
 default tag value that all docker images have, assigned to the last version
 pushed to the image repository).
 
-We strongly advise against deploying the `latest` version of any images.
+> We strongly advise against deploying the `latest` version of any images.
 Doing this makes it difficult or impossible to reproduce a known state, for
 example if you wanted to roll back a deployment to an earlier version. 
 
