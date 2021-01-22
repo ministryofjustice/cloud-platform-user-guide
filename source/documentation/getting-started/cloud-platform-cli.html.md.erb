@@ -238,6 +238,37 @@ cloud-platform decode-secret -n dstest -s rds-instance-output
 }
 ```
 
+### Export AWS Credentials
+
+You can use the CLI to set AWS credentials as shell variables, to make it
+easier to access AWS resources from the command-line.
+
+For example, if you want to run a command like `aws rds describe-db-instances`
+on your RDS instance, you first have to set these environment variables:
+
+* AWS_REGION - to "eu-west-2"
+* ACCESS_KEY_ID - to the value for your RDS instance
+* SECRET_ACCESS_KEY - to the value for your RDS instance
+
+To make this easier, if you run `decode-secret` with the
+`--export-aws-credentials` flag (or `-e` for short), you will get output like
+this:
+
+```
+$ cloud-platform decode-secret -n dstest -s rds-instance-output -e
+export AWS_REGION="eu-west-2"
+export AWS_ACCESS_KEY_ID="XXXXXXXXXXXXXXXXXXXX"
+export AWS_SECRET_ACCESS_KEY="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+```
+
+If you wrap the command in `eval`, it will set the variables in your current
+shell, so you can do things like this:
+
+```
+$ eval(cloud-platform decode-secret -n dstest -s rds-instance-output -e)
+$ aws rds describe-db-instances --db-instance-identifier=cloud-platform-xxxxxxxxxxxxxxxx
+```
+
 [cloud platform cli]: https://github.com/ministryofjustice/cloud-platform-cli#cloud-platform-tool-cli
 [releases]: https://github.com/ministryofjustice/cloud-platform-cli#cloud-platform-tool-cli/releases
 [golang]: https://golang.org
