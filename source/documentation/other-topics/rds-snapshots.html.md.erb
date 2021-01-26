@@ -1,6 +1,6 @@
 ---
 title: RDS Snapshots
-last_reviewed_on: 2020-12-01
+last_reviewed_on: 2021-01-26
 review_in: 3 months
 ---
 
@@ -20,64 +20,83 @@ Examples of managing RDS DB snapshots using the AWS CLI can be found in the [REA
 
 If you want to restore your production RDS DB instance from a previous snapshot, either because the database is corrupted or the whole database was deleted, here is the procedure:
 
-1. Get the `DBSnapshotIdentifier` of your DB instance from which you want to restore using the AWS CLI:
-   
-    ```
-    aws rds describe-db-snapshots --db-instance-identifier [db-instance-identifier]
-    ```
-    The `db-instance-identifier` is the first part (`cloud-platform-xxxxx`) of `rds_instance_address` in your kubernetes secret inside your namespace. 
-    
-    For example, if your `rds_instance_address` value is `cloud-platform-foo.bar.eu-west-2.rds.amazonaws.com`, then the `db-instance-identifier`value is `cloud-platform-foo`.
+#### 1. Get the `db-instance-identifier` of the DB instance you want to restore, using the [Cloud Platform CLI];
 
-    The output will have a list of snapshots available for that RDS DB instance. Pick the `DBSnapshotIdentifier` from which you want the RDS to be restored.
+```bash
+cloud-platform decode-secret -n <your namespace> -s <the secret storing your RDS details>
+```
 
-2. Update your current RDS manifest file (usually called `rds.tf`) in the [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments) repo to include `snapshot-identifier` and raise the PR.
+Look for a line like this in the output;
 
-    ```
-    snapshot_identifier = "rds:cloud-platform-XXXXX-2020-02-08-04-23"
-    ```
+```
+"rds_instance_address": "cloud-platform-xxxxxxxxxxxxxxxx.abcdefghijkl.eu-west-2.rds.amazonaws.com",
+```
+
+The `db-instance-identifier` is the `cloud-platform-xxxxxxxxxxxxxxxx` part.
+
+#### 2. List the available snapshots using the AWS CLI:
+
+```
+eval $(cloud-platform decode-secret -n <your namespace> -s <the secret storing your RDS details> --export-aws-credentials)
+aws rds describe-db-snapshots --db-instance-identifier <db-instance-identifier>
+```
+
+The output will have a list of snapshots available for that RDS DB instance. Pick the `DBSnapshotIdentifier` from which you want the RDS to be restored.
+
+#### 3. Update your current RDS manifest file (usually called `rds.tf`) in the [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments) repo to include `snapshot-identifier` and raise the PR.
+
+```
+snapshot_identifier = "rds:cloud-platform-XXXXX-2020-02-08-04-23"
+```
+
 For example:
 
-    ```
-    module "example_team_rds" {
-        source               = "github.com/ministryofjustice/cloud-platform-terraform-rds-instance?ref=5.1"
-        cluster_name           = var.cluster_name
-        cluster_state_bucket   = var.cluster_state_bucket
-        team_name              = var.team_name
-        business-unit          = var.business-unit
-        application            = var.application
-        is-production          = var.is-production
-        db_engine_version      = "11.4"
-        environment-name       = var.environment-name
-        infrastructure-support = var.infrastructure-support
-        force_ssl              = "true"
-        rds_family             = "postgres11"
+```
+module "example_team_rds" {
+    source               = "github.com/ministryofjustice/cloud-platform-terraform-rds-instance?ref=5.1"
+    cluster_name           = var.cluster_name
+    cluster_state_bucket   = var.cluster_state_bucket
+    team_name              = var.team_name
+    business-unit          = var.business-unit
+    application            = var.application
+    is-production          = var.is-production
+    db_engine_version      = "11.4"
+    environment-name       = var.environment-name
+    infrastructure-support = var.infrastructure-support
+    force_ssl              = "true"
+    rds_family             = "postgres11"
 
-        snapshot_identifier = "rds:cloud-platform-XXXXX-2020-02-08-04-23"
+    snapshot_identifier = "rds:cloud-platform-XXXXX-2020-02-08-04-23"
 
-        providers = {
-        # Can be either "aws.london" or "aws.ireland"
-        aws = aws.london
-        }
+    providers = {
+    # Can be either "aws.london" or "aws.ireland"
+    aws = aws.london
     }
-    ```
+}
+```
 
-    It is important to retain the original settings associated with the DB instance when restoring from the snapshot. So don't make any other changes to this file.
+It is important to retain the original settings associated with the DB instance when restoring from the snapshot. So don't make any other changes to this file.
 
-3. **Contact the Cloud Platform team** about the restore, providing the `db-instance-identifier` and the PR raised.
-     
-4. Before the PR can be merged, the Cloud Platform team have to:
-    * pause the concourse pipeline, and
-    * rename the DB Instance via the AWS console
+#### 4. Contact the Cloud Platform team about the restore, providing the `db-instance-identifier` and the PR raised.
 
-    This allows the pipeline to create the new DB Instance from the snapshot, using the same name and settings as the original, and preserves the database endpoint and credentials. 
-    
-> Sometimes the pipeline throws an error: ``` InvalidParameterCombination: Cannot upgrade mariadb from 10.4.13 to 10.4.8```. This will happen if AWS upgraded the minor version automatically 
-    >and terraform stored the exact db_engine_version in its state. To fix this, change the `db_engine_version` from `10.4` to the one AWS upgraded to, in this case `10.4.13` and do **step 4** again.
-    >Once the the terraform apply is successful and DB instance has been created, revert the changes made for `db_engine_version`.
+#### 5. Before the PR can be merged, the Cloud Platform team have to:
+* pause the concourse pipeline, and
+* rename the DB Instance via the AWS console
 
-5. Merge the PR to master and check that the build pipeline creates the new DB instance with the same identifier and endpoints. The Cloud Platform team can also apply your changes manually if this is time critical.
-   
+This allows the pipeline to create the new DB Instance from the snapshot, using the same name and settings as the original, and preserves the database endpoint and credentials.
+
+> Sometimes the pipeline throws an error: ``` InvalidParameterCombination: Cannot upgrade mariadb from 10.4.13 to 10.4.8```.
+>
+> This will happen if AWS upgraded the minor version automatically and terraform stored the exact db_engine_version in its state.
+>
+> To fix this, change the `db_engine_version` in your `rds.tf` from `10.4` to the one AWS upgraded to, in this case `10.4.13` and repeat the previous steps again.
+>
+> Once the the terraform apply is successful, and the new DB instance has been created, revert the changes made for `db_engine_version`.
+
+#### 6. Merge the PR to master and check that the build pipeline creates the new DB instance with the same identifier and endpoints. The Cloud Platform team can also apply your changes manually if this is time critical.
+
 Once the new DB instance is restored and available, your application should be able to access the database with the same database credentials and endpoint as before.
 
-After you have verified that your DB instance and the database is working as expected, let the Cloud Platform team know so they can delete the renamed DB instance created in Step 4 above.
+After you have verified that your DB instance and the database is working as expected, let the Cloud Platform team know so they can delete the old, renamed DB instance.
+
+[Cloud Platform CLI]: ../getting-started/cloud-platform-cli.html
