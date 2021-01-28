@@ -1,6 +1,6 @@
 ---
 title: Use IAM role to access resources in a different AWS account
-last_reviewed_on: 2020-10-19
+last_reviewed_on: 2020-01-28
 review_in: 3 months
 ---
 
@@ -16,12 +16,10 @@ review_in: 3 months
 
 1. **Create the IAM role**
 
-    Cloud Platform maintain these cross account roles in the [cloud-platform-infrastructure](https://github.com/ministryofjustice/cloud-platform-infrastructure/tree/main/terraform/cross-account-IAM) repo.
+    Create a file (cross-iam-role.tf), update the template below with the correct values and raise a PR.
 
-    Create a file (<namespace>.tf), update the template below with the correct values and raise a PR.
-
-    <details><summary> Click here to see a template code block </summary>
-    <p>
+<details><summary> Click here to see a template code block </summary>
+<p>
 
 ```
     data "aws_iam_policy_document" "<namespace>-kiam-trust-chain" {
@@ -97,11 +95,11 @@ review_in: 3 months
     }
 ```
      
-    </p>
-    </details>
+</p>
+</details>
 
-    <details><summary> Here is an example using the template above, with typical values provided</summary>
-    <p>
+<details><summary> Here is an example using the template above, with typical values provided</summary>
+<p>
 
 
 ```
@@ -178,8 +176,8 @@ review_in: 3 months
     }
 ```
      
-    </p>
-    </details>
+</p>
+</details>
 
 
 2. **Annotate the pod with the IAM role**
