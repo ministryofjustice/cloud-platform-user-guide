@@ -11,16 +11,14 @@ repository to a namespace on the cloud platform, using GitHub Actions.
 
 ## Pre-requisites
 
-This guide assumes you have already created:
+To work through this guide, you will need:
 
-* A [namespace](/documentation/getting-started/env-create.html)
-* An [ECR](/documentation/getting-started/ecr-setup.html) to store your docker images
+* A cloud platform [namespace](/documentation/getting-started/env-create.html)
+* An [ECR](/documentation/getting-started/ecr-setup.html) in your namespace, to store your docker images
+* A [serviceaccount][create serviceaccount] in your namespace
 
-If you haven't done so already, please complete those steps and then resume
-this guide.
-
-> You're going to need a [ServiceAccount] later, so you can save a bit of time by
-also [creating your serviceaccount](#creating-a-serviceaccount) now.
+If you haven't done so already, please go through the linked steps to create
+those resources, and then resume this guide.
 
 ## Something to deploy
 
@@ -82,7 +80,7 @@ docker tag foo 754256621582.dkr.ecr.eu-west-2.amazonaws.com/webops/dstest-ecr:1.
 docker push 754256621582.dkr.ecr.eu-west-2.amazonaws.com/webops/dstest-ecr:1.0
 ```
 
-> You will need to supply the AWS credentials, and change `webops/dstest-ecr` in the `docker tag` URL above, using the values for your own ECR
+> You will need to supply the AWS credentials, and change `webops/dstest-ecr` in the `docker tag` URL above, using the values for your own ECR. Instructions for getting the AWS credentials are [here](../getting-started/ecr-setup.html#accessing-the-credentials)
 
 ### Deploy to kubernetes
 
@@ -185,7 +183,7 @@ not). Instead, we're going to trigger our action whenever there is a push to
 the `main` branch, which will happen whenever a PR is merged.
 
 Create this file in your repository (using your namespace name instead of
-`dstest`, and your ECR details instead of `webops/dstest-ecr`):
+`dstest`):
 
 `.github/workflows/cd.yaml`
 
@@ -201,7 +199,6 @@ on:
 env:
   KUBE_CLUSTER: live-1.cloud-platform.service.justice.gov.uk
   NAMESPACE: dstest
-  ECR: webops/dstest-ecr
 
 jobs:
   main:
@@ -220,17 +217,39 @@ That takes us as far as building our docker image.
 
 ### Push to ECR
 
-The GitHub Action needs to push to your ECR, so it's going to need the AWS
+The GitHub Action needs to push to your ECR, so it's going to need the ECR name and AWS
 credentials.
 
-Add these to your GitHub repository as [GitHub Secrets] by going to the
-"Settings" page for your repository and clicking "Secrets" in the left-hand
-navigation.
+The cloud platform [ECR module] will create [GitHub Actions Secrets] in your repository containing these values.
 
-Create new secrets with the following names, and the values for your ECR:
+To set this up, go back to your namespace folder in the environments repository, and edit the `resources/ecr.tf` file you created.
 
-* AWS_ACCESS_KEY_ID
-* AWS_SECRET_ACCESS_KEY
+Find the line:
+
+```
+# github_repositories = ["my-repo"]
+```
+
+Uncomment it, and change `my-repo` to the name of your GitHub repository. So, if your GitHub repository is `ministryofjustice/my-cd-test`, you should change the line to:
+
+```
+github_repositories = ["my-cd-test"]
+```
+
+Raise a PR as usual. When the PR has been merged, you should see three GitHub Actions Secrets in your repository (click "Settings" and then "Secrets" on the GitHub web page for your repository):
+
+* ECR_NAME
+* ECR_AWS_ACCESS_KEY_ID
+* ECR_AWS_SECRET_ACCESS_KEY
+
+To use these in your pipeline, add the ECR_NAME to the `env:` section near the top, so it becomes:
+
+```yaml
+env:
+  KUBE_CLUSTER: live-1.cloud-platform.service.justice.gov.uk
+  NAMESPACE: dstest  # <-- your namespace name, not `dstest`
+  ECR_NAME: ${{ secrets.ECR_NAME }}
+```
 
 Now add this step to the end of your GitHub Action:
 
@@ -239,12 +258,11 @@ Now add this step to the end of your GitHub Action:
         id: ecr
         uses: jwalton/gh-ecr-push@v1
         with:
-          access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          access-key-id: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+          secret-access-key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
           region: eu-west-2
           local-image: foo
-          image: ${ECR}:${{ github.sha }}
-
+          image: ${ECR_NAME}:${{ github.sha }}
 ```
 
 That takes care of building the docker image and pushing it to the ECR - in
@@ -287,109 +305,28 @@ At this point, the updated docker image has been built and pushed to the ECR,
 and the kubernetes manifest has been updated with the correct image tag. Now we
 need to apply the updated manifest to the kubernetes cluster.
 
-### Creating a ServiceAccount
+### Using your serviceaccount
 
 You applied the manifest to the cluster using `kubectl` earlier. This worked
 because you are already authenticated to the cluster, but the GitHub Action
 isn't, so we need to provide some credentials and get it to authenticate.
 
-We'll use a [ServiceAccount] for this.
+The serviceaccount has permissions to deploy to your namespace, so we will use
+its `ca.crt` and `token` in the pipeline.
 
-To create a serviceaccount for your namespace, you need to raise a PR against
-the [environments repository]. You can do this with the [cloud platform cli].
+Similar to the [ECR module], the cloud platform [serviceaccount module] will
+create these as GitHub Actions Secrets in your repository.
 
-Change directories to your namespace folder in a checkout of the environments
-repository, e.g.
+Back in your namespace folder in the environments repository, make the same
+change to `resources/serviceaccount.tf` that you made to the `resources/ecr.tf`
+file, i.e. uncomment the `github_repositories = ...` line, and supply your
+repository name as a one-element list.
 
-```
-namespaces/live-1.cloud-platform.service.justice.gov.uk/dstest
-```
+Once your change has been merged, you should see two more GitHub Actions
+Secrets in your repository:
 
-...and run this:
-
-```bash
-cloud-platform environment serviceaccount create
-```
-
-This will create a file that defines a serviceaccount.
-
-Create a branch and raise a PR to add this file, and continue when it has been
-approved and you have merged it.
-
-### ServiceAccount Credentials
-
-Once the serviceaccount is created, there will be another secret in your
-namespace, with a name like this:
-
-```
-cloud-platform-user-token-xxxxx
-```
-
-> `cloud-platform-user` is the default name of the serviceaccount created by the CLI
-
-Find the exact name of the secret using:
-
-```bash
-kubectl -n <your namespace> get secret
-```
-
-Then decode it with:
-
-```bash
-cloud-platform decode-secret -n <your namespace> -s <secret name>
-```
-
-This will output the secret as JSON. We need the value of two keys:
-
-* `token`
-* `ca.crt`
-
-Take the value of `token`, and create a GitHub Secret called `KUBE_TOKEN`.
-
-> Do not include the enclosing `"` characters in the secret value
-
-The `ca.crt` value needs a bit of extra care. In the secret, you'll see it
-looks something like this:
-
-```
-"data": {
-    "ca.crt": "-----BEGIN CERTIFICATE-----\nMIIC0zCCAbugAwIBAgIMFYjQf
-EQ8uyuCm6PoMA0GCSqGSIb3DQEBCwUAMBUxEzAR\n...\nBgNVBAMTCmt1YmVybmV0ZXM
-wHhcNMTkwMzAyMTcwODIzWhcNMjkwMzAxMTcwODIz\nSH9qfuabKA==\n-----END CER
-TIFICATE-----\n",
-    "namespace": ...
-```
-
-The GitHub Secret that provides this to the GitHub Action needs to look like
-this:
-
-```
------BEGIN CERTIFICATE-----
-MIIC0zCCAbugAwIBAgIMFYjQfEQ8uyuCm6PoMA0GCSqGSIb3DQEBCwUAMBUxEzAR
-...
-BgNVBAMTCmt1YmVybmV0ZXMwHhcNMTkwMzAyMTcwODIzWhcNMjkwMzAxMTcwODIz
-SH9qfuabKA==
------END CERTIFICATE-----
-```
-
-That is, you need to replace all the `\n` with actual newlines, and get rid of
-the surrounding `"`
-
-You can do that manually, or with this command:
-
-```bash
-cloud-platform decode-secret -n <your namespace> -s <secret name> \
-  | grep ca.crt | sed 's/\\n/\
-/g' | sed 's/.*"//'
-```
-
-> You might have trouble copy/pasting this command, because of the escaped
-newline.
-
-Create a GitHub Secret called `KUBE_CERT` containing the correctly-formatted
-`ca.crt` value.
-
-### Authenticate to the cluster
+* KUBE_CERT
+* KUBE_TOKEN
 
 Add this step to the end of the GitHub Action to use the credentials to
 authenticate to the cluster:
@@ -427,4 +364,7 @@ For reference, this is the full [GitHub Action].
 [environments repository]: https://github.com/ministryofjustice/cloud-platform-environments
 [cloud platform cli]: ../getting-started/cloud-platform-cli.html
 [GitHub Action]: https://gist.github.com/862a8ad93de5f4b4838420437a97f3b2
-[GitHub Secrets]: https://docs.github.com/en/free-pro-team@latest/actions/reference/encrypted-secrets
+[GitHub Actions Secrets]: https://docs.github.com/en/free-pro-team@latest/actions/reference/encrypted-secrets
+[create serviceaccount]: ../getting-started/cloud-platform-cli.html#add-a-service-account-to-your-namespace
+[ECR module]: https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials#aws-ecr-terraform-module
+[serviceaccount module]: https://github.com/ministryofjustice/cloud-platform-terraform-serviceaccount#kubernetes-serviceaccount-module
