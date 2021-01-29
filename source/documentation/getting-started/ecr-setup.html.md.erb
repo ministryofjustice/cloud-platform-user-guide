@@ -44,7 +44,7 @@ This will create a `resources/ecr.tf` file in your namespace folder.
 
 Once your pull request has been approved and merged, it will trigger our build pipeline which will create your ECR.
 
-For more information about the terraform module being used, please read the documentation [here](https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials).
+For more information about the terraform module being used, please read the documentation [here][module documentation].
 
 ## Accessing the credentials
 
@@ -59,6 +59,31 @@ cloud-platform decode-secret -n <namespace_name> -s ecr-repo-[your-namespace]
 ```
 
 Look for the `access_key_id` and `secret_access_key` values.
+
+## GitHub Actions
+
+If you are using [GitHub Actions] for your deployment pipeline, the ECR module can automatically manage [GitHub Actions Secrets] containing the ECR name, and the AWS access/secret keypair required to access it.
+
+In the `resources/ecr.tf` file, you should see this section:
+
+```
+  # Uncomment and provide repository names to create github actions secrets
+  # containing the ECR name, AWS access key, and AWS secret key, for use in
+  # github actions CI/CD pipelines
+  # github_repositories = ["my-repo"]
+```
+
+To use this feature, uncomment the last line, and set the list of repositories in which you want the GitHub Actions Secrets to be created.
+
+e.g. if you have two GitHub repositories in your project, called `ministryofjustice/frontend` and `ministryofjustice/backend`, you would change the last line to:
+
+```
+github_repositories = ["frontend", "backend"]
+```
+
+Once your PR is merged, those repositories should have secrets named: `ECR_NAME`, `ECR_AWS_ACCESS_KEY_ID`, and `ECR_AWS_SECRET_KEY`. You can use these secrets in your GitHub Actions pipelines.
+
+See the [module documentation] for more information.
 
 ## Managing your ECR repository
 
@@ -83,3 +108,6 @@ Try [deploying an app][deploy-helm] with [Helm](https://helm.sh/), a Kubernetes 
 [ecr-metrics]: https://prometheus.cloud-platform.service.justice.gov.uk/graph?g0.range_input=1h&g0.expr=aws_ecr_repository_image_count&g0.tab=1
 [Kubernetes secret]: https://kubernetes.io/docs/concepts/configuration/secret/
 [Cloud Platform CLI]: cloud-platform-cli.html
+[GitHub Actions Secrets]: https://docs.github.com/en/actions/reference/encrypted-secrets
+[module documentation]: https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials#aws-ecr-terraform-module
+[GitHub Actions]: ../deploying-an-app/github-actions-continuous-deployment.html
