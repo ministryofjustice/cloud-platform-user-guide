@@ -196,10 +196,6 @@ on:
     branches:
       - 'main'
 
-env:
-  KUBE_CLUSTER: live-1.cloud-platform.service.justice.gov.uk
-  NAMESPACE: dstest
-
 jobs:
   main:
     runs-on: ubuntu-latest
@@ -210,8 +206,11 @@ jobs:
         run: docker build -t foo .
 ```
 
-> The `workflow_dispatch:` line lets us trigger the action via the GitHub web
+The `workflow_dispatch:` line lets us trigger the action via the GitHub web
 UI, which makes things easier when you're developing an action.
+  
+The `KUBE_CLUSTER` and `KUBE_NAMESPACE` Github Actions Secrets are created by 
+the [serviceaccount module].
 
 That takes us as far as building our docker image.
 
@@ -242,12 +241,10 @@ Raise a PR as usual. When the PR has been merged, you should see three GitHub Ac
 * ECR_AWS_ACCESS_KEY_ID
 * ECR_AWS_SECRET_ACCESS_KEY
 
-To use these in your pipeline, add the ECR_NAME to the `env:` section near the top, so it becomes:
+To use these in your pipeline, add an `env` section above the `jobs` section in your `cd.yaml` file, like this:
 
 ```yaml
 env:
-  KUBE_CLUSTER: live-1.cloud-platform.service.justice.gov.uk
-  NAMESPACE: dstest  # <-- your namespace name, not `dstest`
   ECR_NAME: ${{ secrets.ECR_NAME }}
 ```
 
@@ -315,18 +312,21 @@ The serviceaccount has permissions to deploy to your namespace, so we will use
 its `ca.crt` and `token` in the pipeline.
 
 Similar to the [ECR module], the cloud platform [serviceaccount module] will
-create these as GitHub Actions Secrets in your repository.
+create these as GitHub Actions Secrets in your repository, along with the 
+cluster and namespace names.
 
 Back in your namespace folder in the environments repository, make the same
 change to `resources/serviceaccount.tf` that you made to the `resources/ecr.tf`
 file, i.e. uncomment the `github_repositories = ...` line, and supply your
 repository name as a one-element list.
 
-Once your change has been merged, you should see two more GitHub Actions
+Once your change has been merged, you should see four more GitHub Actions
 Secrets in your repository:
 
 * KUBE_CERT
 * KUBE_TOKEN
+* KUBE_CLUSTER
+* KUBE_NAMESPACE
 
 Add this step to the end of the GitHub Action to use the credentials to
 authenticate to the cluster:
@@ -336,11 +336,14 @@ authenticate to the cluster:
         env:
           KUBE_CERT: ${{ secrets.KUBE_CERT }}
           KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
+          KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }}
+          KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
+      
         run: |
           echo "${KUBE_CERT}" > ca.crt  # <-- the quotes here are important
           kubectl config set-cluster ${KUBE_CLUSTER} --certificate-authority=./ca.crt --server=https://api.${KUBE_CLUSTER}
           kubectl config set-credentials deploy-user --token=${KUBE_TOKEN}
-          kubectl config set-context ${KUBE_CLUSTER} --cluster=${KUBE_CLUSTER} --user=deploy-user --namespace=${NAMESPACE}
+          kubectl config set-context ${KUBE_CLUSTER} --cluster=${KUBE_CLUSTER} --user=deploy-user --namespace=${KUBE_NAMESPACE}
           kubectl config use-context ${KUBE_CLUSTER}
 ```
 
@@ -351,7 +354,7 @@ The final step in the GitHub Action is to apply the yaml file like this:
 ```yaml
       - name: Apply the updated manifest
         run: |
-          kubectl -n ${NAMESPACE} apply -f kubernetes-deploy.yaml
+          kubectl -n ${KUBE_NAMESPACE} apply -f kubernetes-deploy.yaml
 ```
 
 Now if you raise and merge a PR making a change to `index.html`, you should see
