@@ -262,6 +262,8 @@ Now add this step to the end of your GitHub Action:
           image: ${ECR_NAME}:${{ github.sha }}
 ```
 
+> We use `ECR_NAME` in multiple steps, so it goes in the top-level `env` section
+
 That takes care of building the docker image and pushing it to the ECR - in
 this case, tagged with the SHA hash of the last commit to the GitHub
 repository.
@@ -328,6 +330,15 @@ Secrets in your repository:
 * KUBE_CLUSTER
 * KUBE_NAMESPACE
 
+We need the cluster and namespace name in multiple workflow steps, so add them to the top-level `env` section of the file:
+
+```yaml
+env:
+  ECR_NAME: ${{ secrets.ECR_NAME }}
+  KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }}
+  KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
+```
+
 Add this step to the end of the GitHub Action to use the credentials to
 authenticate to the cluster:
 
@@ -336,8 +347,6 @@ authenticate to the cluster:
         env:
           KUBE_CERT: ${{ secrets.KUBE_CERT }}
           KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
-          KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }}
-          KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
       
         run: |
           echo "${KUBE_CERT}" > ca.crt  # <-- the quotes here are important
