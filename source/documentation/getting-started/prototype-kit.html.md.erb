@@ -86,13 +86,17 @@ of the repository.
 There are a few things to be aware of, concerning your prototype kit site:
 
 * The continuous deployment workflow usually takes around 5 minutes to run
-* The very first run of the deployment workflow often fails. We're not sure why
-this happens, but it's probably due to a [race condition] when trying to use
-github actions secrets immediately after creating them. If this happens, you
-can use the "re-run" button in the GitHub web interface, and the action should
-succeed.
+
+* The very first run of the deployment workflow will fail. This is because the
+github repository (and its deployment workflow) has to be created before some
+of the resources the workflow depends on.  You can use the "re-run" button in
+the GitHub web interface, and the action should succeed.
 
 ![GitHub Actions re-run button](/images/github-actions-rerun-button.png)
+
+> You don't have to do this - when you push changes to the repository, they
+will be deployed successfully - but you may want to confirm that your site
+works before making any changes.
 
 * The GitHub repository is created with [branch protection] applied to the
 default `main` branch. If you don't want this, edit the `github-repo.tf` file
