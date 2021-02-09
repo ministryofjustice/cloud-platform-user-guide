@@ -182,7 +182,7 @@ update the template below with the correct values and raise a PR.
 
     Decode the role ARN and annotate the pod to indicate which role will need access to the resource in the other AWS account.
 
-    A deployment with the Pod template annotated would look like this (note the `<role-arn>`):
+    A deployment with the Pod template annotated would look like this (note the `<role-name>`):
 
       ```
       apiVersion: apps/v1
@@ -206,7 +206,7 @@ update the template below with the correct values and raise a PR.
               app: wordpress
               tier: frontend
               annotations:
-                iam.amazonaws.com/role: <role-arn>
+                iam.amazonaws.com/role: <role-name>
           spec:
             containers:
             - image: wordpressdemo/wpapp:1.1
@@ -237,7 +237,7 @@ update the template below with the correct values and raise a PR.
               app: wordpress
               tier: frontend
               annotations:
-                iam.amazonaws.com/role: arn:aws:iam::11111111:role/my-namespace-app-iam-role
+                iam.amazonaws.com/role: my-namespace-app-iam-role
           spec:
             containers:
             - image: wordpressdemo/wpapp:1.1
