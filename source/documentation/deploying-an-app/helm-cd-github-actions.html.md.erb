@@ -1,0 +1,390 @@
+---
+title: Setting up GitHub Actions CD with Helm
+last_reviewed_on: 2021-02-12
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+This tutorial walks through setting up continuous deployment of an application
+using GitHub Actions and Helm.
+
+This builds on ideas in a previous tutorial, [Continuous Deployment of an
+application using Github Actions][ga-cd]. If you haven't done so already,
+please read that document before working through this tutorial.
+
+## Pre-requisites
+
+* A cloud platform [namespace] with...
+* an [ECR],
+* a [serviceaccount][create serviceaccount],
+* and an [RDS] database
+* [Helm] installed
+
+## Multi-container Demo Application
+
+We're going to deploy a copy of the [Cloud Platform Multi-container Demo
+Application][multi-container].  Since you don't have write access to that
+repository, we'll start by creating a new repository containing the same source
+code.
+
+> Github doesn't let you easily create a [fork] of a repository within the same
+Github organisation
+
+### Clone the current repository into a differently-named folder
+
+```
+git clone --depth 1 \
+  git@github.com:ministryofjustice/cloud-platform-multi-container-demo-app \
+  helm-cd-tutorial
+```
+
+> Please use a different name for your copy, rather than `helm-cd-tutorial`.
+Please use your repo name wherever you see `helm-cd-tutorial` in the examples.
+
+### Remove the connection to the original repository
+
+```
+cd helm-cd-tutorial
+rm -rf .git
+git init
+```
+
+### Create a new GitHub repository
+
+> Tip: make sure to run `gh config set git_protocol ssh` to use SSH rather than
+HTTPS
+
+```
+gh repo create --public ministryofjustice/helm-cd-tutorial
+git add *
+git add .gitignore
+git commit -m "Initial commit"
+git push --set-upstream origin main
+```
+
+> If you don't have the [gh] command-line tool, you can do this via the GitHub web interface
+
+### Create GitHub Actions Secrets
+
+In your namespace folder in the [cloud-platform-environments] repository, raise a PR updating:
+
+* `resources/ecr.tf`
+* `resources/serviceaccount.tf`
+
+Edit both files so that [GitHub Actions Secrets] are created in your new repository:
+
+```
+  github_repositories = ["helm-cd-tutorial"]
+```
+
+Merge the PR as soon as it has been approved.
+
+## Manual Helm Deployment
+
+Before we automate the process, we'll go through it once manually.
+
+The multi-container demo app. has a Helm chart already, but we need to change a
+couple of things:
+
+### Remove postgres container
+
+We're using an RDS database instance for storage, so we don't need to deploy a
+postgres container.
+
+```
+rm helm_deploy/multi-container-app/charts/postgresql-9.1.1.tgz
+rm helm_deploy/multi-container-app/requirements.*
+rm helm_deploy/multi-container-app/container-postgres-secrets.yaml
+```
+
+### Supply missing values
+
+Edit `helm_deploy/multi-container-app/values.yaml`, and change this line:
+
+```
+databaseUrlSecretName: <DATABASE-URL-SECRET-NAME>
+```
+
+Replace `<DATABASE-URL-SECRET-NAME>` with the name of the secret in your
+namespace that contains the `url` for your RDS instance.
+
+Normally, this is `rds-instance-output` so this line should be:
+
+```
+databaseUrlSecretName: rds-instance-output
+```
+
+A little further down in the same file, you should see these lines:
+
+```
+  hosts:
+    - host: <DNS-PREFIX>.apps.live-1.cloud-platform.service.justice.gov.uk
+```
+
+We need to replace `<DNS-PREFIX>` with a unique hostname for your instance of
+this application.
+
+I'm going to use `helm-cd` for this, but you should pick a different value.
+
+```
+  hosts:
+    - host: helm-cd.apps.live-1.cloud-platform.service.justice.gov.uk
+```
+
+Commit and push your changes.
+
+### Manual Helm Deploy
+
+At this point, you should be able to deploy the app. like this:
+
+```
+cd helm_deploy/multi-container-app/
+helm install myapplication . --values values.yaml --namespace <namespace-name>
+```
+
+Where `<namespace-name>` is the name of your cloud platform namespace.
+
+You should see output like this:
+
+```
+NAME: myapplication
+LAST DEPLOYED: Fri Feb 12 16:16:05 2021
+NAMESPACE: helm-cd-tutorial
+STATUS: deployed
+REVISION: 1
+...
+```
+
+To confirm that the app. is working, visit the URL corresponding to the
+hostname you chose:
+
+```
+https://helm-cd.apps.live-1.cloud-platform.service.justice.gov.uk
+```
+
+### Delete the application
+
+To ensure we're starting with a clean slate, let's delete the application:
+
+```
+helm delete myapplication --namespace helm-cd-tutorial
+```
+
+## Automating deployment
+
+The steps we need our continuous deployment (CD) workflow to carry out are very
+similar to those in the [github actions CD][ga-cd] tutorial. Whenever a change
+is pushed to the `main` branch:
+
+* Rebuild any docker images
+* Tag them with a git SHA and push them to a docker image repository
+* Update our Helm chart with the latest tag
+* Deploy our updated chart
+
+## Rebuild docker images
+
+The multi-container demo. app. has three components:
+
+* rails-app
+* content-api
+* worker
+
+For simplicity, we're going to build and push all three images whenever any part of the code is updated. This means we can use the same git SHA throughout our Helm chart, for all of our images.
+
+Create a `.github/workflows/cd.yaml` file like this:
+
+```yaml
+name: Continuous Deployment
+
+on:
+  push:
+    branches:
+      - 'main'
+
+env:
+  ECR_NAME: ${{ secrets.ECR_NAME }}
+  KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }}
+  KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build content-api image
+        run: |
+          cd content-api
+          docker build -t content-api .
+      - name: Push content-api to ECR
+        uses: jwalton/gh-ecr-push@v1
+        with:
+          access-key-id: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+          secret-access-key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+          region: eu-west-2
+          local-image: content-api
+          image: ${ECR_NAME}:content-api-${{ github.sha }}
+      - name: Build worker image
+        run: |
+          cd worker
+          docker build -t worker .
+      - name: Push worker to ECR
+        uses: jwalton/gh-ecr-push@v1
+        with:
+          access-key-id: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+          secret-access-key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+          region: eu-west-2
+          local-image: worker
+          image: ${ECR_NAME}:worker-${{ github.sha }}
+      - name: Build rails-app image
+        run: |
+          cd rails-app
+          docker build -t rails-app .
+      - name: Push rails-app to ECR
+        uses: jwalton/gh-ecr-push@v1
+        with:
+          access-key-id: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+          secret-access-key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+          region: eu-west-2
+          local-image: rails-app
+          image: ${ECR_NAME}:rails-app-${{ github.sha }}
+```
+
+This builds all three component images of the multi-container demo application
+in turn, and pushes each one to our ECR.
+
+> A single AWS ECR represents a single docker image, so we are overriding the
+tag value in order to store our three different docker images in a single ECR,
+with the tags;
+>
+> * content-api-${{ github.sha }}
+> * worker-${{ github.sha }}
+> * rails-app-${{ github.sha }}
+
+## Update the Helm Chart
+
+We need to modify the Helm chart so that our CD workflow can provide the docker
+image details at deployment time.
+
+The only file which needs to change from one deployment to the next is the
+`values.yaml` file. We'll turn that into a template, and supply the docker
+image tag values via environment variables.
+
+Rename the file;
+
+```
+mv helm_deploy/multi-container-app/values.yaml helm_deploy/multi-container-app/values.tpl
+```
+
+Now, edit the file to replace the repository and image tag values. We need to change this:
+
+```yaml
+contentapi:
+  replicaCount: 1
+  image:
+    repository: ministryofjustice/cloud-platform-multi-container-demo-app
+    tag: content-api-1.6
+```
+
+...to this:
+
+```yaml
+contentapi:
+  replicaCount: 1
+  image:
+    repository: ${ECR_NAME}
+    tag: content-api-${GITHUB_SHA}
+```
+
+Make the corresponding change for `railsapp` and `worker`:
+
+```yaml
+railsapp:
+  replicaCount: 1
+  image:
+    repository: ${ECR_NAME}
+    tag: rails-app-${GITHUB_SHA}
+```
+
+```yaml
+worker:
+  replicaCount: 1
+  image:
+    repository: ${ECR_NAME}
+    tag: worker-${GITHUB_SHA}
+```
+
+Now, add a step to the end of `.github/workflows/cd.yaml`:
+
+```yaml
+- name: Update `values.yaml`
+  run: |
+    export GITHUB_SHA=${{ github.sha }}
+    cat helm_deploy/multi-container-app/values.tpl \
+      | envsubst > helm_deploy/multi-container-app/values.yaml
+```
+
+## Authenticate to the cluster
+
+Before we can use helm to apply the chart, we need to authenticate to the
+cluster using the serviceaccount credentials.
+
+This is identical to [this workflow step][ga-cd-authenticate] in the basic
+[GitHub Actions CD][ga-cd] tutorial.
+
+```yaml
+- name: Authenticate to the cluster
+  env:
+    KUBE_CERT: ${{ secrets.KUBE_CERT }}
+    KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
+  run: |
+    echo "${KUBE_CERT}" > ca.crt  # <-- the quotes here are important
+    kubectl config set-cluster ${KUBE_CLUSTER} --certificate-authority=./ca.crt --server=https://api.${KUBE_CLUSTER}
+    kubectl config set-credentials deploy-user --token=${KUBE_TOKEN}
+    kubectl config set-context ${KUBE_CLUSTER} --cluster=${KUBE_CLUSTER} --user=deploy-user --namespace=${KUBE_NAMESPACE}
+    kubectl config use-context ${KUBE_CLUSTER}
+```
+
+## Helm Upgrade
+
+Finally, add this step to perform the `helm upgrade`:
+
+```yaml
+- name: Upgrade the Helm chart
+  run: |
+    cd helm_deploy/multi-container-app/
+    helm upgrade myapplication . \
+      --values values.yaml \
+      --namespace ${KUBE_NAMESPACE}
+```
+
+> This command will only upgrade an existing Helm deployment, so you will need
+to do a manual `helm install` at least once.
+
+## Testing
+
+Test your CD process by making a visible change, such as changing the H1 text
+in `rails-app/app/views/home/index.html.erb`
+
+Commit and push your change, and shortly afterwards you should be able to
+refresh your browser and see your change deployed live.
+
+## Cleaning up
+
+Please remember to [clean up] your namespace when you have finished
+with it.
+
+
+[ECR]: ../getting-started/ecr-setup.html
+[Helm]: https://helm.sh
+[RDS]: multicontainer-app-deploy.html#create-an-rds-instance
+[create serviceaccount]: ../getting-started/cloud-platform-cli.html#add-a-service-account-to-your-namespace
+[fork]: https://guides.github.com/activities/forking/
+[ga-cd]: github-actions-continuous-deployment.html
+[gh]: https://github.com/cli/cli
+[multi-container]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app
+[namespace]: ../getting-started/env-create.html
+[cloud-platform-environments]: https://github.com/ministryofjustice/cloud-platform-environments
+[ga-cd-authenticate]: github-actions-continuous-deployment.html#using-your-serviceaccount
+[clean up]: cleaning-up.html
