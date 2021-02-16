@@ -1,6 +1,6 @@
 ---
 title: Continuous Deployment of an application using Github Actions
-last_reviewed_on: 2021-01-07
+last_reviewed_on: 2021-02-16
 review_in: 3 months
 ---
 
@@ -208,15 +208,15 @@ jobs:
 
 The `workflow_dispatch:` line lets us trigger the action via the GitHub web
 UI, which makes things easier when you're developing an action.
-  
-The `KUBE_CLUSTER` and `KUBE_NAMESPACE` Github Actions Secrets are created by 
+
+The `KUBE_CLUSTER` and `KUBE_NAMESPACE` Github Actions Secrets are created by
 the [serviceaccount module].
 
 That takes us as far as building our docker image.
 
 ### Push to ECR
 
-The GitHub Action needs to push to your ECR, so it's going to need the ECR name and AWS
+The GitHub Action needs to push to your ECR, so it's going to need the URL of the ECR, and AWS
 credentials.
 
 The cloud platform [ECR module] will create [GitHub Actions Secrets] in your repository containing these values.
@@ -235,18 +235,14 @@ Uncomment it, and change `my-repo` to the name of your GitHub repository. So, if
 github_repositories = ["my-cd-test"]
 ```
 
-Raise a PR as usual. When the PR has been merged, you should see three GitHub Actions Secrets in your repository (click "Settings" and then "Secrets" on the GitHub web page for your repository):
+Raise a PR as usual. When the PR has been merged, you should see four GitHub Actions Secrets in your repository (click "Settings" and then "Secrets" on the GitHub web page for your repository):
 
 * ECR_NAME
+* ECR_URL
 * ECR_AWS_ACCESS_KEY_ID
 * ECR_AWS_SECRET_ACCESS_KEY
 
-To use these in your pipeline, add an `env` section above the `jobs` section in your `cd.yaml` file, like this:
-
-```yaml
-env:
-  ECR_NAME: ${{ secrets.ECR_NAME }}
-```
+> ECR_NAME is used by the GitHub Action which pushes docker images to the ECR. We need ECR_URL for our deployment manifest
 
 Now add this step to the end of your GitHub Action:
 
@@ -259,10 +255,8 @@ Now add this step to the end of your GitHub Action:
           secret-access-key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
           region: eu-west-2
           local-image: foo
-          image: ${ECR_NAME}:${{ github.sha }}
+          image: ${{ secrets.ECR_NAME }}:${{ github.sha }}
 ```
-
-> We use `ECR_NAME` in multiple steps, so it goes in the top-level `env` section
 
 That takes care of building the docker image and pushing it to the ECR - in
 this case, tagged with the SHA hash of the last commit to the GitHub
@@ -287,16 +281,15 @@ up for this tutorial, because it's already installed on the GitHub actions
 * Change the `image:` line to this:
 
 ```yaml
-image: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/${ECR}:${IMAGE_TAG}
+image: ${ECR_URL}:${IMAGE_TAG}
 ```
 
-The `ECR` environment variable exists already, so we just need to supply
-`IMAGE_TAG`.
-
-* Add this step to the end of the GitHub Action:
+Then add this step to the end of the GitHub Action:
 
 ```yaml
       - name: Update image tag
+        env:
+          ECR_URL: ${{ secrets.ECR_URL }}
         run: export IMAGE_TAG=${{ github.sha }} && cat kubernetes-deploy.tpl | envsubst > kubernetes-deploy.yaml
 ```
 
@@ -314,7 +307,7 @@ The serviceaccount has permissions to deploy to your namespace, so we will use
 its `ca.crt` and `token` in the pipeline.
 
 Similar to the [ECR module], the cloud platform [serviceaccount module] will
-create these as GitHub Actions Secrets in your repository, along with the 
+create these as GitHub Actions Secrets in your repository, along with the
 cluster and namespace names.
 
 Back in your namespace folder in the environments repository, make the same
@@ -330,24 +323,23 @@ Secrets in your repository:
 * KUBE_CLUSTER
 * KUBE_NAMESPACE
 
-We need the cluster and namespace name in multiple workflow steps, so add them to the top-level `env` section of the file:
+We need the namespace name in multiple workflow steps, so add it in a top-level `env` section of the file:
 
 ```yaml
 env:
-  ECR_NAME: ${{ secrets.ECR_NAME }}
-  KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }}
   KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
 ```
 
-Add this step to the end of the GitHub Action to use the credentials to
+Now add this step to the end of the GitHub Action to use the credentials to
 authenticate to the cluster:
 
 ```yaml
       - name: Authenticate to the cluster
         env:
+          KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }}
           KUBE_CERT: ${{ secrets.KUBE_CERT }}
           KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
-      
+
         run: |
           echo "${KUBE_CERT}" > ca.crt  # <-- the quotes here are important
           kubectl config set-cluster ${KUBE_CLUSTER} --certificate-authority=./ca.crt --server=https://api.${KUBE_CLUSTER}
