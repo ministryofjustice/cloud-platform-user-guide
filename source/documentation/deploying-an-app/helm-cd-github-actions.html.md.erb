@@ -1,6 +1,6 @@
 ---
 title: Setting up GitHub Actions CD with Helm
-last_reviewed_on: 2021-02-12
+last_reviewed_on: 2021-02-16
 review_in: 3 months
 ---
 
@@ -11,7 +11,7 @@ using GitHub Actions and Helm.
 
 This builds on ideas in a previous tutorial, [Continuous Deployment of an
 application using Github Actions][ga-cd]. If you haven't done so already,
-please read that document before working through this tutorial.
+please read that tutorial before working through this one.
 
 ## Pre-requisites
 
@@ -39,31 +39,33 @@ git clone --depth 1 \
   helm-cd-tutorial
 ```
 
-> Please use a different name for your copy, rather than `helm-cd-tutorial`.
-Please use your repo name wherever you see `helm-cd-tutorial` in the examples.
+> I'm using `helm-cd-tutorial` for this walkthrough. Please use a different
+name for your copy, and use your repo name wherever you see `helm-cd-tutorial`
+in the examples.
 
 ### Remove the connection to the original repository
 
 ```
 cd helm-cd-tutorial
 rm -rf .git
-git init
 ```
 
 ### Create a new GitHub repository
 
-> Tip: make sure to run `gh config set git_protocol ssh` to use SSH rather than
-HTTPS
+I'm using the [gh] GitHub command line tool. If you don't have it, you can do
+this step via the GitHub web interface.
 
 ```
-gh repo create --public ministryofjustice/helm-cd-tutorial
+git init
 git add *
 git add .gitignore
 git commit -m "Initial commit"
+gh repo create --public ministryofjustice/helm-cd-tutorial
 git push --set-upstream origin main
 ```
 
-> If you don't have the [gh] command-line tool, you can do this via the GitHub web interface
+> Tip: make sure to run `gh config set git_protocol ssh` to use SSH rather than
+HTTPS
 
 ### Create GitHub Actions Secrets
 
@@ -72,7 +74,8 @@ In your namespace folder in the [cloud-platform-environments] repository, raise 
 * `resources/ecr.tf`
 * `resources/serviceaccount.tf`
 
-Edit both files so that [GitHub Actions Secrets] are created in your new repository:
+Edit both files to tell the modules to create [GitHub Actions Secrets] in your
+new repository:
 
 ```
   github_repositories = ["helm-cd-tutorial"]
@@ -109,7 +112,7 @@ databaseUrlSecretName: <DATABASE-URL-SECRET-NAME>
 Replace `<DATABASE-URL-SECRET-NAME>` with the name of the secret in your
 namespace that contains the `url` for your RDS instance.
 
-Normally, this is `rds-instance-output` so this line should be:
+By default this is `rds-instance-output` so this line should be:
 
 ```
 databaseUrlSecretName: rds-instance-output
@@ -136,7 +139,7 @@ Commit and push your changes.
 
 ### Manual Helm Deploy
 
-At this point, you should be able to deploy the app. like this:
+At this point you should be able to deploy the application like this:
 
 ```
 cd helm_deploy/multi-container-app/
@@ -163,24 +166,16 @@ hostname you chose:
 https://helm-cd.apps.live-1.cloud-platform.service.justice.gov.uk
 ```
 
-### Delete the application
-
-To ensure we're starting with a clean slate, let's delete the application:
-
-```
-helm delete myapplication --namespace helm-cd-tutorial
-```
-
 ## Automating deployment
 
 The steps we need our continuous deployment (CD) workflow to carry out are very
 similar to those in the [github actions CD][ga-cd] tutorial. Whenever a change
 is pushed to the `main` branch:
 
-* Rebuild any docker images
+* Rebuild all of our docker images
 * Tag them with a git SHA and push them to a docker image repository
-* Update our Helm chart with the latest tag
-* Deploy our updated chart
+* Update our Helm chart with the latest image tag
+* `helm upgrade` our updated chart
 
 ## Rebuild docker images
 
@@ -190,7 +185,10 @@ The multi-container demo. app. has three components:
 * content-api
 * worker
 
-For simplicity, we're going to build and push all three images whenever any part of the code is updated. This means we can use the same git SHA throughout our Helm chart, for all of our images.
+For simplicity, we're going to build and push all three images whenever any
+part of the code is updated. This means we can use the same git SHA throughout
+our Helm chart, for all of our images. I'm also going to push all three images
+to the same ECR.
 
 Create a `.github/workflows/cd.yaml` file like this:
 
@@ -201,11 +199,6 @@ on:
   push:
     branches:
       - 'main'
-
-env:
-  ECR_NAME: ${{ secrets.ECR_NAME }}
-  KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }}
-  KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
 
 jobs:
   main:
@@ -224,7 +217,7 @@ jobs:
           secret-access-key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
           region: eu-west-2
           local-image: content-api
-          image: ${ECR_NAME}:content-api-${{ github.sha }}
+          image: ${{ secrets.ECR_NAME }}:content-api-${{ github.sha }}
       - name: Build worker image
         run: |
           cd worker
@@ -236,7 +229,7 @@ jobs:
           secret-access-key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
           region: eu-west-2
           local-image: worker
-          image: ${ECR_NAME}:worker-${{ github.sha }}
+          image: ${{ secrets.ECR_NAME }}:worker-${{ github.sha }}
       - name: Build rails-app image
         run: |
           cd rails-app
@@ -248,7 +241,7 @@ jobs:
           secret-access-key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
           region: eu-west-2
           local-image: rails-app
-          image: ${ECR_NAME}:rails-app-${{ github.sha }}
+          image: ${{ secrets.ECR_NAME }}:rails-app-${{ github.sha }}
 ```
 
 This builds all three component images of the multi-container demo application
@@ -274,7 +267,8 @@ image tag values via environment variables.
 Rename the file;
 
 ```
-mv helm_deploy/multi-container-app/values.yaml helm_deploy/multi-container-app/values.tpl
+mv helm_deploy/multi-container-app/values.yaml \
+  helm_deploy/multi-container-app/values.tpl
 ```
 
 Now, edit the file to replace the repository and image tag values. We need to change this:
@@ -293,7 +287,7 @@ contentapi:
 contentapi:
   replicaCount: 1
   image:
-    repository: ${ECR_NAME}
+    repository: ${ECR_URL}
     tag: content-api-${GITHUB_SHA}
 ```
 
@@ -303,7 +297,7 @@ Make the corresponding change for `railsapp` and `worker`:
 railsapp:
   replicaCount: 1
   image:
-    repository: ${ECR_NAME}
+    repository: ${ECR_URL}
     tag: rails-app-${GITHUB_SHA}
 ```
 
@@ -311,7 +305,7 @@ railsapp:
 worker:
   replicaCount: 1
   image:
-    repository: ${ECR_NAME}
+    repository: ${ECR_URL}
     tag: worker-${GITHUB_SHA}
 ```
 
@@ -321,6 +315,7 @@ Now, add a step to the end of `.github/workflows/cd.yaml`:
 - name: Update `values.yaml`
   run: |
     export GITHUB_SHA=${{ github.sha }}
+    export ECR_URL=${{ secrets.ECR_URL }}
     cat helm_deploy/multi-container-app/values.tpl \
       | envsubst > helm_deploy/multi-container-app/values.yaml
 ```
@@ -336,13 +331,12 @@ This is identical to [this workflow step][ga-cd-authenticate] in the basic
 ```yaml
 - name: Authenticate to the cluster
   env:
-    KUBE_CERT: ${{ secrets.KUBE_CERT }}
-    KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
+    KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }}
   run: |
-    echo "${KUBE_CERT}" > ca.crt  # <-- the quotes here are important
+    echo "${{ secrets.KUBE_CERT }}" > ca.crt
     kubectl config set-cluster ${KUBE_CLUSTER} --certificate-authority=./ca.crt --server=https://api.${KUBE_CLUSTER}
-    kubectl config set-credentials deploy-user --token=${KUBE_TOKEN}
-    kubectl config set-context ${KUBE_CLUSTER} --cluster=${KUBE_CLUSTER} --user=deploy-user --namespace=${KUBE_NAMESPACE}
+    kubectl config set-credentials deploy-user --token=${{ secrets.KUBE_TOKEN }}
+    kubectl config set-context ${KUBE_CLUSTER} --cluster=${KUBE_CLUSTER} --user=deploy-user --namespace=${{ secrets.KUBE_NAMESPACE }}
     kubectl config use-context ${KUBE_CLUSTER}
 ```
 
@@ -356,15 +350,17 @@ Finally, add this step to perform the `helm upgrade`:
     cd helm_deploy/multi-container-app/
     helm upgrade myapplication . \
       --values values.yaml \
-      --namespace ${KUBE_NAMESPACE}
+      --namespace ${{ secrets.KUBE_NAMESPACE }}
 ```
 
-> This command will only upgrade an existing Helm deployment, so you will need
+> This command will only **upgrade** an existing Helm deployment, so you will need
 to do a manual `helm install` at least once.
+
+For reference, the full `.github/workflows/cd.yaml` and `helm_deploy/multi-container-app/values.tpl` files are in [this gist].
 
 ## Testing
 
-Test your CD process by making a visible change, such as changing the H1 text
+Test your CD process by making a visible change, such as changing the `h1` text
 in `rails-app/app/views/home/index.html.erb`
 
 Commit and push your change, and shortly afterwards you should be able to
@@ -377,14 +373,16 @@ with it.
 
 
 [ECR]: ../getting-started/ecr-setup.html
+[GitHub Actions Secrets]: https://docs.github.com/en/actions/reference/encrypted-secrets
 [Helm]: https://helm.sh
 [RDS]: multicontainer-app-deploy.html#create-an-rds-instance
+[clean up]: cleaning-up.html
+[cloud-platform-environments]: https://github.com/ministryofjustice/cloud-platform-environments
 [create serviceaccount]: ../getting-started/cloud-platform-cli.html#add-a-service-account-to-your-namespace
 [fork]: https://guides.github.com/activities/forking/
+[ga-cd-authenticate]: github-actions-continuous-deployment.html#using-your-serviceaccount
 [ga-cd]: github-actions-continuous-deployment.html
 [gh]: https://github.com/cli/cli
 [multi-container]: https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app
 [namespace]: ../getting-started/env-create.html
-[cloud-platform-environments]: https://github.com/ministryofjustice/cloud-platform-environments
-[ga-cd-authenticate]: github-actions-continuous-deployment.html#using-your-serviceaccount
-[clean up]: cleaning-up.html
+[this gist]: https://gist.github.com/digitalronin/98819329227b6b2f6fb0e9de679ba8b3
