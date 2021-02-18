@@ -1,6 +1,6 @@
 ---
 title: The Cloud Platform CLI
-last_reviewed_on: 2020-10-30
+last_reviewed_on: 2021-02-03
 review_in: 3 months
 ---
 
@@ -153,16 +153,42 @@ generated file.
 * `cd` into your [namespace folder]
 * Run `cloud-platform environment serviceaccount create`
 
-    This will create a `05-serviceaccount.yaml` file in your working copy.
+    This will create a `resources/serviceaccount.tf` file in your working copy.
 
 * `git add` and `git commit` the new file, and raise a PR
 
-By default your service account name will be `cloud-platform-user`. If you'd like to specify the name of your service account resource, you can use the `-n` or `--name` flag followed by the name of your choice.
+By default your service account name will be `cloud-platform-user`. If you'd like to specify the name of your service account resource, you can define it in the `serviceaccount_name` terraform variable.
+
+See the [module documentation] for more information about the options available.
 
 After the cloud platform team have approved your PR, please merge it, and your
 service account resource will be created.
 
 You can query your new resource using the command `kubectl get serviceaccount -n <namespace>`.
+
+#### GitHub Actions Secrets
+
+If you are using [GitHub Actions] for your deployment pipeline, the serviceaccount module can automatically manage [GitHub Actions Secrets] containing the certificate and token required to authenticate to the cluster and issue commands for your namespace.
+
+In the `resources/serviceaccount.tf` file, you should see this section:
+
+```
+  # Uncomment and provide repository names to create github actions secrets
+  # containing the ca.crt and token for use in github actions CI/CD pipelines
+  # github_repositories = ["my-repo"]
+```
+
+To use this feature, uncomment the last line, and set the list of repositories in which you want the GitHub Actions Secrets to be created.
+
+e.g. if you have two GitHub repositories in your project, called `ministryofjustice/frontend` and `ministryofjustice/backend`, you would change the last line to:
+
+```
+github_repositories = ["frontend", "backend"]
+```
+
+Once your PR is merged, those repositories should have secrets named: `KUBE_CERT`, and `KUBE_TOKEN`. You can use these secrets in your GitHub Actions pipelines.
+
+See the [module documentation] for more information.
 
 ### Check your kubernetes config file
 
@@ -238,8 +264,42 @@ cloud-platform decode-secret -n dstest -s rds-instance-output
 }
 ```
 
+### Export AWS Credentials
+
+You can use the CLI to set AWS credentials as shell variables, to make it
+easier to access AWS resources from the command-line.
+
+For example, if you want to run a command like `aws rds describe-db-instances`
+on your RDS instance, you first have to set these environment variables:
+
+* AWS_REGION - to "eu-west-2"
+* ACCESS_KEY_ID - to the value for your RDS instance
+* SECRET_ACCESS_KEY - to the value for your RDS instance
+
+To make this easier, if you run `decode-secret` with the
+`--export-aws-credentials` flag (or `-e` for short), you will get output like
+this:
+
+```
+$ cloud-platform decode-secret -n dstest -s rds-instance-output -e
+export AWS_REGION="eu-west-2"
+export AWS_ACCESS_KEY_ID="XXXXXXXXXXXXXXXXXXXX"
+export AWS_SECRET_ACCESS_KEY="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+```
+
+If you wrap the command in `eval`, it will set the variables in your current
+shell, so you can do things like this:
+
+```
+$ eval(cloud-platform decode-secret -n dstest -s rds-instance-output -e)
+$ aws rds describe-db-instances --db-instance-identifier=cloud-platform-xxxxxxxxxxxxxxxx
+```
+
 [cloud platform cli]: https://github.com/ministryofjustice/cloud-platform-cli#cloud-platform-tool-cli
 [releases]: https://github.com/ministryofjustice/cloud-platform-cli#cloud-platform-tool-cli/releases
 [golang]: https://golang.org
 [environments repository]: https://github.com/ministryofjustice/cloud-platform-environments
 [namespace folder]: https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live-1.cloud-platform.service.justice.gov.uk
+[module documentation]: https://github.com/ministryofjustice/cloud-platform-terraform-serviceaccount#kubernetes-serviceaccount-module
+[GitHub Actions Secrets]: https://docs.github.com/en/actions/reference/encrypted-secrets
+[GitHub Actions]: https://docs.github.com/en/actions

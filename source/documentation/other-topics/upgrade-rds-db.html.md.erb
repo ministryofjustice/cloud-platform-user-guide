@@ -1,6 +1,6 @@
 ---
 title: Upgrade an RDS database
-last_reviewed_on: 2020-10-27
+last_reviewed_on: 2021-01-28
 review_in: 3 months
 ---
 
@@ -35,10 +35,10 @@ If you want to use this method, you can treat it like any other [database migrat
 
 The upgrade process involves these steps:
 
-* Ask the Cloud Platform team to pause the "apply" pipeline (so that subsequent changes aren't automatically reverted before your upgrade is complete)
+* Raise and merge a PR to [tell the apply pipeline to skip your namespace][long-running]
 * Alter your RDS instance to use the default [parameter group] for your **current** PostgreSQL version
 * Raise and merge a PR to change your PostgreSQL version to the one you want - the pipeline will handle the upgrade for you
-* Tell the Cloud Platform team to unpause the apply pipeline
+* Raise another PR to [remove the "skip file"][long-running] from your namespace
 
 ### Advantages
 
@@ -183,3 +183,5 @@ When this PR is merged, the pipeline will upgrade your RDS instance.
 [parameter group]: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithParamGroups.html
 [AWS CLI tool]: https://aws.amazon.com/cli/
 [cloud platform cli]: ../getting-started/cloud-platform-cli.html
+[long-running]: ./long-running-env-operations.html
+
