@@ -1,6 +1,6 @@
 ---
 title: Troubleshooting guide
-last_reviewed_on: 2020-11-09
+last_reviewed_on: 2021-02-19
 review_in: 3 months
 ---
 
@@ -113,15 +113,15 @@ $ kubectl -n dstest exec -it helloworld-rubyapp-8795b9c56-58fbc -c rubyapp sh
 You might want to make network calls from within your namespace, to test different components of your service. If your deployed containers don't have the tools you need (e.g. `wget`, `curl`), you can launch a new pod into your namespace like this:
 
 ```
-kubectl -n dstest run --generator=run-pod/v1 shell --rm -i --tty --image ministryofjustice/cloud-platform-tools -- bash
+kubectl -n dstest run shell --rm -i --tty --image ministryofjustice/cloud-platform-shell -- sh
 ```
 
-You could subtitute another image such as `busybox` or `alpine` instead of `ministryofjustice/cloud-platform-tools` if you prefer.
+You could subtitute another image instead of `ministryofjustice/cloud-platform-shell` if you prefer, **provided it does not try to run as `root`**
 
 Once we have a shell on our new container, we can access the services running in our namespace like this:
 
 ```
-bash-4.4# curl rubyapp-service:4567
+$ wget -q -O - rubyapp-service:4567
 <h1>Hello, World!</h1>
 ```
 
