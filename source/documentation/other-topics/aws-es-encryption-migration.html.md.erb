@@ -137,62 +137,65 @@ module "ns_annotation" {
 
 ### Step 4: Snapshot source Elasticsearch
 
-- Port forward the source `aws-es-proxy-service` 
+  - Port forward the source `aws-es-proxy-service` 
 
-```
-kubectl \
-  -n [your namespace] \
-  port-forward \
-  svc/aws-es-proxy-service 9200:9200
+  ```
+  kubectl \
+    -n [your namespace] \
+    port-forward \
+    svc/aws-es-proxy-service 9200:9200
   ```
 
-- Register the snapshot repository inside Elasticsearch cluster via the [ES API](https://www.elastic.co/guide/en/elasticsearch/reference/current/rest-apis.html). 
-  
-  In this guide, same bucket is used with multiple domains. Hence adding a basepath will keeps the snapshots in separate directories.
+  - Register the snapshot repository inside Elasticsearch cluster via the [ES API](https://www.elastic.co/guide/en/elasticsearch/reference/current/rest-apis.html). 
+    
+    In this guide, same bucket is used with multiple domains. Hence adding a basepath will keeps the snapshots in separate directories.
 
-  An sample template is given below:
+    A sample template is given below:
+
   ```
-  PUT http://localhost:9200/_snapshot/<repo-name-for-snapshot>
-{
-  "type": "s3",
-  "settings": {
-    "bucket": "<s3-bucket for snapshots>",
-    "base_path": "<repo-name for snapshot>",
-    "region": "eu-west-2",
-    "role_arn": "<role arn from es_snapshots_role secret>"
+    PUT http://localhost:9200/_snapshot/<repo-name-for-snapshot>
+  {
+    "type": "s3",
+    "settings": {
+      "bucket": "<s3-bucket for snapshots>",
+      "base_path": "<repo-name for snapshot>",
+      "region": "eu-west-2",
+      "role_arn": "<role arn from es_snapshots_role secret>"
+    }
   }
-}
   ```
-- Create a snapshot 
-```
-PUT http://localhost:9200/_snapshot/<repo-name-for-snapshot>/latest-snapshot
-``
+
+  - Create a snapshot 
+  
+  ```
+  PUT http://localhost:9200/_snapshot/<repo-name-for-snapshot>/latest-snapshot
+  ```
 
 ### Step 5: Restore to encrypted Elasticsearch
 
-- Port forward the source `aws-es-proxy-service` 
+  - Port forward the source `aws-es-proxy-service` 
 
-```
-kubectl \
-  -n [your namespace] \
-  port-forward \
-  svc/aws-es-proxy-service-encrypted 9200:9200
-```
+  ```
+  kubectl \
+    -n [your namespace] \
+    port-forward \
+    svc/aws-es-proxy-service-encrypted 9200:9200
+  ```
 
-- Restore snapshot to encrypted elasticseaerch
+  - Restore snapshot to encrypted elasticseaerch
 
-NOTE: `"include_global_state":true` will restore all the key data
+  NOTE: `"include_global_state":true` will restore all the key data
 
-```
-POST http://localhost:9200/_snapshot/<repo-name-for-snapshot>/<snapshot-you-want-to-restore-from>/_restore
-{
-  "include_global_state": true
-}
-```
+  ```
+  POST http://localhost:9200/_snapshot/<repo-name-for-snapshot>/<snapshot-you-want-to-restore-from>/_restore
+  {
+    "include_global_state": true
+  }
+  ```
 
 ### Step 6: Connect apps to new ES
 
 ### Step 7: Clean up
-Cleanup the portforward pods and the unwanted elasticseaerch cluster 
+  Cleanup the portforward pods and the unwanted elasticseaerch cluster 
 
 For more details on backup snapshots and restore, see [aws documentation](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-managedomains-snapshots.html)
