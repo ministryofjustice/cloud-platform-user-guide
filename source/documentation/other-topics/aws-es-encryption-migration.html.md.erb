@@ -166,14 +166,14 @@ module "ns_annotation" {
   ```
 
   - Create a snapshot 
-  
+
   ```
   PUT http://localhost:9200/_snapshot/<repo-name-for-snapshot>/latest-snapshot
   ```
 
 ### Step 5: Restore to encrypted Elasticsearch
 
-  - Port forward the source `aws-es-proxy-service` 
+  - Port forward the encrypted Elasticsearch cluster
 
   ```
   kubectl \
@@ -182,7 +182,7 @@ module "ns_annotation" {
     svc/aws-es-proxy-service-encrypted 9200:9200
   ```
 
-  - Restore snapshot to encrypted elasticseaerch
+  - Restore snapshot
 
   NOTE: `"include_global_state":true` will restore all the key data
 
