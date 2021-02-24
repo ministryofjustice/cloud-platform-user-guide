@@ -1,6 +1,6 @@
 ---
 title: Migrating an Elasticsearch cluster
-last_reviewed_on: 2021-02-22
+last_reviewed_on: 2021-02-24
 review_in: 3 months
 ---
 
@@ -80,7 +80,7 @@ module "ns_annotation" {
 }
 
 ```
-This output snapshot_role will have permissions to enable creation of manual snapshot repo in s3 bucket
+This output `es_snapshot_role` will have permissions to enable creation of manual snapshot repo in s3 bucket
 
 ```hcl
 resource "kubernetes_secret" "es_snapshots_role" {
@@ -100,6 +100,7 @@ resource "kubernetes_secret" "es_snapshots_role" {
 
   - Register the same snapshot repository on the source domain and the new domain
   - Add the `aws_iam_role_name` of source ES cluster and new encrypted ES cluster to the `ns_annotation` module.
+  - Provide a different name to `aws-es-proxy-service` so it doesnot overwrite with existing source proxy.
 
 ```hcl
 module "encrypted_es" {
@@ -117,6 +118,7 @@ module "encrypted_es" {
   node_to_node_encryption_enabled = true
   namespace                       = var.namespace
   elasticsearch_version           = "7.9"
+  aws-es-proxy-service            = "aws-es-proxy-service-encrypted"
   aws-es-proxy-replica-count      = 2
   instance_type                   = "t3.medium.elasticsearch"
   s3_manual_snapshot_repository   = module.es_snapshots_s3_bucket.bucket_arn
@@ -135,7 +137,18 @@ module "ns_annotation" {
 
 ### Step 4: Snapshot source Elasticsearch
 
+- Port forward the source `aws-es-proxy-service` 
+
+```
+kubectl \
+  -n [your namespace] \
+  port-forward \
+  svc/aws-es-proxy-service 9200:9200
+  ```
+
 - Register the snapshot repository inside Elasticsearch cluster via the [ES API](https://www.elastic.co/guide/en/elasticsearch/reference/current/rest-apis.html). 
+  
+  In this guide, same bucket is used with multiple domains. Hence adding a basepath will keeps the snapshots in separate directories.
 
   An sample template is given below:
   ```
@@ -157,4 +170,29 @@ PUT http://localhost:9200/_snapshot/<repo-name-for-snapshot>/latest-snapshot
 
 ### Step 5: Restore to encrypted Elasticsearch
 
-### 
+- Port forward the source `aws-es-proxy-service` 
+
+```
+kubectl \
+  -n [your namespace] \
+  port-forward \
+  svc/aws-es-proxy-service-encrypted 9200:9200
+```
+
+- Restore snapshot to encrypted elasticseaerch
+
+NOTE: `"include_global_state":true` will restore all the key data
+
+```
+POST http://localhost:9200/_snapshot/<repo-name-for-snapshot>/<snapshot-you-want-to-restore-from>/_restore
+{
+  "include_global_state": true
+}
+```
+
+### Step 6: Connect apps to new ES
+
+### Step 7: Clean up
+Cleanup the portforward pods and the unwanted elasticseaerch cluster 
+
+For more details on backup snapshots and restore, see [aws documentation](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-managedomains-snapshots.html)
