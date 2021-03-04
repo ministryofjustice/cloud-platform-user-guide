@@ -1,6 +1,6 @@
 ---
 title: Creating Pingdom checks
-last_reviewed_on: 2021-02-25
+last_reviewed_on: 2021-03-04
 review_in: 3 months
 ---
 
@@ -17,39 +17,73 @@ This guide assumes the following:
 * You have a slack channel to send alerts to
 
 ## Create a Pingdom check
-To create a Pingdom check simply add a `pingdom.tf` file in the resources directory of your namespace in your [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live-1.cloud-platform.service.justice.gov.uk) repository. You can define the conditions of your check using the resources outlined in the [Terraform community provider](https://github.com/russellcardullo/terraform-provider-pingdom). Here's a working example of a [basic check](https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live-1.cloud-platform.service.justice.gov.uk/monitoring/resources).
+Add the below 2 files in in the resources directory of your namespace in your [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live-1.cloud-platform.service.justice.gov.uk) repository. You can define the conditions of your check using the resources outlined in the [Terraform community provider](https://github.com/russellcardullo/terraform-provider-pingdom). Here's a working example of a [basic check](https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live-1.cloud-platform.service.justice.gov.uk/monitoring/resources). 
 
-```yaml
-provider "pingdom" {
-}
+1. Add the below code to the `required_providers` block in `versions.tf`
 
-resource "pingdom_check" "claim-criminal-injuries-compensation-uat" {
-  type                     = "http"
-  name                     = "cica - uat - cloud-platform - claim"
-  host                     = "uat.claim-criminal-injuries-compensation.service.justice.gov.uk"
-  resolution               = 1
-  notifywhenbackup         = true
-  sendnotificationwhendown = 6
-  notifyagainevery         = 0
-  url                      = "/"
-  encryption               = true
-  port                     = 443
-  tags                     = "businessunit_platforms,application_prometheus,component_healthcheck,isproduction_true,environment_uat,infrastructuresupport_platforms"
-  probefilters             = "region:EU"
-  publicreport             = "true"
-}
+    ```hcl
+        pingdom = {
+          source  = "russellcardullo/pingdom"
+          version = "1.1.3"
+        }
+    ```
+    An working example of `versions.tf` with pingdom included will look like this.
 
-```
+    ```hcl
+    terraform {
+      required_version = ">= 0.13"
+      required_providers {
+        aws = {
+          source = "hashicorp/aws"
+        }
+        kubernetes = {
+          source = "hashicorp/kubernetes"
+        }
+        pingdom = {
+          source  = "russellcardullo/pingdom"
+          version = "1.1.3"
+        }
+      }
+    }
+    ```
+2. Add a `pingdom.tf` file 
 
-**Note**: You'll need to include the `provider "pingdom"` and `terraform` blocks either in this file or in a `main.tf` file.
+    ```hcl
+    provider "pingdom" {
+    }
 
-This basic check simply checks that the host/url (in this case; uat.claim-criminal-injuries-compensation.service.justice.gov.uk) returns a 200 every minute (resolution = 1 minute). When six (sendnotificationwhendown = 6) consecutive checks fail it triggers an alarm. As publicreport is set to true, you can view the status of your check by visiting the public status page - [http://pingdom.service.dsd.io](http://pingdom.service.dsd.io), where this check would appear with the name "cica - uat - cloud-platform - claim".
+    resource "pingdom_check" "claim-criminal-injuries-compensation-uat" {
+      type                     = "http"
+      name                     = "cica - uat - cloud-platform - claim"
+      host                     = "uat.claim-criminal-injuries-compensation.service.justice.gov.uk"
+      resolution               = 1
+      notifywhenbackup         = true
+      sendnotificationwhendown = 6
+      notifyagainevery         = 0
+      url                      = "/"
+      encryption               = true
+      port                     = 443
+      tags                     = "businessunit_platforms,application_prometheus,component_healthcheck,isproduction_true,environment_uat,infrastructuresupport_platforms"
+      probefilters             = "region:EU"
+    }
 
-[This](https://github.com/russellcardullo/terraform-provider-pingdom#pingdom-check) page explains all the attributes used in the check.
+    ```
 
-All resources, including Pingdom checks **must** be tagged and adhere to the technical guidance outlined [here](https://ministryofjustice.github.io/technical-guidance/documentation/standards/documenting-infrastructure-owners.html). Ensure your check has appropriate tags before submitting a pull request.
+  **Note**: You'll need to include the `provider "pingdom"` and `terraform` blocks either in this file or in a `main.tf` file.
+ 
 
-Once reviewed and merged to master, the pipeline will create your check in the MoJ Pingdom account.
+  You can define the conditions of your check using the resources outlined in the [Terraform community provider](https://github.com/russellcardullo/terraform-provider-pingdom). 
+
+  Here's a working example of a [basic check](https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live-1.cloud-platform.service.justice.gov.uk/claim-criminal-injuries-compensation-uat/resources/pingdom.tf).
+
+  This basic check simply checks that the host/url (in this case; uat.claim-criminal-injuries-compensation.service.justice.gov.uk) returns a 200 every minute (resolution = 1 minute). 
+  When six (sendnotificationwhendown = 6) consecutive checks fail it triggers an alarm. 
+
+  [This](https://github.com/russellcardullo/terraform-provider-pingdom#pingdom-check) page explains all the attributes used in the check.
+
+  All resources, including Pingdom checks **must** be tagged and adhere to the technical guidance outlined [here](https://ministryofjustice.github.io/technical-guidance/documentation/standards/documenting-infrastructure-owners.html). Ensure your check has appropriate tags before submitting a pull request.
+
+Once reviewed and merged to main, the pipeline will create your check in the MoJ Pingdom account.
 
 ### Adding Slack notification
 You can enable the option to send a failing alert to Slack via a webhook by simply adding Pingdom integration id. You need administrator permissions to manage the mojdt [Pingdom Slack](https://slack.com/apps/A0F814AV7-pingdom?next_id=0) webhook and then [Pingdom](https://my.pingdom.com) to create the integration id.
@@ -64,7 +98,7 @@ The team will provide you with an integration id, following the steps outlined [
 
 You can now add `integrationids` to your `pingdom.tf`. Appending the example above, your check will now appear as follows (assuming you were given 1000 as the integration id):
 
-```yaml
+```hcl
 provider "pingdom" {
 }
 
@@ -81,7 +115,6 @@ resource "pingdom_check" "claim-criminal-injuries-compensation-uat" {
   port                     = 443
   tags                     = "businessunit_platforms,application_prometheus,component_healthcheck,isproduction_true,environment_uat,infrastructuresupport_platforms"
   probefilters             = "region:EU"
-  publicreport             = "true"
   integrationids           = [1000]
 }
 ```
