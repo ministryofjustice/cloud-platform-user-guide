@@ -1,12 +1,12 @@
 ---
 title: Adding AWS resources to your environment
-last_reviewed_on: 2021-01-13
+last_reviewed_on: 2021-03-31
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
 
-Through the [cloud-platform-environments][env-repo] repository, you can provision AWS resources for your environments. This is done using terraform and more specifically, terraform modules the Cloud Platform team provides.
+Through the [cloud-platform-environments][env-repo] repository, you can provision AWS resources for your environments. This is done using Terraform and more specifically, terraform modules the Cloud Platform team provides.
 
 The documentation for the modules lives in each module's repository.
 
@@ -16,17 +16,18 @@ The list of terraform modules provided by the Cloud Platform team is available h
 
 ## Usage
 
-In each terraform module repository, you will find a directory named `example` which includes sample configuration for use on the Cloud Platform.
+There are two ways to create Terraform resources for your namespace:
 
-In your namespace's path in the [cloud-platform-environments][env-repo] repository, `cd` to the `resources` directory and refer to the module's example to define your resources.
+- Manually create a Terraform manifest.
+- Using the [cloud-platform] CLI tool.
 
-Terraform configs for some AWS resources can be created using the [cloud-platform] CLI tool, e.g.
+### Manually create a Terraform manifest
 
-```
-cloud-platform environment rds create
-```
+In the [cloud-platform-environments][env-repo], `cd` into your namespace and create a new directory called `resources` (if it doesn't already exist). Inside this directory create a file with a sensible filename i.e. `rds.tf` and create a call to the module you require. 
 
-...will create an `rds.tf` file in your resources directory.
+For example, if you wish to create an [RDS instance][rds-instance], go to the example in the module's repository and populate your `rds.tf` file using the example as a guide.
+
+### Use the cloud-platform cli
 
 At time of writing, the following resources can be created by the CLI tool:
 
@@ -34,6 +35,14 @@ At time of writing, the following resources can be created by the CLI tool:
 * s3
 * ecr
 * serviceaccount
+
+[Download][download-cli] the cloud-platform command line tool.
+
+In the [cloud-platform-environments][env-repo], `cd` into your namespace and run the following command. This will create an RDS manifest in the `resources` directory:
+
+```
+cloud-platform environment rds create
+```
 
 Each example will have some global terraform configuration defined, however, this should only be declared once, regardless of the number of modules used:
 
@@ -99,3 +108,5 @@ You can view all metrics AWS make available [here](https://docs.aws.amazon.com/A
 [cloud-platform]: ../getting-started/cloud-platform-cli.html
 [architecture decision record]: https://github.com/ministryofjustice/cloud-platform/blob/main/architecture-decision-record/015-Keeping-Terraform-modules-up-to-date.md#keeping-terraform-modules-up-to-date
 [Prometheus]: https://prometheus.cloud-platform.service.justice.gov.uk/graph
+[rds-instance]: https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance/blob/main/example/rds.tf
+[download-cli]: https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/cloud-platform-cli.html#installation
