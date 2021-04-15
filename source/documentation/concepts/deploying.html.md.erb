@@ -1,6 +1,6 @@
 ---
 title: Deploying to the Cloud Platform
-last_reviewed_on: 2021-01-13
+last_reviewed_on: 2021-04-14
 review_in: 3 months
 ---
 
@@ -120,14 +120,14 @@ The metrics you specify in the `HorizontalPodAutoscaler` manifest will determine
 
 The Horizontal Pod Autoscaler can ensure that critical applications are elastic and can scale out to meet increasing demand as well scale down to ensure optimal resource usage, it is also a great tool in saving money by auto-scaling down non-production work loads when not in use, such as overnight or at the weekend.
 
+The HPA calculates the number of replicas by calculating the ratio between desired metric value and current metric value. Details on how the algorithm works is explained [here](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
+
 #### Important aspects of the HorizontalPodAutoscaler to be aware of:
 
 * Resource Limits - You need to set resource limits otherwise HPA will not work, as it will not have a value to quantify from.
 * 15 seconds - The HPA controller checks the value of the metric used every 15 seconds per pod. 
 * 3 minutes - The HPA scales up pods if the metric threshold has been continually exceeded for 3 mins. 
 * 5 minutes - The HPA scales down pods if the metric threshold has not been exceeded for 5 mins. 
-
-
 
 To create the horizontal pod autoscaler for your deployment, create a `hpa-myapp.yaml` similar to this:
 
@@ -144,10 +144,22 @@ spec:
     name: my-app-name
   minReplicas: 1
   maxReplicas: 5
-  targetCPUUtilizationPercentage: 50
+  targetCPUUtilizationPercentage: 95
 ```
 
-The above manifest will ensure a minimum of 1 replica is available for the deployment called my-app-name, but will increase replicas up to 5 when the CPU utilization is above 50%.
+The above manifest will ensure a minimum of 1 replica is available for the deployment called my-app-name, but will increase replicas up to 5 when the CPU utilization is above 95%.
+
+To configure what value to set for `targetCPUUtilizationPercentage` depends on resource limits set up in your namespace and how much the actual pods consume.
+This [limitrange file] defines the defaults we assign to new namespaces. 
+
+- Check how much defaults is set for your namespace
+
+- Check how much the pods actually consume by running
+```
+kubectl top pods -n <namespace>
+```
+If your namespace `defaultRequest.cpu : 10m` and you pods consumes `8m` wihtout any traffic, then the usual CPUUtilizationPercentage is 80%. 
+The pods doesnot need scaling until it reaches 95% of the `defaultRequest.cpu` which is already reserved for each of the containers. Hence the `targetCPUUtilizationPercentage` can be set as 95%.
 
 Run the following command to apply:
 
@@ -191,3 +203,4 @@ Click [here](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-aut
 [worker node]: https://kubernetes.io/docs/concepts/architecture/nodes/
 [this article]: /documentation/other-topics/zero-downtime-deployment.html
 [Recreate]: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#recreate-deployment
+[limitrange file]: https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespace-resources-cli-template/02-limitrange.yaml
