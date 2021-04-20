@@ -10,7 +10,7 @@ review_in: 3 months
 ## Overview
 
 Below is the guidance for rotating the tokens and keys that are set as environment variables for your application container or your automated deployment pipeline. 
-This include only the variables fetched from system secrets from a namespace and not include any application related variables.
+This guide covers only secrets provided by the Cloud Platform system (your application may have other secrets too)
 
 ### Serviceaccount tokens
   Delete the secrets related to the serviceaccount credentials that are used in automated deployment pipeline like circleCI or github Actions. The secret name mostly start with `circleci-token-XXXX`
@@ -28,4 +28,6 @@ This include only the variables fetched from system secrets from a namespace and
   Decode the secret using `cloud-platform decode-secret -n <yournamespace> -s circleci-token-XXXXX` to use it in your deployment pipeline.
 
 ### AWS credentials
-   Contact `Cloud platform` team to rotate the credentials related to AWS resources such as ECR, RDS etc. The will run the instructions from the runbook [Rotate User AWS Credentials](https://runbooks.cloud-platform.service.justice.gov.uk/rotate-user-aws-credentials.html#rotate-user-aws-credentials)
+  [Ask the Cloud Platform team](/documentation/reference/getting-help.html) to rotate the credentials related to AWS resources such as ECR, RDS etc., which have been [created by terraform](/documentation/deploying-an-app/add-aws-resources.html). 
+  The team will run the instructions from the runbook [Rotate User AWS Credentials](https://runbooks.cloud-platform.service.justice.gov.uk/rotate-user-aws-credentials.html#rotate-user-aws-credentials) to regenerate the AWS credentials. 
+  This will recreate the kubernetes-secret in the same name and the values are updated automatically in the `mountPath` which the pod consumes.
