@@ -1,0 +1,33 @@
+---
+title: Rotating tokens and keys
+last_reviewed_on: 2021-04-19
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+
+## Overview
+
+Below is the guidance for rotating the tokens and keys that are set as environment variables for your application container or your automated deployment pipeline. 
+This guide covers only secrets provided by the Cloud Platform system (your application may have other secrets too)
+
+### Serviceaccount tokens
+  Delete the secrets related to the serviceaccount credentials that are used in automated deployment pipeline like circleCI or github Actions. The secret name mostly start with `circleci-token-XXXX`
+
+    ```bash
+    $kubectl get secrets -n <yournamespace>
+    circleci-token-XXXXX                                       kubernetes.io/service-account-token   3      279d
+    default-token-jgtdz                                        kubernetes.io/service-account-token   3      279d
+    es-snapshot-bucket                                         Opaque                                2      144d
+    $
+    $kubectl delete secret circleci-token-XXXXX -n <yournamespace>
+
+  After the secret is deleted the replacement secret is generated immediately. Check the age of the newly generated secret to confirm. 
+  
+  Decode the secret using `cloud-platform decode-secret -n <yournamespace> -s circleci-token-XXXXX` to use it in your deployment pipeline.
+
+### AWS credentials
+  [Ask the Cloud Platform team](/documentation/reference/getting-help.html) to rotate the credentials related to AWS resources such as ECR, RDS etc., which have been [created by terraform](/documentation/deploying-an-app/add-aws-resources.html). 
+  The team will run the instructions from the runbook [Rotate User AWS Credentials](https://runbooks.cloud-platform.service.justice.gov.uk/rotate-user-aws-credentials.html#rotate-user-aws-credentials) to regenerate the AWS credentials. 
+  This will recreate the kubernetes-secret in the same name and the values are updated automatically in the `mountPath` which the pod consumes.
