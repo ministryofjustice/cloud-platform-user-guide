@@ -33,6 +33,12 @@ mv cloud-platform /usr/local/bin
 rm ${TARBALL}
 ```
 
+or use Homebrew:
+
+```bash
+brew install ministryofjustice/cloud-platform-tap/cloud-platform-cli
+```
+
 After this, you should be able to run:
 
 ```bash
@@ -41,10 +47,10 @@ $ cloud-platform version
 
 ...to confirm that your installation is working.
 
-### Auto-update
+### Keeping up to date
 
-The `cloud-platform` binary will update itself whenever it detects a new
-version, so you should only ever have to install it once.
+The `cloud-platform` binary will attempt update itself whenever it detects a new
+version. If you installed it via brew then it'll be kept up to date when you run `brew update/upgrade`.
 
 ## Functions
 
