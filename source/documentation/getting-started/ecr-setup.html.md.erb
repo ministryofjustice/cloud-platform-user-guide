@@ -8,7 +8,7 @@ review_in: 3 months
 
 ## Introduction
 
-This guide will guide you through the creation of an ECR (Elastic Container Registry) repository for your application's docker image.
+This document will guide you through the creation of an ECR (Elastic Container Registry) repository for your application's docker image.
 
 AWS resources are provisioned through the [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments/) repository, per environment. Your application might be using multiple namespaces, however you typically only need one image repository and once created in any of them you can copy credentials for it to the others via `kubectl get/create secret`.
 
