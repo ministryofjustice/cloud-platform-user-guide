@@ -46,13 +46,14 @@ We will use [ministryofjustice/port-forward][port-forward-image] for this exampl
 kubectl \
   -n [your namespace] \
   run port-forward-pod \
-  --generator=run-pod/v1 \
   --image=ministryofjustice/port-forward \
   --port=5432 \
   --env="REMOTE_HOST=[your database hostname]" \
   --env="LOCAL_PORT=5432" \
   --env="REMOTE_PORT=5432"
 ```
+
+Use port `1433` for MS-SQL.
 
 > This creates a pod in your namespace, but without a deployment to manage it.
 >
@@ -73,6 +74,8 @@ kubectl \
   port-forward-pod 5432:5432
 ```
 
+Use port `1433` for MS-SQL.
+
 You need to leave this running as long as you are accessing the database.
 
 ### 3. Access the database
@@ -84,6 +87,12 @@ If you are exporting a database URL from your RDS kubernetes secret, it might ha
 ```
 postgres://cpDvquXO5B:R1eDN0xEUnaH6Aqr@cloud-platform-df3589e0e7acba37.cdwm328dlye6.eu-west-2.rds.amazonaws.com:5432/dbdf3589e0e7acba37
 
+```
+
+For MS-SQL, use [sqlcmd for MacOS](https://cloudblogs.microsoft.com/sqlserver/2017/05/16/sql-server-command-line-tools-for-macos-released/) and test with a command like
+
+```
+sqlcmd -S tcp:127.0.0.1,1433 -U $user -P $pass -Q 'select @@version'
 ```
 
 You can use this URL to connect to your database via the port forward you have set up, but you need to replace the database hostname, (`cloud-platform-df3589e0e7acba37.cdwm328dlye6.eu-west-2.rds.amazonaws.com` in this example), with `localhost`.
