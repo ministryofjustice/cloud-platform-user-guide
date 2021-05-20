@@ -10,21 +10,43 @@ The purpose of this section of the guide is to clarify what the Cloud Platform o
 
 ## What does the Cloud Platform offer in terms of Disaster Recovery?
 
-## Back-ups and restores
+There are many scenarios in which the Cloud Platform could fail that would require some form of recovery process. We have tested and documented [runbooks](https://runbooks.cloud-platform.service.justice.gov.uk/disaster-recovery-scenarios.html#cloud-platform-disaster-recovery-scenarios) for each scenario identified. In summary we have plans for the following scenarios:
 
-## How will you know if there is a Disaster in progress?
+* Complete loss of the platform
+* Loss of one or more individual namespaces
+* Losing a Kubernetes Component or Object
+* Deleted/corrupted the kops state
+* Deleted terraform state
+* Loss or corrupted etcd volumes
+* Overwriting KOPS cluster’s components with EKS components
 
-No doubt you may have some alarms firing depending on how you have your alerting set up.
+In the case of all of the above the Cloud Platform Team is responsible for recovery.
 
-If there is a wider issues with the platform we will notifiy all users via #cloud-platform-update channel in line with our [operational processes](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/reference/operational-processes.html#cloud-platform-update-slack-channel). You should check back here for periodic updates.
+*However, it possible that in the event of the loss of the platform or a namespace that we may require Service Teams to redeploy their services. It is also possible that any resources not added to your namespace folder in the [Environments Repo](https://github.com/ministryofjustice/cloud-platform-environments) (e.g. custom Prometheus rules) many require recovery by the Service Team.*  
 
-If we identify a specifiuc issue relating to a single service we will contact teams via the `slack-channel` annotation detailed in your namespace.
+The Cloud Platform Team is continually reviewing and identifiying risks to the Platform. As each threat is identified we are testing and creating recovery plans.
 
 ## What isn't covered by the Cloud Platforms?/Considerations for Service Teams
 
 *
 * Please ensure your `slack-channel` annotaion is kept up to date so that the Cloud Platform Team knows how best to contact your team.
 * Please ensure you team is added to the #cloud-platform-update slack channel so that you can ensure you receive important messages for the Cloud Platform Team.
+
+## Back-ups and restores
+
+There are different types of back-ups made on the Cloud Platform for a variety of pursposes:
+
+### Velero - Cluster backups
+
+### AWS RDS Snapshots
+
+### Other AWS Managed Resources
+
+## How will you know if there is a Disaster in progress?
+
+If there is a wider issues with the platform we will notifiy all users via #cloud-platform-update channel in line with our [operational processes](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/reference/operational-processes.html#cloud-platform-update-slack-channel). You should check back here for periodic updates.
+
+If we identify a specifiuc issue relating to a single service we will contact teams via the `slack-channel` annotation detailed in your namespace.
 
 ## How do I access these services if we have a problem or if we have any questions?
 
