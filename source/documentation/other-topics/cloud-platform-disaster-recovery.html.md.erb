@@ -10,7 +10,7 @@ The purpose of this section of the guide is to clarify what the Cloud Platform o
 
 ## What does the Cloud Platform offer in terms of Disaster Recovery?
 
-There are many scenarios in which the Cloud Platform could fail that would require some form of recovery process. We have tested and documented [runbooks](https://runbooks.cloud-platform.service.justice.gov.uk/disaster-recovery-scenarios.html#cloud-platform-disaster-recovery-scenarios) for each scenario identified. In summary we have plans for the following scenarios:
+There are many scenarios in which the Cloud Platform could fail that would require some form of recovery process. We have tested and documented [runbooks](https://runbooks.cloud-platform.service.justice.gov.uk/disaster-recovery-scenarios.html#cloud-platform-disaster-recovery-scenarios) for each scenario identified:
 
 * Complete loss of the platform
 * Loss of one or more individual namespaces
@@ -22,7 +22,7 @@ There are many scenarios in which the Cloud Platform could fail that would requi
 
 In the case of all of the above the Cloud Platform Team is responsible for recovery.
 
-*However, it possible that in the event of the loss of the platform or a namespace that we may require Service Teams to redeploy their services. It is also possible that any resources not added to your namespace folder in the [Environments Repo](https://github.com/ministryofjustice/cloud-platform-environments) (e.g. custom Prometheus rules) many require recovery by the Service Team.*  
+*However, it possible that in the event of the loss of the platform or a namespace that we may require Service Teams to redeploy their services. It is also possible that any resources not added to your namespace folder in the [Environments Repo](https://github.com/ministryofjustice/cloud-platform-environments) (e.g. custom Prometheus rules) many require recovery by the Service Team themselves.*  
 
 The Cloud Platform Team is continually reviewing and identifiying risks to the Platform. As each threat is identified we are testing and creating recovery plans.
 
@@ -42,7 +42,7 @@ There are different types of back-ups made on the Cloud Platform for a variety o
 
 ### Velero - Cluster backups
 
-[Velero](https://runbooks.cloud-platform.service.justice.gov.uk/velero.html#velero-cluster-backups-and-disaster-recovery) is an open source tool to safely backup and restore, perform disaster recovery, and migrate Kubernetes cluster resources and persistent volumes. These backup are managed by the Cloud Platform and are a core tool in recovery from a loss of the the cluster or one or more of it's components. A back-up of the custer is scheduled to run every 3 hours.
+[Velero](https://runbooks.cloud-platform.service.justice.gov.uk/velero.html#velero-cluster-backups-and-disaster-recovery) is an open source tool to safely backup and restore, perform disaster recovery, and migrate Kubernetes cluster resources and persistent volumes. These backup are managed by the Cloud Platform and is a core tool in recovery from a loss of the the cluster, or one or more of it's components. A back-up of the custer is scheduled to run every 3 hours.
 
 ### AWS RDS Snapshots
 
@@ -52,7 +52,7 @@ Service Teams can take manual AWS [RDS Snapshots](https://user-guide.cloud-platf
 
 All AWS managed resources (e.g. RDS) have some form of back-up and recovery. These services are managed by AWS in line with their [SLAs](https://aws.amazon.com/legal/service-level-agreements/). More detail about specific back-up schedules, retention periods and recovery can be found in AWS documentation.
 
-If you require assistance finding the detail or need to initiate the recovery of an AWS resource please contact #ask-cloud-platform 
+If you need to initiate the recovery of an AWS resource please contact #ask-cloud-platform.
 
 ## How will you know if there is a Disaster in progress?
 
