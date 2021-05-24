@@ -1,6 +1,6 @@
 ---
 title: Cloud Platform Disaster Recovery
-last_reviewed_on: 2021-05-20
+last_reviewed_on: 2021-05-24
 review_in: 3 months
 ---
 
@@ -28,9 +28,12 @@ The Cloud Platform Team is continually reviewing and identifiying risks to the P
 
 ## What isn't covered by the Cloud Platforms?/Considerations for Service Teams
 
-* 
-* Please ensure your `slack-channel` annotaion is kept up to date so that the Cloud Platform Team knows how best to contact your team.
-* Please ensure you team is added to the #cloud-platform-update slack channel so that you can ensure you receive important messages for the Cloud Platform Team.
+* Custom `PrometheusRule` and dashboards - To ensure these are not lost it is best practice to store these in the `environments` repository so that they have be redeployed by the Cloud Platform Team. Any resources of this type not in `environments` will need to be redeployed by the Service Team.
+* Persistent volumes and other stateful resources - Kubernetes is designed and works best for stateless applications. In the event of a disaster it is likley that any stateful resources would be lost. In this instance it would be the responsability of the Service Team to back-up these resources, or treat them as ephemeral. An alternative would be to use AWS managed persistant resources such as RDS or S3.
+* Redeployment of applications - The Cloud Platform doesn't manage tenant deployment pipleines. If there is a need to deploy a service as part of any restoration you will be asked to do so by the Cloud Platform Team.
+* 3rd party managed services (e.g. Github, CircleCI, Sentry.io) - These 3rd party managed services will offer some form of back-up and recovery as part of their managed service, however these processes are out of the scope of recovery by the Cloud Platform. If you need more information please contact #ask-operations-engineering. 
+* Ensure your `slack-channel` annotaion is kept up to date so that the Cloud Platform Team knows how best to contact your team.
+* Ensure you team is added to the #cloud-platform-update slack channel so that you can ensure you receive important messages for the Cloud Platform Team.
 
 ## Back-ups and restores
 
