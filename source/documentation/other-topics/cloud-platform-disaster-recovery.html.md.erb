@@ -31,6 +31,7 @@ The Cloud Platform Team is continually reviewing and identifiying risks to the P
 * Custom `PrometheusRule` and dashboards - To ensure these are not lost it is best practice to store these in the `environments` repository so that they have be redeployed by the Cloud Platform Team. Any resources of this type not in `environments` will need to be redeployed by the Service Team.
 * Persistent volumes and other stateful resources - Kubernetes is designed and works best for stateless applications. In the event of a disaster it is likley that any stateful resources would be lost. In this instance it would be the responsability of the Service Team to back-up these resources, or treat them as ephemeral. An alternative would be to use AWS managed persistant resources such as RDS or S3.
 * Redeployment of applications - The Cloud Platform doesn't manage tenant deployment pipleines. If there is a need to deploy a service as part of any restoration you will be asked to do so by the Cloud Platform Team.
+* Only retain AWS RDS Snaphots for as long as they are required. Please clean-up any snapshops regularly.
 * 3rd party managed services (e.g. Github, CircleCI, Sentry.io) - These 3rd party managed services will offer some form of back-up and recovery as part of their managed service, however these processes are out of the scope of recovery by the Cloud Platform. If you need more information please contact #ask-operations-engineering. 
 * Ensure your `slack-channel` annotaion is kept up to date so that the Cloud Platform Team knows how best to contact your team.
 * Ensure you team is added to the #cloud-platform-update slack channel so that you can ensure you receive important messages for the Cloud Platform Team.
@@ -41,9 +42,17 @@ There are different types of back-ups made on the Cloud Platform for a variety o
 
 ### Velero - Cluster backups
 
+[Velero](https://runbooks.cloud-platform.service.justice.gov.uk/velero.html#velero-cluster-backups-and-disaster-recovery) is an open source tool to safely backup and restore, perform disaster recovery, and migrate Kubernetes cluster resources and persistent volumes. These backup are managed by the Cloud Platform and are a core tool in recovery from a loss of the the cluster or one or more of it's components. A back-up of the custer is scheduled to run every 3 hours.
+
 ### AWS RDS Snapshots
 
+Service Teams can take manual AWS [RDS Snapshots](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/rds-snapshots.html#rds-snapshots) for a variety of purposes. The Cloud Platform provides a daily snapshot by default. Team are able to restore their own snapshots as required. It is important that Service Teams only keep snapshots for as long as required and clean-up as soon as they are no longer required.
+
 ### Other AWS Managed Resources
+
+All AWS managed resources (e.g. RDS) have some form of back-up and recovery. These services are managed by AWS in line with their [SLAs](https://aws.amazon.com/legal/service-level-agreements/). More detail about specific back-up schedules, retention periods and recovery can be found in AWS documentation.
+
+If you require assistance finding the detail or need to initiate the recovery of an AWS resource please contact #ask-cloud-platform 
 
 ## How will you know if there is a Disaster in progress?
 
