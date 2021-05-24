@@ -86,6 +86,7 @@ In this document, we will use environment variables to deploy to a single enviro
 
 To deploy to a single namespace, select the "Project Settings" and then "Environment Variables". The following should be set:
 
+```
 - AWS_DEFAULT_REGION # This should be set to `eu-west-2`.
 - AWS_ACCESS_KEY_ID # If you're deploying to ECR you can find this value in a [namespace secret](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/ecr-setup.html#accessing-the-credentials).
 - AWS_SECRET_ACCESS_KEY # As above, this should be stored in a namespace secret and is used for ECR.
@@ -96,7 +97,8 @@ To deploy to a single namespace, select the "Project Settings" and then "Environ
 - K8S_NAMESPACE # The name of the namespace/environment (see [Create a namespace][env-create])
 - K8S_CLUSTER_CERT # The CA Certificate for the cluster, can be acquired from the `Secret` that is generated for the `serviceaccount` (as stated above)
 - K8S_TOKEN # The access token generated for the `serviceaccount`. Please note, you should first base64 decode the token value you retrieve from the secret [in the previous section][create-sa], e.g. `echo <thereallylongstringthatyougetback> | base64 --decode`.
-
+```
+   
 ## Configuring CircleCI
 
 This is a really simple example of adding a build and deploy section to your configuration. If you'd rather see this in action, please checkout the [cloud-platform-reference-app](https://github.com/ministryofjustice/cloud-platform-reference-app/blob/main/.circleci/config.yml)
