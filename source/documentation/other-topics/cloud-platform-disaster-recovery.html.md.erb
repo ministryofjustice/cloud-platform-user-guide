@@ -1,0 +1,67 @@
+---
+title: Cloud Platform Disaster Recovery
+last_reviewed_on: 2021-05-24
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+The purpose of this section of the guide is to clarify what the Cloud Platform offers in terms of disaster recovery, the processes to initiate different types of recovery, and roles and responsibilities of the Cloud Platform and Service Teams.
+
+## What does the Cloud Platform offer in terms of Disaster Recovery?
+
+Cloud Platform is provided to Service Teams as a managed service. To ensure business continuity, Cloud Platform has a disaster recovery plan that facilitates quick recovery. Recovery plans have been tested and documented in the [runbooks](https://runbooks.cloud-platform.service.justice.gov.uk/disaster-recovery-scenarios.html#cloud-platform-disaster-recovery-scenarios) for the following scenarios:
+
+* Complete loss of the platform
+* Loss of one or more individual namespaces
+* Losing a Kubernetes Component or Object
+* Deleted/corrupted the kops state
+* Deleted terraform state
+* Loss or corrupted etcd volumes
+* Overwriting KOPS cluster’s components with EKS components
+
+In the case of all of the above the Cloud Platform Team is responsible for recovery.
+
+*However, it's possible that in the event of the loss of the platform or a namespace that we may require Service Teams to redeploy their services. It is also possible that any resources not added to your namespace folder in the [Environments Repo](https://github.com/ministryofjustice/cloud-platform-environments) (e.g. custom Prometheus rules) may require recovery by the Service Team themselves.*  
+
+The Cloud Platform Team is continually reviewing and identifying risks to the our users and the platform. As each threat is identified we are testing and creating recovery plans.
+
+## What isn't covered by the Cloud Platforms?/Considerations for Service Teams
+
+* Custom `PrometheusRule` and dashboards - To ensure these are not lost it is best practice to store these in the `environments` repository so that they can be redeployed by the Cloud Platform Team. Any resources of this type not in `environments` will need to be redeployed by the Service Team.
+* Persistent volumes and other stateful resources - Kubernetes is designed and works best for stateless applications. In the event of a disaster it is likely that any stateful resources would be lost. In this instance it would be the responsibility of the Service Team to back-up these resources, or treat them as ephemeral. An alternative would be to use AWS managed persistent resources such as RDS or S3.
+* Redeployment of applications - The Cloud Platform doesn't manage tenant deployment pipelines. If there is a need to deploy a service as part of any restoration you will be asked to do so by the Cloud Platform Team.
+* Only retain AWS RDS Snapshots for as long as they are required. Please clean-up any snapshots regularly.
+* 3rd party managed services (e.g. Github, CircleCI, Sentry.io) - These 3rd party managed services will offer some form of back-up and recovery as part of their managed service, however these processes are out of the scope of recovery by the Cloud Platform. If you need more information please contact #ask-operations-engineering. 
+* Ensure your `slack-channel` annotation is kept up to date so that the Cloud Platform Team knows how best to contact your team.
+* Ensure you team is added to the #cloud-platform-update slack channel so that you can ensure you receive important messages from the Cloud Platform Team.
+
+## Back-ups and restores
+
+There are different types of back-ups made on the Cloud Platform for a variety of purposes:
+
+### Velero - Cluster backups
+
+[Velero](https://runbooks.cloud-platform.service.justice.gov.uk/velero.html#velero-cluster-backups-and-disaster-recovery) is an open source tool to safely backup and restore, perform disaster recovery, and migrate Kubernetes cluster resources and persistent volumes. These backups are managed by the Cloud Platform Team. A back-up of the cluster is scheduled to run every 3 hours.
+
+### AWS RDS Snapshots
+
+Service Teams can take manual AWS [RDS Snapshots](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/rds-snapshots.html#rds-snapshots) for a variety of purposes. The Cloud Platform provides a daily snapshot by default. Service Teams are able to restore their own snapshots as required. It is important that Service Teams only keep snapshots for as long as required and clean-up as soon as they are no longer needed.
+
+### Other AWS Managed Resources
+
+All AWS managed resources (e.g. RDS) have some form of back-up and recovery. These services are managed by AWS in line with their [SLAs](https://aws.amazon.com/legal/service-level-agreements/). More detail about specific back-up schedules, retention periods and recovery can be found in AWS documentation.
+
+If you need to initiate the recovery of an AWS resource please contact #ask-cloud-platform.
+
+## How will you know if there is a Disaster in progress?
+
+If there is a wider issues with the platform we will notify all users via #cloud-platform-update channel in line with our [operational processes](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/reference/operational-processes.html#cloud-platform-update-slack-channel). You should check #cloud-platform-update for periodic status updates.
+
+If we identify a specific issue relating to a single service we will contact the team via the `slack-channel` annotation detailed in your namespace.
+
+## How do I access these services if we have a problem or if we have any questions?
+
+During normal [working hours](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/reference/operational-processes.html#working-hours) please contact us over at #ask-cloud-platform slack channel.
+
+In the event that this is a *critical incident* but outside of normal hours you can contact us via our [On-Call Process](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/reference/operational-processes.html#our-on-call-process).
