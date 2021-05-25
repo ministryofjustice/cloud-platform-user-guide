@@ -22,7 +22,7 @@ There are many scenarios in which the Cloud Platform could fail that would requi
 
 In the case of all of the above the Cloud Platform Team is responsible for recovery.
 
-*However, it possible that in the event of the loss of the platform or a namespace that we may require Service Teams to redeploy their services. It is also possible that any resources not added to your namespace folder in the [Environments Repo](https://github.com/ministryofjustice/cloud-platform-environments) (e.g. custom Prometheus rules) many require recovery by the Service Team themselves.*  
+*However, it possible that in the event of the loss of the platform or a namespace that we may require Service Teams to redeploy their services. It is also possible that any resources not added to your namespace folder in the [Environments Repo](https://github.com/ministryofjustice/cloud-platform-environments) (e.g. custom Prometheus rules) may require recovery by the Service Team themselves.*  
 
 The Cloud Platform Team is continually reviewing and identifiying risks to the Platform. As each threat is identified we are testing and creating recovery plans.
 
@@ -33,7 +33,7 @@ The Cloud Platform Team is continually reviewing and identifiying risks to the P
 * Redeployment of applications - The Cloud Platform doesn't manage tenant deployment pipleines. If there is a need to deploy a service as part of any restoration you will be asked to do so by the Cloud Platform Team.
 * Only retain AWS RDS Snaphots for as long as they are required. Please clean-up any snapshops regularly.
 * 3rd party managed services (e.g. Github, CircleCI, Sentry.io) - These 3rd party managed services will offer some form of back-up and recovery as part of their managed service, however these processes are out of the scope of recovery by the Cloud Platform. If you need more information please contact #ask-operations-engineering. 
-* Ensure your `slack-channel` annotaion is kept up to date so that the Cloud Platform Team knows how best to contact your team.
+* Ensure your `slack-channel` annotation is kept up to date so that the Cloud Platform Team knows how best to contact your team.
 * Ensure you team is added to the #cloud-platform-update slack channel so that you can ensure you receive important messages for the Cloud Platform Team.
 
 ## Back-ups and restores
@@ -42,11 +42,11 @@ There are different types of back-ups made on the Cloud Platform for a variety o
 
 ### Velero - Cluster backups
 
-[Velero](https://runbooks.cloud-platform.service.justice.gov.uk/velero.html#velero-cluster-backups-and-disaster-recovery) is an open source tool to safely backup and restore, perform disaster recovery, and migrate Kubernetes cluster resources and persistent volumes. These backup are managed by the Cloud Platform and is a core tool in recovery from a loss of the the cluster, or one or more of it's components. A back-up of the custer is scheduled to run every 3 hours.
+[Velero](https://runbooks.cloud-platform.service.justice.gov.uk/velero.html#velero-cluster-backups-and-disaster-recovery) is an open source tool to safely backup and restore, perform disaster recovery, and migrate Kubernetes cluster resources and persistent volumes. These backup are managed by the Cloud Platform and is a core tool in recovery from a loss of the the cluster, or one or more of its components. A back-up of the custer is scheduled to run every 3 hours.
 
 ### AWS RDS Snapshots
 
-Service Teams can take manual AWS [RDS Snapshots](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/rds-snapshots.html#rds-snapshots) for a variety of purposes. The Cloud Platform provides a daily snapshot by default. Team are able to restore their own snapshots as required. It is important that Service Teams only keep snapshots for as long as required and clean-up as soon as they are no longer required.
+Service Teams can take manual AWS [RDS Snapshots](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/rds-snapshots.html#rds-snapshots) for a variety of purposes. The Cloud Platform provides a daily snapshot by default. Service Teams are able to restore their own snapshots as required. It is important that Service Teams only keep snapshots for as long as required and clean-up as soon as they are no longer needed.
 
 ### Other AWS Managed Resources
 
@@ -56,7 +56,7 @@ If you need to initiate the recovery of an AWS resource please contact #ask-clou
 
 ## How will you know if there is a Disaster in progress?
 
-If there is a wider issues with the platform we will notifiy all users via #cloud-platform-update channel in line with our [operational processes](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/reference/operational-processes.html#cloud-platform-update-slack-channel). You should check back here for periodic updates.
+If there is a wider issues with the platform we will notifiy all users via #cloud-platform-update channel in line with our [operational processes](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/reference/operational-processes.html#cloud-platform-update-slack-channel). You should check #cloud-platform-update for periodic status updates.
 
 If we identify a specific issue relating to a single service we will contact the team via the `slack-channel` annotation detailed in your namespace.
 
