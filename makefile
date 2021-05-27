@@ -1,4 +1,4 @@
-PUBLISHING_IMAGE := ministryofjustice/cloud-platform-tech-docs-publisher:1.2
+PUBLISHING_IMAGE := ministryofjustice/cloud-platform-tech-docs-publisher:1.3
 
 # Use this to run a local instance of the documentation site, while editing
 .PHONY: preview
@@ -39,6 +39,6 @@ htmlproofer:
 		-v $$(pwd)/docs:/app/docs \
 		-p 4567:4567 \
 		$(PUBLISHING_IMAGE) \
-		bundle exec htmlproofer ./docs --http-status-ignore 429 --allow-hash-href --http-status-ignore 0,429 --url-swap "https?\:\/\/user-guide\.cloud-platform\.service\.justice\.gov\.uk:" ./docs
+		bundle exec htmlproofer ./docs --http-status-ignore 429 --allow-hash-href --http-status-ignore 0,429,403 --url-swap "https?\:\/\/user-guide\.cloud-platform\.service\.justice\.gov\.uk:" ./docs
 
 
