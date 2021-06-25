@@ -35,9 +35,9 @@ If you want to use this method, you can treat it like any other [database migrat
 
 The upgrade process involves these steps:
 
-* Raise and merge a PR to [tell the apply pipeline to skip your namespace][long-running]
+* Raise and merge a PR to [tell the Apply Pipeline to skip your namespace][long-running]
 * Alter your RDS instance to use the default [parameter group] for your **current** PostgreSQL version
-* Raise and merge a PR to change your PostgreSQL version to the one you want - the pipeline will handle the upgrade for you
+* Raise and merge a PR to change your PostgreSQL version to the one you want - the Apply Pipeline will handle the upgrade for you
 * Raise another PR to [remove the "skip file"][long-running] from your namespace
 
 ### Advantages
@@ -159,7 +159,7 @@ aws rds modify-db-instance --db-instance-identifier $db \
 
 This will output a few screenfuls of JSON, which you can ignore. After making the change, repeat the `describe-db-instances` command to confirm that the change has worked.
 
-> It is important that the apply pipeline is paused, at this point, or it will revert the above change, and your upgrade will fail.
+> It is important that the Apply Pipeline is paused, at this point, or it will revert the above change, and your upgrade will fail.
 
 ##### Upgrade your RDS instance
 
@@ -175,7 +175,7 @@ e.g. To upgrade from PostgreSQL 9.5 to 9.6 (this is a [major version upgrade]), 
 +  rds_family = "postgres9.6"
 ```
 
-When this PR is merged, the pipeline will upgrade your RDS instance.
+When this PR is merged, the [Apply Pipeline](/documentation/other-topics/apply-pipeline.html) will upgrade your RDS instance.
 
 > In testing, data in the database was preserved, and the total downtime of the RDS instance was approx. 7 minutes. You need to carry out your own tests in your non-production namespace(s) to confirm that this behaviour is similar and acceptable, for your service.
 

@@ -80,7 +80,7 @@ It is important to retain the original settings associated with the DB instance 
 #### 4. Contact the Cloud Platform team about the restore, providing the `db-instance-identifier` and the PR raised.
 
 #### 5. Before the PR can be merged, the Cloud Platform team have to:
-* pause the concourse pipeline, and
+* pause the [Apply Pipeline](/documentation/other-topics/apply-pipeline.html), and
 * rename the DB Instance via the AWS console
 
 This allows the pipeline to create the new DB Instance from the snapshot, using the same name and settings as the original, and preserves the database endpoint and credentials.
@@ -93,7 +93,7 @@ This allows the pipeline to create the new DB Instance from the snapshot, using 
 >
 > Once the the terraform apply is successful, and the new DB instance has been created, revert the changes made for `db_engine_version`.
 
-#### 6. Merge the PR to master and check that the build pipeline creates the new DB instance with the same identifier and endpoints. The Cloud Platform team can also apply your changes manually if this is time critical.
+#### 6. Merge the PR to master and check that the Apply Pipeline creates the new DB instance with the same identifier and endpoints. The Cloud Platform team can also apply your changes manually if this is time critical.
 
 Once the new DB instance is restored and available, your application should be able to access the database with the same database credentials and endpoint as before.
 

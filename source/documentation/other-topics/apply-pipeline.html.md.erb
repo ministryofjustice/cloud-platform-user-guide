@@ -1,0 +1,46 @@
+---
+title: Apply Pipeline
+last_reviewed_on: 2021-06-24
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+## Introduction
+
+The **Apply Pipeline** is the part of Cloud Platform that continuously deploys the [environments repo](https://github.com/ministryofjustice/cloud-platform-environments) into Cloud Platform's Kubernetes cluster and AWS account. Service teams typically define their Kubernetes namespace and AWS resources in the environments repo, and and the Apply Pipeline is what gets it applied.
+
+(Don't confuse it with the **application pipelines**, which are created and managed by service teams. These deploy the Kubernetes resources which make up the application. The application in turn relies on the resources created by the Apply Pipeline - the namespace the application runs in and AWS services that it uses.)
+
+## How it operates
+
+The Apply Pipeline is triggered when a Pull Request on the [environments repo](https://github.com/ministryofjustice/cloud-platform-environments) is merged to `main`. The Apply Pipeline deploys the changes to whichever environments were changed in the PR.
+
+Essentially it does:
+
+```sh
+kubectl -n your-namespace apply -f *.yaml
+cd resources
+terraform plan
+terraform apply
+```
+
+It takes a minute to start the job and then 1 to 2 minutes to run.
+
+## Viewing the Apply Pipeline
+
+You can see the running of the Apply Pipeline in [Concourse's "Apply-namespace-changes-live-1" pipeline](https://concourse.cloud-platform.service.justice.gov.uk/teams/main/pipelines/environments-terraform/jobs/apply-namespace-changes-live-1)
+
+Usage:
+
+* Sign in using your GitHub identity
+* Select the build corresponding to your PR merge (other people's changes to environments also show up here). The latest build is at the top, but you can also identify your one by the merge commit hash.
+* Select `task: apply-namespace-changes` to see the logs, where terraform is applied.
+
+### Success and failures
+
+The colour of the header is green if the job was successful, or red for failure. A failing apply can disrupt other Service Teams who wish to apply their environment changes. So in this case, the Cloud Platform team will work quickly, hopefully with the PR author involved, to resolve or reverse changes, to resolve the failure.
+
+## Questions
+
+If you have questions about the running of the Apply Pipeline, ask the team in [#ask-cloud-platform](https://mojdt.slack.com/messages/C57UPMZLY/team/U58MLFA0M/).

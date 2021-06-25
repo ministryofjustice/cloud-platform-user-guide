@@ -40,9 +40,9 @@ You need to have the [Cloud Platform CLI] tool installed.
 
 5. Raise a PR to have your change approved
 
-Once your pull request has been approved and merged, it will trigger our build pipeline which will create your ECR.
+Once your pull request has been approved and merged, it will trigger the [Apply Pipeline](/documentation/other-topics/apply-pipeline.html) which will create your ECR.
 
-For more information about the terraform module being used, please read the documentation [here][module documentation].
+For more information about the terraform module being used, please read the documentation: [ECR terraform module][module documentation]
 
 ## Accessing the credentials
 
@@ -60,7 +60,7 @@ Look for the `access_key_id` and `secret_access_key` values.
 
 ## GitHub Actions
 
-If you are using [GitHub Actions] for your deployment pipeline, the ECR module can automatically manage [GitHub Actions Secrets] containing the ECR name, and the AWS access/secret keypair required to access it.
+If you are using [GitHub Actions] for your application deployment pipeline, the ECR module can automatically manage [GitHub Actions Secrets] containing the ECR name, and the AWS access/secret keypair required to access it.
 
 In the `resources/ecr.tf` file, you should see this section:
 
