@@ -31,7 +31,7 @@ deploying changes to the application:
 * Tag the image and push it to your ECR
 * Update your kubernetes files to deploy the updated application
 
-The process of building an image and pushing it to an ECR will normally be carried out by a build pipeline. For this initial walkthrough, we will go through these steps manually. Later we will go through an example of setting up a [CircleCI][circleci] job to do this automatically. The steps are similar if you're using other CI/CD tools such as [TravisCI][travisci].
+The process of building an image and pushing it to an ECR will normally be carried out an application's build pipeline. However, for this initial walkthrough, we will go through these steps manually. Later we will go through an example of setting up a [CircleCI][circleci] job to do this automatically. The steps are similar if you're using other CI/CD tools such as [TravisCI][travisci].
 
 ## Prerequisites
 
@@ -208,8 +208,9 @@ To update our application, we need to:
 * Update our `deployment.yaml` file with the new image details
 * Apply the updated yaml file to kubernetes
 
-> Everything but the first step will usually be done automatically by your
-> CI/CD pipeline, but it's worth understanding what's going on.
+> Everything but the first step would usually be done automatically by your
+> application's CI/CD pipeline, but we're doing it manually here for ease of
+> understanding.
 
 ## Step 3 - Create an Amazon ECR
 

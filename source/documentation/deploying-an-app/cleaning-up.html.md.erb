@@ -24,8 +24,9 @@ deleting the folder:
 
 ...and all its contents, from the [cloud-platform-environments][envrepo] repository.
 
-Merging this [PR] will trigger an automated pipeline which will delete all of
-your namespace's AWS resources, followed by the namespace itself.
+Merging this [PR] will trigger the [Apply Pipeline](/documentation/other-topics/apply-pipeline.html),
+which will delete all of your namespace's AWS resources, followed by the
+namespace itself.
 
 > NB: If you have set up a CI/CD pipeline, which deploys into your namespace,
 then this should be deleted first, so that anything you delete later is not

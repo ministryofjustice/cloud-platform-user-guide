@@ -76,16 +76,16 @@ Create a new branch, `git add` the new folder and then raise a pull request.
 
 Once a member of the Cloud Platform team has approved your PR, merge it.
 
-When you merge the PR, the Cloud Platform CI/CD pipeline will create your
-namespace and github repository. The github repository has a [GitHub Actions]
-workflow which will continuously deploy any changes made to the `main` branch
-of the repository.
+When you merge the PR, the [Apply Pipeline](/documentation/other-topics/apply-pipeline.html)
+will create your namespace and github repository. The github repository has a
+deployment workflow, implemented as a [GitHub Actions] workflow, which will
+continuously deploy any changes made to the `main` branch of the repository.
 
 ## Caveats
 
 There are a few things to be aware of, concerning your prototype kit site:
 
-* The continuous deployment workflow usually takes around 5 minutes to run
+* The deployment workflow usually takes around 5 minutes to run
 
 * The very first run of the deployment workflow will fail. This is because the
 github repository (and its deployment workflow) has to be created before some
@@ -112,8 +112,7 @@ resource "github_branch_protection" "default" {
 }
 ```
 
-> If you use the GitHub UI to disable branch protection, the Cloud Platform
-deployment pipeline will re-enable it shortly afterwards.
+> If you use the GitHub UI to disable branch protection, the [Apply Pipeline](/documentation/other-topics/apply-pipeline.html) will re-enable it shortly afterwards.
 >
 > The only way to permanently disable it is to remove it from the terraform
 source code.
@@ -131,7 +130,7 @@ delete your repository
 
 1. Merge the PR
 
-> The Cloud Platform deployment pipeline has the GitHub privileges required to
+> The [Apply Pipeline](/documentation/other-topics/apply-pipeline.html) has the GitHub privileges required to
 **create** repositories, but not to **delete** them. This is a deliberate
 safety feature.
 

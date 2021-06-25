@@ -13,10 +13,11 @@ This means a scheduled [apply pipeline] run might try to operate on a namespace
 while it is being modified.
 
 We use [Terraform state locking] to ensure that this does not cause serious
-problems, but at the least it would cause the apply pipeline to timeout with an
-error if it can't acquire a lock on the target namespace's terraform state.
+problems, but at the least it would cause the [Apply Pipeline](/documentation/other-topics/apply-pipeline.html)
+to timeout with an error if it can't acquire a lock on the target namespace's
+terraform state.
 
-For this reason, we have a mechanism to allow the apply pipeline to skip
+For this reason, we have a mechanism to allow the Apply Pipeline to skip
 individual namespaces during long-running operations.
 
 To use this feature:

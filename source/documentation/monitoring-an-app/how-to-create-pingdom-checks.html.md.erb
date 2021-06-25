@@ -8,7 +8,7 @@ review_in: 3 months
 
 
 ## Overview
-[Pingdom](https://my.pingdom.com) is a global performance and availability monitor for your web application. The aim of this document is to provide you with the necessary information to create Pingom checks via the [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments) pipeline, and then send failing checks to a Slack channel of your choosing.
+[Pingdom](https://my.pingdom.com) is a global performance and availability monitor for your web application. The aim of this document is to provide you with the necessary information to create Pingdom checks via the [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments) pipeline, and then send failing checks to a Slack channel of your choosing.
 
 ## Prerequisites
 This guide assumes the following:
@@ -83,7 +83,7 @@ Add the below 2 files in in the resources directory of your namespace in your [c
 
   All resources, including Pingdom checks **must** be tagged and adhere to the technical guidance outlined [here](https://ministryofjustice.github.io/technical-guidance/documentation/standards/documenting-infrastructure-owners.html). Ensure your check has appropriate tags before submitting a pull request.
 
-Once reviewed and merged to main, the pipeline will create your check in the MoJ Pingdom account.
+Once reviewed and merged to main, the [Apply Pipeline](/documentation/other-topics/apply-pipeline.html) will create your check in the MoJ Pingdom account.
 
 ### Adding Slack notification
 You can enable the option to send a failing alert to Slack via a webhook by simply adding Pingdom integration id. You need administrator permissions to manage the mojdt [Pingdom Slack](https://slack.com/apps/A0F814AV7-pingdom?next_id=0) webhook and then [Pingdom](https://my.pingdom.com) to create the integration id.

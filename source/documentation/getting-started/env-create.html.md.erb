@@ -57,8 +57,8 @@ location in the repository.
 
 Please create a new branch, add the new files and raise a pull request. The
 cloud platform team need to approve your pull request before you can merge it.
-Once you have done this, a build pipeline will create your namespace on the
-cluster.
+Once you have done this, the [Apply Pipeline](/documentation/other-topics/apply-pipeline.html)
+will create your namespace on the cluster.
 
 Please create **one PR per namespace** i.e. if you need namespaces `myapp-dev`,
 `myapp-staging` and `myapp-prod`, please raise a separate PR for each one. This
@@ -75,8 +75,9 @@ This is all you need to do in order to create your namespace.
 
 ## Accessing your environments
 
-Once the pipeline has completed you will be able to check that your environment
-is available by running:
+The [Apply Pipeline](/documentation/other-topics/apply-pipeline.html) deployment
+should complete in about 3 minutes, and you will be able to check that your
+environment is available by running:
 
 `$ kubectl get namespaces`
 
@@ -155,11 +156,12 @@ metadata:
     ...
 ```
 
-The namespace is your (team's) 'private' part of the cluster. The name of
-your namespace must be unique across the whole of the cluster. If you try to
-create a new namespace using the name of one which already exists, you will get
-an error when you try to apply the generated kubernetes config files (or when
-our build pipeline applies them on your behalf).
+The namespace is your (team's) 'private' part of the cluster. The name of your
+namespace must be unique across the whole of the cluster. If you try to create a
+new namespace using the name of one which already exists, you will get an error
+when you try to apply the generated kubernetes config files (or when the [Apply
+Pipeline](/documentation/other-topics/apply-pipeline.html) applies them on your
+behalf).
 
 For 'real' services, this is very unlikely to be a problem - most services have
 distinct names, so namespace name conflicts are unlikely. But, if you are
