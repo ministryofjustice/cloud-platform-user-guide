@@ -13,11 +13,11 @@ Ensure that your app:
 * can run in containers (Linux-based, Docker)
 * follows: [12 Factor App](https://12factor.net/)
 * uses backing services from AWS (which can be defined in Terraform)
-* its data is at OFFICIAL classification or [OFFICIAL-SENSITIVE](/documentation/concepts/official-sensitive.html), not anything higher
-* is secure - whilst CP environments are generally isolated, there is an element of sharing, so we expect applications to be kept [patched](https://ministryofjustice.github.io/security-guidance/vulnerability-scanning-and-patch-management-guide/) and follow [security guidance](https://ministryofjustice.github.io/security-guidance/)
+* its data does not have a classification higher than OFFICIAL or [OFFICIAL-SENSITIVE](/documentation/concepts/official-sensitive.html)
+* is secure - whilst Cloud Platform environments are generally isolated, there is an element of sharing, so we expect applications to be kept [patched](https://ministryofjustice.github.io/security-guidance/vulnerability-scanning-and-patch-management-guide/) and follow [security guidance](https://ministryofjustice.github.io/security-guidance/)
 * doesn't require private network connections such as PSN (see: [the internet is ok](https://ministryofjustice.github.io/security-guidance/internet-v-psn/#internet--v--psn))
 
 Support for:
 
-* micro-service architecture - this is supported but not necessary for Cloud Platform. Traditional monoliths or n-tier archictures can be hosted. Just bear in mind 12 factor app: they need to be [stateless](https://12factor.net/processes) to scale horizontally and [disposible](https://12factor.net/disposability) to be efficiently herded across the platform.
-* serverless - Cloud Platform is fine for the occasional lambda function used as AWS glue-code. However Cloud Platform doesn't currently give a good developer experience for rapid iteration, so doesn't support full serverless architectures. Supporting this is something CP is considering.
+* micro-service architecture - this is supported but not necessary for Cloud Platform. Traditional monoliths or n-tier archictures can be hosted. Just bear in mind 12 factor app: they need to be [stateless](https://12factor.net/processes) to scale horizontally and [disposable](https://12factor.net/disposability) to be efficiently herded across the platform.
+* serverless - Cloud Platform is fine for the occasional lambda function used as AWS glue-code. However Cloud Platform doesn't currently give a good developer experience for rapid iteration, so doesn't support full serverless architectures. Supporting this is something Cloud Platform is considering.
