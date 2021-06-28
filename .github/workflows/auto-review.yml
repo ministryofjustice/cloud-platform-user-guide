@@ -1,10 +1,7 @@
 name: Auto-approve a pull request
 
 on:
-  workflow_dispatch:
-    branches:
-      - 'main'
-  # pull_request
+  pull_request
 
 env:
   HEAD_OWNER: ${{ github.event.pull_request.head.repo.owner.login }}
