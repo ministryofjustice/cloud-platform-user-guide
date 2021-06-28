@@ -24,10 +24,6 @@ jobs:
         run: |
           git diff origin/main HEAD > changes
 
-
-      - name: Get the owner of the head repository
-        run: echo "head owner = ${{ env.HEAD_OWNER }}"
-
       - name: Copy changes file so next check can read it
         run: |
           mkdir ${HOME}/work/_temp/_github_home
@@ -37,3 +33,11 @@ jobs:
         uses: ministryofjustice/github-actions/approve-doc-review@add-docs-check
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get the owner of the head repository
+        run: echo "head owner = ${{ env.HEAD_OWNER }}"
+
+      - name: Print the GitHub context
+          env:
+            GITHUB_CONTEXT: ${{ toJson(github) }}
+          run: echo "$GITHUB_CONTEXT"
