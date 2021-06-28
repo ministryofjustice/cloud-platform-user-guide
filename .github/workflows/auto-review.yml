@@ -1,0 +1,20 @@
+name: Auto-approve a pull request
+
+on:
+  pull_request
+
+jobs:
+  check-diff:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+      - name: Checkout PR code
+        uses: actions/checkout@v1
+
+      - name: Run git diff against repository
+        run: |
+          git diff --name-only --diff-filter=AM ${{ github.event.before }} ${{ github.sha }}
