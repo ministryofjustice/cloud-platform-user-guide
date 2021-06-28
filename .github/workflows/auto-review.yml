@@ -38,6 +38,6 @@ jobs:
         run: echo "head owner = ${{ env.HEAD_OWNER }}"
 
       - name: Print the GitHub context
-          env:
-            GITHUB_CONTEXT: ${{ toJson(github) }}
-          run: echo "$GITHUB_CONTEXT"
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
