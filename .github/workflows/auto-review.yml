@@ -13,8 +13,10 @@ jobs:
 
     steps:
       - name: Checkout PR code
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
+      - run: |
+          git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
 
       - name: Run git diff against repository
         run: |
-          git diff --name-only --diff-filter=AM ${{ github.event.before }} ${{ github.sha }}
+          git diff origin/main HEAD
