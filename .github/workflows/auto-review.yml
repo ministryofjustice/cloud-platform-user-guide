@@ -23,3 +23,8 @@ jobs:
 
       - run: |
           cat changes
+
+      - name: Auto-approval check
+        uses: ministryofjustice/github-actions/approve-doc-review@add-docs-check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
