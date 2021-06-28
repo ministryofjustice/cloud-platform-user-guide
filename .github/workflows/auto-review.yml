@@ -27,6 +27,11 @@ jobs:
       - run: |
           cat changes
 
+      - name: Copy changes file so next check can read it
+        run: |
+          mkdir ${HOME}/work/_temp/_github_home
+          cp ${HOME}/changes ${HOME}/work/_temp/_github_home/.
+
       - name: Auto-approval check
         uses: ministryofjustice/github-actions/approve-doc-review@add-docs-check
         env:
