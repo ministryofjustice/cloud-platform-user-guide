@@ -19,4 +19,7 @@ jobs:
 
       - name: Run git diff against repository
         run: |
-          git diff origin/main HEAD
+          git diff origin/main HEAD > changes
+
+      - run: |
+          cat changes
