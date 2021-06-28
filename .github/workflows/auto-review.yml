@@ -21,6 +21,9 @@ jobs:
         run: |
           git diff origin/main HEAD > changes
 
+      - run: |
+          cat changes
+
       - name: Copy changes file so next check can read it
         run: |
           mkdir ${HOME}/work/_temp/_github_home
