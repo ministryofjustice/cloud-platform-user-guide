@@ -3,9 +3,6 @@ name: Auto-approve a pull request
 on:
   pull_request
 
-env:
-  HEAD_OWNER: ${{ github.event.pull_request.head.repo.owner.login }}
-
 jobs:
   check-diff:
     runs-on: ${{ matrix.os }}
@@ -33,9 +30,6 @@ jobs:
         uses: ministryofjustice/github-actions/approve-doc-review@add-docs-check
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Get the owner of the head repository
-        run: echo "head owner = ${{ env.HEAD_OWNER }}"
 
       - name: Print the GitHub context
         env:
