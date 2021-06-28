@@ -6,6 +6,9 @@ on:
       - 'main'
   # pull_request
 
+env:
+  HEAD_OWNER: ${{ github.event.pull_request.head.repo.owner.login }}
+
 jobs:
   check-diff:
     runs-on: ${{ matrix.os }}
@@ -24,8 +27,9 @@ jobs:
         run: |
           git diff origin/main HEAD > changes
 
-      - run: |
-          cat changes
+
+      - name: Get the owner of the head repository
+        run: echo "head owner = ${{ env.HEAD_OWNER }}"
 
       - name: Copy changes file so next check can read it
         run: |
