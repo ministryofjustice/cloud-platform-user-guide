@@ -1,7 +1,10 @@
 name: Auto-approve a pull request
 
 on:
-  pull_request
+  workflow_dispatch:
+    branches:
+      - 'main'
+  # pull_request
 
 jobs:
   check-diff:
