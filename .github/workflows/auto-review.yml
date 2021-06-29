@@ -5,7 +5,7 @@ on:
 
 env:
   PR_OWNER: ${{ github.actor }}
-  GITHUB_OAUTH_TOKEN: ${{ secrets.GITHUB_OAUTH_TOKEN }}
+  GITHUB_OAUTH_TOKEN: ${{ secrets.DOCUMENT_REVIEW_GITHUB }}
 
 jobs:
   check-diff:
