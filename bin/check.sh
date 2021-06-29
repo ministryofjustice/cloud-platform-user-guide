@@ -24,7 +24,7 @@ MOJ_GITHUB=/https...github.com.ministryofjustice.*/
 # annoying warnings due to some of the gem dependencies using functions that
 # have been deprecated in current versions of ruby.
 bundle exec htmlproofer 2>&1 \
-  --http-status-ignore 0,429,403 \
+  --http-status-ignore 0,429,403,400 \
   --allow-hash-href \
   --url-ignore "${MOJ_GITHUB}" \
   --url-swap "https?\:\/\/user-guide\.cloud-platform\.service\.justice\.gov\.uk:" \
