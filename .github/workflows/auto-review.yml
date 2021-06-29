@@ -30,11 +30,14 @@ jobs:
           git diff origin/main HEAD > changes
 
       - name: Auto-approval check
+        id: approve_pr_check
         uses: ministryofjustice/github-actions/approve-doc-review@add-docs-check
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Print the GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
+      - name: Approving PR
+        uses: hmarr/auto-approve-action@v2
+
+        if: steps.approve_pr_check.outputs.review_pr == 'true'
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN  }}"
