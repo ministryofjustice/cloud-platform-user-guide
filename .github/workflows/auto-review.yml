@@ -31,7 +31,7 @@ jobs:
 
       - name: Auto-approval check
         id: approve_pr_check
-        uses: ministryofjustice/github-actions/approve-doc-review@add-docs-check
+        uses: ministryofjustice/github-actions/approve-doc-review@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
