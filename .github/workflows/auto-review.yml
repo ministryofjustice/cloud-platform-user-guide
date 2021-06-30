@@ -4,7 +4,7 @@ on:
   pull_request
 
 env:
-  PR_OWNER: ${{ github.actor }}
+  PR_OWNER: ${{ github.event.pull_request.user.login }}
   GITHUB_OAUTH_TOKEN: ${{ secrets.DOCUMENT_REVIEW_GITHUB }}
 
 jobs:
