@@ -37,33 +37,46 @@ You need to have the [Cloud Platform CLI] tool installed.
     This will create a `resources/ecr.tf` file in your namespace folder.
 
 4. Update github variables
-   Ensure you have the below variables added to `variables.tf`
 
-   ```bash
-   variable "github_owner" {
-   description = "The GitHub organization or individual user account containing the app's code repo. Used by the Github Terraform provider. See: https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/ecr-setup.html#accessing-the-credentials"
-   default     = "ministryofjustice"
-   }
+    Ensure you have the below variables added to `variables.tf`
 
-   variable "github_token" {
-   description = "Required by the Github Terraform provider"
-   default     = ""
-   }
-   ```
-   If you have created your environment using [Cloud Platform CLI], this will be already added to the `variables.tf`
-5. Update provider block
-   Ensure the provider is added to the required_providers in versions.tf
-
-   ```bash
-    github = {
-      source = "integrations/github"
+    ```bash
+    variable "github_owner" {
+    description = "The GitHub organization or individual user account containing the app's code repo. Used by the Github Terraform provider. See: https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/ecr-setup.html#accessing-the-credentials"
+    default     = "ministryofjustice"
     }
-   ```
+
+    variable "github_token" {
+    description = "Required by the Github Terraform provider"
+    default     = ""
+    }
+    ```
     If you have created your environment using [Cloud Platform CLI], this will be already added to the `variables.tf`
 
-4. git add, commit and push to your branch
+5. Update provider block
 
-5. Raise a PR to have your change approved
+    Ensure the provider is added to the required_providers in versions.tf
+
+    ```bash
+        github = {
+        source = "integrations/github"
+        }
+    ```
+
+    Ensure the provider configuration is added to the main.tf
+
+    ```bash
+        provider "github" {
+        token = var.github_token
+        owner = var.github_owner
+        }
+    ```
+
+    If you have created your environment using [Cloud Platform CLI], this will be already added to the `versions.tf`
+
+6. git add, commit and push to your branch
+
+7. Raise a PR to have your change approved
 
 Once your pull request has been approved and merged, it will trigger the [Apply Pipeline](/documentation/other-topics/apply-pipeline.html) which will create your ECR.
 
