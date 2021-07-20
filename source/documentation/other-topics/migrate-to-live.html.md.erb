@@ -6,17 +6,33 @@ review_in: 3 months
 
 # <%= current_page.data.title %>
 
-## Overview
+## Introduction
+
+This document intends to act as a guide to helo you migrate your namespace from "Live-1" to "Live".
 
 ### Terms used in this document
 
-### Cluster names
+There are some confusing names and terms used in this document. Here are a few:
+- "Live-1" = The name of the current Cloud Platform (Kubernetes) cluster your namespace is deployed to.
+- "Live" = The name of a new Cloud Platform (EKS) cluster that you'll need to migrate to.
 
 ## Why should you migrate
 
+The Cloud Platform is a Kubernetes cluster deployed using a tool named kOps. When the Cloud Platform was conceived in 2017, Kubernetes management tools such as EKS (Elastic Kubernetes Service from AWS) and GKE (Google Kubernetes Engine) were in their infancy. An architecture decision record (ADR) was created with the understanding and acceptance of the extra management overhead and slightly slower release times. Since then, EKS has matured to a state where the benefits of running a multi-tenant cluster without the overhead of maintaining the control plane has become extremely attractive. If you wish to read more, please see this ADR.
+
 ## What are you migrating
 
+You will be migrating your Cloud Platform namespace, all permissions and resources in your namespace [directory](). This doesn't include AWS resources.
+
 ## Prerequisites for migration
+
+There are just a few things you need to ensure before you migrate between clusters.
+
+- Ensure your containers are "stateless". During the transition between clusters, your pods will be running simultaniously between "Live" and "Live-1". Any state that your containers (inside the pod) store on disk or persistent volume (such as EBS) will not be copied to the new cluster.
+
+- Check that multiple copies of your app can communicate simultaniously with AWS resources. These AWS resources will be shared between clusters. For example, your RDS instance will accept connections from pods in "Live" and "Live-1".
+
+If this is a concern or you'd like to check in advance, please feel free to contact the Cloud Platform team.
 
 ## How to migrate
 
