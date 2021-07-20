@@ -20,7 +20,7 @@ This article explains how to utilise IAM roles for Kubernetes Service Accounts (
 1.  **Create the IAM role for service accounts config**
 
     Create a file (cross-iam-role-sa.tf) inside your environment folder in the [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments) repo, 
-update the template below with the correct values and raise a PR.
+    update the template below with the correct values and raise a PR.
 
     <details><summary>Click here to see a template code block</summary>
     <pre><code>
@@ -128,52 +128,53 @@ update the template below with the correct values and raise a PR.
   
 2.**Use the Serviceaccount to deploy your app**
 
-Decode the serviceaccount from the kubernetes_secret `irsa-output` and add it to your depolyment manifest as shown in example below:
-
-```
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: helloworld-rubyapp
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: helloworld-rubyapp
-  template:
-    metadata:
-      labels:
-        app: helloworld-rubyapp
-    spec:
-      serviceAccountName: <serviceaccount>
-      containers:
-      - name: rubyapp
-        image: ministryofjustice/cloud-platform-helloworld-ruby:1.1
-        ports:
-        - containerPort: 4567
-```
-
-4.**Allow the service account IAM role to permit access in the target AWS account**
-
-You also need to update the AWS resource policy of the target AWS account to allow the service account IAM role to perform actions.
-
-Here is an example s3 bucket policy to allow an service account IAM role to perform specific actions:
+  [Decode the secret](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/add-secrets-to-deployment.html#decoding-a-secret) `irsa-output` to get the serviceaccount name and add it to your depolyment manifest as shown in example below:
 
   ```
-  {
-  "Version": "2012-10-17",
-  "Statement": [
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: helloworld-rubyapp
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: helloworld-rubyapp
+    template:
+      metadata:
+        labels:
+          app: helloworld-rubyapp
+      spec:
+        serviceAccountName: <serviceaccount>
+        containers:
+        - name: rubyapp
+          image: ministryofjustice/cloud-platform-helloworld-ruby:1.1
+          ports:
+          - containerPort: 4567
+```
+
+3.**Allow the service account IAM role to permit access in the target AWS account**
+
+  You also need to update the AWS resource policy of the target AWS account to allow the service account IAM role to perform actions.
+
+  Here is an example s3 bucket policy to allow an service account IAM role to perform specific actions:
+
+
     {
-      "Sid": "Cross IAM permissions",
-      "Effect": "Allow",
-      "Principal": {
-        "AWS": "arn:aws:iam::11111111:role/my-service-account-role"
-      },
-      "Action": [
-        "s3:PutObject",
-        "s3:GetObject",
-      ],
-      "Resource": "arn:aws:s3:::target-s3-bucket/*"
-        }
-      ]
-    }
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "Cross IAM permissions",
+        "Effect": "Allow",
+        "Principal": {
+          "AWS": "arn:aws:iam::11111111:role/my-service-account-role"
+        },
+        "Action": [
+          "s3:PutObject",
+          "s3:GetObject",
+        ],
+        "Resource": "arn:aws:s3:::target-s3-bucket/*"
+          }
+        ]
+      }
+
