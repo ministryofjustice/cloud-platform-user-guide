@@ -1,0 +1,180 @@
+---
+title: Use IAM Roles for service accounts to access resources in a different AWS account
+last_reviewed_on: 2021-07-19
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+This article explains how to utilise IAM roles for Kubernetes Service Accounts (on the EKS cluster), to enable connection and authorization:
+
+  * from applications (running in the AWS Cloud platform account)
+  * to AWS resources within a different AWS account.
+
+ For more information on AWS "IAM roles for Service Accounts" (IRSA) please see [IAM roles for Kubernetes Service Accounts](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html):
+
+ The Cloud Platform utilises an [cloud-platform-terraform-irsa module](https://github.com/ministryofjustice/cloud-platform-terraform-irsa). Please make sure you are using the [latest release](https://github.com/ministryofjustice/cloud-platform-terraform-irsa/releases) in the following config:
+
+ Required Configuration:
+
+1.  **Create the IAM role for service accounts config**
+
+    Create a file (cross-iam-role-sa.tf) inside your environment folder in the [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments) repo, 
+    update the template below with the correct values and raise a PR.
+
+    <details><summary>Click here to see a template code block</summary>
+    <pre><code>
+        module "irsa" {
+          source = "github.com/ministryofjustice/cloud-platform-terraform-irsa?ref=0.0.1"
+          namespace        = "<namespace>"
+          role_policy_arns = ["<aws_iam_policy.<namespace>_<policy_name>.arn>"]
+        }
+        data "aws_iam_policy_document" "<namespace>_<policy_name>" {
+          # "api" policy statements for the namespace
+          # allows direct access to "landing" S3 bucket
+          statement {
+            actions = [
+              "s3:PutObject",
+              "s3:PutObjectAcl",
+            ]
+            resources = [
+              "<ARN of resource in target AWS account>/*",
+            ]
+          }
+        }
+        resource "aws_iam_policy" "<namespace>_<policy_name>" {
+          name   = "<namespace>-<policy-name>"
+          policy = data.aws_iam_policy_document.<namespace>_<policy_name>.json
+        } 
+        variable "<namespace>-tags" {
+          type = map(string)
+          default = {
+            business-unit          = "<Which part of the MoJ is responsible for this service? (e.g HMPPS, Legal Aid Agency)>"
+            application            = "<Application name>"
+            is-production          = "<true/false>"
+            environment-name       = "<dev/test/staging/prod>"
+            owner                  = "<team responsible for this application>"
+            infrastructure-support = "<Email address for contact/support>"
+          }
+        }
+        resource "kubernetes_secret" "irsa" {
+          metadata {
+            name      = "irsa-output"
+            namespace = "<namespace>"
+          }
+          data = {
+            role = module.irsa.aws_iam_role_name
+            serviceaccount = module.irsa.service_account_name
+          }
+        }
+    </code>
+    </pre>
+    </details>
+
+    <details><summary> Here is an example using the template above, with typical values provided</summary>
+    <pre><code>
+          module "irsa" {
+          source = "github.com/ministryofjustice/cloud-platform-terraform-irsa?ref=0.0.1"
+          namespace        = "my-namespace"
+          role_policy_arns = [aws_iam_policy.my_namespace_my_policy.arn]
+        }
+        data "aws_iam_policy_document" "my_namespace_my_policy" {
+          # "api" policy statements for the namespace/policy
+          # allows direct access to "landing" S3 bucket
+          statement {
+            actions = [
+              "s3:PutObject",
+              "s3:PutObjectAcl",
+            ]
+            resources = [
+              "arn:aws:s3:::my-destination-s3-bucket/*",
+            ]
+          }
+        }
+        resource "aws_iam_policy" "my_namespace_my_policy" {
+          name   = "my-namespace-my-policy"
+          policy = data.aws_iam_policy_document.my_namespace_my_policy.json
+        }
+        variable "my-namespace-tags" {
+          type = map(string)
+          default = {
+            business-unit          = "Cloud Platform"
+            application            = "My Application"
+            is-production          = "false"
+            environment-name       = "Development"
+            owner                  = "cloud-platform"
+            infrastructure-support = "platforms@digital.justice.gov.uk"
+          }
+        }
+        resource "kubernetes_secret" "irsa" {
+          metadata {
+            name      = "irsa-output"
+            namespace = "my-namespace"
+          }
+          data = {
+            role = module.irsa.aws_iam_role_name
+            serviceaccount = module.irsa.service_account_name
+          }
+        }
+    </code>
+    </pre>
+    </details>
+
+  * The service account and the service account IAM role will be created with a random string in the format `cloud-platform-jhsdflisuhdfih` and can be changed by passing the `
+  service_account` variable. Make sure there is no existing service_account in the same name.
+  Please see the module [README](https://github.com/ministryofjustice/cloud-platform-terraform-irsa#inputs) for optional inputs. 
+  
+  * Once the PR is merged, the IAM role and serviceaccount will be stored as a kubernetes_secret called `irsa-output` in your namespace.
+  
+2.**Use the Serviceaccount to deploy your app**
+
+  [Decode the secret](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/add-secrets-to-deployment.html#decoding-a-secret) `irsa-output` to get the serviceaccount name and add it to your depolyment manifest as shown in example below:
+
+  ```
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: helloworld-rubyapp
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: helloworld-rubyapp
+    template:
+      metadata:
+        labels:
+          app: helloworld-rubyapp
+      spec:
+        serviceAccountName: <serviceaccount>
+        containers:
+        - name: rubyapp
+          image: ministryofjustice/cloud-platform-helloworld-ruby:1.1
+          ports:
+          - containerPort: 4567
+```
+
+3.**Allow the service account IAM role to permit access in the target AWS account**
+
+  You also need to update the AWS resource policy of the target AWS account to allow the service account IAM role to perform actions.
+
+  Here is an example s3 bucket policy to allow an service account IAM role to perform specific actions:
+
+
+    {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "Cross IAM permissions",
+        "Effect": "Allow",
+        "Principal": {
+          "AWS": "arn:aws:iam::11111111:role/my-service-account-role"
+        },
+        "Action": [
+          "s3:PutObject",
+          "s3:GetObject",
+        ],
+        "Resource": "arn:aws:s3:::target-s3-bucket/*"
+          }
+        ]
+      }
+
