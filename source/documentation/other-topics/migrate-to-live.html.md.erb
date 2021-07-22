@@ -8,7 +8,7 @@ review_in: 3 months
 
 ## Introduction
 
-This document intends to act as a guide to helo you migrate your namespace from "Live-1" to "Live".
+This document intends to act as a guide to help you migrate your namespace from "Live-1" to "Live".
 
 ### Terms used in this document
 
@@ -28,9 +28,9 @@ You will be migrating your Cloud Platform namespace, all permissions and resourc
 
 There are just a few things you need to ensure before you migrate between clusters.
 
-- Ensure your containers are "stateless". During the transition between clusters, your pods will be running simultaniously between "Live" and "Live-1". Any state that your containers (inside the pod) store on disk or persistent volume (such as EBS) will not be copied to the new cluster.
+- Ensure your containers are "stateless". During the transition between clusters, your pods will be running simultaneously between "Live" and "Live-1". Any state that your containers (inside the pod) store on disk or persistent volume (such as EBS) will not be copied to the new cluster.
 
-- Check that multiple copies of your app can communicate simultaniously with AWS resources. These AWS resources will be shared between clusters. For example, your RDS instance will accept connections from pods in "Live" and "Live-1".
+- Check that multiple copies of your app can communicate simultaneously with AWS resources. These AWS resources will be shared between clusters. For example, your RDS instance will accept connections from pods in "Live" and "Live-1".
 
 If this is a concern or you'd like to check in advance, please feel free to contact the Cloud Platform team.
 
@@ -44,7 +44,7 @@ During the process of migration high velocity apps will be unable to deploy to "
 
 ## Step 2 - Amend your ingress resource
 
-To ensure that you can send traffic to both clusters simultaniously you must add an annotation to your `ingress` resource to allow traffic weighting.
+To ensure that you can send traffic to both clusters simultaneously you must add an annotation to your `ingress` resource to allow traffic weighting.
 
 This looks as follows:
 
@@ -102,6 +102,14 @@ It is advised to send between 1-10% of the traffic to the live cluster. Once the
 NOTE: If results are not successful within the live cluster, rollback the annotations to their initial state (0% weight).
 
 ## Step 9 - Cleanup old "Live-1" namespace
+
+Once you've migrated to the "Live" cluster you can remove your namespace from the ["Live-1"]() directory. This is as simple as running the command:
+
+```bash
+rm -rf ./namespaces/live-1.cloud-platform.service.justice.gov.uk/<my-namespace-name>
+```
+
+The deletion will need to be written back to the main branch, so create a Pull Request and have it approved by the Cloud Platform team.
 
 ## Links for the new cluster
 
