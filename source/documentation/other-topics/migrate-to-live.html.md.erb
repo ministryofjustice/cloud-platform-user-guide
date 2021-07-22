@@ -95,9 +95,13 @@ Test your application is working on the new cluster by performing manual tests. 
 
 ## Step 8 - Start sending real traffic
 
-## Step 9 - Weight live traffic between "Live" and "Live-1"
+Traffic flow is controlled by tweaking external-dns ingress annotation (`aws-weight`), used to determine the proportion of traffic sent to that ingress. Initially it is not expected to have any traffic because live’s ingresses have `external-dns.alpha.kubernetes.io/aws-weight: "0"`. By setting this value to 5% or 10% route53 will send real traffic to the application.
 
-## Step 10 - Cleanup old "Live-1" namespace
+We recommend setting any value between 1-10% of the traffic to the live cluster. Once traffic flows into live and the application behaves as expected you could set 100% of the traffic into live and 0% into live-1.
+
+NOTE: If results are not as expected on the live cluster, rollback the annotations to their initial state (0% weight).
+
+## Step 9 - Cleanup old "Live-1" namespace
 
 ## Links for the new cluster
 
