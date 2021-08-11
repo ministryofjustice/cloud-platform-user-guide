@@ -1,6 +1,6 @@
 ---
 title: Creating your own custom alerts
-last_reviewed_on: 2021-05-11
+last_reviewed_on: 2021-08-10
 review_in: 3 months
 ---
 
@@ -19,7 +19,9 @@ This guide assumes the following:
 
 ### Create a slack webhook, and amend Alertmanager
 
-1. Create a [slack webhook](https://slack.com/intl/en-gb/help/articles/115005265063-Incoming-webhooks-for-Slack) if you dont already have one for the channel you want to send the alerts.
+1. Create a [slack webhook - Set up incoming webhooks](https://slack.com/intl/en-gb/help/articles/115005265063-Incoming-webhooks-for-Slack) if you dont already have one for the channel you want to send the alerts.
+
+* Follow the steps in "Set up incoming webhooks" (starting with "Create an app"  "From scratch")
 
 2. Create a [kubernetes secret](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/add-secrets-to-deployment.html#adding-a-secret-to-an-application) to store the slack webhook.
 
@@ -110,7 +112,7 @@ kubectl -n <namespace> describe prometheusrules prometheus-custom-rules-<applica
 
 ### PrometheusRule examples
 
-If you're struggling for ideas on how and which alerts to setup, please see some examples [here](https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/resources/prometheusrule-examples/application-alerts.yaml).
+If you're struggling for ideas on how and which alerts to setup, please see some examples [here](https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/main/terraform/aws-accounts/cloud-platform-aws/vpc/kops/components/resources/prometheusrule-examples/application-alerts.yaml).
 
 ### Advisory Note 1: If Prometheus gets re-installed
 
