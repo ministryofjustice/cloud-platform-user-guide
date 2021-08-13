@@ -111,6 +111,30 @@ rm -rf ./namespaces/live-1.cloud-platform.service.justice.gov.uk/<my-namespace-n
 
 The deletion will need to be written back to the main branch, so create a Pull Request and have it approved by the Cloud Platform team.
 
+## Namespace resource changes
+
+We have a few resources that needs amending when migrating to EKS.
+
+### Elasticsearch module
+
+For users who use elasticsearch, KIAM[kiam] is replaced with [IRSA][irsa] in EKS cluster.
+
+When we migrate to EKS cluster, adding below in the [ES module][es-example] will enable to use IRSA instead of KIAM.
+
+
+```
+irsa_enabled          = "true"
+assume_enabled        = "false"
+```
+
+### Cross account IAM roles
+
+For users who use KIAM for [cross account IAM roles][iam-infra], will be using [IRSA][irsa] in EKS, these [roles][iam-infra] needs to define inside [environments repo][env-repo] using this guidence [here][irsa-cross-account].
+
+### ttlSecondsAfterFinished 
+
+TTL Controller for Finished Resources(ttlSecondsAfterFinished) is not available in EKS yet. For users who use ttlSecondsAfterFinished to clear completed jobs, should setup [Jobs History Limits][job-history-limit] using failedJobsHistoryLimit and successfulJobsHistoryLimit.
+
 ## Links for the new cluster
 
 ## How to roll back
