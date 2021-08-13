@@ -69,11 +69,19 @@ Copy the [namespace]() directory from the [live-1.cloud-platform.service.justice
 
 Grab a new set of credentials from [login.apps.live.cloud-platform.service.justice.gov.uk]().
 
-## Step 4 - Add a new ingress resource
+## Step 5 - Add a new ingress resource
 
-Create a duplicate ingress resource? How do we advise the user here?
+Create a new Ingress from the copy of "live-1" Ingress. Ammend the `aws-weight` annotation to "0", this will not send any traffic to "live". In the later step we start sending real traffic by tweaking external-dns ingress annotation (`aws-weight`)
 
-## Step 5 - Create a new step to your deployment pipeline
+```yaml
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    external-dns.alpha.kubernetes.io/set-identifier: $namespace-live-1-cluster
+    external-dns.alpha.kubernetes.io/aws-weight: "0"
+```
+
 
 There are multi ways people are deploying their application, this guide will cover two of them:
 
