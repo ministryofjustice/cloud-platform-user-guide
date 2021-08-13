@@ -65,13 +65,15 @@ The idea behind the annotation is to control where the traffic is going. Using t
 
 Copy the [namespace]() directory from the [live-1.cloud-platform.service.justice.gov.uk]() parent directory to its sibling directory [live-1.cloud-platform.service.justice.gov.uk](). This change will need to reviewed by the Cloud Platform team. Create a pull request and wait for approval. An example can be seen [here]().
 
+We have few resources that needs amending when migrating to EKS, please look at [Namespace resource changes][ns-changes], before raising a pull request.
+
 ## Step 4 - Authenticate to the "Live" cluster
 
 Grab a new set of credentials from [login.apps.live.cloud-platform.service.justice.gov.uk]().
 
 ## Step 5 - Add a new ingress resource
 
-Create a new Ingress from the copy of "live-1" Ingress. Ammend the `aws-weight` annotation to "0", this will not send any traffic to "live". In the later step we start sending real traffic by tweaking external-dns ingress annotation (`aws-weight`)
+Create a new Ingress from the copy of "live-1" Ingress. Amend the `aws-weight` annotation to "0", this will not send any traffic to "live". In the later step, we start sending real traffic by tweaking external-dns ingress annotation (`aws-weight`)
 
 ```yaml
 apiVersion: networking.k8s.io/v1beta1
@@ -82,26 +84,28 @@ metadata:
     external-dns.alpha.kubernetes.io/aws-weight: "0"
 ```
 
+## Step 6 - Create a new step to your deployment pipeline
 
 There are multi ways people are deploying their application, this guide will cover two of them:
 
 ### Deploy with GitHub Actions
 
-Add instructions for deploying to live with gha.
+For teams using Github Actions as continuous deployment using guidence [here], the secrets will be pushed to the repository. Hence update your serviceaccount module in “cloud-platform-environments” repo to push secrets with different names. e.g.
+https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live-1.cloud-platform.service.justice.gov.uk/justicedata-prod/resources/serviceaccount.tf#L4-L7
 
 ### Deploy with CircleCI
 
 Add instructions for deploying to live with circle.
 
-## Step 6 - Trigger your pipeline
+## Step 7 - Trigger your pipeline
 
 Trigger your application pipeline. This is normally done manually or by a push to branch.
 
-## Step 7 - Test your application
+## Step 8 - Test your application
 
 Test your application is working on the new cluster by performing manual tests. How do we test this?
 
-## Step 8 - Start sending real traffic
+## Step 9 - Start sending real traffic
 
 Traffic flow is controlled by tweaking external-dns ingress annotation (`aws-weight`), which is used to determine the proportion of traffic sent to that ingress. Initially it is not expected to have any traffic because live’s ingresses have `external-dns.alpha.kubernetes.io/aws-weight: "0"`. For example, by setting this value to 5, route53 will send 5% of real traffic to the application.
 
@@ -109,7 +113,7 @@ It is advised to send between 1-10% of the traffic to the live cluster. Once the
 
 NOTE: If results are not successful within the live cluster, rollback the annotations to their initial state (0% weight).
 
-## Step 9 - Cleanup old "Live-1" namespace
+## Step 10 - Cleanup old "Live-1" namespace
 
 Once you've migrated to the "Live" cluster you can remove your namespace from the ["Live-1"]() directory. This is as simple as running the command:
 
@@ -121,11 +125,11 @@ The deletion will need to be written back to the main branch, so create a Pull R
 
 ## Namespace resource changes
 
-We have a few resources that needs amending when migrating to EKS.
+We have a few resources that need amending when migrating to EKS.
 
 ### Elasticsearch module
 
-For users who use elasticsearch, KIAM[kiam] is replaced with [IRSA][irsa] in EKS cluster.
+For users who use elasticsearch module, KIAM[kiam] is replaced with [IRSA][irsa] in EKS cluster.
 
 When we migrate to EKS cluster, adding below in the [ES module][es-example] will enable to use IRSA instead of KIAM.
 
@@ -150,3 +154,13 @@ TTL Controller for Finished Resources(ttlSecondsAfterFinished) is not available 
 ## Troubleshooting
 
 ## Feedback welcome
+
+
+[irsa]: https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html
+[kiam]: https://github.com/uswitch/kiam
+[es-example]: https://github.com/ministryofjustice/cloud-platform-terraform-elasticsearch/blob/main/example/elasticsearch.tf#L34-L36
+[iam-infra]: https://github.com/ministryofjustice/cloud-platform-infrastructure/tree/main/terraform/cross-account-IAM
+[irsa-cross-account]: /documentation/other-topics/access-cross-aws-resources-irsa-eks.html#use-iam-roles-for-service-accounts-to-access-resources-in-a-different-aws-account
+[env-repo]: https://github.com/ministryofjustice/cloud-platform-environments/
+[job-history-limit]: https://kubernetes.io/docs/tasks/job/automated-tasks-with-cron-jobs/#jobs-history-limits
+[ns-changes]: /documentation/other-topics/migrate-to-live.html#namespace-resource-changes
