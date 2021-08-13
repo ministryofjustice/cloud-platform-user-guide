@@ -90,12 +90,16 @@ There are multi ways people are deploying their application, this guide will cov
 
 ### Deploy with GitHub Actions
 
-For teams using Github Actions as continuous deployment using guidence [here], the secrets will be pushed to the repository. Hence update your serviceaccount module in “cloud-platform-environments” repo to push secrets with different names. e.g.
-https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live-1.cloud-platform.service.justice.gov.uk/justicedata-prod/resources/serviceaccount.tf#L4-L7
+For teams using Github Actions as continuous deployment following [user guide][gh-actions], update your service account module in the “cloud-platform-environments” repo to push secrets with different names for [example][sa-example]. Use the new secrets to authenticate to the "live" cluster. You can either create separate GitHub action or add additional steps to your existing GitHub action to deploy in the "live" cluster
+
 
 ### Deploy with CircleCI
 
-Add instructions for deploying to live with circle.
+For teams who use circleci for continuous deployment, will see your new CircleCI service account created in "live" cluster after the namespace directory is copied from "Live"-1.
+
+Once the service account is created, you can grab the ca.crt, token and cluster_name, to authenticate to the "live" cluster.
+
+You can use a seperate pipeline to deploy in "live" or amend the existing pipeline to add additional steps to authenticate and deploy to "live"
 
 ## Step 7 - Trigger your pipeline
 
@@ -164,3 +168,5 @@ TTL Controller for Finished Resources(ttlSecondsAfterFinished) is not available 
 [env-repo]: https://github.com/ministryofjustice/cloud-platform-environments/
 [job-history-limit]: https://kubernetes.io/docs/tasks/job/automated-tasks-with-cron-jobs/#jobs-history-limits
 [ns-changes]: /documentation/other-topics/migrate-to-live.html#namespace-resource-changes
+[gh-actions]: /documentation/deploying-an-app/github-actions-continuous-deployment.html#continuous-deployment-of-an-application-using-github-actions
+[sa-example]: https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live-1.cloud-platform.service.justice.gov.uk/justicedata-prod/resources/serviceaccount.tf#L4-L7
