@@ -107,7 +107,9 @@ Trigger your application pipeline. This is normally done manually or by a push t
 
 ## Step 8 - Test your application
 
-Test your application is working on the new cluster by performing manual tests. How do we test this?
+Test your application is working on the new cluster by performing manual tests, or if you configured an automated test, run the complete test suite to cover end to end functionality of your application.
+ 
+As you will start with the migration of your dev namespaces, test your application in your development namespace by creating a new host in "live" and also with your existing host(same hostname as in live-1) using external-dns ingress annotation (`aws-weight`)
 
 ## Step 9 - Start sending real traffic
 
