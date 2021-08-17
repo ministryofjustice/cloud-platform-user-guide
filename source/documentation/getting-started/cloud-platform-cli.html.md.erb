@@ -1,6 +1,6 @@
 ---
 title: The Cloud Platform CLI
-last_reviewed_on: 2021-05-11
+last_reviewed_on: 2021-07-20
 review_in: 3 months
 ---
 
@@ -105,6 +105,11 @@ your namespace folder, and that this defines all the variables which appear in
 the template `ecr.tf` file. If this is not the case, you may need to amend the
 generated file.
 
+> It also assumes you already have a `resources/variables.tf`, `resources/main.tf` 
+and `resources/versions.tf` file below your namespace folder, and that this defines all the variables, 
+provider declarations and configurations needed for the `ecr.tf` file. If this is not the case, 
+you may need to amend those files by comparing with the [template files]
+
 ### Add an RDS to your namespace
 
 * Start from the root of a working copy of the [environments repository]
@@ -171,6 +176,11 @@ After the cloud platform team have approved your PR, please merge it, and your
 service account resource will be created.
 
 You can query your new resource using the command `kubectl get serviceaccount -n <namespace>`.
+
+> The CLI tool assumes you already have a `resources/variables.tf`, `resources/main.tf` 
+and `resources/versions.tf` file below your namespace folder, and that this defines all the variables, 
+provider declarations and configurations needed for the `resources/serviceaccount.tf` file. If this is not the case, 
+you may need to amend those files by comparing with the [template files]
 
 #### GitHub Actions Secrets
 
@@ -309,3 +319,4 @@ $ aws rds describe-db-instances --db-instance-identifier=cloud-platform-xxxxxxxx
 [module documentation]: https://github.com/ministryofjustice/cloud-platform-terraform-serviceaccount#kubernetes-serviceaccount-module
 [GitHub Actions Secrets]: https://docs.github.com/en/actions/reference/encrypted-secrets
 [GitHub Actions]: https://docs.github.com/en/actions
+[template files]: https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespace-resources-cli-template/resources

@@ -1,6 +1,6 @@
 ---
 title: Continuous Deployment of an application using CircleCI and Helm
-last_reviewed_on: 2021-04-29
+last_reviewed_on: 2021-07-20
 review_in: 3 months
 ---
 
@@ -32,12 +32,15 @@ It is assumed you have the following:
 As part of the CircleCI deployment pipeline, CircleCI will need to authenticate with the Cloud Platform cluster. In order to do so, Kubernetes uses [service accounts](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/). Service accounts provide an identity for processes that run in a cluster allowing the process to access the API server.
 
 To create a service account:
+
 - Download the [cloud-platform-cli tool](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/cloud-platform-cli.html#the-cloud-platform-cli)
 - Run the command `cloud-platform environment serviceaccount create` in your [namespace](https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live-1.cloud-platform.service.justice.gov.uk) as outlined in the [instructions](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/cloud-platform-cli.html#the-cloud-platform-cli)
 - Add a `serviceaccount_name` variable called `circleci` (This doesn't have to be circleci, it's just easier for reference)
+- Ensure `github_owner` and `github_token` variables are defined in variables.tf. This is added by default if you created the environment using the [cloud-platform-cli tool]
+- Ensure github provider block is added to versions.tf and main.tf. This is added by default if you created the environment using the [cloud-platform-cli tool]
 - Raise a PR for your service account creation. Once approved you should then see your new CircleCI service account in your namespace.
 
-Note - A good example of a service account created in the Cloud Platform can be found in the [cloud-platform-reference-app](https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live-1.cloud-platform.service.justice.gov.uk/cloud-platform-reference-app) namespace.
+Note - A good example of a service account created in the Cloud Platform can be found in the [cloud-platform-reference-app](https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live.cloud-platform.service.justice.gov.uk/cloud-platform-reference-app) namespace.
 
 Once your service account is created you should be able to see it by running the following commands:
 

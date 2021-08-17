@@ -1,6 +1,6 @@
 ---
 title: How to use `kubectl` to connect to the cluster
-last_reviewed_on: 2021-04-26
+last_reviewed_on: 2021-07-01
 review_in: 3 months
 ---
 
@@ -18,7 +18,7 @@ Please read the [official documentation][kubectl-install] on how to install `kub
 
 ### Before you begin
 
-You must use a kubectl version that is within one minor version difference of your cluster. For example, a v1.15 client should work with v1.14, v1.15, and v1.16 master. Using the correct version of kubectl helps avoid unforeseen issues.
+You must use a kubectl version that is within one minor version difference of your cluster. For example, a v1.15 client should work with v1.14, v1.15, and v1.16 master. Check the current value in [the infrastructure repository] to avoid unforeseen issues.
 
 ## Authentication
 
@@ -89,3 +89,4 @@ Once you are ready to deploy applications you will need to [create a namespace] 
 [github-sso]: https://github.com/orgs/ministryofjustice/sso
 [cp-login]: https://login.cloud-platform.service.justice.gov.uk/
 [create a namespace]: /documentation/getting-started/env-create.html
+[the infrastructure repository]: https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/main/kops/live-1.yaml#L254
