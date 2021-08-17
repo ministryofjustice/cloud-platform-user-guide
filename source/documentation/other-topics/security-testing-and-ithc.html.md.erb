@@ -1,0 +1,47 @@
+---
+title: Security testing and ITHC
+last_reviewed_on: 2021-07-19
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+## Introduction
+
+MOJ systems typically have a range of security testing, covering the application and infrastructure. When applications are hosted on the Cloud Platform, it's important to be clear which areas are the responsibility of the platform to test and which are the responsibility of the service team who develop the app. Also, when testing using stress techniques or unusually high load, this page describes how we avoid affecting other tenants of the platform and stay within cloud provider rules.
+
+## IT Health Check (ITHC)
+
+An ITHC, is an independent security assessment, typically including a penetration test. Service teams likely need an ITHC for their applications. Cloud Platform also has its own ITHCs. Service teams should ensure that their ITHC has a scope that does not overlap into areas which are Cloud Platform's responsibilities, and equally doesn't assume Cloud Platform are responsible for things that is the service team's responsibilities. (During an application's ITHC, the Cloud Platform team will not normally provide testers with higher permissions to the AWS account or cluster, than what the service team already have access to.)
+
+So an ITHC for an app hosted on the Cloud Platform should be: a web application test, plus any cloud infrastructure configuration you do as code, including your namespace/environment configuration.
+
+We've written a guide based on one ITHC Scoping form, providing the division of responsibilities between Cloud Platform and Service Teams:
+
+* [ITHC scoping for service teams vs Cloud Platform](https://docs.google.com/spreadsheets/d/1MX9aS7uKaNA2v8M_LK3VL3Ebe8vvlU4Zk_giJmFBpF4/edit#gid=0)
+    
+This spreadsheet is a work in progress and we invite questions and suggestions to improve it.
+
+## Notifiable testing
+
+AWS require you to contact them if you do security testing on AWS services outside a small [Permitted Services](https://aws.amazon.com/security/penetration-testing/#Permitted_Services) list. This list covers Cloud Platform's Kubernetes cluster and RDS, for example. But other services like ElastiCache or ECR **do** require notifying AWS, if they are involved in your security test. In this case, please get in touch with the Cloud Platform team to coordinate with contacting AWS.
+
+## Load / stress testing
+
+A test that sends a sustained high volume of traffic to your service may become an issue for the Platform's ingress controllers, and degrade connectivity to other Cloud Platform tenants. Please coordinate with the Cloud Platform when planning these tests.
+
+In addition, please note the [Amazon EC2 testing policy](https://aws.amazon.com/ec2/testing/) that forbids network stress testing / load testing, where the traffic is:
+
+> in aggregate, for more than 1 minute, over 1 Gbps (1 billion bits per second) or 1 Gpps (1 billion packets per second); generates traffic that appears to be abusive or malicious; or generates traffic that has the potential for impact to entities other than the anticipated target of the testing (such as routing or shared service infrastructure)
+
+## Disallowed testing
+
+Some testing is not allowed, because it may affect other tenants on the Cloud Platform, or due to the underlying cloud provider's policies.
+
+[AWS Penetration test policy](https://aws.amazon.com/security/penetration-testing/) forbids:
+
+* denial of service (DoS) style attacks
+* DNS zone walking
+* port/protocol/connection/network flooding
+
+See also the limitations on [load / stress testing](#load-stress-testing)
