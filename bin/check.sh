@@ -20,6 +20,8 @@ set -euo pipefail
 # point to MoJ GitHub entities.
 MOJ_GITHUB=/https...github.com.ministryofjustice.*/
 
+CHROME_USER_AGENT="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36"
+
 # Check for internal and external broken links The 'grep -v' suppresses
 # annoying warnings due to some of the gem dependencies using functions that
 # have been deprecated in current versions of ruby.
@@ -28,6 +30,7 @@ bundle exec htmlproofer 2>&1 \
   --allow-hash-href \
   --url-ignore "${MOJ_GITHUB}" \
   --url-swap "https?\:\/\/user-guide\.cloud-platform\.service\.justice\.gov\.uk:" \
+  --typhoeus-config "{\"headers\":{\"User-Agent\":\"${CHROME_USER_AGENT}\"}}" \
   ./docs | grep -v "warning: URI.*escape is obsolete"
 
 
