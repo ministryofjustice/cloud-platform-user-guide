@@ -121,13 +121,14 @@ NOTE: If results are not successful within the live cluster, rollback the annota
 
 ## Step 10 - Cleanup old "Live-1" namespace
 
-Once you've migrated to the "Live" cluster you can remove your namespace from the ["Live-1"]() directory. This is as simple as running the command:
+Once you have successfully migrated to the "Live" cluster you can remove your namespace from the["Live-1" directory][live-1-folder].This is as simple as running the command :
+
 
 ```bash
 rm -rf ./namespaces/live-1.cloud-platform.service.justice.gov.uk/<my-namespace-name>
 ```
 
-The deletion will need to be written back to the main branch, so create a Pull Request and have it approved by the Cloud Platform team.
+The deletion will need to be written back to the `main` branch. Please create a PR and have `Deletion of NS due to migration to live cluster` in the description. 
 
 ## Namespace resource changes
 
@@ -172,3 +173,4 @@ TTL Controller for Finished Resources(ttlSecondsAfterFinished) is not available 
 [ns-changes]: /documentation/other-topics/migrate-to-live.html#namespace-resource-changes
 [gh-actions]: /documentation/deploying-an-app/github-actions-continuous-deployment.html#continuous-deployment-of-an-application-using-github-actions
 [sa-example]: https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live-1.cloud-platform.service.justice.gov.uk/justicedata-prod/resources/serviceaccount.tf#L4-L7
+[live-1-folder]: https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live-1.cloud-platform.service.justice.gov.uk
