@@ -13,7 +13,9 @@ This document intends to act as a guide to help you migrate your namespace from 
 ### Terms used in this document
 
 There are some confusing names and terms used in this document. Here are a few:
+
 - "Live-1" = The name of the current Cloud Platform (Kubernetes) cluster your namespace is deployed to.
+
 - "Live" = The name of a new Cloud Platform (EKS) cluster that you'll need to migrate to.
 
 ## Why should you migrate
@@ -61,7 +63,7 @@ metadata:
 
 The idea behind the annotation is to control where the traffic is going. Using the above example 50% of the traffic will be sent to the ingress in the "Live-1" cluster. In a later step, we will create another resource in the "Live" cluster that will weight the traffic between the two clusters.
 
-## Step 3 - Copy the namespace directory from "Live"-1 to "Live"
+## Step 3 - Copy the namespace directory from "Live-1" to "Live"
 
 Copy the [namespace]() directory from the [live-1.cloud-platform.service.justice.gov.uk]() parent directory to its sibling directory [live-1.cloud-platform.service.justice.gov.uk](). This change will need to reviewed by the Cloud Platform team. Create a pull request and wait for approval. An example can be seen [here]().
 
