@@ -13,7 +13,6 @@ This document intends to act as a guide to help you migrate your namespace from 
 ### Terms used in this document
 
 There are some confusing names and terms used in this document. Here are a few:
-
 - "Live-1" = The name of the current Cloud Platform (Kubernetes) cluster your namespace is deployed to.
 
 - "Live" = The name of a new Cloud Platform (EKS) cluster that you'll need to migrate to.
@@ -65,7 +64,10 @@ The idea behind the annotation is to control where the traffic is going. Using t
 
 ## Step 3 - Copy the namespace directory from "Live-1" to "Live"
 
-Copy the [namespace]() directory from the [live-1.cloud-platform.service.justice.gov.uk]() parent directory to its sibling directory [live-1.cloud-platform.service.justice.gov.uk](). This change will need to reviewed by the Cloud Platform team. Create a pull request and wait for approval. An example can be seen [here]().
+Copy the namespace directory i.e `/myapp-dev` from [live-1 directory](https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live-1.cloud-platform.service.justice.gov.uk) to [live directory](https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live.cloud-platform.service.justice.gov.uk). 
+
+This change will need to reviewed by the Cloud Platform team. Create a pull request and wait for approval. 
+An example can be seen [here](https://github.com/ministryofjustice/cloud-platform-environments/pull/4983).
 
 We have few resources that needs amending when migrating to EKS, please look at [Namespace resource changes][ns-changes], before raising a pull request.
 
