@@ -50,7 +50,7 @@ To ensure that you can send traffic to both clusters simultaneously you must add
 This looks as follows:
 
 ```yaml
-apiVersion: networking.k8s.io/v1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   annotations:
@@ -80,7 +80,7 @@ Grab a new set of credentials from [login.live.cloud-platform.service.justice.go
 Create a new Ingress from the copy of "live-1" Ingress. Amend the `aws-weight` annotation to "0", this will not send any traffic to "live". In the later step, we start sending real traffic by tweaking external-dns ingress annotation (`aws-weight`)
 
 ```yaml
-apiVersion: networking.k8s.io/v1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   annotations:
