@@ -50,15 +50,15 @@ To ensure that you can send traffic to both clusters simultaneously you must add
 This looks as follows:
 
 ```yaml
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
-    external-dns.alpha.kubernetes.io/set-identifier: $namespace-live-1-cluster
+    external-dns.alpha.kubernetes.io/set-identifier: <ingress-name>-<namespace-name>-<colour>
     external-dns.alpha.kubernetes.io/aws-weight: "50"
 ```
 
-(Note - Please change the `$namespace` value in the above example to the namespace you are migrating.)
+(Note - Please change the `ingress-name` and `namespace-name` values in the above example to the ingress and namespace name you are migrating. The `colour` should be `blue` for ingress in live-1)
 
 The idea behind the annotation is to control where the traffic is going. Using the above example 50% of the traffic will be sent to the ingress in the "Live-1" cluster. In a later step, we will create another resource in the "Live" cluster that will weight the traffic between the two clusters.
 
@@ -80,13 +80,15 @@ Grab a new set of credentials from [login.live.cloud-platform.service.justice.go
 Create a new Ingress from the copy of "live-1" Ingress. Amend the `aws-weight` annotation to "0", this will not send any traffic to "live". In the later step, we start sending real traffic by tweaking external-dns ingress annotation (`aws-weight`)
 
 ```yaml
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
-    external-dns.alpha.kubernetes.io/set-identifier: $namespace-live-1-cluster
+    external-dns.alpha.kubernetes.io/set-identifier: <ingress-name>-<namespace-name>-<colour>
     external-dns.alpha.kubernetes.io/aws-weight: "0"
 ```
+
+(Note - Please change the `colour` to `green` for ingress in live)
 
 ## Step 6 - Create a new step to your deployment pipeline
 

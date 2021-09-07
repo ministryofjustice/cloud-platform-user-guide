@@ -128,12 +128,14 @@ spec:
   selector:
     app: webserver
 ---
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: helloworld-nginx-ingress
   annotations:
     kubernetes.io/ingress.class: nginx
+    external-dns.alpha.kubernetes.io/set-identifier: <ingress-name>-<namespace-name>-<colour>
+    external-dns.alpha.kubernetes.io/aws-weight: "100"
 spec:
   tls:
   - hosts:
@@ -147,6 +149,7 @@ spec:
           serviceName: nginx-service
           servicePort: 8080
 ```
+(Note - Please change the `ingress-name` and `namespace-name` values in the above example. The `colour` should be `blue` for ingress in live-1 and `green` for ingress in EKS `live` cluster)
 
 Deploy to the cluster like this:
 
