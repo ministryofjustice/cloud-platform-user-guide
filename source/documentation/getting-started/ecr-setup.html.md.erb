@@ -84,14 +84,14 @@ For more information about the terraform module being used, please read the docu
 
 ## Accessing the credentials
 
-After your ECR has been created, there will be a [Kubernetes secret] in your namespace, called `ecr-repo-<namespace_name>`
+After your ECR has been created, there will be a [Kubernetes secret] in your namespace, called `ecr-repo-[namespace name]`
 
 The secret stores the IAM access keys to authenticate with the registry, and the actual repository URL.
 
 Use the [Cloud Platform CLI] to retrieve the credentials:
 
 ```
-cloud-platform decode-secret -n <namespace_name> -s ecr-repo-<namespace_name>
+cloud-platform decode-secret -n [namespace name] -s ecr-repo-[namespace name]
 ```
 
 Look for the `access_key_id` and `secret_access_key` values.
