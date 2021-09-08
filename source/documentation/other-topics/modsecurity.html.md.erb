@@ -69,6 +69,8 @@ metadata:
   name: app-ingress
   annotations:
     kubernetes.io/ingress.class: "modsec01"
+    external-dns.alpha.kubernetes.io/set-identifier: <ingress-name>-<environment-name>-<colour>
+    external-dns.alpha.kubernetes.io/aws-weight: "100"
     nginx.ingress.kubernetes.io/enable-modsecurity: "true"
     nginx.ingress.kubernetes.io/modsecurity-snippet: |
       SecRuleEngine On
@@ -85,7 +87,7 @@ spec:
           serviceName: app-service
           servicePort: 8080
 ```
-(Note - Please change the `ingress-name` and `namespace-name` values in the above example. The `colour` should be `blue` for ingress in live-1 and `green` for ingress in EKS `live` cluster)
+(Note - Please change the `ingress-name` and `environment-name` values in the above example, you can get the `environment-name` value from your namespace label "cloud-platform.justice.gov.uk/environment-name". The `colour` should be `blue` for ingress in live-1 and `green` for ingress in EKS `live` cluster)
 
 ### Logging
 
