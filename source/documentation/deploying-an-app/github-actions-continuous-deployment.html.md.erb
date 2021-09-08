@@ -134,6 +134,8 @@ metadata:
   name: helloworld-nginx-ingress
   annotations:
     kubernetes.io/ingress.class: nginx
+    external-dns.alpha.kubernetes.io/set-identifier: <ingress-name>-<environment-name>-<colour>
+    external-dns.alpha.kubernetes.io/aws-weight: "100"
 spec:
   tls:
   - hosts:
@@ -147,6 +149,7 @@ spec:
           serviceName: nginx-service
           servicePort: 8080
 ```
+(Note - Please change the `ingress-name` and `environment-name` values in the above example, you can get the `environment-name` value from your namespace label "cloud-platform.justice.gov.uk/environment-name". The `colour` should be `blue` for ingress in live-1 and `green` for ingress in EKS `live` cluster)
 
 Deploy to the cluster like this:
 

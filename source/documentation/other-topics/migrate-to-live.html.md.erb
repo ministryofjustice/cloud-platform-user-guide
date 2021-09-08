@@ -54,11 +54,11 @@ apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   annotations:
-    external-dns.alpha.kubernetes.io/set-identifier: $namespace-live-1-cluster
+    external-dns.alpha.kubernetes.io/set-identifier: <ingress-name>-<environment-name>-<colour>
     external-dns.alpha.kubernetes.io/aws-weight: "50"
 ```
 
-(Note - Please change the `$namespace` value in the above example to the namespace you are migrating.)
+(Note - Please change the `ingress-name` and `environment-name` values in the above example, you can get the `environment-name` value from your namespace label "cloud-platform.justice.gov.uk/environment-name". The `colour` should be `blue` for ingress in live-1 and `green` for ingress in EKS `live` cluster)
 
 The idea behind the annotation is to control where the traffic is going. Using the above example 50% of the traffic will be sent to the ingress in the "Live-1" cluster. In a later step, we will create another resource in the "Live" cluster that will weight the traffic between the two clusters.
 
@@ -84,9 +84,11 @@ apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   annotations:
-    external-dns.alpha.kubernetes.io/set-identifier: $namespace-live-1-cluster
+    external-dns.alpha.kubernetes.io/set-identifier: <ingress-name>-<environment-name>-<colour>
     external-dns.alpha.kubernetes.io/aws-weight: "0"
 ```
+
+(Note - Please change the `colour` to `green` for ingress in live)
 
 ## Step 6 - Create a new step to your deployment pipeline
 

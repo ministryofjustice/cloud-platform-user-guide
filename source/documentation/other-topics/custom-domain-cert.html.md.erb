@@ -125,7 +125,9 @@ namespace where the certificate and key material will be stored.
        name: <my-ingress>
        namespace: <my-namespace>
        annotations:
-         kubernetes.io/ingress.class: <my-namespace>
+         kubernetes.io/ingress.class: nginx
+         external-dns.alpha.kubernetes.io/set-identifier: <ingress-name>-<environment-name>-<colour>
+         external-dns.alpha.kubernetes.io/aws-weight: "100"
      spec:
        tls:
        - hosts:
@@ -149,6 +151,8 @@ namespace where the certificate and key material will be stored.
    +           serviceName: <my-svc>
    +           servicePort: 80
    ```
+
+(Note - Please change the `ingress-name` and `environment-name` values in the above example, you can get the `environment-name` value from your namespace label "cloud-platform.justice.gov.uk/environment-name". The `colour` should be `blue` for ingress in live-1 and `green` for ingress in EKS `live` cluster)
 
 Once you've made the changes to your `Ingress`, the cluster (and more
 specifically, `external-dns`) will update the necessary records defined in it.
