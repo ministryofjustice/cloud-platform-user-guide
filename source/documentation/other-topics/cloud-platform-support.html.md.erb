@@ -1,20 +1,32 @@
 ---
 title: Cloud Platform Support
-last_reviewed_on: 2021-07-19
+last_reviewed_on: 2021-09-10
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
 
-## Background
+## Overview
 
-The Cloud Platform Team has built a new platform to replace Template Deploy. We are employing modern tools and techniques to enable teams to develop and support their modern cloud native software and infrastructure.
+The Cloud Platform Team provides support for users who run software on the platform. Requests and questions are answered on our slack channel, with quick response from the team.
 
-This also provides us with an opportunity to enable teams, through self-service, to develop and support products the way they want to, without having to rely on the Cloud Platform Team for assistance.
+The platform is *self-service*. Users are provided with the tools to operate, monitor and support their software that runs on the platform. The platform automatically spins up the containers and infrastructure, as defined by the users, and the platform team is responsible for making sure this platform functionality works smoothly.
 
-This new flexibility changes the way in which the Cloud Platform team provides support to our users.
+## Where to find help
 
-## Cloud Platform Team Support Processes
+If you have any questions or require help from the Cloud Platform Team in relation to the new Cloud Platform contact us at the `#ask-cloud-platform` Slack channel.
+
+## Shared responsibility model
+
+The healthly running of the software that runs on top of the platform is a *shared responsibility*:
+
+* users - for example a service team building a digital service - provide the container images, specifie the infrastructure and config, and 'operate' their software, which includes monitoring the metrics, logs and responding to issues with the app, and provide support to their service users. This is the "You build it, you run it" / DevOps philosophy.
+
+* the Cloud Platform ensures the infrastructure and config supplied by the service team get applied to Kubernetes and AWS, and that the platform itself runs smoothly, including Kubernetes, montoring and logging. The team also manage the relationship with AWS.
+
+The Cloud Platform Team commits to providing an excellent level of service, in managing and operating the platform.
+
+## Cloud Platform Team support processes
 
 The Cloud Platform [Operational Processes](/documentation/reference/operational-processes.html#cloud-platform-operational-processes) details how we will offer support to our users for the new platform.
 
@@ -24,9 +36,9 @@ This includes support hours, out-of-hours support, operational communication wit
 
 Below is a diagram of the Cloud Platform.
 
-![Cloud Platform Diagram](https://github.com/ministryofjustice/cloud-platform/blob/main/docs/images/cloud-platform-architecture-diagram.png)
+![Cloud Platform Diagram](https://github.com/ministryofjustice/cloud-platform/raw/main/docs/images/cloud-platform-architecture-diagram.png)
 
-The Cloud Platform Team supports everything outside of a user’s namespace.
+The Cloud Platform Team supports everything apart from what is running in a user’s namespace, and their AWS resources.
 
 Support includes:
 
@@ -46,9 +58,9 @@ The Cloud Platform Team doesn’t provide:
 * ongoing maintenance of the application, including patching, updating dependencies, and ensuring it remains deployable
 * user support for users of the application
 
-## What this means for Cloud Platform users
+## Responsibilities of Cloud Platform users
 
-It means teams using the platform will be responsible for supporting the infrastructure they build, and the applications running on it.
+It means teams using the platform will be responsible for operating and supporting the applications and infrastructure they run on the platform.
 
 We expect teams or service areas using the platform to ensure they can, for the life of the service:
 
@@ -62,7 +74,3 @@ The Cloud Platform Team will be responsible for support of the underlying platfo
 The new Cloud Platform introduces modern technology that users may not already be familiar with. The Cloud Platform User Guide is intended to help users understand some of the basic concepts of working with Kubernetes, as well as providing links to useful training and reference materials. In addition, the Cloud Platform Team will be very happy to assist with any queries you might have on the #ask-cloud-platform slack channel.
 
 You can also speak to your line manager or Head of Profession should you have any further training needs.
-
-### Where to find help
-
-If you have any questions or require help from the Cloud Platform Team in relation to the new Cloud Platform contact us at the `#ask-cloud-platform` slack channel.
