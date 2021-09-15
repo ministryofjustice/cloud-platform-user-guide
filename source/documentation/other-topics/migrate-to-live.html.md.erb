@@ -13,6 +13,7 @@ This document intends to act as a guide to help you migrate your namespace from 
 ### Terms used in this document
 
 There are some confusing names and terms used in this document. Here are a few:
+
 - "Live-1" = The name of the current Cloud Platform (Kubernetes) cluster your namespace is deployed to.
 
 - "Live" = The name of a new Cloud Platform (EKS) cluster that you'll need to migrate to.
@@ -62,14 +63,29 @@ metadata:
 
 The idea behind the annotation is to control where the traffic is going. Using the above example 50% of the traffic will be sent to the ingress in the "Live-1" cluster. In a later step, we will create another resource in the "Live" cluster that will weight the traffic between the two clusters.
 
-## Step 3 - Copy the namespace directory from "Live-1" to "Live"
+## Step 3 - Migrate your namespace environment to "Live"
 
-Copy the namespace directory i.e `/myapp-dev` from [live-1 directory](https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live-1.cloud-platform.service.justice.gov.uk) to [live directory](https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live.cloud-platform.service.justice.gov.uk). 
+To migrate your namespace from "live-1" to "live" you'll need to migrate it to a new directory in the [cloud-platform-environments]() repository. To do this, ensure your [cloud-platform-cli]() is up to date. Then you perform:
 
-This change will need to reviewed by the Cloud Platform team. Create a pull request and wait for approval. 
-An example can be seen [here](https://github.com/ministryofjustice/cloud-platform-environments/pull/4983).
+- Clone a copy of the [cloud-platform-environments]() repository and create a branch: `git clone git@github.com:ministryofjustice/cloud-platform-environments.git`
 
-We have few resources that needs amending when migrating to EKS, please look at [Namespace resource changes][ns-changes], before raising a pull request.
+- Change directory to your namespace in "live-1": `cd namespaces/live-1.cloud-platform.service.justice.gov.uk/<namespace>`.
+
+- Use the command: `cloud-platform environment migrate` to move your namespace.
+
+- Commit changes and create a pull request.
+
+The migrate command checks a number of conditions before moving the namespace. If condition returns true an error will be displayed pointing you to a user-guide entry containing additional steps to undertake.
+
+Conditions:
+
+- If you have an Elasticsearch module: the `cloud-platform environment migrate` command will automatically make the change outlined in this article. No action is required.
+
+- If have a ServiceAccount module: DO SOMETHING
+
+- If you use Kiam: DO SOMETHING
+
+If you want to skip any warnings and continue anyway, the cli has a `--skip-warnings` flag you can enable.
 
 ## Step 4 - Authenticate to the "Live" cluster
 
