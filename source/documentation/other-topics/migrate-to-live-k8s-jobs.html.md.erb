@@ -1,0 +1,59 @@
+---
+title: Migrating Kubernetes Jobs to the "Live" cluster
+last_reviewed_on: 2021-09-15
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+## TTL Controller for Finished Resources `(ttlSecondsAfterFinished)`
+
+`ttlSecondsAfterFinished` feature is not enabled on EKS Kubernetes version 1.19 and hence not available to use in "Live" cluster.
+Therefore, when a Job is completed/failed, the Pods created by the job are deleted based on the [Jobs History Limits][job-history-limit] and not
+by the duration set in `ttlSecondsAfterFinished` field. 
+
+The default limits for `failedJobsHistoryLimit` is **1** and `successfulJobsHistoryLimit` is **3**.
+
+The logs of deleted Pods will still be available in [kibana][kibana]
+
+If you create your job on the "Live" cluster with the field `ttlSecondsAfterFinished` you will see an error as below:
+
+`
+error validating data: ValidationError(Job.spec.template.spec): unknown field "ttlSecondsAfterFinished" in io.k8s.api.core.v1.PodSpec; if you choose to ignore these errors, turn validation off with --validate=false
+`
+
+### Kubernetes CronJobs and TZCronJobs
+If you have set `ttlSecondsAfterFinished` field as part of your Cronjob or TZCronJob spec, **remove** that field.
+
+if you want the [Jobs History Limits][job-history-limit] to be different from the above mentioned defaults, set `failedJobsHistoryLimit` and `successfulJobsHistoryLimit` fields to a desired value 
+
+Example:
+
+```
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: hello
+spec:
+  schedule: "5 0 * * *"
+  successfulJobsHistoryLimit: 7
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: hello
+            image: bitnami/nginx
+            args:
+            - /bin/sh
+            - -c
+            - date; echo "Hello, World!"
+          restartPolicy: OnFailure
+```
+
+### Kubernetes Jobs
+If you have a batch job which is not a CronJob or TZCronJob and has `ttlSecondsAfterFinished` field set **remove** before creating in "Live" cluster.
+
+[job-history-limit]: https://kubernetes.io/docs/tasks/job/automated-tasks-with-cron-jobs/#jobs-history-limits
+[kibana]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana
