@@ -8,8 +8,9 @@ review_in: 3 months
 
 ## TTL Controller for Finished Resources `(ttlSecondsAfterFinished)`
 
-`ttlSecondsAfterFinished` feature is not available in "Live" cluster and hence when a Job is completed/failed, the Pods created
-by the job are deleted based on the [Jobs History Limits][job-history-limit]. 
+`ttlSecondsAfterFinished` feature is not enabled on EKS Kubernetes version 1.19 and hence not available to use in "Live" cluster.
+Therefore, when a Job is completed/failed, the Pods created by the job are deleted based on the [Jobs History Limits][job-history-limit] and not
+by the duration set in `ttlSecondsAfterFinished` field. 
 
 The default limits for `failedJobsHistoryLimit` is **1** and `successfulJobsHistoryLimit` is **3**.
 
