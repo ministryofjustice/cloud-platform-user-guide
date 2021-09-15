@@ -101,7 +101,7 @@ For teams using Github Actions as continuous deployment following [user guide][g
 
 ### Deploy with CircleCI
 
-For teams who use circleci for continuous deployment, you will see a new CircleCI service account created in "live" cluster after the namespace directory is copied from "Live"-1. This serviceaccount is created using the serviceaccount.yaml file in your namespace folder.
+For teams who use circleci for continuous deployment, you will see a new CircleCI service account created in "live" cluster after the namespace directory is copied from "Live"-1. This serviceaccount is created by either the serviceaccount.yaml or serviceaccount.tf file in your namespace folder.
 
 Once the service account is created, you can grab the ca.crt, token and cluster_name, to authenticate to the "live" cluster.
 
