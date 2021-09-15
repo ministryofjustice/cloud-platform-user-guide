@@ -107,10 +107,7 @@ Once the service account is created, you can grab the ca.crt, token and cluster_
 
 You can use a separate pipeline to deploy in "live" or amend the existing pipeline to add additional steps to authenticate and deploy to "live"
 
-Click[HERE](https://github.com/ministryofjustice/cloud-platform-reference-app/blob/main/.circleci/config.yml) for an example of a circleci config.yml file that builds an image, authenticates and deploys an application to both the `live-1` and `live` clusters in the same workflow. The application is deployed using [Kubernetes manifest files](https://github.com/ministryofjustice/cloud-platform-reference-app/tree/main/deploy/kubectl) and include a [unique ingress identifier](https://github.com/ministryofjustice/cloud-platform-reference-app/blob/73b021b36a0cfee9b7363a119db92597e398641c/deploy/kubectl/live-1/ingress.yaml#L6) for each cluster and a [weighting](https://github.com/ministryofjustice/cloud-platform-reference-app/blob/73b021b36a0cfee9b7363a119db92597e398641c/deploy/kubectl/live-1/ingress.yaml#L7) of 50/50.
-
-
-
+Click [HERE](https://github.com/ministryofjustice/cloud-platform-reference-app/blob/main/.circleci/config.yml) for an example of a circleci config.yml file that builds an image, authenticates and deploys an application to both the "live-1" and "live" clusters in the same workflow. The application is deployed using [Kubernetes manifest files](https://github.com/ministryofjustice/cloud-platform-reference-app/tree/main/deploy/kubectl) and include a [unique ingress identifier](https://github.com/ministryofjustice/cloud-platform-reference-app/blob/73b021b36a0cfee9b7363a119db92597e398641c/deploy/kubectl/live-1/ingress.yaml#L6) for each cluster and a [weighting](https://github.com/ministryofjustice/cloud-platform-reference-app/blob/73b021b36a0cfee9b7363a119db92597e398641c/deploy/kubectl/live-1/ingress.yaml#L7) of 50/50 as mentioned in `Step 2 - Amend your ingress resource` of this document. 
 
 ## Step 7 - Trigger your pipeline
 
