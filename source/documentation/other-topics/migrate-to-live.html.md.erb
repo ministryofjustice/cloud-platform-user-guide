@@ -63,27 +63,27 @@ metadata:
 
 The idea behind the annotation is to control where the traffic is going. Using the above example 50% of the traffic will be sent to the ingress in the "Live-1" cluster. In a later step, we will create another resource in the "Live" cluster that will weight the traffic between the two clusters.
 
-## Step 3 - Migrate your namespace environment to "Live"
+## Step 3 - Migrate your namespace environment to "live"
 
-To migrate your namespace from "live-1" to "live" you'll need to migrate it to a new directory in the [cloud-platform-environments]() repository. To do this, ensure your [cloud-platform-cli]() is up to date. Then you perform:
+To migrate your namespace from "live-1" to "live" you'll need to copy it to a new directory in the [cloud-platform-environments][env-repo] repository. To do this, ensure your [cloud-platform-cli][cli] is up to date. Then you perform the following:
 
-- Clone a copy of the [cloud-platform-environments]() repository and create a branch: `git clone git@github.com:ministryofjustice/cloud-platform-environments.git`
+- Clone a copy of the [cloud-platform-environments][env-repo] repository and create a branch: `git clone git@github.com:ministryofjustice/cloud-platform-environments.git`
 
-- Change directory to your namespace in "live-1": `cd namespaces/live-1.cloud-platform.service.justice.gov.uk/<namespace>`.
+- Change directory to your namespace in "live-1": `cd namespaces/live-1.cloud-platform.service.justice.gov.uk/<namespace>`
 
-- Use the command: `cloud-platform environment migrate` to move your namespace.
+- Use the command: `cloud-platform environment migrate` to migrate your namespace.
 
 - Commit changes and create a pull request.
 
-The migrate command checks a number of conditions before moving the namespace. If condition returns true an error will be displayed pointing you to a user-guide entry containing additional steps to undertake.
+The migrate command checks a number of conditions before moving the namespace. If a condition returns true an error will be displayed pointing you to a user-guide entry.
 
 Conditions:
 
 - If you have an Elasticsearch module: the `cloud-platform environment migrate` command will automatically make the change outlined in this article. No action is required.
 
-- If have a ServiceAccount module: DO SOMETHING
+- If you have a ServiceAccount module: DO SOMETHING
 
-- If you use Kiam: DO SOMETHING
+- If you use Kiam for [cross account IAM roles][iam-infra]: You'll need to use [IRSA][irsa] in EKS. These [roles][iam-infra] need to be defined inside  the [environments repo][env-repo] using the guidence [here][irsa-cross-account].
 
 If you want to skip any warnings and continue anyway, the cli has a `--skip-warnings` flag you can enable.
 
@@ -159,22 +159,6 @@ The deletion will need to be written back to the `main` branch. Please create a 
 
 We have a few resources that need amending when migrating to EKS.
 
-### Elasticsearch module
-
-For users who use elasticsearch module, KIAM[kiam] is replaced with [IRSA][irsa] in EKS cluster.
-
-When we migrate to EKS cluster, adding below in the [ES module][es-example] will enable to use IRSA instead of KIAM.
-
-
-```
-irsa_enabled          = "true"
-assume_enabled        = "false"
-```
-
-### Cross account IAM roles
-
-For users who use KIAM for [cross account IAM roles][iam-infra], will be using [IRSA][irsa] in EKS, these [roles][iam-infra] needs to define inside [environments repo][env-repo] using this guidence [here][irsa-cross-account].
-
 ### ttlSecondsAfterFinished 
 
 TTL Controller for Finished Resources(ttlSecondsAfterFinished) is not available in EKS yet. For users who use ttlSecondsAfterFinished to clear completed jobs, should setup [Jobs History Limits][job-history-limit] using failedJobsHistoryLimit and successfulJobsHistoryLimit.
@@ -211,3 +195,4 @@ Authenticating to the Cluster: [login.live.cloud-platform.service.justice.gov.uk
 [sa-example]: https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live-1.cloud-platform.service.justice.gov.uk/justicedata-prod/resources/serviceaccount.tf#L4-L7
 [authenticate-to-cluster]: https://login.live.cloud-platform.service.justice.gov.uk
 [live-1-folder]: https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live-1.cloud-platform.service.justice.gov.uk
+[cli]: https://github.com/ministryofjustice/cloud-platform-cli
