@@ -13,6 +13,7 @@ This document intends to act as a guide to help you migrate your namespace from 
 ### Terms used in this document
 
 There are some confusing names and terms used in this document. Here are a few:
+
 - "Live-1" = The name of the current Cloud Platform (Kubernetes) cluster your namespace is deployed to.
 
 - "Live" = The name of a new Cloud Platform (EKS) cluster that you'll need to migrate to.
@@ -62,14 +63,29 @@ metadata:
 
 The idea behind the annotation is to control where the traffic is going. Using the above example 50% of the traffic will be sent to the ingress in the "Live-1" cluster. In a later step, we will create another resource in the "Live" cluster that will weight the traffic between the two clusters.
 
-## Step 3 - Copy the namespace directory from "Live-1" to "Live"
+## Step 3 - Migrate your namespace environment to "live"
 
-Copy the namespace directory i.e `/myapp-dev` from [live-1 directory](https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live-1.cloud-platform.service.justice.gov.uk) to [live directory](https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live.cloud-platform.service.justice.gov.uk). 
+To migrate your namespace from "live-1" to "live" you'll need to copy your namespace directory to a new location in the [cloud-platform-environments][env-repo] repository. To do this, ensure your [cloud-platform-cli][cli] is up to date. Then you perform the following:
 
-This change will need to reviewed by the Cloud Platform team. Create a pull request and wait for approval. 
-An example can be seen [here](https://github.com/ministryofjustice/cloud-platform-environments/pull/4983).
+- Clone a copy of the [cloud-platform-environments][env-repo] repository and create a branch: `git clone git@github.com:ministryofjustice/cloud-platform-environments.git`
 
-We have few resources that needs amending when migrating to EKS, please look at [Namespace resource changes][ns-changes], before raising a pull request.
+- Change directory to your namespace in "live-1": `cd namespaces/live-1.cloud-platform.service.justice.gov.uk/<namespace>`
+
+- Use the cloud-platform cli command: `cloud-platform environment migrate` to migrate your namespace.
+
+- Commit changes and create a pull request.
+
+The migrate command checks a number of conditions before moving the namespace. If a condition returns true an error will be displayed pointing you to a user-guide entry.
+
+Conditions:
+
+- If you have an Elasticsearch module: the `cloud-platform environment migrate` command will automatically make the change outlined in this article. No action is required.
+
+- If you have a ServiceAccount module: Please get in touch with someone in the team at #ask-cloud-platform.
+
+- If you use Kiam for [cross account IAM roles][iam-infra]: You'll need to use [IRSA][irsa] in EKS. These [roles][iam-infra] need to be defined inside  the [environments repo][env-repo] using the guidence [here][irsa-cross-account].
+
+If you want to skip any warnings and continue anyway, the cli has a `--skip-warnings` flag you can enable.
 
 ## Step 4 - Authenticate to the "Live" cluster
 
@@ -141,30 +157,6 @@ rm -rf ./namespaces/live-1.cloud-platform.service.justice.gov.uk/<my-namespace-n
 
 The deletion will need to be written back to the `main` branch. Please create a PR and have `Deletion of NS due to migration to live cluster` in the description. 
 
-## Namespace resource changes
-
-We have a few resources that need amending when migrating to EKS.
-
-### Elasticsearch module
-
-For users who use elasticsearch module, KIAM[kiam] is replaced with [IRSA][irsa] in EKS cluster.
-
-When we migrate to EKS cluster, adding below in the [ES module][es-example] will enable to use IRSA instead of KIAM.
-
-
-```
-irsa_enabled          = "true"
-assume_enabled        = "false"
-```
-
-### Cross account IAM roles
-
-For users who use KIAM for [cross account IAM roles][iam-infra], will be using [IRSA][irsa] in EKS, these [roles][iam-infra] needs to define inside [environments repo][env-repo] using this guidence [here][irsa-cross-account].
-
-### ttlSecondsAfterFinished 
-
-TTL Controller for Finished Resources(ttlSecondsAfterFinished) is not available in EKS yet. For users who use ttlSecondsAfterFinished to clear completed jobs, should setup [Jobs History Limits][job-history-limit] using failedJobsHistoryLimit and successfulJobsHistoryLimit.
-
 ## Links for the new cluster
 
 Prometheus: [https://prometheus.live.cloud-platform.service.justice.gov.uk](https://prometheus.live.cloud-platform.service.justice.gov.uk)
@@ -182,8 +174,10 @@ Authenticating to the Cluster: [login.live.cloud-platform.service.justice.gov.uk
 
 ## Troubleshooting
 
-## Feedback welcome
+### ttlSecondsAfterFinished 
 
+TTL Controller for Finished Resources(ttlSecondsAfterFinished) is not available in EKS yet. For users who use ttlSecondsAfterFinished to clear completed jobs, should setup [Jobs History Limits][job-history-limit] using failedJobsHistoryLimit and successfulJobsHistoryLimit.
+## Feedback welcome
 
 [irsa]: https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html
 [kiam]: https://github.com/uswitch/kiam
@@ -197,3 +191,4 @@ Authenticating to the Cluster: [login.live.cloud-platform.service.justice.gov.uk
 [sa-example]: https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live-1.cloud-platform.service.justice.gov.uk/justicedata-prod/resources/serviceaccount.tf#L4-L7
 [authenticate-to-cluster]: https://login.live.cloud-platform.service.justice.gov.uk
 [live-1-folder]: https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live-1.cloud-platform.service.justice.gov.uk
+[cli]: https://github.com/ministryofjustice/cloud-platform-cli
