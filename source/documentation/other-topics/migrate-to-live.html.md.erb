@@ -112,8 +112,7 @@ There are multi ways people are deploying their application, this guide will cov
 
 ### Deploy with GitHub Actions
 
-For teams using Github Actions as continuous deployment following [user guide][gh-actions], update your service account module in the “cloud-platform-environments” repo to push secrets with different names for [example][sa-example]. Use the new secrets to authenticate to the "live" cluster. You can either create separate GitHub action or add additional steps to your existing GitHub action to deploy in the "live" cluster
-
+For teams using Github Actions as continuous deployment follow this [user guide][gh-actions-migrate]
 
 ### Deploy with CircleCI
 
@@ -206,3 +205,4 @@ We'd love to receive feedback on this process, to make it as low friction as pos
 [authenticate-to-cluster]: https://login.live.cloud-platform.service.justice.gov.uk
 [live-1-folder]: https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live-1.cloud-platform.service.justice.gov.uk
 [cli]: https://github.com/ministryofjustice/cloud-platform-cli
+[gh-actions-migrate]: ./migrate-to-live-sa-github-actions.html
