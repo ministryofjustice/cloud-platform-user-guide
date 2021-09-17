@@ -49,7 +49,11 @@ Both the ca.crt and token should be added as new environment variables using dif
 
 Add `KUBE_CLUSTER_LIVE_1` environment variable in the Github secrets, the value will be `live-1.cloud-platform.service.justice.gov.uk`
 
-Update the above 3 environment variable names in the GitHub action config file for live-1 as shown [here][githubaction-env]. This will enable to authenticate and Continuous Deployment of an application using Github actions in "Live-1". For reference use, this [githubaction config file] that builds an image, authenticates and deploys an application to both the "live-1" and "live" clusters.
+![GitHub secrets](/images/github-secrets.png)
+
+Update the above 3 environment variable names in the GitHub action config file for live-1 as shown [here][githubaction-env]. This will enable to authenticate and Continuous Deployment of an application using Github actions in "Live-1". 
+
+For reference use, this [githubaction config file] that builds an image, authenticates and deploys an application to both the "live-1" and "live" clusters.
 
 [long-running]: ./long-running-env-operations.html
 [serviceaccount module]: https://github.com/ministryofjustice/cloud-platform-terraform-serviceaccount#kubernetes-serviceaccount-module
