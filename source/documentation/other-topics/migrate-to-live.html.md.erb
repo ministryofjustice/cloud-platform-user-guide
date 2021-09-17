@@ -30,7 +30,7 @@ You will be migrating your Cloud Platform namespace, all permissions and resourc
 
 There are just a few things you need to ensure before you migrate between clusters.
 
-- Ensure your containers are "stateless". During the transition between clusters, your pods will be running simultaneously between "Live" and "Live-1". Any state that your containers (inside the pod) store on disk or persistent volume (such as EBS) will not be copied to the new cluster.
+- Ensure your containers are "stateless". During the transition between clusters, your pods will be running simultaneously between "Live" and "Live-1". Any state that your containers (inside the pod) store on disk or persistent volume (such as EBS) will not be copied to the new cluster. Using Elasticache for session variables storage will avoid web users being logged off when traffic gets routed to the other cluster.
 
 - Check that multiple copies of your app can communicate simultaneously with AWS resources. These AWS resources will be shared between clusters. For example, your RDS instance will accept connections from pods in "Live" and "Live-1".
 
