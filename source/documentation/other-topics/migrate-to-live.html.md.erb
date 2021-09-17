@@ -41,9 +41,7 @@ These steps describe how to migrate. We'd love to make these as clear and simple
 
 During the process of migration high velocity apps will be unable to deploy to "live-1". You should speak to your team and agree a time and date to attempt to migrate your namespace. It's also recommended that you get familiar with migrating a non-production namespace before attempting prod.
 
-## Step 2 - Amend your ingress resource
-
-Amend your ingress resource of "Live-1"
+## Step 2 - Amend your ingress resource of "live-1"
 
   To ensure that you can send traffic to both clusters simultaneously you must add an annotation to your `ingress` resource to allow traffic weighting.
 
@@ -54,12 +52,12 @@ Amend your ingress resource of "Live-1"
   kind: Ingress
   metadata:
     annotations:
-      external-dns.alpha.kubernetes.io/set-identifier: <ingress-name>-<namespace-name>-<colour>
+      external-dns.alpha.kubernetes.io/set-identifier: <ingress-name>-<namespace-name>-blue
       external-dns.alpha.kubernetes.io/aws-weight: "100"
   ```
 
   (Note - Please change the `ingress-name` and `namespace-name` values in the above example.
-  The `colour` should be <span style="color:blue">**blue**</span> for ingress in "Live-1")
+  The <span style="color:blue">**-blue**</span> for ingress in "Live-1")
 
 The idea behind the annotation is to control where traffic is directed to. The addition of `aws-weight: 100` against this ingress to the "live-1" cluster changes nothing initially - all of the internet traffic to this domain still goes to your service. 
 But in a later step we'll add a second ingress for your domain, on the new "live" cluster. And when you increase the `aws-weight` on that one from 0 upwards, a proportion of the traffic will be directed to your service running on that cluster too.
@@ -84,7 +82,7 @@ Conditions:
 
 - If you have an Elasticsearch module: the `cloud-platform environment migrate` command will automatically make the change outlined in this article. No action is required.
 
-- If you have a ServiceAccount module to do Continuos Deployment using Github Actions: You'll need to refer the [user guide][gh-actions] guide for changes to your Ingress resource and Github secrets.
+- If you have a ServiceAccount module to do Continuous Deployment using Github Actions: You'll need to refer the [user guide][gh-actions] for changes to your Ingress resource and Github secrets.
 
 - If you use Kiam for [cross account IAM roles][iam-infra]: You'll need to use [IRSA][irsa] in EKS. These [roles][iam-infra] need to be defined inside  the [environments repo][env-repo] using the guidence [here][irsa-cross-account].
 
@@ -125,7 +123,7 @@ This ServiceAccount is created by either the serviceaccount.yaml or serviceaccou
 
 Once the service account is created, you can grab the ca.crt, token and cluster_name, to authenticate to the "live" cluster. 
 
-The `cluster_name` to the "Live" cluster is `DF366E49809688A3B16EEC29707D8C09.gr7.eu-west-2.eks.amazonaws.com`
+The `cluster_name` of the "Live" cluster is `DF366E49809688A3B16EEC29707D8C09.gr7.eu-west-2.eks.amazonaws.com`
 
 The cluster endpoint will look like `https://DF366E49809688A3B16EEC29707D8C09.gr7.eu-west-2.eks.amazonaws.com`
 
