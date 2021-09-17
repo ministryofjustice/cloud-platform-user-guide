@@ -1,6 +1,6 @@
 ---
 title: Migrate to the "Live" cluster
-last_reviewed_on: 2021-07-20
+last_reviewed_on: 2021-09-17
 review_in: 3 months
 ---
 
@@ -46,22 +46,26 @@ During the process of migration high velocity apps will be unable to deploy to "
 
 ## Step 2 - Amend your ingress resource
 
-To ensure that you can send traffic to both clusters simultaneously you must add an annotation to your `ingress` resource to allow traffic weighting.
+Amend your ingress resource of "Live-1"
 
-This looks as follows:
+  To ensure that you can send traffic to both clusters simultaneously you must add an annotation to your `ingress` resource to allow traffic weighting.
 
-```yaml
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
-  annotations:
-    external-dns.alpha.kubernetes.io/set-identifier: <ingress-name>-<environment-name>-<colour>
-    external-dns.alpha.kubernetes.io/aws-weight: "50"
-```
+  The annotation looks as follows:
 
-(Note - Please change the `ingress-name` and `environment-name` values in the above example, you can get the `environment-name` value from your namespace label "cloud-platform.justice.gov.uk/environment-name". The `colour` should be `blue` for ingress in live-1 and `green` for ingress in EKS `live` cluster)
+  ```yaml
+  apiVersion: networking.k8s.io/v1beta1
+  kind: Ingress
+  metadata:
+    annotations:
+      external-dns.alpha.kubernetes.io/set-identifier: <ingress-name>-<namespace-name>-<colour>
+      external-dns.alpha.kubernetes.io/aws-weight: "100"
+  ```
 
-The idea behind the annotation is to control where the traffic is going. Using the above example 50% of the traffic will be sent to the ingress in the "Live-1" cluster. In a later step, we will create another resource in the "Live" cluster that will weight the traffic between the two clusters.
+  (Note - Please change the `ingress-name` and `namespace-name` values in the above example.
+  The `colour` should be <span style="color:blue">**blue**</span> for ingress in "Live-1")
+
+  The idea behind the annotation is to control where the traffic is going. Using the above example 100% of the traffic will be sent to the ingress in the "Live-1" cluster. 
+  In a later step, you will create another resource in the "Live" cluster that will weight the traffic between the two clusters.
 
 ## Step 3 - Migrate your namespace environment to "live"
 
@@ -81,7 +85,7 @@ Conditions:
 
 - If you have an Elasticsearch module: the `cloud-platform environment migrate` command will automatically make the change outlined in this article. No action is required.
 
-- If you have a ServiceAccount module: Please get in touch with someone in the team at #ask-cloud-platform.
+- If you have a ServiceAccount module to do Continuos Deployment using Github Actions: You'll need to refer the [user guide][gh-actions] guide for changes to your Ingress resource and Github secrets.
 
 - If you use Kiam for [cross account IAM roles][iam-infra]: You'll need to use [IRSA][irsa] in EKS. These [roles][iam-infra] need to be defined inside  the [environments repo][env-repo] using the guidence [here][irsa-cross-account].
 
@@ -91,7 +95,7 @@ If you want to skip any warnings and continue anyway, the cli has a `--skip-warn
 
 Grab a new set of credentials from [login.live.cloud-platform.service.justice.gov.uk][authenticate-to-cluster].
 
-## Step 5 - Add a new ingress resource
+## Step 5 - Add a new ingress resource to "Live"
 
 Create a new Ingress from the copy of "live-1" Ingress. Amend the `aws-weight` annotation to "0", this will not send any traffic to "live". In the later step, we start sending real traffic by tweaking external-dns ingress annotation (`aws-weight`)
 
@@ -100,11 +104,11 @@ apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   annotations:
-    external-dns.alpha.kubernetes.io/set-identifier: <ingress-name>-<environment-name>-<colour>
+    external-dns.alpha.kubernetes.io/set-identifier: <ingress-name>-<namespace-name>-<colour>
     external-dns.alpha.kubernetes.io/aws-weight: "0"
 ```
 
-(Note - Please change the `colour` to `green` for ingress in live)
+(Note - Please change the `colour` to <span style="color:green">**green**</span> for ingress in "Live")
 
 ## Step 6 - Create a new step to your deployment pipeline
 
@@ -117,25 +121,28 @@ For teams using Github Actions as continuous deployment following [user guide][g
 
 ### Deploy with CircleCI
 
-For teams who use circleci for continuous deployment, you will see a new CircleCI service account created in "live" cluster after the namespace directory is copied from "Live"-1. This serviceaccount is created by either the serviceaccount.yaml or serviceaccount.tf file in your namespace folder.
+For teams who use circleci for continuous deployment, you will see a new CircleCI service account created in "live" cluster after the namespace directory is copied from "Live-1". 
+This serviceaccount is created by either the serviceaccount.yaml or serviceaccount.tf file in your namespace folder.
 
-Once the service account is created, you can grab the ca.crt, token and cluster_name, to authenticate to the "live" cluster.
+Once the service account is created, you can grab the ca.crt, token and cluster_name, to authenticate to the "live" cluster. 
+
+The `cluster_name` to the "Live" cluster is `DF366E49809688A3B16EEC29707D8C09.gr7.eu-west-2.eks.amazonaws.com`
+
+The cluster endpoint will look like `https://DF366E49809688A3B16EEC29707D8C09.gr7.eu-west-2.eks.amazonaws.com`
 
 You can use a separate pipeline to deploy in "live" or amend the existing pipeline to add additional steps to authenticate and deploy to "live"
 
 Click [HERE](https://github.com/ministryofjustice/cloud-platform-reference-app/blob/main/.circleci/config.yml) for an example of a circleci config.yml file that builds an image, authenticates and deploys an application to both the "live-1" and "live" clusters in the same workflow. The application is deployed using [Kubernetes manifest files](https://github.com/ministryofjustice/cloud-platform-reference-app/tree/main/deploy/kubectl) and include a [unique ingress identifier](https://github.com/ministryofjustice/cloud-platform-reference-app/blob/73b021b36a0cfee9b7363a119db92597e398641c/deploy/kubectl/live-1/ingress.yaml#L6) for each cluster and a [weighting](https://github.com/ministryofjustice/cloud-platform-reference-app/blob/73b021b36a0cfee9b7363a119db92597e398641c/deploy/kubectl/live-1/ingress.yaml#L7) of 50/50 as mentioned in `Step 2 - Amend your ingress resource` of this document. 
 
-## Step 7 - Trigger your pipeline
+Once you have the pipeline variables configured, trigger your pipeline. This is normally done manually or by a push to branch.
 
-Trigger your application pipeline. This is normally done manually or by a push to branch.
-
-## Step 8 - Test your application
+## Step 7 - Test your application
 
 Test your application is working on the new cluster by performing manual tests, or if you configured an automated test, run the complete test suite to cover end to end functionality of your application.
  
 As you will start with the migration of your dev namespaces, test your application in your development namespace by creating a new host in "live" and also with your existing host(same hostname as in live-1) using external-dns ingress annotation (`aws-weight`)
 
-## Step 9 - Start sending real traffic
+## Step 8 - Start sending real traffic
 
 Traffic flow is controlled by tweaking external-dns ingress annotation (`aws-weight`), which is used to determine the proportion of traffic sent to that ingress.
 Initially it is not expected to have any traffic because live’s ingresses have `external-dns.alpha.kubernetes.io/aws-weight: "0"`. 
@@ -146,7 +153,7 @@ you could send 100% of the traffic into live cluster and 0% into live-1 cluster.
 
 NOTE: If results are not successful within the live cluster, rollback the annotations to their initial state (0% weight).
 
-## Step 10 - Cleanup old "Live-1" namespace
+## Step 9 - Cleanup old "Live-1" namespace
 
 Once you have successfully migrated to the "Live" cluster you can remove your namespace from the["Live-1" directory][live-1-folder].This is as simple as running the command :
 
@@ -176,7 +183,9 @@ Authenticating to the Cluster: [login.live.cloud-platform.service.justice.gov.uk
 
 ### ttlSecondsAfterFinished 
 
-TTL Controller for Finished Resources(ttlSecondsAfterFinished) is not available in EKS yet. For users who use ttlSecondsAfterFinished to clear completed jobs, should setup [Jobs History Limits][job-history-limit] using failedJobsHistoryLimit and successfulJobsHistoryLimit.
+ttlSecondsAfterFinished feature is not enabled on EKS Kubernetes version 1.19 and hence not available to use in “Live” cluster. Please use the guide
+[Migrating Kubernetes Jobs to the “Live” cluster][ttlSecondsAfterFinished-live-changes] for alternative ways to keep the Job History and cleanup of Completed/Failed jobs.
+
 ## Feedback welcome
 
 [irsa]: https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html
@@ -192,3 +201,4 @@ TTL Controller for Finished Resources(ttlSecondsAfterFinished) is not available 
 [authenticate-to-cluster]: https://login.live.cloud-platform.service.justice.gov.uk
 [live-1-folder]: https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live-1.cloud-platform.service.justice.gov.uk
 [cli]: https://github.com/ministryofjustice/cloud-platform-cli
+[ttlSecondsAfterFinished-live-changes]: https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/migrate-to-live-k8s-jobs.html#migrating-kubernetes-jobs-to-the-quot-live-quot-cluster
