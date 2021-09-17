@@ -1,5 +1,5 @@
 ---
-title: Migrate to the "Live" cluster
+title: Migrate to the "live" cluster
 last_reviewed_on: 2021-07-20
 review_in: 3 months
 ---
@@ -8,15 +8,13 @@ review_in: 3 months
 
 ## Introduction
 
-This document intends to act as a guide to help you migrate your namespace from "Live-1" to "Live".
+This is a guide for Cloud Platform users to migrate a namespace from "live-1" to "live".
 
-### Terms used in this document
+Explanation of terms:
 
-There are some confusing names and terms used in this document. Here are a few:
+- "live-1" = The name of the existing Cloud Platform (Kubernetes) cluster, that all namespaces have been on during 2018-2021
 
-- "Live-1" = The name of the current Cloud Platform (Kubernetes) cluster your namespace is deployed to.
-
-- "Live" = The name of a new Cloud Platform (EKS) cluster that you'll need to migrate to.
+- "live" = The name of a new Cloud Platform (EKS) cluster, that all namespaces need to be migrated to, during Autumn 2021
 
 ## Why should you migrate
 
@@ -24,25 +22,25 @@ The Cloud Platform is a Kubernetes cluster deployed using a tool named kOps. Whe
 
 ## What are you migrating
 
-You will be migrating your Cloud Platform namespace, all permissions and resources in your namespace [directory](). This doesn't include AWS resources.
+You will be migrating your Cloud Platform namespace of Kubernetes resources. This includes all permissions and resources defined in the .yaml and .tf files in your namespace [directory][live-1-folder]. Your AWS resources, such as RDS and ECR don't move or change during this migration.
 
 ## Prerequisites for migration
 
-There are just a few things you need to ensure before you migrate between clusters.
+There are just a few things you need to ensure before you start the migration.
 
-- Ensure your containers are "stateless". During the transition between clusters, your pods will be running simultaneously between "Live" and "Live-1". Any state that your containers (inside the pod) store on disk or persistent volume (such as EBS) will not be copied to the new cluster. Using Elasticache for session variables storage will avoid web users being logged off when traffic gets routed to the other cluster.
+- Ensure your containers are "stateless". During the transition between clusters, your pods will be running simultaneously on both "live" and "live-1". Any state that is in the containers (or inside the pod), such as the ephemeral disk or persistent volume (such as EBS), will not be copied to the new cluster. For example if you store user session data on disk, then moving it to Elasticache will avoid web users being logged off when traffic gets routed to the other cluster.
 
-- Check that multiple copies of your app can communicate simultaneously with AWS resources. These AWS resources will be shared between clusters. For example, your RDS instance will accept connections from pods in "Live" and "Live-1".
+- Check that multiple copies of your app are ok to communicate simultaneously with AWS resources. These AWS resources will be shared between clusters. For example, your RDS instance will accept connections from pods in "live" and "live-1".
 
-If this is a concern or you'd like to check in advance, please feel free to contact the Cloud Platform team.
+If any of these are a concern or you'd like to check in advance, please [contact the Cloud Platform team](#questions).
 
 ## How to migrate
 
-The rest of this document contains the steps required to perform the migration. This is very much a work in progress, so please leave feedback if you've either struggled to understand a step or feel it could be clarified further.
+These steps describe how to migrate. We'd love to make these as clear and simple as possible, so please leave [feedback](#feedback-welcome) if you've either struggled to understand a step or feel it could be clarified further.
 
 ## Step 1 - Agree a time to perform the migration
 
-During the process of migration high velocity apps will be unable to deploy to "Live-1". You should speak to your team and agree a time and date to attempt to migrate your namespace. It's also recommended that you get familiar with migrating a non-production namespace before attempting prod.
+During the process of migration high velocity apps will be unable to deploy to "live-1". You should speak to your team and agree a time and date to attempt to migrate your namespace. It's also recommended that you get familiar with migrating a non-production namespace before attempting prod.
 
 ## Step 2 - Amend your ingress resource
 
@@ -61,11 +59,13 @@ metadata:
 
 (Note - Please change the `ingress-name` and `environment-name` values in the above example, you can get the `environment-name` value from your namespace label "cloud-platform.justice.gov.uk/environment-name". The `colour` should be `blue` for ingress in live-1 and `green` for ingress in EKS `live` cluster)
 
-The idea behind the annotation is to control where the traffic is going. Using the above example 50% of the traffic will be sent to the ingress in the "Live-1" cluster. In a later step, we will create another resource in the "Live" cluster that will weight the traffic between the two clusters.
+The idea behind the annotation is to control where traffic is directed to. The addition of `aws-weight: 50` against this ingress to the "live-1" cluster changes nothing initially - all of the internet traffic to this domain still goes to your service. But in a later step we'll add a second ingress for your domain, on the new "live" cluster. And when you increase the `aws-weight` on that one from 0 upwards, a proportion of the traffic will be directed to your service running on that cluster too.
 
 ## Step 3 - Migrate your namespace environment to "live"
 
-To migrate your namespace from "live-1" to "live" you'll need to copy your namespace directory to a new location in the [cloud-platform-environments][env-repo] repository. To do this, ensure your [cloud-platform-cli][cli] is up to date. Then you perform the following:
+To migrate your namespace from "live-1" to "live" you'll need to copy your namespace directory to a new location in the [cloud-platform-environments][env-repo] repository.
+
+To do this, ensure your [cloud-platform-cli][cli] is up to date. Then you perform the following:
 
 - Clone a copy of the [cloud-platform-environments][env-repo] repository and create a branch: `git clone git@github.com:ministryofjustice/cloud-platform-environments.git`
 
@@ -87,7 +87,7 @@ Conditions:
 
 If you want to skip any warnings and continue anyway, the cli has a `--skip-warnings` flag you can enable.
 
-## Step 4 - Authenticate to the "Live" cluster
+## Step 4 - Authenticate to the "live" cluster
 
 Grab a new set of credentials from [login.live.cloud-platform.service.justice.gov.uk][authenticate-to-cluster].
 
@@ -117,7 +117,7 @@ For teams using Github Actions as continuous deployment following [user guide][g
 
 ### Deploy with CircleCI
 
-For teams who use circleci for continuous deployment, you will see a new CircleCI service account created in "live" cluster after the namespace directory is copied from "Live"-1. This serviceaccount is created by either the serviceaccount.yaml or serviceaccount.tf file in your namespace folder.
+For teams who use CircleCI for continuous deployment, when you have copied the namespace directory from "live-1", a new ServiceAccount is created in the "live" cluster, for you to use with CircleCI. This ServiceAccount is created by either the serviceaccount.yaml or serviceaccount.tf file in your namespace folder.
 
 Once the service account is created, you can grab the ca.crt, token and cluster_name, to authenticate to the "live" cluster.
 
@@ -146,16 +146,15 @@ you could send 100% of the traffic into live cluster and 0% into live-1 cluster.
 
 NOTE: If results are not successful within the live cluster, rollback the annotations to their initial state (0% weight).
 
-## Step 10 - Cleanup old "Live-1" namespace
+## Step 10 - Cleanup old "live-1" namespace
 
-Once you have successfully migrated to the "Live" cluster you can remove your namespace from the["Live-1" directory][live-1-folder].This is as simple as running the command :
-
+Once you have successfully migrated to the "live" cluster you can remove your namespace from the["live-1" directory][live-1-folder].This is as simple as running the command :
 
 ```bash
 rm -rf ./namespaces/live-1.cloud-platform.service.justice.gov.uk/<my-namespace-name>
 ```
 
-The deletion will need to be written back to the `main` branch. Please create a PR and have `Deletion of NS due to migration to live cluster` in the description. 
+The deletion will need to be written back to the `main` branch. Please create a PR and have `Deletion of NS due to migration to live cluster` in the description.
 
 ## Links for the new cluster
 
@@ -172,12 +171,27 @@ Authenticating to the Cluster: [login.live.cloud-platform.service.justice.gov.uk
 
 ## How to roll back
 
+TODO
+
 ## Troubleshooting
 
-### ttlSecondsAfterFinished 
+### Jobs cleanup - ttlSecondsAfterFinished
 
 TTL Controller for Finished Resources(ttlSecondsAfterFinished) is not available in EKS yet. For users who use ttlSecondsAfterFinished to clear completed jobs, should setup [Jobs History Limits][job-history-limit] using failedJobsHistoryLimit and successfulJobsHistoryLimit.
+
+## Questions
+
+If you have questions, please ask us on Slack:
+
+- #cloud-platform-eks-migration-plan-testing if you're in this group
+- #ask-cloud-platform
+
 ## Feedback welcome
+
+We'd love to receive feedback on this process, to make it as low friction as possible. Please drop us a message on Slack:
+
+- #cloud-platform-eks-migration-plan-testing if you're in this group
+- DM to @antony.bishop
 
 [irsa]: https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html
 [kiam]: https://github.com/uswitch/kiam
