@@ -125,7 +125,12 @@ metadata:
 
 ## Step 6 - Create a new step to your deployment pipeline
 
-There are multiple ways people are deploying their application. This guide will cover two of them:
+Your application's continuous deployment pipeline needs a couple of changes:
+
+- deploy the app to both clusters, not just "live-1"
+- store a second set of secrets, containing Kubernetes credentials for "live", and use them when deploying to that cluster
+
+Below is guidance for making these changes, if you've followed Cloud Platform CI/CD setup guides for CircleCI or GitHub Actions. However teams have been free to make other choices, so they should adapt these accordingly.
 
 ### Deploy with CircleCI
 
@@ -200,7 +205,56 @@ Authenticating to the Cluster: [login.live.cloud-platform.service.justice.gov.uk
 
 ## How to roll back
 
-TODO
+Easy roll back is a key feature of this migration process. At any point in this migration process you can revert to using your service on the original "live-1" cluster. This may be necessary if you encounter problems running the namespace on the new cluster, and post-pone the migration until that is resolved.
+
+To rollback, going through the process in reverse, depending on how far you got:
+
+- Step 10 "Clean-up old "live-1" namespace" -
+  Revert the pull request that deleted your [live-1-folder]. It doesn't get applied yet, because of the skipfile.
+
+- Step 9 - "Start sending real traffic" -
+  Change the ingress weightings to 0 on "live", and 100 on "live-1". This directs all traffic to the live-1 cluster. There may be a lag, as users' DNS caches update.
+
+  **At this point your application is running as it was pre-migration**
+
+- Step 8 - Test your application -
+  It's a good idea to check it works fine.
+
+- (Step 7 - Trigger your pipeline -
+  Not needed - your app is deployed still on the old cluster)
+
+- Step 6 - "Create a new step to your deployment pipeline" -
+  You need to ensure your application's CI/CD deploys:
+  * just to the old cluster "live-1"
+  * using the old names of credentials (not with the "_live1' suffix)
+
+- (Step 5 - Add a new ingress resource -
+  Not needed - you can leave this ingress in place)
+
+- (Step 4 - Authenticate to the “live” cluster -
+  Not needed - you can keep your kubectl context for the new cluster)
+
+- Step 3 - "Migrate your namespace environment to "live"" -
+  Move the 'skip file' from your namespace under the ["live" folder][live-folder] into your namespace under the ["live-1" folder][live-1-folder]:
+
+  ```bash
+  cd namespaces
+  mv live-1.cloud-platform.service.justice.gov.uk/<namespace>/APPLY_PIPELINE_SKIP_THIS_NAMESPACE live.cloud-platform.service.justice.gov.uk/<namespace>/
+  ```
+  
+  Once merged to `main`, the Apply Pipeline will be configured to apply your namespace settings that are in your "live-1" folder, rather than you "live" folder. (You must have the skip file in one of the folders, otherwise there will be errors on every terraform apply, because the terraform state is shared between the Apply pipelines for live and live-1, will conflict on every apply have both since the terraform is slightly different - IRSA etc)
+
+  **Important**: The ServiceAccount credentials used by your application CI/CD will have been rotated by the Apply Pipeline, within a couple minutes of merging the skip file change. So your application's CI/CD will need its secrets updating. If you use GitHub Actions then the ServiceAccount terraform module will automatically update the GHA secrets. However if you use CircleCI or any other way of deployment, then you'll need to obtain the fresh token from "live-1" and provide it to your CI, replacing the existing token secret with this new value.
+
+  **At this point your application can be re-deployed again normally**
+
+  **At this point you are also free to make changes to your environment under the ["live-1" folder][live-1-folder]**
+
+- (Step 2 - Amend your ingress resource -
+  Not needed - you can leave the annotation in - it won't change anything)
+
+- (Step 1 - Agree a time to perform the migration -
+  You can let your team know that they are no longer restricted from changing the environment config)
 
 ## Questions
 
@@ -228,4 +282,5 @@ We'd love to receive feedback on this process, to make it as low friction as pos
 [sa-example]: https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live-1.cloud-platform.service.justice.gov.uk/justicedata-prod/resources/serviceaccount.tf#L4-L7
 [authenticate-to-cluster]: https://login.live.cloud-platform.service.justice.gov.uk
 [live-1-folder]: https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live-1.cloud-platform.service.justice.gov.uk
+[live-folder]: https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live.cloud-platform.service.justice.gov.uk
 [cli]: https://github.com/ministryofjustice/cloud-platform-cli
