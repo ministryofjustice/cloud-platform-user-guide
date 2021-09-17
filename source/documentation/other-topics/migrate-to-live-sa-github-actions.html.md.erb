@@ -1,0 +1,72 @@
+---
+title: Migrating serviceaccount module for GitHub actions to the "Live" cluster
+last_reviewed_on: 2021-09-17
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+## Migrating service account module
+
+#### Pre-requisites
+
+* You have [skip your namespace][long-running] file in your "live-1" namespace.
+
+This will allow the Apply Pipeline to skip live-1 namespace during migration.
+
+#### Continuous Deployment of an application using Github actions in live
+
+For teams who use [github actions][gh-actions] for continuous deployment, you will see a new cd-serviceaccount created in “live” cluster after the namespace directory is copied from “Live”-1. This will replace below GitHub Actions Secrets in your repository using new serviceaccount details created in "live" cluster.
+
+* KUBE_CERT
+* KUBE_TOKEN
+* KUBE_CLUSTER
+* KUBE_NAMESPACE
+
+Using these secrets, you can create a separate pipeline to deploy in “live” or amend the existing pipeline to add additional steps to authenticate and deploy to “live”.
+Use this example [githubaction config file] for continuous deployment of an application using Github actions that authenticate and deploys an application to both the “live-1” and “live” clusters in the same workflow.  
+
+The application is deployed using [HELM] and include a unique ingress identifier and a weighting for both [live-1][ingress-resource-live-1] and [live][ingress-resource-live] cluster. Please make sure your new ingress resource for live have aws-weight as “0” as shown [here][ingress-resource-live].
+
+Note: The server name used to setup [kubectl config set-cluster][set-cluster] for "Live" is `https://DF366E49809688A3B16EEC29707D8C09.gr7.eu-west-2.eks.amazonaws.com`
+
+#### Continuous Deployment of an application using Github actions in live-1
+
+After migrating to "live" cluster, the GitHub Actions Secrets for live-1 is no longer available in your repository. For teams to continue deploying to live-1, needs to manually create GitHub Actions Secrets with new names in your repository using the cd-serviceaccount secret in “live-1” cluster. This will be used to authenticate to your namespace and deploy your application in live-1.
+
+##### Retrieving the service account credentials
+
+You can grab the ca.crt and token from the live-1 service account using the following commands:
+
+```bash
+cloud-platform decode-secret -n <YOUR-NAMESPACE> -s <NAME-OF-GITHUBACTION-SERVICE-ACCOUNT-SECRET> | grep ca.crt
+```
+
+```bash
+cloud-platform decode-secret -n <YOUR-NAMESPACE> -s <NAME-OF-GITHUBACTION-SERVICE-ACCOUNT-SECRET> | grep token
+```
+
+Both the `ca.crt` and `token` should be added as new environment variables along with `kube_cluster` using different names for "live-1" as below in the Github secrets console.
+
+* KUBE_CERT_LIVE_1
+* KUBE_TOKEN_LIVE_1
+* KUBE_CLUSTER_LIVE_1
+
+`KUBE_CLUSTER_LIVE_1` environment variable value will be `live-1.cloud-platform.service.justice.gov.uk`
+
+![GitHub secrets](/images/github-secrets.png)
+
+Update the above 3 environment variable names in the GitHub action config file for live-1 as shown [here][githubaction-env]. This will enable to authenticate and Continuous Deployment of an application using Github actions in "Live-1". 
+
+For reference use, this [githubaction config file] that builds an image, authenticates and deploys an application to both the "live-1" and "live" clusters.
+
+[long-running]: ./long-running-env-operations.html
+[serviceaccount module]: https://github.com/ministryofjustice/cloud-platform-terraform-serviceaccount#kubernetes-serviceaccount-module
+[githubaction config file]: https://github.com/ministryofjustice/cloud-platform-reference-app-github-action/blob/main/.github/workflows/cd.yaml
+[HELM]: https://github.com/ministryofjustice/cloud-platform-reference-app-github-action/tree/main/deploy/helm
+[ingress-resource-live-1]: https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/migrate-to-live.html#step-2-amend-your-ingress-resource
+[ingress-resource-live]: https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/migrate-to-live.html#step-5-add-a-new-ingress-resource
+[githubaction-env]: https://github.com/ministryofjustice/cloud-platform-reference-app-github-action/blob/main/.github/workflows/cd.yaml#L35-L38
+[gh-actions]: /documentation/deploying-an-app/github-actions-continuous-deployment.html#continuous-deployment-of-an-application-using-github-actions
+[migrate-cli]: https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/migrate-to-live.html#step-3-migrate-your-namespace-environment-to-quot-live-quot
+[set-cluster]: https://github.com/ministryofjustice/cloud-platform-reference-app-github-action/blob/main/.github/workflows/cd.yaml#L64
