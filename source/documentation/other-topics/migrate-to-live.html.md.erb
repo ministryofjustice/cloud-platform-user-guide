@@ -1,6 +1,6 @@
 ---
 title: Migrate to the "live" cluster
-last_reviewed_on: 2021-07-20
+last_reviewed_on: 2021-09-17
 review_in: 3 months
 ---
 
@@ -22,15 +22,17 @@ The Cloud Platform is a Kubernetes cluster deployed using a tool named kOps. Whe
 
 ## What are you migrating
 
-You will be migrating your Cloud Platform namespace of Kubernetes resources. This includes all permissions and resources defined in the .yaml and .tf files in your namespace [directory][live-1-folder]. Your AWS resources, such as RDS and ECR don't move or change during this migration.
+You will be migrating your Cloud Platform namespace of Kubernetes resources. This includes all permissions and resources defined in the .yaml and .tf files in your namespace [directory][live-1-folder]. The new Kubernetes cluster is in the same AWS account and VPC, so that already running AWS resources such as RDS and ECR don't change during this migration.
 
 ## Prerequisites for migration
 
 There are just a few things you need to ensure before you start the migration.
 
-- Ensure your containers are "stateless". During the transition between clusters, your pods will be running simultaneously on both "live" and "live-1". Any state that is in the containers (or inside the pod), such as the ephemeral disk or persistent volume (such as EBS), will not be copied to the new cluster. For example if you store user session data on disk, then moving it to Elasticache will avoid web users being logged off when traffic gets routed to the other cluster.
+- Ensure your containers are "stateless". During the transition between clusters, your pods will be running simultaneously on both "live" and "live-1". Any state that is in the containers (or inside the pod), such as the ephemeral disk or EBS, will not be copied to the new cluster. For example if you store user session data on disk, then moving it to Elasticache will avoid web users being logged off when traffic gets routed to the other cluster.
 
 - Check that multiple copies of your app are ok to communicate simultaneously with AWS resources. These AWS resources will be shared between clusters. For example, your RDS instance will accept connections from pods in "live" and "live-1".
+
+- If you use Kubernetes Jobs and option `ttlSecondsAfterFinished` then refer to this guide: [ttlSecondsAfterFinished](/documentation/other-topics/migrate-to-live-k8s-jobs.html#migrating-kubernetes-jobs-to-the-quot-live-quot-cluster)
 
 If any of these are a concern or you'd like to check in advance, please [contact the Cloud Platform team](#questions).
 
@@ -40,11 +42,11 @@ These steps describe how to migrate. We'd love to make these as clear and simple
 
 ## Step 1 - Agree a time to perform the migration
 
-During the process of migration high velocity apps will be unable to deploy to "live-1". You should speak to your team and agree a time and date to attempt to migrate your namespace. It's also recommended that you get familiar with migrating a non-production namespace before attempting prod.
+During the process of migration you can still deploy your app to both clusters together. However you will not be able to change your environment configuration, as defined in [environments repo][live-1-folder], which may be an issue. You should speak to your team and agree a time and date to attempt to migrate your namespace. It's also strongly recommended that you get familiar with migrating a non-production namespace before attempting prod.
 
 ## Step 2 - Amend your ingress resource
 
-To ensure that you can send traffic to both clusters simultaneously you must add an annotation to your `ingress` resource to allow traffic weighting.
+You must add two new annotations to your existing `ingress` resource, needed for load balancing using [DNS weighting](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-values-weighted.html#rrsets-values-weighted-weight). We've designed this process to allow for moving traffic gradually to the new copy of your app on the new cluster, which also provides easy roll-back, if needed.
 
 This looks as follows:
 
@@ -53,35 +55,34 @@ apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   annotations:
-    external-dns.alpha.kubernetes.io/set-identifier: <ingress-name>-<environment-name>-<colour>
-    external-dns.alpha.kubernetes.io/aws-weight: "50"
+    external-dns.alpha.kubernetes.io/set-identifier: <ingress-name>-<environment-name>-blue
+    external-dns.alpha.kubernetes.io/aws-weight: "100"
 ```
 
 (Note - Please change the `ingress-name` and `environment-name` values in the above example, you can get the `environment-name` value from your namespace label "cloud-platform.justice.gov.uk/environment-name". The `colour` should be `blue` for ingress in live-1 and `green` for ingress in EKS `live` cluster)
 
-The idea behind the annotation is to control where traffic is directed to. The addition of `aws-weight: 50` against this ingress to the "live-1" cluster changes nothing initially - all of the internet traffic to this domain still goes to your service. But in a later step we'll add a second ingress for your domain, on the new "live" cluster. And when you increase the `aws-weight` on that one from 0 upwards, a proportion of the traffic will be directed to your service running on that cluster too.
+The idea behind the annotation is to control where traffic is directed to. The addition of `aws-weight: 100` against this ingress to the "live-1" cluster changes nothing initially - all of the internet traffic to this domain still goes to your service on the existing cluster. But in a later step we'll add a second ingress for your domain, on the new "live" cluster. And when you increase the `aws-weight` on that one from 0 upwards, a proportion of the traffic will be directed to your service running on that cluster too.
 
 ## Step 3 - Migrate your namespace environment to "live"
 
 To migrate your namespace from "live-1" to "live" you'll need to copy your namespace directory to a new location in the [cloud-platform-environments][env-repo] repository.
 
-To do this, ensure your [cloud-platform-cli][cli] is up to date. Then you perform the following:
+- If you've not already got a clone of [cloud-platform-environments][env-repo] repository, do that now: `git clone git@github.com:ministryofjustice/cloud-platform-environments.git`. Create a branch.
 
-- Clone a copy of the [cloud-platform-environments][env-repo] repository and create a branch: `git clone git@github.com:ministryofjustice/cloud-platform-environments.git`
+- Run the cloud-platform cli command from your namespace directory to migrate your namespace:
 
-- Change directory to your namespace in "live-1": `cd namespaces/live-1.cloud-platform.service.justice.gov.uk/<namespace>`
+  ```bash
+  cd namespaces/live-1.cloud-platform.service.justice.gov.uk/<namespace>
+  cloud-platform environment migrate
+  ```
 
-- Use the cloud-platform cli command: `cloud-platform environment migrate` to migrate your namespace.
+- Commit changes to your branch, and create a pull request.
 
-- Commit changes and create a pull request.
+The migrate command copies the folder. In some cases it makes minor changes to the terraform or alerts to you changes you need to make manually, as described in these points:
 
-The migrate command checks a number of conditions before moving the namespace. If a condition returns true an error will be displayed pointing you to a user-guide entry.
+- If you have a ServiceAccount module for GitHub Actions: please follow [this guide](migrate-to-live-sa-github-actions.html#migrating-serviceaccount-module-for-github-actions-to-the-quot-live-quot-cluster)
 
-Conditions:
-
-- If you have an Elasticsearch module: the `cloud-platform environment migrate` command will automatically make the change outlined in this article. No action is required.
-
-- If you have a ServiceAccount module: Please get in touch with someone in the team at #ask-cloud-platform.
+- If you have an Elasticsearch module, it adds an IRSA change, needed for EKS.
 
 - If you use Kiam for [cross account IAM roles][iam-infra]: You'll need to use [IRSA][irsa] in EKS. These [roles][iam-infra] need to be defined inside  the [environments repo][env-repo] using the guidence [here][irsa-cross-account].
 
@@ -91,9 +92,24 @@ If you want to skip any warnings and continue anyway, the cli has a `--skip-warn
 
 Grab a new set of credentials from [login.live.cloud-platform.service.justice.gov.uk][authenticate-to-cluster].
 
+You'll download a new config.yaml. Copy that to your .kube folder:
+
+    mv ~/Downloads/config.yaml ~/.kube/config-live
+
+Copy your existing live-1 credentials into a separate file:
+
+    cp ~/.kube/config ~/.kube/config-live-1
+
+To talk to the live cluster copy it into the default location that kubectl looks for credentials:
+
+    cp ~/.kube/config-live ~/.kube/config
+
+
 ## Step 5 - Add a new ingress resource
 
 Create a new Ingress from the copy of "live-1" Ingress. Amend the `aws-weight` annotation to "0", this will not send any traffic to "live". In the later step, we start sending real traffic by tweaking external-dns ingress annotation (`aws-weight`)
+
+The annotations will look like this:
 
 ```yaml
 apiVersion: networking.k8s.io/v1beta1
@@ -108,22 +124,24 @@ metadata:
 
 ## Step 6 - Create a new step to your deployment pipeline
 
-There are multi ways people are deploying their application, this guide will cover two of them:
-
-### Deploy with GitHub Actions
-
-For teams using Github Actions as continuous deployment following [user guide][gh-actions], update your service account module in the “cloud-platform-environments” repo to push secrets with different names for [example][sa-example]. Use the new secrets to authenticate to the "live" cluster. You can either create separate GitHub action or add additional steps to your existing GitHub action to deploy in the "live" cluster
-
+There are multiple ways people are deploying their application. This guide will cover two of them:
 
 ### Deploy with CircleCI
 
-For teams who use CircleCI for continuous deployment, when you have copied the namespace directory from "live-1", a new ServiceAccount is created in the "live" cluster, for you to use with CircleCI. This ServiceAccount is created by either the serviceaccount.yaml or serviceaccount.tf file in your namespace folder.
+For teams who use CircleCI for continuous deployment, in Step 3 when you migrated your namespace environment to "live", a new ServiceAccount was created in the "live" cluster, for you to use with CircleCI. This ServiceAccount is created by either the serviceaccount.yaml or serviceaccount.tf file in your namespace folder.
 
-Once the service account is created, you can grab the ca.crt, token and cluster_name, to authenticate to the "live" cluster.
+You need to copy the ServiceAccount credentials to CircleCI secrets, so it can authenticate with the "live" cluster. Retrieve [ca.crt, token and cluster_name](/documentation/deploying-an-app/using-circleci-for-continuous-deployment.html#retrieving-the-service-account-credentials), making sure kubectl is talking to the 'live' cluster. The `cluster_name` of the "live" cluster is `DF366E49809688A3B16EEC29707D8C09.gr7.eu-west-2.eks.amazonaws.com`. Paste these secrets into the CircleCI web console.
 
-You can use a separate pipeline to deploy in "live" or amend the existing pipeline to add additional steps to authenticate and deploy to "live"
+To deploy to both "live" and "live-1" you can either:
 
-Click [HERE](https://github.com/ministryofjustice/cloud-platform-reference-app/blob/main/.circleci/config.yml) for an example of a circleci config.yml file that builds an image, authenticates and deploys an application to both the "live-1" and "live" clusters in the same workflow. The application is deployed using [Kubernetes manifest files](https://github.com/ministryofjustice/cloud-platform-reference-app/tree/main/deploy/kubectl) and include a [unique ingress identifier](https://github.com/ministryofjustice/cloud-platform-reference-app/blob/73b021b36a0cfee9b7363a119db92597e398641c/deploy/kubectl/live-1/ingress.yaml#L6) for each cluster and a [weighting](https://github.com/ministryofjustice/cloud-platform-reference-app/blob/73b021b36a0cfee9b7363a119db92597e398641c/deploy/kubectl/live-1/ingress.yaml#L7) of 50/50 as mentioned in `Step 2 - Amend your ingress resource` of this document. 
+- create a separate pipeline to deploy in "live"
+- amend the existing pipeline to add additional steps to authenticate and deploy to "live". An example config.yml file is available [here](https://github.com/ministryofjustice/cloud-platform-reference-app/blob/main/.circleci/config.yml). It builds an image, authenticates and deploys an application to both the "live-1" and "live" clusters in the same workflow.
+
+### Deploy with GitHub Actions
+
+Earlier on in this migration you will have [migrated the ServiceAccount module](migrate-to-live-sa-github-actions.html#migrating-serviceaccount-module-for-github-actions-to-the-quot-live-quot-cluster), leading to GitHub Action secrets differentiated by the cluster e.g. `KUBE_CLUSTER_LIVE_1`.
+
+An example of GitHub Actions config is provided in this repo: https://github.com/ministryofjustice/cloud-platform-reference-app-github-action. It deploys the app to both the live-1 and live clusters.
 
 ## Step 7 - Trigger your pipeline
 
@@ -131,30 +149,40 @@ Trigger your application pipeline. This is normally done manually or by a push t
 
 ## Step 8 - Test your application
 
-Test your application is working on the new cluster by performing manual tests, or if you configured an automated test, run the complete test suite to cover end to end functionality of your application.
- 
-As you will start with the migration of your dev namespaces, test your application in your development namespace by creating a new host in "live" and also with your existing host(same hostname as in live-1) using external-dns ingress annotation (`aws-weight`)
+Test your application is working on the new cluster.
+
+This could include:
+
+- pingdom
+- automated smoke tests - requests should be sent to the new load balancer IP (TOD) and add a "Host: <hostname>" header.
+- manual browser testing - requires a new ingress with a test host name
 
 ## Step 9 - Start sending real traffic
 
 Traffic flow is controlled by tweaking external-dns ingress annotation (`aws-weight`), which is used to determine the proportion of traffic sent to that ingress.
-Initially it is not expected to have any traffic because live’s ingresses have `external-dns.alpha.kubernetes.io/aws-weight: "0"`. 
-For example, by setting this value to 5, route53 will send 5% of real traffic to the application.
+Initially it is not expected to have any traffic because live’s ingresses have `external-dns.alpha.kubernetes.io/aws-weight: "0"`.
+For example, by setting this value to 5 on "live" and 95 on "live-1", route53 will send 5% of real traffic to the application on "live".
 
-It is advised to send between 1-10% of the traffic to the live cluster. Once the traffic flows into the live cluster and the application behaves as expected, 
+To apply the changes to the ingress, as a quick alternative to running your application's CI/CD pipeline, you can edit them directly:
+
+```bash
+    kubectl edit ingress <ingress-name> -n <namespace>
+```
+
+It is advised to send between 1-10% of the traffic to the live cluster initially. Once the traffic flows into the live cluster and the application behaves as expected, 
 you could send 100% of the traffic into live cluster and 0% into live-1 cluster.
 
-NOTE: If results are not successful within the live cluster, rollback the annotations to their initial state (0% weight).
+NOTE: If results are not successful within the live cluster, rollback the annotations to their initial weights ('100' on "live-1", '0'  on "live").
 
 ## Step 10 - Cleanup old "live-1" namespace
 
-Once you have successfully migrated to the "live" cluster you can remove your namespace from the["live-1" directory][live-1-folder].This is as simple as running the command :
+Once you have successfully migrated to the "live" cluster, you can tidy up by removing your (now unused) namespace from the ["live-1" directory][live-1-folder]:
 
 ```bash
 rm -rf ./namespaces/live-1.cloud-platform.service.justice.gov.uk/<my-namespace-name>
 ```
 
-The deletion will need to be written back to the `main` branch. Please create a PR and have `Deletion of NS due to migration to live cluster` in the description.
+As usual, commit this change to a branch, create a PR with title `Deletion of NS due to migration to live cluster` and once approved merge to `main`.
 
 ## Links for the new cluster
 
