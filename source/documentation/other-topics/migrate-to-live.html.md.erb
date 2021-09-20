@@ -8,19 +8,52 @@ review_in: 3 months
 
 ## Introduction
 
-This is a guide for Cloud Platform users to migrate a namespace from "live-1" to "live".
+This is a guide about the Cloud Platform's EKS Migration for Cloud Platform users.
 
-Explanation of terms:
+Cloud Platform team is asking all teams with services on Cloud Platform to migrate their services to a new cluster this Autumn. This migration is needed to improve the platform's maintainability, so that the team can deliver more user facing functionality.
 
-- "live-1" = The name of the existing Cloud Platform (Kubernetes) cluster, that all namespaces have been on during 2018-2021
+The expected time for a migration is **two hours**, but this is dependent on dealing with occasional edge cases. [Support](#questions) is on hand during the process from the Cloud Platform team.
 
-- "live" = The name of a new Cloud Platform (EKS) cluster, that all namespaces need to be migrated to, during Autumn 2021
+## Migration overview
 
-## Why should you migrate
+The migration is between Kubernetes clusters:
 
-The Cloud Platform is a Kubernetes cluster deployed using a tool named kOps. When the Cloud Platform was conceived in 2017, Kubernetes management tools such as EKS (Elastic Kubernetes Service from AWS) and GKE (Google Kubernetes Engine) were in their infancy. An architecture decision record (ADR) was created with the understanding and acceptance of the extra management overhead and slightly slower release times. Since then, EKS has matured to a state where the benefits of running a multi-tenant cluster without the overhead of maintaining the control plane has become extremely attractive. If you wish to read more, please see this [ADR](https://github.com/ministryofjustice/cloud-platform/blob/main/architecture-decision-record/014-Why-we-build-our-own-kubernetes-cluster.md).
+- from "live-1", which all namespaces have been running on during 2018-2021
+- to "live", a new cluster based on AWS's EKS managed service
 
-## What are you migrating
+There are only [minor differences](#cluster-differences) in the setup of the new cluster.
+
+Each environment or 'namespace' is migrated separately. Initially we will invite teams to migrate their 'development' namespace, so that any issues can be ironed out before affecting the production service. Exactly the same steps
+
+Schedule (rough):
+
+- 20/9/21 - 31/9/21 Pilot - A small invited group will migrate their dev namespaces to iron out teething problems with the process
+- October '21 - widespread migration of dev namespaces - to understand get a handle on any challenges for teams
+- November-ish '21 - widespread migration of remaining namespaces
+- Then: live-1 cluster is switched off
+
+### What is EKS and why is Cloud Platform adopting it?
+
+Elastic Kubernetes Service (EKS) is a managed Kubernetes service offered by AWS. Back when we started building the Cloud Platform we made the decision to build our clusters using kOps. This was a self-managed service that enabled us to start building the platform.
+
+Since then EKS has matured as a product and we are now in a position to switch to this solution which will enable us to better meet user needs, and continue to grow the platform. More info: [ADR#22](https://github.com/ministryofjustice/cloud-platform/blob/main/architecture-decision-record/022-EKS.md#reasoning)
+
+### Why should we migrate our services to the new cluster?
+
+Benefits to users of the Cloud Platform:
+
+- Reduced operational overhead of EKS compared to kOps means the Cloud Platform team can spend more time working on the needs of our users, and improving the platform.
+- Smoother upgrades of Kubernetes reduces the potential for downtime.
+- The move to EKS is an enabler to adopting a multi-cluster architecture, which will enable the platform scale, offer better separation between non-production and production services, and reduce the “blast radius” of unforeseen outages.
+- It also mitigates a number of risks that will improve resilience and security on the platform.
+
+### Why call the new cluster "live"?
+
+We didn't call it "live-2" because we plan to make this the last name change. We'd rather abstract away from users the identity of the cluster, to allow the platform team to shift workloads onto new cluster when doing a blue-green upgrade or disaster recovery. So we plan for this migration to be the last visible name change. Inevitably we will clusters again some time in future, but in URLs the new cluster should be called "live" as well.
+
+We continue use the word "live" to indicate that it is suitable for environments from dev to production. And that it is live to the public, not just internally accessible.
+
+### What are you migrating
 
 You will be migrating your Cloud Platform namespace of Kubernetes resources. This includes all permissions and resources defined in the .yaml and .tf files in your namespace [directory][live-1-folder]. The new Kubernetes cluster is in the same AWS account and VPC, so that already running AWS resources such as RDS and ECR don't change during this migration.
 
@@ -203,6 +236,24 @@ Kibana:
 
 Authenticating to the Cluster: [login.live.cloud-platform.service.justice.gov.uk][authenticate-to-cluster]
 
+## Cluster differences
+
+Aside from the main change, from a kOps to a EKS managed Kubernetes cluster, we've minimized the differences between the two clusters, to smooth migrations. In case the minor differences do affect services in some way, we've summarized the differences in this list.
+
+The migration process takes account of differences that will affect services:
+
+- Pods that need to make calls to AWS will need to authenticate differently - they now need to use [IRSA](https://aws.amazon.com/blogs/opensource/introducing-fine-grained-iam-roles-service-accounts/), rather than kiam. Terraform modules have been adapted to take account of this.
+
+- Kubernetes jobs don't get cleaned after a TTL. TTL Controller for Finished Resources(ttlSecondsAfterFinished) is not available in EKS yet. For users who use ttlSecondsAfterFinished to clear completed jobs, should setup [Jobs History Limits][job-history-limit] using failedJobsHistoryLimit and successfulJobsHistoryLimit.
+
+Other differences which we think will not affect services:
+
+- EKS manages the control plane (master) nodes instead of kOps.
+
+- Kubernetes version is 1.19 instead of 1.18. No YAML needs to change because no k8s APIs have been removed in this upgrade.
+
+- Pod networking is implemented by Amazon's [VPC Container Network Interface (CNI) plugin for Kubernetes](https://docs.aws.amazon.com/eks/latest/userguide/pod-networking.html). Pods are assigned IP addresses associated with Elastic Network Interfaces on worker nodes. The IPs come from the VPC network pool and therefore do not require NAT to access resources outside the Kubernetes cluster. This replaces the platform's use of Calico CNI, which uses an overlay network.
+
 ## How to roll back
 
 Easy roll back is a key feature of this migration process. At any point in this migration process you can revert to using your service on the original "live-1" cluster. This may be necessary if you encounter problems running the namespace on the new cluster, and post-pone the migration until that is resolved.
@@ -225,8 +276,8 @@ To rollback, going through the process in reverse, depending on how far you got:
 
 - Step 6 - "Create a new step to your deployment pipeline" -
   You need to ensure your application's CI/CD deploys:
-  * just to the old cluster "live-1"
-  * using the old names of credentials (not with the "_live1' suffix)
+  - just to the old cluster "live-1"
+  - using the old names of credentials (not with the "_live1' suffix)
 
 - (Step 5 - Add a new ingress resource -
   Not needed - you can leave this ingress in place)
