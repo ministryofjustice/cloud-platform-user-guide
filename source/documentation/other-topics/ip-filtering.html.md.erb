@@ -24,12 +24,14 @@ An example configuration using `nginx.ingress.kubernetes.io/whitelist-source-ran
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
+  name: <ingress-name>
+  namespace: <namespace-name>
   annotations:
     kubectl.kubernetes.io/last-applied-configuration: |
           {"apiVersion":"networking.k8s.io/v1beta1","kind":"Ingress","metadata":{"annotations":{"kubernetes.io/ingress.class":"nginx","nginx.ingress.kubernetes.io/whitelist-source-range":"1.1.1.1/24,10.0.0.0/24"},"name":"<my-ingress>","namespace":"<my-namespace>"},"spec":{"rules":[{"host":"my-app.apps.live-1.cloud-platform.service.justice.gov.uk","http":{"paths":[{"backend":{"serviceName":"<my-svc>","servicePort":3000},"path":"/"}]}}],"tls":[{"hosts":["my-app.apps.live-1.cloud-platform.service.justice.gov.uk"]}]}}
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/whitelist-source-range: 1.1.1.1/24,10.0.0.0/24
-    external-dns.alpha.kubernetes.io/set-identifier: <ingress-name>-<environment-name>-<colour>
+    external-dns.alpha.kubernetes.io/set-identifier: <ingress-name>-<namespace-name>-<colour>
     external-dns.alpha.kubernetes.io/aws-weight: "100"
   creationTimestamp: 2019-03-21T14:26:31Z
   generation: 1
@@ -52,7 +54,7 @@ status:
     ingress:
     - hostname: <hostname>
    ```
-(Note - Please change the `ingress-name` and `environment-name` values in the above example, you can get the `environment-name` value from your namespace label "cloud-platform.justice.gov.uk/environment-name". The `colour` should be `blue` for ingress in live-1 and `green` for ingress in EKS `live` cluster)
+(Note - Please change the `ingress-name` and `namespace-name` values in the above example. The `colour` should be `blue` for ingress in live-1 and `green` for ingress in EKS `live` cluster)
 
 Testing with the annotation set:
 
