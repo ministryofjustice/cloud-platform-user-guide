@@ -8,28 +8,32 @@ review_in: 3 months
 
 ## Introduction
 
-This is a guide about the Cloud Platform's EKS Migration for Cloud Platform users.
+This is guide to the EKS Migration, for users of the Cloud Platform.
 
-Cloud Platform team is asking all teams with services on Cloud Platform to migrate their services to a new cluster this Autumn. This migration is needed to improve the platform's maintainability, so that the team can deliver more user facing functionality.
+The Cloud Platform team is asking all teams with services running on the platform to migrate their services to a new cluster in the platform, during Autumn 2021. This migration is needed to improve the platform's maintainability, so that the team can deliver more user-facing functionality.
 
-The expected time for a migration is **two hours**, but this is dependent on dealing with occasional edge cases. [Support](#questions) is on hand during the process from the Cloud Platform team.
+The expected time for a migration is **two hours**. Some services may take longer, depending on the features used. [Support](#questions) is on hand throughout the process.
 
 ## Migration overview
 
 The migration is between Kubernetes clusters:
 
-- from "live-1", which all namespaces have been running on during 2018-2021
+- from the "live-1" cluster, on which all namespaces have been running on during 2018-2021
 - to "live", a new cluster based on AWS's EKS managed service
 
-There are only [minor differences](#cluster-differences) in the setup of the new cluster.
+There are only [minor differences](#cluster-differences) between the old and new clusters, so in most cases no changes are needed to the service.
 
-Each environment or 'namespace' is migrated separately. Initially we will invite teams to migrate their 'development' namespace, so that any issues can be ironed out before affecting the production service. Exactly the same steps
+Migrate each of environment or 'namespace' separately. Initially we will invite teams to migrate their 'development' namespace, so that any issues can be ironed out before affecting the production service.
 
-Schedule (rough):
+During migration, you can continue to deploy your application to the namespace, however [you can't change your namespace configuration or terraform](#can-i-make-changes-to-my-service-during-migration).
 
-- 20/9/21 - 31/9/21 Pilot - A small invited group will migrate their dev namespaces to iron out teething problems with the process
+If you have any trouble during the migration then it is easy to [roll back](#how-to-roll-back) at any point.
+
+Schedule (draft):
+
+- 20/9/21 - 31/9/21 Pilot - A small invited group will migrate their dev namespaces, to iron out teething problems with the process
 - October '21 - widespread migration of dev namespaces - to understand get a handle on any challenges for teams
-- November-ish '21 - widespread migration of remaining namespaces
+- November-ish '21 - widespread migration of remaining namespaces - e.g. staging, pre-prod and production
 - Then: live-1 cluster is switched off
 
 ### What is EKS and why is Cloud Platform adopting it?
@@ -53,9 +57,21 @@ We didn't call it "live-2" because we plan to make this the last name change. We
 
 We continue use the word "live" to indicate that it is suitable for environments from dev to production. And that it is live to the public, not just internally accessible.
 
-### What are you migrating
+### What are you migrating?
 
 You will be migrating your Cloud Platform namespace of Kubernetes resources. This includes all permissions and resources defined in the .yaml and .tf files in your namespace [directory][live-1-folder]. The new Kubernetes cluster is in the same AWS account and VPC, so that already running AWS resources such as RDS and ECR don't change during this migration.
+
+### Why are we doing the extra work of a 'gradual' cut-over?
+
+Users of modern digital services [expect](https://www.gov.uk/service-manual/technology/uptime-and-availability-keeping-your-service-online) government services to have no planned downtime, and good reliability. The Cloud Platform has the facility to move traffic to the new cluster gradually ('canarying'), using weighted DNS, so service teams are expected to make use of this. This is achieved by adding two lines of annotations to the ingress on each cluster and changing the weights. By initially directing only 1% of traffic onto the new cluster and building up, any issues with load, or edge case usage, can be caught early, and the migration can be rolled back. So this small change avoids planned downtime and reduces risk of unplanned downtime.
+
+We guide you to use the gradual process for all environments, not just production ones. This is because it is best to test the process works for the non-prod environments, and to familiarize yourself with the steps, before you run them on the production environment.
+
+### Can I make changes to my service during migration?
+
+Your *application* can be deployed as normal. This is because in Step 6 you will configure your application's CI/CD to deploy your application to both clusters, so they are the same.
+
+**However** you shouldn't change your *namespace configuration*, including your terraform i.e. the .yaml and .tf files in your environment's folders under the [live-1 folder][live-1-folder] and [live folder][live-folder]. This is because the Apply Pipeline can only apply changes to one cluster or the other, not both (because they share the terraform state, which includes some ServiceAccount objects in the cluster, so applying to both clusters would recreate these k8s resources every time). So for the 2 hours (expected) of the migration you should not change this config. If you urgently need to change your namespace config, then you can [roll back the migration](#how-to-roll-back).
 
 ## Prerequisites for migration
 
@@ -127,16 +143,21 @@ Grab a new set of credentials from [login.live.cloud-platform.service.justice.go
 
 You'll download a new config.yaml. Copy that to your .kube folder:
 
+```bash
     mv ~/Downloads/config.yaml ~/.kube/config-live
+```
 
 Copy your existing live-1 credentials into a separate file:
 
+```bash
     cp ~/.kube/config ~/.kube/config-live-1
+```
 
 To talk to the live cluster copy it into the default location that kubectl looks for credentials:
 
+```bash
     cp ~/.kube/config-live ~/.kube/config
-
+```
 
 ## Step 5 - Add a new ingress resource
 
@@ -153,8 +174,7 @@ metadata:
     external-dns.alpha.kubernetes.io/aws-weight: "0"
 ```
 
-(Note - The <span style="color:green">green</span> is for ingress in "live"))
-
+(Note - The <span style="color:green">green</span> is for ingress in "live")
 
 ## Step 6 - Create a new step to your deployment pipeline
 
@@ -211,7 +231,7 @@ To apply the changes to the ingress, as a quick alternative to running your appl
 It is advised to send between 1-10% of the traffic to the live cluster initially. Once the traffic flows into the live cluster and the application behaves as expected, 
 you could send 100% of the traffic into live cluster and 0% into live-1 cluster.
 
-NOTE: If results are not successful within the live cluster, rollback the annotations to their initial weights ('100' on "live-1", '0'  on "live").
+NOTE: If results are not successful within the live cluster, roll back the annotations to their initial weights ('100' on "live-1", '0'  on "live").
 
 ## Step 10 - Cleanup old "live-1" namespace
 
@@ -258,7 +278,7 @@ Other differences which we think will not affect services:
 
 Easy roll back is a key feature of this migration process. At any point in this migration process you can revert to using your service on the original "live-1" cluster. This may be necessary if you encounter problems running the namespace on the new cluster, and post-pone the migration until that is resolved.
 
-To rollback, going through the process in reverse, depending on how far you got:
+To roll back, going through the process in reverse, depending on how far you got:
 
 - Step 10 "Clean-up old "live-1" namespace" -
   Revert the pull request that deleted your [live-1-folder]. It doesn't get applied yet, because of the skipfile.
