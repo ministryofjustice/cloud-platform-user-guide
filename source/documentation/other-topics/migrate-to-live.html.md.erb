@@ -159,6 +159,8 @@ To talk to the live cluster copy it into the default location that kubectl looks
     cp ~/.kube/config-live ~/.kube/config
 ```
 
+To use multiple kubeconfigs at once, follow this guide [here][multiple-kubeconfig]
+
 ## Step 5 - Add a new ingress resource
 
 Create a new Ingress from the copy of "live-1" Ingress. Amend the `aws-weight` annotation to "0", this will not send any traffic to "live". In the later step, we start sending real traffic by tweaking external-dns ingress annotation (`aws-weight`)
@@ -355,3 +357,4 @@ We'd love to receive feedback on this process, to make it as low friction as pos
 [live-1-folder]: https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live-1.cloud-platform.service.justice.gov.uk
 [live-folder]: https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live.cloud-platform.service.justice.gov.uk
 [cli]: https://github.com/ministryofjustice/cloud-platform-cli
+[multiple-kubeconfig]: /documentation/getting-started/kubectl-config.html#using-multiple-kubeconfigs
