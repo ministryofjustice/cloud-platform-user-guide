@@ -74,6 +74,80 @@ CURRENT   NAME                                           CLUSTER                
 
 Then you need to set the context with the `use-context` command mentioned above.
 
+### Using multiple kubeconfigs
+
+During [migration from live-1 to live][migrate-to-live], you will have multiple kubeconfig files (one per cluster) but you may want to use them all at once, with kubectl that work with multiple contexts at once.
+
+To do that, you need to [merge the kubeconfigs into a single file][kubectl-merge], following the steps outlined below. 
+
+Grab a new set of credentials for live from [login.live.cloud-platform.service.justice.gov.uk][authenticate-to-cluster].
+
+You'll download a new config.yaml. Copy that to your .kube folder:
+
+```bash
+    mv ~/Downloads/config.yaml ~/.kube/config-live
+```
+
+Note: You have the same user but a different token for "live-1" and "live" kubeconfig, [merging][kubectl-merge] the two configs will only keep the user for the first one it encounters, to avoid that you will need to use a different "user" name in the "live-1" and "live" kubeconfig.
+
+Amend the "user" in `config-live` as shown below
+
+```
+contexts:
+- context:
+    cluster: live.cloud-platform.service.justice.gov.uk
+    user: <firstname>.<lastname>@live
+  name: live.cloud-platform.service.justice.gov.uk
+current-context: ""
+kind: Config
+preferences: {}
+users:
+- name: <firstname>.<lastname>@live
+
+```
+
+Copy your existing live-1 credentials into a separate file:
+
+```bash
+    cp ~/.kube/config ~/.kube/config-live-1
+```
+
+Amend the "user" in `config-live-1` as shown below
+
+```
+contexts:
+- context:
+    cluster: live-1.cloud-platform.service.justice.gov.uk
+    user: <firstname>.<lastname>@live-1
+  name: live-1.cloud-platform.service.justice.gov.uk
+current-context: ""
+kind: Config
+preferences: {}
+users:
+- name: <firstname>.<lastname>@live-1
+
+```
+
+Then, run this command to [merge][kubectl-merge] the two config files together into a new config file and replace your old config with the new merged config.
+
+```
+KUBECONFIG=~/.kube/config-live-1:~/.kube/config-live kubectl config view --flatten > /tmp/config && mv /tmp/config ~/.kube/config
+```
+
+Now using the single config file, you can switch between live-1 and live context
+
+For live-1:
+
+```
+kubectl config use-context live-1.cloud-platform.service.justice.gov.uk
+```
+
+For live:
+
+```
+kubectl config use-context live.cloud-platform.service.justice.gov.uk
+```
+
 ## Where to go from here?
 
 Now that you've setup `kubectl`, you might want to look at this handy [cheatsheet][kubectl-cheatsheet].
@@ -90,3 +164,6 @@ Once you are ready to deploy applications you will need to [create a namespace] 
 [cp-login]: https://login.cloud-platform.service.justice.gov.uk/
 [create a namespace]: /documentation/getting-started/env-create.html
 [the infrastructure repository]: https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/main/kops/live-1.yaml#L254
+[authenticate-to-cluster]: https://login.live.cloud-platform.service.justice.gov.uk
+[kubectl-merge]: https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/#merging-kubeconfig-files
+[migrate-to-live]: /documentation/other-topics/migrate-to-live.html#migrate-to-the-quot-live-quot-cluster
