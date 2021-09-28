@@ -95,7 +95,7 @@ These steps describe how to migrate. We'd love to make these as clear and simple
 
 During the process of migration you can still deploy your app to both clusters together. However you will not be able to change your environment configuration, as defined in [environments repo][live-1-folder], which may be an issue. You should speak to your team and agree a time and date to attempt to migrate your namespace. It's also strongly recommended that you get familiar with migrating a non-production namespace before attempting prod.
 
-## Step 2 - Amend your ingress resource
+## Step 2 - Amend your and apply your "live-1" ingress resource.
 
 You must add two new annotations to your existing `ingress` resource in "live-1", needed for load balancing using [DNS weighting](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-values-weighted.html#rrsets-values-weighted-weight). We've designed this process to allow for moving traffic gradually to the new copy of your app on the new cluster, which also provides easy roll-back, if needed.
 
@@ -169,7 +169,7 @@ To talk to the live cluster copy it into the default location that kubectl looks
 
 To use multiple kubeconfigs at once, follow this guide [here][multiple-kubeconfig]
 
-## Step 5 - Add a new ingress resource
+## Step 5 - Add a new ingress resource in "live" cluster
 
 Create a new Ingress from the copy of "live-1" Ingress. Amend the `aws-weight` annotation to "0", this will not send any traffic to "live". In the later step, we start sending real traffic by tweaking external-dns ingress annotation (`aws-weight`)
 
@@ -185,6 +185,12 @@ metadata:
 ```
 
 (Note - The <span style="color:green">green</span> is for ingress in "live")
+
+Once you have created a new live-ingress.yaml with the above two external-dns annotations, you can apply the ingress in the "live" cluster using this command:
+
+  ```bash
+  kubectl --context live.cloud-platform.service.justice.gov.uk -n [namespace name] apply -f live-ingress.yaml
+  ```
 
 ## Step 6 - Create a new step to your deployment pipeline
 
