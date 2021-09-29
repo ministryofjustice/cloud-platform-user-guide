@@ -83,6 +83,8 @@ There are just a few things you need to ensure before you start the migration.
 
 - If you use Kubernetes Jobs and option `ttlSecondsAfterFinished` then refer to this guide: [ttlSecondsAfterFinished](/documentation/other-topics/migrate-to-live-k8s-jobs.html#migrating-kubernetes-jobs-to-the-quot-live-quot-cluster)
 
+- Ensure you have the latest version of [cloud-platform cli](/documentation/getting-started/cloud-platform-cli.html#the-cloud-platform-cli)
+
 If any of these are a concern or you'd like to check in advance, please [contact the Cloud Platform team](#questions).
 
 ## How to migrate
@@ -93,9 +95,9 @@ These steps describe how to migrate. We'd love to make these as clear and simple
 
 During the process of migration you can still deploy your app to both clusters together. However you will not be able to change your environment configuration, as defined in [environments repo][live-1-folder], which may be an issue. You should speak to your team and agree a time and date to attempt to migrate your namespace. It's also strongly recommended that you get familiar with migrating a non-production namespace before attempting prod.
 
-## Step 2 - Amend your ingress resource
+## Step 2 - Amend and apply your "live-1" ingress resource
 
-You must add two new annotations to your existing `ingress` resource, needed for load balancing using [DNS weighting](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-values-weighted.html#rrsets-values-weighted-weight). We've designed this process to allow for moving traffic gradually to the new copy of your app on the new cluster, which also provides easy roll-back, if needed.
+You must add two new annotations to your existing `ingress` resource in "live-1", needed for load balancing using [DNS weighting](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-values-weighted.html#rrsets-values-weighted-weight). We've designed this process to allow for moving traffic gradually to the new copy of your app on the new cluster, which also provides easy roll-back, if needed.
 
 This looks as follows:
 
@@ -109,6 +111,12 @@ metadata:
 ```
 
 (Note - Please change the `ingress-name` and `namespace-name` values in the above example. The <span style="color:blue">blue</span> is for ingress in "live-1")
+
+Once you have added the above two external-dns annotations and saved your changes to the "live-1" ingress.yaml file, you can apply the ingress using this command:
+
+  ```bash
+  kubectl -n [namespace name] apply -f ingress.yaml
+  ```
 
 The idea behind the annotation is to control where traffic is directed to. The addition of `aws-weight: 100` against this ingress to the "live-1" cluster changes nothing initially - all of the internet traffic to this domain still goes to your service on the existing cluster. But in a later step we'll add a second ingress for your domain, on the new "live" cluster. And when you increase the `aws-weight` on that one from 0 upwards, a proportion of the traffic will be directed to your service running on that cluster too.
 
@@ -141,10 +149,10 @@ If you want to skip any warnings and continue anyway, the cli has a `--skip-warn
 
 Grab a new set of credentials from [login.live.cloud-platform.service.justice.gov.uk][authenticate-to-cluster].
 
-You'll download a new config.yaml. Copy that to your .kube folder:
+You'll download a new kubecfg.yaml. Copy that to your .kube folder:
 
 ```bash
-    mv ~/Downloads/config.yaml ~/.kube/config-live
+    mv ~/Downloads/kubecfg.yaml ~/.kube/config-live
 ```
 
 Copy your existing live-1 credentials into a separate file:
@@ -161,7 +169,7 @@ To talk to the live cluster copy it into the default location that kubectl looks
 
 To use multiple kubeconfigs at once, follow this guide [here][multiple-kubeconfig]
 
-## Step 5 - Add a new ingress resource
+## Step 5 - Add a new ingress resource in "live" cluster
 
 Create a new Ingress from the copy of "live-1" Ingress. Amend the `aws-weight` annotation to "0", this will not send any traffic to "live". In the later step, we start sending real traffic by tweaking external-dns ingress annotation (`aws-weight`)
 
@@ -177,6 +185,12 @@ metadata:
 ```
 
 (Note - The <span style="color:green">green</span> is for ingress in "live")
+
+Once you have created a new live-ingress.yaml with the above two external-dns annotations, you can apply the ingress in the "live" cluster using this command:
+
+  ```bash
+  kubectl --context live.cloud-platform.service.justice.gov.uk -n [namespace name] apply -f live-ingress.yaml
+  ```
 
 ## Step 6 - Create a new step to your deployment pipeline
 
