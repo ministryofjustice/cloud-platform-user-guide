@@ -25,7 +25,7 @@ There are only [minor differences](#cluster-differences) between the old and new
 
 Migrate each of environment or 'namespace' separately. Initially we will invite teams to migrate their 'development' namespace, so that any issues can be ironed out before affecting the production service.
 
-During migration, you can continue to deploy your application to the namespace, however [you can't change your namespace configuration or terraform](#can-i-make-changes-to-my-service-during-migration).
+During migration, you can continue to deploy your application to the namespace, however you can't change your namespace configuration or terraform. More info: Answered below under "Can I make changes to my service during migration?" .
 
 If you have any trouble during the migration then it is easy to [roll back](#how-to-roll-back) at any point.
 
@@ -36,13 +36,17 @@ Schedule (draft):
 - November-ish '21 - widespread migration of remaining namespaces - e.g. staging, pre-prod and production
 - Then: live-1 cluster is switched off
 
-### What is EKS and why is Cloud Platform adopting it?
+  <details>
+  <summary>**What is EKS and why is Cloud Platform adopting it?**</summary>
 
 Elastic Kubernetes Service (EKS) is a managed Kubernetes service offered by AWS. Back when we started building the Cloud Platform we made the decision to build our clusters using kOps. This was a self-managed service that enabled us to start building the platform.
 
 Since then EKS has matured as a product and we are now in a position to switch to this solution which will enable us to better meet user needs, and continue to grow the platform. More info: [ADR#22](https://github.com/ministryofjustice/cloud-platform/blob/main/architecture-decision-record/022-EKS.md#reasoning)
 
-### Why should we migrate our services to the new cluster?
+  </details>
+
+  <details>
+  <summary>**Why should we migrate our services to the new cluster?**</summary>
 
 Benefits to users of the Cloud Platform:
 
@@ -51,27 +55,41 @@ Benefits to users of the Cloud Platform:
 - The move to EKS is an enabler to adopting a multi-cluster architecture, which will enable the platform scale, offer better separation between non-production and production services, and reduce the “blast radius” of unforeseen outages.
 - It also mitigates a number of risks that will improve resilience and security on the platform.
 
-### Why call the new cluster "live"?
+  </details>
+
+  <details>
+  <summary>**Why call the new cluster "live"?**</summary>
 
 We didn't call it "live-2" because we plan to make this the last name change. We'd rather abstract away from users the identity of the cluster, to allow the platform team to shift workloads onto new cluster when doing a blue-green upgrade or disaster recovery. So we plan for this migration to be the last visible name change. Inevitably we will clusters again some time in future, but in URLs the new cluster should be called "live" as well.
 
 We continue use the word "live" to indicate that it is suitable for environments from dev to production. And that it is live to the public, not just internally accessible.
 
-### What are you migrating?
+  </details>
+
+  <details>
+  <summary>**What are you migrating?**</summary>
 
 You will be migrating your Cloud Platform namespace of Kubernetes resources. This includes all permissions and resources defined in the .yaml and .tf files in your namespace [directory][live-1-folder]. The new Kubernetes cluster is in the same AWS account and VPC, so that already running AWS resources such as RDS and ECR don't change during this migration.
 
-### Why are we doing the extra work of a 'gradual' cut-over?
+  </details>
+
+  <details>
+  <summary>**Why are we doing the extra work of a 'gradual' cut-over?**</summary>
 
 Users of modern digital services [expect](https://www.gov.uk/service-manual/technology/uptime-and-availability-keeping-your-service-online) government services to have no planned downtime, and good reliability. The Cloud Platform has the facility to move traffic to the new cluster gradually ('canarying'), using weighted DNS, so service teams are expected to make use of this. This is achieved by adding two lines of annotations to the ingress on each cluster and changing the weights. By initially directing only 1% of traffic onto the new cluster and building up, any issues with load, or edge case usage, can be caught early, and the migration can be rolled back. So this small change avoids planned downtime and reduces risk of unplanned downtime.
 
 We guide you to use the gradual process for all environments, not just production ones. This is because it is best to test the process works for the non-prod environments, and to familiarize yourself with the steps, before you run them on the production environment.
 
-### Can I make changes to my service during migration?
+  </details>
+
+  <details>
+  <summary>**Can I make changes to my service during migration?**</summary>
 
 Your *application* can be deployed as normal. This is because in Step 6 you will configure your application's CI/CD to deploy your application to both clusters, so they are the same.
 
 **However** you shouldn't change your *namespace configuration*, including your terraform i.e. the .yaml and .tf files in your environment's folders under the [live-1 folder][live-1-folder] and [live folder][live-folder]. This is because the Apply Pipeline can only apply changes to one cluster or the other, not both (because they share the terraform state, which includes some ServiceAccount objects in the cluster, so applying to both clusters would recreate these k8s resources every time). So for the 2 hours (expected) of the migration you should not change this config. If you urgently need to change your namespace config, then you can [roll back the migration](#how-to-roll-back).
+
+  </details>
 
 ## Prerequisites for migration
 
