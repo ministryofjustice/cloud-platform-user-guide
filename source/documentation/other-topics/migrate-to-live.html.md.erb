@@ -99,7 +99,16 @@ There are just a few things you need to ensure before you start the migration.
 
 - Check that multiple copies of your app are ok to communicate simultaneously with AWS resources. These AWS resources will be shared between clusters. For example, your RDS instance will accept connections from pods in "live" and "live-1".
 
-- If you use Kubernetes Jobs and option `ttlSecondsAfterFinished` then refer to this guide: [ttlSecondsAfterFinished](/documentation/other-topics/migrate-to-live-k8s-jobs.html#migrating-kubernetes-jobs-to-the-quot-live-quot-cluster)
+- If you use Kubernetes [Cronjobs][kubernetes-cronjobs] and [Jobs][kubernetes-jobs] with option [`ttlSecondsAfterFinished`][TTL mechanism] then refer to this guide: [ttlSecondsAfterFinished](/documentation/other-topics/migrate-to-live-k8s-jobs.html#migrating-kubernetes-jobs-to-the-quot-live-quot-cluster), you can check that by running below commands in your namespace.
+
+  ```bash
+  Cronjobs:
+  kubectl -n <namespace-name> get cronjobs -ojson | jq '.items[] | select(.spec.jobTemplate.spec.ttlSecondsAfterFinished != null ) | .metadata.name'
+
+  Jobs:
+  kubectl -n <namespace-name> get jobs -ojson | jq -r '.items[] | select(.spec.ttlSecondsAfterFinished !=  null ) | .metadata.name'
+
+  ```
 
 - Ensure you have the latest version of [cloud-platform cli](/documentation/getting-started/cloud-platform-cli.html#the-cloud-platform-cli)
 
@@ -159,7 +168,7 @@ The migrate command copies the folder. In some cases it makes minor changes to t
 
 - If you have an Elasticsearch module, it adds an IRSA change, needed for EKS.
 
-- If you use Kiam for [cross account IAM roles][iam-infra]: You'll need to use [IRSA][irsa] in EKS. These [roles][iam-infra] need to be defined inside  the [environments repo][env-repo] using the guidence [here][irsa-cross-account].
+- `Money to prisoners` and `Pathfinder to analytical platform` teams use kiam for [cross account IAM roles][iam-infra]: You'll need to use [IRSA][irsa] in EKS. These [roles][iam-infra] need to be defined inside  the [environments repo][env-repo] using the guidence [here][irsa-cross-account].
 
 If you want to skip any warnings and continue anyway, the cli has a `--skip-warnings` flag you can enable.
 
@@ -390,3 +399,6 @@ We'd love to receive feedback on this process, to make it as low friction as pos
 [live-folder]: https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live.cloud-platform.service.justice.gov.uk
 [cli]: https://github.com/ministryofjustice/cloud-platform-cli
 [multiple-kubeconfig]: /documentation/getting-started/kubectl-config.html#using-multiple-kubeconfigs
+[kubernetes-cronjobs]: https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
+[kubernetes-jobs]: https://kubernetes.io/docs/concepts/workloads/controllers/job/
+[TTL mechanism]: https://kubernetes.io/docs/concepts/workloads/controllers/ttlafterfinished/
