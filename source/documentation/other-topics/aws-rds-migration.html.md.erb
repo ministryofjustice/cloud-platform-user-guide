@@ -9,6 +9,8 @@ review_in: 3 months
 This guide covers one way of migrating an RDS instance from one AWS account to another.
 This is a standard approach using`pg_dump` and `psql`.  
 
+More complex scenarios, including migrating from a completely different provider and converting data across database engines, are described in the [DMS+SCT (Data migration Service + Schema Conversion tool)](https://github.com/ministryofjustice/cloud-platform-terraform-dms) Readme.
+
 This guide assumes the migration complies with the following :
 
  - The migration happens from a _source_ postresql RDS instance to a _target_ postresql RDS instance
