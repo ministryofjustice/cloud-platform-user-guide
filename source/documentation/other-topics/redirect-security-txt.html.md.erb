@@ -1,6 +1,6 @@
 ---
 title: Setup Ingress to redirect security.txt 
-last_reviewed_on: 2021-09-30
+last_reviewed_on: 2021-10-04
 review_in: 3 months
 ---
 
@@ -10,6 +10,9 @@ Security has a requirement that all domains where the Ministry of Justice (MoJ) 
 for cyber security must redirect the `/.well-known/security.txt` location to the central [`security.txt`](https://raw.githubusercontent.com/ministryofjustice/security-guidance/main/contact/vulnerability-disclosure-security.txt). 
 Refer security guidance [here](https://security-guidance.service.justice.gov.uk/implement-security-txt/#implementing-securitytxt).
 
+The approach below is one way to handle these redirects, but you can handle those redirects yourself inside your
+application if you wish to.
+
 To setup a permanent redirect to the central [`security.txt`](https://raw.githubusercontent.com/ministryofjustice/security-guidance/main/contact/vulnerability-disclosure-security.txt), 
 
 - create a **new** ingress-redirect.yaml with the annotation
@@ -17,7 +20,7 @@ To setup a permanent redirect to the central [`security.txt`](https://raw.github
     ```
     metadata:
     annotations:
-    nginx.ingress.kubernetes.io/permanent-redirect: https://raw.githubusercontent.com/ministryofjustice/security-guidance/main/contact/vulnerability-disclosure-security.txt
+        nginx.ingress.kubernetes.io/permanent-redirect: https://raw.githubusercontent.com/ministryofjustice/security-guidance/main/contact/vulnerability-disclosure-security.txt
     ```
 
     An example is shown below:
@@ -30,6 +33,8 @@ To setup a permanent redirect to the central [`security.txt`](https://raw.github
     name: helloworld-rubyapp-ingress-security-txt-redirect
     annotations:
         kubernetes.io/ingress.class: nginx
+        external-dns.alpha.kubernetes.io/set-identifier: <ingress-name>-<namespace-name>-<blue/green>
+        external-dns.alpha.kubernetes.io/aws-weight: "100"
         nginx.ingress.kubernetes.io/permanent-redirect: https://raw.githubusercontent.com/ministryofjustice/security-guidance/main/contact/vulnerability-disclosure-security.txt
     spec:
     tls:
