@@ -64,11 +64,11 @@ To access the credentials of the service account, a `ca.crt` and a `token` are g
 Once the service account is created, you can grab the ca.crt and token using the following commands:
 
 ```bash
-cloud-platform decode-secret -n <YOUR-NAMESPACE> -s <NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET> | grep ca.crt
+cloud-platform decode-secret -n <YOUR-NAMESPACE> -s <NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET> | jq -r '.data."ca.crt" | @base64'
 ```
 
 ```bash
-cloud-platform decode-secret -n <YOUR-NAMESPACE> -s <NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET> | grep token
+cloud-platform decode-secret -n <YOUR-NAMESPACE> -s <NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET> | jq -r '.data."token"'
 ```
 
 Both the ca.crt and token will be added as environment variables in the CircleCI console later in this document.
@@ -99,7 +99,7 @@ To deploy to a single namespace, select the "Project Settings" and then "Environ
 - K8S_CLUSTER_NAME # The full name of the cluster e.g. `live-1.cloud-platform.service.justice.gov.uk`
 - K8S_NAMESPACE # The name of the namespace/environment (see [Create a namespace][env-create])
 - K8S_CLUSTER_CERT # The CA Certificate for the cluster, can be acquired from the `Secret` that is generated for the `serviceaccount` (as stated above)
-- K8S_TOKEN # The access token generated for the `serviceaccount`. Please note, you should first base64 decode the token value you retrieve from the secret [in the previous section][create-sa], e.g. `echo <thereallylongstringthatyougetback> | base64 --decode`.
+- K8S_TOKEN # The access token generated for the `serviceaccount`.
 ```
    
 ## Configuring CircleCI
