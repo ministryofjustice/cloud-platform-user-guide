@@ -1,6 +1,6 @@
 ---
 title: Migrate to the "live" cluster
-last_reviewed_on: 2021-09-17
+last_reviewed_on: 2021-10-06
 review_in: 3 months
 ---
 
@@ -137,7 +137,12 @@ metadata:
     external-dns.alpha.kubernetes.io/aws-weight: "100"
 ```
 
-(Note - Please change the `ingress-name` and `namespace-name` values in the above example. The <span style="color:blue">blue</span> is for ingress in "live-1")
+---
+**NOTE**
+
+Please change the `ingress-name` and `namespace-name` values in the above example. The <span style="color:blue">blue</span> is for ingress in "live-1")
+
+---
 
 Once you have added the above two external-dns annotations and saved your changes to the "live-1" ingress.yaml file, you can apply the ingress using this command:
 
@@ -211,7 +216,12 @@ metadata:
     external-dns.alpha.kubernetes.io/aws-weight: "0"
 ```
 
-(Note - The <span style="color:green">green</span> is for ingress in "live")
+---
+**NOTE**
+
+The <span style="color:green">green</span> is for ingress in "live")
+
+---
 
 Once you have created a new live-ingress.yaml with the above two external-dns annotations, you can apply the ingress in the "live" cluster using this command:
 
