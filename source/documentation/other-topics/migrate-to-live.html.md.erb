@@ -139,11 +139,11 @@ metadata:
 
 **NOTE**: Please change the `ingress-name` and `namespace-name` values in the above example. The <span style="color:blue">blue</span> is for ingress in "live-1"
 
-Once you have added the above two external-dns annotations and saved your changes to the "live-1" ingress.yaml file, you can apply the ingress using this command:
+Once you have added the above two external-dns annotations and saved your changes to the "live-1" ingress.yaml file, you need 'apply' it to the cluster. Ideally you've got CI/CD setup, so merging the PR will apply it. Alternatively can apply the ingress manually using this command:
 
-  ```bash
-  kubectl -n <namespace-name> apply -f ingress.yaml
-  ```
+```bash
+kubectl -n <namespace-name> apply -f ingress.yaml
+```
 
 The idea behind the annotation is to control where traffic is directed to. The addition of `aws-weight: 100` against this ingress to the "live-1" cluster changes nothing initially - all of the internet traffic to this domain still goes to your service on the existing cluster. But in a later step we'll add a second ingress for your domain, on the new "live" cluster. And when you increase the `aws-weight` on that one from 0 upwards, a proportion of the traffic will be directed to your service running on that cluster too.
 
@@ -211,11 +211,7 @@ metadata:
     external-dns.alpha.kubernetes.io/aws-weight: "0"
 ```
 
----
-**NOTE**
-
-The <span style="color:green">green</span> is for ingress in "live"
----
+**NOTE**: The <span style="color:green">green</span> is for ingress in "live"
 
 Once you have created a new live-ingress.yaml with the above two external-dns annotations, you can apply the ingress in the "live" cluster using this command:
 
