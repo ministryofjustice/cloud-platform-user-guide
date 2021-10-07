@@ -146,7 +146,7 @@ Please change the `ingress-name` and `namespace-name` values in the above exampl
 Once you have added the above two external-dns annotations and saved your changes to the "live-1" ingress.yaml file, you can apply the ingress using this command:
 
   ```bash
-  kubectl -n [namespace name] apply -f ingress.yaml
+  kubectl -n <namespace-name> apply -f ingress.yaml
   ```
 
 The idea behind the annotation is to control where traffic is directed to. The addition of `aws-weight: 100` against this ingress to the "live-1" cluster changes nothing initially - all of the internet traffic to this domain still goes to your service on the existing cluster. But in a later step we'll add a second ingress for your domain, on the new "live" cluster. And when you increase the `aws-weight` on that one from 0 upwards, a proportion of the traffic will be directed to your service running on that cluster too.
@@ -160,7 +160,7 @@ To migrate your namespace from "live-1" to "live" you'll need to copy your names
 - Run the cloud-platform cli command from your namespace directory to migrate your namespace:
 
   ```bash
-  cd namespaces/live-1.cloud-platform.service.justice.gov.uk/<namespace>
+  cd namespaces/live-1.cloud-platform.service.justice.gov.uk/<namespace-name>
   cloud-platform environment migrate
   ```
 
@@ -224,7 +224,7 @@ The <span style="color:green">green</span> is for ingress in "live"
 Once you have created a new live-ingress.yaml with the above two external-dns annotations, you can apply the ingress in the "live" cluster using this command:
 
   ```bash
-  kubectl --context live.cloud-platform.service.justice.gov.uk -n [namespace name] apply -f live-ingress.yaml
+  kubectl --context live.cloud-platform.service.justice.gov.uk -n <namespace-name> apply -f live-ingress.yaml
   ```
 
 ## Step 6 - Create a new step to your deployment pipeline
@@ -276,7 +276,7 @@ For example, by setting this value to 5 on "live" and 95 on "live-1", route53 wi
 To apply the changes to the ingress, as a quick alternative to running your application's CI/CD pipeline, you can edit them directly:
 
 ```bash
-    kubectl edit ingress <ingress-name> -n <namespace>
+    kubectl edit ingress <ingress-name> -n <namespace-name>
 ```
 
 It is advised to send between 1-10% of the traffic to the live cluster initially. Once the traffic flows into the live cluster and the application behaves as expected, 
@@ -361,7 +361,7 @@ To roll back, going through the process in reverse, depending on how far you got
 
   ```bash
   cd namespaces
-  mv live-1.cloud-platform.service.justice.gov.uk/<namespace>/APPLY_PIPELINE_SKIP_THIS_NAMESPACE live.cloud-platform.service.justice.gov.uk/<namespace>/
+  mv live-1.cloud-platform.service.justice.gov.uk/<namespace-name>/APPLY_PIPELINE_SKIP_THIS_NAMESPACE live.cloud-platform.service.justice.gov.uk/<namespace-name>/
   ```
   
   Once merged to `main`, the Apply Pipeline will be configured to apply your namespace settings that are in your "live-1" folder, rather than you "live" folder. (You must have the skip file in one of the folders, otherwise there will be errors on every terraform apply, because the terraform state is shared between the Apply pipelines for live and live-1, will conflict on every apply have both since the terraform is slightly different - IRSA etc)
