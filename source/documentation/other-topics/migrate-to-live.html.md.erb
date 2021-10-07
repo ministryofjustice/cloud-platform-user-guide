@@ -198,9 +198,15 @@ To use multiple kubeconfigs at once, follow this guide [here][multiple-kubeconfi
 
 ## Step 5 - Add a new ingress resource in "live" cluster
 
-Create a new Ingress from the copy of "live-1" Ingress. Amend the `aws-weight` annotation to "0", this will not send any traffic to "live". In the later step, we start sending real traffic by tweaking external-dns ingress annotation (`aws-weight`)
+Create a new Ingress for "live", which is almost the same as your existing "live-1" Ingress.
 
-The annotations will look like this:
+To do this, it depends on how you manage your app's kubernetes config:
+
+Case 1: You have **plain YAML files**, one for each environment e.g. dev, staging, prod, which you apply using `kubectl apply` (either with CI/CD or manually on the command-line). Create a duplicate of your folder of YAML files. e.g. `cp -R deploy-dev deploy-dev-live`. Now change the annotations in the new live ingress.yaml, as described below.
+
+Case 2: You have a **Helm chart**, with templated YAML, with a different values.yaml file for each environment. In the ingress.yaml ensure you've included the annotations below, and use variables for their values. Create a duplicate of the values.yaml for the environment you're migrating. In all of your values.yaml files (one for each environment), provide values for thse annotations, as described below. Every environment and cluster will have a unique value for `set-identifier`.
+
+Set the annotations in the new (live) ingress to have these two values:
 
 ```yaml
 apiVersion: networking.k8s.io/v1beta1
@@ -212,6 +218,11 @@ metadata:
 ```
 
 **NOTE**: The <span style="color:green">green</span> is for ingress in "live"
+
+Explanation:
+
+* `set-identifier` is set to a string that is unique. No two ingresses or namespaces or clusters can share the same value. This is achieved by you substituting in the ingress name, namespace name and a colour referring to the cluster.
+* `aws-weight` is set to `0`, so that initially no traffic will be sent to the copy of the app running on the "live" cluster. In the later step, we start sending real traffic by increasing this value. (The value for the equivalent environment on the live-1 cluster will be 100, as set in Step 2, so the existing app will continue to get all the traffic for now.)
 
 Once you have created a new live-ingress.yaml with the above two external-dns annotations, you can apply the ingress in the "live" cluster using this command:
 
