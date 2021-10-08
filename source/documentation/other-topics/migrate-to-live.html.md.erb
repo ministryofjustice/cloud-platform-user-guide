@@ -202,9 +202,9 @@ Create a new Ingress for "live", which is almost the same as your existing "live
 
 To do this, it depends on how you manage your app's kubernetes config:
 
-Case 1: You have **plain YAML files**, one for each environment e.g. dev, staging, prod, which you apply using `kubectl apply` (either with CI/CD or manually on the command-line). Create a duplicate of your folder of YAML files. e.g. `cp -R deploy-dev deploy-dev-live`. Now change the annotations in the new live ingress.yaml, as described below.
+Case 1: You have **plain YAML files**, one for each environment e.g. dev, staging, prod, which you apply using `kubectl apply` (either with CI/CD or manually on the command-line). Create a duplicate of your folder of YAML files as shown [here][ref-app-folder]. e.g. `cp -R deploy-dev deploy-dev-live`. Now change the annotations in the [new live ingress.yaml][live-ing-yaml-kubectl-example], as described below.
 
-Case 2: You have a **Helm chart**, with templated YAML, with a different values.yaml file for each environment. In the ingress.yaml ensure you've included the annotations below, and use variables for their values. Create a duplicate of the values.yaml for the environment you're migrating. In all of your values.yaml files (one for each environment), provide values for thse annotations, as described below. Every environment and cluster will have a unique value for `set-identifier`.
+Case 2: You have a **Helm chart**, with templated YAML, with a different values.yaml file for each environment. In the ingress.yaml ensure you've included the annotations below, and use variables for their values. Create a duplicate of the values.yaml for the environment you're migrating as shown [here][duplicate-valuesfile]. In all of your values.yaml files (one for each environment), provide [values for these annotations][live-ing-yaml-helm-example], as described below. Every environment and cluster will have a unique value for `set-identifier`.
 
 Set the annotations in the new (live) ingress to have these two values:
 
@@ -243,7 +243,9 @@ Below is guidance for making these changes, if you've followed Cloud Platform CI
 
 For teams who use CircleCI for continuous deployment, in Step 3 when you migrated your namespace environment to "live", a new ServiceAccount was created in the "live" cluster, for you to use with CircleCI. This ServiceAccount is created by either the serviceaccount.yaml or serviceaccount.tf file in your namespace folder.
 
-You need to copy the ServiceAccount credentials to CircleCI secrets, so it can authenticate with the "live" cluster. Retrieve [ca.crt, token and cluster_name](/documentation/deploying-an-app/using-circleci-for-continuous-deployment.html#retrieving-the-service-account-credentials), making sure kubectl is talking to the 'live' cluster. The `cluster_name` of the "live" cluster is `DF366E49809688A3B16EEC29707D8C09.gr7.eu-west-2.eks.amazonaws.com`. Paste these secrets into the CircleCI web console.
+ For CircleCI to authenticate with the "live" cluster, retrieve [ca.crt and token](/documentation/deploying-an-app/using-circleci-for-continuous-deployment.html#retrieving-the-service-account-credentials) from the new ServiceAccount created in the "live" cluster and [add as environment variables][add-var-circleci] in the CircleCI console using different names for “live”, making sure kubectl is talking to the 'live' cluster.
+
+**NOTE**: The `cluster_name` Environment Variable for the "live" cluster is `DF366E49809688A3B16EEC29707D8C09.gr7.eu-west-2.eks.amazonaws.com`
 
 To deploy to both "live" and "live-1" you can either:
 
@@ -413,3 +415,8 @@ We'd love to receive feedback on this process, to make it as low friction as pos
 [kubernetes-cronjobs]: https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
 [kubernetes-jobs]: https://kubernetes.io/docs/concepts/workloads/controllers/job/
 [TTL mechanism]: https://kubernetes.io/docs/concepts/workloads/controllers/ttlafterfinished/
+[ref-app-folder]: https://github.com/ministryofjustice/cloud-platform-reference-app/tree/main/deploy/kubectl
+[duplicate-valuesfile]: https://github.com/ministryofjustice/cloud-platform-reference-app-github-action/tree/main/deploy/helm
+[live-ing-yaml-kubectl-example]: https://github.com/ministryofjustice/cloud-platform-reference-app/blob/main/deploy/kubectl/live/ingress.yaml
+[live-ing-yaml-helm-example]: https://github.com/ministryofjustice/cloud-platform-reference-app-github-action/blob/main/deploy/helm/live.values.tpl
+[add-var-circleci]: /documentation/deploying-an-app/using-circleci-for-continuous-deployment.html#add-variables-to-circleci
