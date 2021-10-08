@@ -1,6 +1,6 @@
 ---
 title: Add external-dns annotations to your ingress resource in “live-1”
-last_reviewed_on: 2021-10-07
+last_reviewed_on: 2021-10-08
 review_in: 3 months
 ---
 
@@ -71,11 +71,11 @@ The idea behind the annotation is to control where traffic is directed to. The a
 
 Completing the above step in advance of your migrations means you will have less to do when it comes to your actual event (this covers [step 2][ingress-resource-live-1] of the migration process)
 
-This change will not impact how traffic is routed to your service until migration.
-
 Please add this annotation to all your ingress by 5th November 2021
 
 To make sure all the ingress in live-1 have that annotation we will apply an [OPA policy][opa-annotation-policy] to reject all the ingress without the annotation on 8th November 2021.
+  
+**Please note this change will not impact how traffic is routed to your service until migration. The OPA policy will not block traffic to your services and will only reject new ingress definitions without the annotations.**
 
 If you have any questions or concerns about these changes please contact us over at #ask-cloud-platform.
 
