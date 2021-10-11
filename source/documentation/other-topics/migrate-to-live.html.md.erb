@@ -110,9 +110,15 @@ There are just a few things you need to ensure before you start the migration.
 
   ```
 
-- Ensure you have the latest version of [cloud-platform cli](/documentation/getting-started/cloud-platform-cli.html#the-cloud-platform-cli)
+- Ensure you have installed the [cloud-platform cli](/documentation/getting-started/cloud-platform-cli.html#the-cloud-platform-cli) at the [latest version](https://github.com/ministryofjustice/cloud-platform-cli/releases/latest). To test:
 
-If any of these are a concern or you'd like to check in advance, please [contact the Cloud Platform team](#questions).
+  ```bash
+  cloud-platform version
+  ```
+
+  (Old versions try to auto-update, but this can fail. In this case, to upgrade, run `brew update && brew upgrade cloud-platform-cli` or download the [latest release](https://api.github.com/repos/ministryofjustice/cloud-platform-cli/releases/latest))
+
+If any of these are a concern, or you'd like to check in advance, please [contact the Cloud Platform team](#questions).
 
 ## How to migrate
 
