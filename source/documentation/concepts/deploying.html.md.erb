@@ -1,6 +1,6 @@
 ---
 title: Deploying to the Cloud Platform
-last_reviewed_on: 2021-07-15
+last_reviewed_on: 2021-10-11
 review_in: 3 months
 ---
 
@@ -77,7 +77,7 @@ workload, such as background job processing, it might make sense to ensure that
 you have zero or one instances, rather than one or more. 
 
 An example of this
-would be a job processing tasks which **must** be handled in FIFO order -
+would be a job processing tasks which **must** be handled in First In, First Out (FIFO) order -
 running multiple replicas in this case could mean tasks get processed out
 of order. For workloads like this, consider a [Recreate] deployment strategy.
 
@@ -112,7 +112,7 @@ More information about deployment strategies is available in the [kubernetes
 documentation][kubernetes deployments], and there is more discussion of zero
 downtime deployments in [this article].
 
-## Horizontal Pod Autoscaling
+## Horizontal Pod Autoscaling (HPA)
 
 The Horizontal Pod Autoscaler is a built-in Kubernetes feature that allows you to horizontally scale applications based on one or more monitored metrics such as cpu or memory usage.
 
