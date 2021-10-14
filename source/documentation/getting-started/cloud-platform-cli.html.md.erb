@@ -31,13 +31,9 @@ brew install ministryofjustice/cloud-platform-tap/cloud-platform-cli
 or by running the following commands
 
 ```bash
-LATEST=$(curl --silent https://github.com/ministryofjustice/cloud-platform-cli/releases/latest | sed 's/.*releases.tag.\(.*\)".*/\1/')
-TARBALL="cloud-platform-cli_${LATEST}_darwin_amd64.tar.gz"
-wget https://github.com/ministryofjustice/cloud-platform-cli/releases/download/${LATEST}/${TARBALL}
-tar xzf ${TARBALL}
-mv cloud-platform /usr/local/bin
-rm ${TARBALL}
+$ tar xzv -C /usr/local/bin/ -f <(curl -sL $(curl -sL https://api.github.com/repos/ministryofjustice/cloud-platform-cli/releases/latest | jq -r '.assets[] | select(.browser_download_url | match("darwin_amd64")) | .browser_download_url'))
 ```
+(change amd64 to arm64 for Apple Silicon aka M1)
 
 After this, you should be able to run:
 
