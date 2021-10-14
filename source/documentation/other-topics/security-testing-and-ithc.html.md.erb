@@ -1,6 +1,6 @@
 ---
 title: Security testing and ITHC
-last_reviewed_on: 2021-07-19
+last_reviewed_on: 2021-10-14
 review_in: 3 months
 ---
 
@@ -12,7 +12,7 @@ MOJ systems typically have a range of security testing, covering the application
 
 ## IT Health Check (ITHC)
 
-An ITHC, is an independent security assessment, typically including a penetration test. Service teams likely need an ITHC for their applications. Cloud Platform also has its own ITHCs. Service teams should ensure that their ITHC has a scope that does not overlap into areas which are Cloud Platform's responsibilities, and equally doesn't assume Cloud Platform are responsible for things that is the service team's responsibilities. (During an application's ITHC, the Cloud Platform team will not normally provide testers with higher permissions to the AWS account or cluster, than what the service team already have access to.)
+An [ITHC](https://security-guidance.service.justice.gov.uk/ost/ithc/#what-is-an-it-health-check-and-why-is-it-important), is an independent security assessment, typically including a penetration test. Service teams likely need an ITHC for their applications. Cloud Platform also has its own ITHCs. Service teams should ensure that their ITHC has a scope that does not overlap into areas which are Cloud Platform's responsibilities, and equally doesn't assume Cloud Platform are responsible for things that is the service team's responsibilities. (During an application's ITHC, the Cloud Platform team will not normally provide testers with higher permissions to the AWS account or cluster, than what the service team already have access to.)
 
 So an ITHC for an app hosted on the Cloud Platform should be: a web application test, plus any cloud infrastructure configuration you do as code, including your namespace/environment configuration.
 
