@@ -18,7 +18,10 @@ Please read the [official documentation][kubectl-install] on how to install `kub
 
 ### Before you begin
 
-You must use a kubectl version that is within one minor version difference of your cluster. For example, a v1.15 client should work with v1.14, v1.15, and v1.16 master. Check the current value in [the infrastructure repository] to avoid unforeseen issues.
+You must use a kubectl version that is within one minor version difference of your cluster. For example, a v1.15 client should work with v1.14, v1.15, and v1.16 master. 
+Check the current value in [the infrastructure repository] to avoid unforeseen issues.
+
+During migration to `live` cluster and if you want to switch between `live-1` and `live` cluster, can use the kubectl version `v1.18`
 
 ## Authentication
 
@@ -34,20 +37,29 @@ Your account must be a member of the Ministry of Justice Organisation on GitHub.
 
 We use [Auth0] to bridge between GitHub's [OAuth2], and [OIDC] authentication, which Kubernetes supports. [Kuberos] generates a config file, containing access credentials. You need to download this file and store it on your laptop, as `~/.kube/config`
 
-1. Click on [this link][cp-login]
+1. Click on the login link
+
+    For `live` cluster, use the link [login.live.cloud-platform.service.justice.gov.uk][authenticate-to-live-cluster] and for `live-1` cluster use the link [login.cloud-platform.service.justice.gov.uk][cp-login]
+
 2. Go through the 'Sign in with GitHub' process
 
     NB: Be careful when you reach the authorization step:
 
     ![GitHub Authorize MoJ](/images/github-authorize-moj-new.png)
 
-3. Authorise 'live-1:kubernetes' to access your 'justice-cloud-platform' tenant
+3. Authorise 'live-1/live:kubernetes' to access your 'justice-cloud-platform' tenant
 4. Use the 'Download Config File' button
 5. Rename the downloaded file to `~/.kube/config`
 6. Run this command:
 
 ```
 kubectl config use-context live-1.cloud-platform.service.justice.gov.uk
+```
+
+For `live` cluster, run this command:
+
+```
+kubectl config use-context live.cloud-platform.service.justice.gov.uk
 ```
 
 You should now be able to run `kubectl` commands. Try running `kubectl get namespaces` to list the namespaces in the cluster.
@@ -72,6 +84,13 @@ CURRENT   NAME                                           CLUSTER                
           live-1.cloud-platform.service.justice.gov.uk   live-1.cloud-platform.service.justice.gov.uk   <your github e-mail>
 ```
 
+If the output looks like this (i.e. there is no `*` indicating that the live context is set as the `current` context:
+
+```
+CURRENT   NAME                                           CLUSTER                                        AUTHINFO                 NAMESPACE
+          live.cloud-platform.service.justice.gov.uk   live.cloud-platform.service.justice.gov.uk   <your github e-mail>
+```
+
 Then you need to set the context with the `use-context` command mentioned above.
 
 ### Using multiple kubeconfigs
@@ -80,7 +99,7 @@ During [migration from live-1 to live][migrate-to-live], you will have multiple 
 
 To do that, you need to [merge the kubeconfigs into a single file][kubectl-merge], following the steps outlined below. 
 
-Grab a new set of credentials for live from [login.live.cloud-platform.service.justice.gov.uk][authenticate-to-cluster].
+Grab a new set of credentials for live from [login.live.cloud-platform.service.justice.gov.uk][authenticate-to-live-cluster].
 
 You'll download a new config.yaml. Copy that to your .kube folder:
 
@@ -164,6 +183,6 @@ Once you are ready to deploy applications you will need to [create a namespace] 
 [cp-login]: https://login.cloud-platform.service.justice.gov.uk/
 [create a namespace]: /documentation/getting-started/env-create.html
 [the infrastructure repository]: https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/main/kops/live-1.yaml#L254
-[authenticate-to-cluster]: https://login.live.cloud-platform.service.justice.gov.uk
+[authenticate-to-live-cluster]: https://login.live.cloud-platform.service.justice.gov.uk
 [kubectl-merge]: https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/#merging-kubeconfig-files
 [migrate-to-live]: /documentation/other-topics/migrate-to-live.html#migrate-to-the-quot-live-quot-cluster
