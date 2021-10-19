@@ -106,6 +106,10 @@ To deploy to a single namespace, select the "Project Settings" and then "Environ
 
 This is a really simple example of adding a build and deploy section to your configuration. If you'd rather see this in action, please checkout the [cloud-platform-reference-app](https://github.com/ministryofjustice/cloud-platform-reference-app/blob/main/.circleci/config.yml)
 
+*Deprecation notice*
+
+Early on in our examples we used a custom image just for CircleCI and a wrapper script named `setup-kube-auth` that handled the kubeconfig generation; both are obsolete so if you have a reference to either `image: ${ECR_ENDPOINT}/cloud-platform/tools:circleci-internal` or `setup-kube-auth` in your `steps:` just remove and configure as described below.
+
 ### Building and pushing image to ECR
 
 Below is an example how you can build and push an image to ECR:
