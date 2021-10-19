@@ -258,7 +258,7 @@ To deploy to both "live" and "live-1" you can either:
 - create a separate pipeline to deploy in "live"
 - amend the existing pipeline to add additional steps to authenticate and deploy to "live". An example config.yml file is available [here](https://github.com/ministryofjustice/cloud-platform-reference-app/blob/main/.circleci/config.yml). It builds an image, authenticates and deploys an application to both the "live-1" and "live" clusters in the same workflow.
 
-**NOTE** Make sure you use current versions of the tools image and Circle config as mentioned in [/documentation/deploying-an-app/using-circleci-for-continuous-deployment.html#add-variables-to-circleci](/documentation/deploying-an-app/using-circleci-for-continuous-deployment.html#add-variables-to-circleci).
+**NOTE** Make sure you use current versions of the tools image and Circle config as mentioned in [/documentation/deploying-an-app/using-circleci-for-continuous-deployment.html#setup-kube-auth-is-deprecated](/documentation/deploying-an-app/using-circleci-for-continuous-deployment.html#setup-kube-auth-is-deprecated).
     
 ### Deploy with GitHub Actions
 
