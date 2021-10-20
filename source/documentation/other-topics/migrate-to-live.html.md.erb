@@ -278,7 +278,15 @@ This could include:
 
 - pingdom
 - automated smoke tests - requests should be sent to the new load balancer IP (TOD) and add a "Host: <hostname>" header.
-- manual browser testing - requires a new ingress with a test host name
+- manual browser testing - duplicate your ingress with different host domain and test it.
+
+    To create this ingress, set your env variable KUBECONFIG pointing to the kubeconfig file(if your config is not in ~/.kube/config) and run the cloud-platform cli command
+
+    ```
+    cloud-platform duplicate ingress <ingress resource name> -n <namespace>
+    ```
+    If your ingress name is `helloworld-ing` and host is `helloworld.service.justice.gov.uk`, then this command will create a duplicate ingress `helloworld-ing-duplicate` 
+    with host `helloworld-duplicate.service.justice.gov.uk` in the given namespace.
 
 ## Step 9 - Start sending real traffic
 
