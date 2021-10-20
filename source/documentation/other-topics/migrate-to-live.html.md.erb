@@ -311,7 +311,7 @@ Using the "hostname" from the above command, make a cURL call every 5 seconds to
   while sleep 5; do curl -I https://<host-name>; done
 ```
 
-To view your ingress traffic, login to [grafana-live][grafana-live], select `Kubernetes-ingress traffic` dashboard, choose your `ingress-name` and `namespace-name` from the drop-down and do a search, you will see traffic for your ingress from "live" cluster. Now login to [grafana-live-1][grafana-live-1], do the same search, you should not see any traffic for your ingress from "live-1" cluster. 
+To view your ingress traffic, login to [grafana-live][grafana-live], in `Kubernetes-ingress traffic` dashboard, select your `ingress-name` and `namespace-name` from the drop-down and do a search, you will see traffic for your ingress from "live" cluster. Now login to [grafana-live-1][grafana-live-1], do the same search, you should not see any traffic for your ingress from "live-1" cluster. 
 
 To view your ingress logs, login to [kibana][kibana-common], select index `live_kubernetes_ingress*`, and do a search using `"host-name"` , you will see new logs for "host-name" from "live" cluster. Now select index `live-1_kubernetes_ingress*` and do the same search, you should not see any new logs for "host-name" from "live-1" cluster.
 
