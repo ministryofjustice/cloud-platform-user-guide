@@ -438,6 +438,24 @@ To roll back, going through the process in reverse, depending on how far you got
 
   </details>
 
+  <details>
+  
+  <summary>**How to check the set-identifier and aws-weight annotations are set correctly**</summary>
+  
+  Once you have the `set-identifier` and `aws-weight` annotations added to your `live-1` ingress and applied to `live-1` cluster, 
+  you can check this [reports page](https://reports.cloud-platform.service.justice.gov.uk/ingress_weighting) and your ingress name should not be on the list.
+  
+  </details>
+
+  <details>
+  
+  <summary>**Do I need to update my ingress spec hosts for live?**</summary>
+
+  Your current ingress definition may have spec->tls->hosts and rules->host pointing to the `XXX.apps.live-1.cloud-platform.service.jsutice.gov.uk`. When deploying the ingress in`live`
+  cluster, you dont need to update this live-1 domains. The `live` cluster have permissions to host these domains and will work in the `live` cluster.
+
+  </details>
+
 ## Questions
 
 If you have questions, please ask us on Slack:
