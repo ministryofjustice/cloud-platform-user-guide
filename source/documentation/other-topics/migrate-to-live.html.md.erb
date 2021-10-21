@@ -421,6 +421,40 @@ To roll back, going through the process in reverse, depending on how far you got
 - (Step 1 - Agree a time to perform the migration -
   You can let your team know that they are no longer restricted from changing the environment config)
 
+## Frequently asked questions
+
+  <details>
+  
+  <summary>**How to ensure the alerts are migrated?**</summary>
+
+  When you migrate your namespace to `live` cluster in [Step 3](#step-3-migrate-your-namespace-environment-to-quot-live-quot), 
+  the namespace files related to monitoring and alerting such as ServiceMonitors, NetworkPolicy and prometheusRule in [the environments repo][env-repo]
+  are copied and applied to the `live` cluster. 
+
+  You can confirm this using kubectl command. For example, to check the prometheusrules, do `kubectl get prometheusrules -n <yournamespace>` in the `live` cluster.
+
+  After you deploy your application to the `live` cluster, in the [Cloud Platform Prometheus](https://prometheus.live.cloud-platform.service.justice.gov.uk/) targets, Rules and Service Discovery pages, ensure your application is listed.
+  In the [Cloud Platform Alertmanager](https://alertmanager.live.cloud-platform.service.justice.gov.uk) -> Status, ensure your application severity, receiver and Channel information is added to the list.
+
+  </details>
+
+  <details>
+  
+  <summary>**How to check the set-identifier and aws-weight annotations are set correctly**</summary>
+  
+  Once you have the `set-identifier` and `aws-weight` annotations added to your `live-1` ingress and applied to `live-1` cluster, 
+  you can check this [reports page](https://reports.cloud-platform.service.justice.gov.uk/ingress_weighting) and your ingress name should not be on the list.
+  
+  </details>
+
+  <details>
+  
+  <summary>**Do I need to update my ingress spec hosts for live?**</summary>
+
+  No, your current ingress hostname (i.e `XXX.apps.live-1.cloud-platform.service.justice.gov.uk` and your custom hostname) can remain in your deployment to the `live` cluster.
+
+  </details>
+
 ## Questions
 
 If you have questions, please ask us on Slack:
