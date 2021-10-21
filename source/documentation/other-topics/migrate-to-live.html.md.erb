@@ -451,8 +451,7 @@ To roll back, going through the process in reverse, depending on how far you got
   
   <summary>**Do I need to update my ingress spec hosts for live?**</summary>
 
-  Your current ingress definition may have spec->tls->hosts and rules->host pointing to the `XXX.apps.live-1.cloud-platform.service.jsutice.gov.uk`. When deploying the ingress in`live`
-  cluster, you dont need to update this live-1 domains. The `live` cluster have permissions to host these domains and will work in the `live` cluster.
+  No, your current ingress hostname (i.e `XXX.apps.live-1.cloud-platform.service.justice.gov.uk` and your custom hostname) can remain in your deployment to the `live` cluster.
 
   </details>
 
