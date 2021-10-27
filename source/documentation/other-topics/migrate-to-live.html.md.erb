@@ -329,7 +329,10 @@ NOTE: If results are not successful within the live cluster, roll back the annot
 
 ## Step 10 - Cleanup old "live-1" namespace
 
-Once you have successfully migrated to the "live" cluster, you can tidy up by removing your (now unused) namespace from the ["live-1" directory][live-1-folder]:
+Once you have successfully migrated to the "live" cluster, you can tidy up by scaling down your deployment replica to 0 and stop your CI pipeline/job that deploys
+to the `live-1` cluster.
+
+Then, removing your (now unused) namespace from the ["live-1" directory][live-1-folder]:
 
 ```bash
 rm -rf ./namespaces/live-1.cloud-platform.service.justice.gov.uk/<my-namespace-name>
