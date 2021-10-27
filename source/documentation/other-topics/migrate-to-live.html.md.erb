@@ -1,6 +1,6 @@
 ---
 title: Migrate to the "live" cluster
-last_reviewed_on: 2021-10-06
+last_reviewed_on: 2021-10-27
 review_in: 3 months
 ---
 
@@ -455,6 +455,14 @@ To roll back, going through the process in reverse, depending on how far you got
   <summary>**Do I need to update my ingress spec hosts for live?**</summary>
 
   No, your current ingress hostname (i.e `XXX.apps.live-1.cloud-platform.service.justice.gov.uk` and your custom hostname) can remain in your deployment to the `live` cluster.
+
+  </details>
+    
+  <details>
+  
+  <summary>**Does the new EKS cluster have different external IP addresses**</summary>
+
+  No, the new EKS cluster is in the same VPC of the existing `live-1` cluster. Hence there is no change in the IP address from which the traffic will be sent.
 
   </details>
 
