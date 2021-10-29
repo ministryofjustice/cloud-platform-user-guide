@@ -10,7 +10,7 @@ review_in: 3 months
 
 #### Pre-requisites
 
-* You have [skip your namespace][long-running] file in your "live-1" namespace.
+* You have [MIGRATED_SKIP_APPLY_THIS_NAMESPACE][long-running] file in your "live-1" namespace.
 
 This will allow the Apply Pipeline to skip live-1 namespace during migration.
 
@@ -60,7 +60,7 @@ Update the above 3 environment variable names in the GitHub action config file f
 
 For reference use, this [githubaction config file] that builds an image, authenticates and deploys an application to both the "live-1" and "live" clusters.
 
-[long-running]: ./long-running-env-operations.html
+[long-running]: /documentation/other-topics/long-running-env-operations.html#skip-quot-live-1-quot-environments-during-migration
 [serviceaccount module]: https://github.com/ministryofjustice/cloud-platform-terraform-serviceaccount#kubernetes-serviceaccount-module
 [githubaction config file]: https://github.com/ministryofjustice/cloud-platform-reference-app-github-action/blob/main/.github/workflows/cd.yaml
 [HELM]: https://github.com/ministryofjustice/cloud-platform-reference-app-github-action/tree/main/deploy/helm
