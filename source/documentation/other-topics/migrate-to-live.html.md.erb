@@ -283,6 +283,8 @@ This could include:
     To create this ingress, set your env variable KUBECONFIG pointing to the kubeconfig file(if your config is not in ~/.kube/config) and run the cloud-platform cli command
 
     ```
+    kubectl config use-context live.cloud-platform.service.justice.gov.uk
+
     cloud-platform duplicate ingress <ingress resource name> -n <namespace>
     ```
     If your ingress name is `helloworld-ing` and host is `helloworld.service.justice.gov.uk`, then this command will create a duplicate ingress `helloworld-ing-duplicate` 
@@ -402,12 +404,12 @@ To roll back, going through the process in reverse, depending on how far you got
 - (Step 4 - Authenticate to the “live” cluster -
   Not needed - you can keep your kubectl context for the new cluster)
 
-- Step 3 - "Migrate your namespace environment to "live"" -
-  Move the 'skip file' from your namespace under the ["live" folder][live-folder] into your namespace under the ["live-1" folder][live-1-folder]:
+- Step 3 - "Migrate your namespace environment to "live" -
+  Move the 'skip file' from your namespace under the ["live-1" folder][live-1-folder] into your namespace under the ["live" folder][live-folder]:
 
   ```bash
   cd namespaces
-  mv live-1.cloud-platform.service.justice.gov.uk/<namespace-name>/APPLY_PIPELINE_SKIP_THIS_NAMESPACE live.cloud-platform.service.justice.gov.uk/<namespace-name>/
+  mv live-1.cloud-platform.service.justice.gov.uk/<namespace-name>/MIGRATED_SKIP_APPLY_THIS_NAMESPACE live.cloud-platform.service.justice.gov.uk/<namespace-name>/
   ```
   
   Once merged to `main`, the Apply Pipeline will be configured to apply your namespace settings that are in your "live-1" folder, rather than you "live" folder. (You must have the skip file in one of the folders, otherwise there will be errors on every terraform apply, because the terraform state is shared between the Apply pipelines for live and live-1, will conflict on every apply have both since the terraform is slightly different - IRSA etc)

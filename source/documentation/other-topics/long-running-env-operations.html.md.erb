@@ -33,5 +33,15 @@ namespaces/live-1.cloud-platform.service.justice.gov.uk/mynamespace/APPLY_PIPELI
 1. Raise your PR, and approve it when it is merged.
 1. After your change has completed successfully, raise another PR to remove the `APPLY_PIPELINE_SKIP_THIS_NAMESPACE` file.
 
+### Skip "live-1" environments during migration
+
+When you [migrate your namespace environment to “live”][migrate-live-step], a file called `MIGRATED_SKIP_APPLY_THIS_NAMESPACE` is added to your namespace repository in [live-1][live-1-namespace], this will allow the [Apply Pipelines][apply-pipeline] to skip individual namespaces in "live-1", to avoid resource conflicts during [migration][migration-live].
+
+
 [apply pipeline]: https://concourse.cloud-platform.service.justice.gov.uk/teams/main/pipelines/environments-terraform/jobs/apply-live-1
 [Terraform state locking]: https://www.terraform.io/docs/language/state/locking.html
+[migrate-command]: /documentation/other-topics/migrate-to-live.html#step-3-migrate-your-namespace-environment-to-quot-live-quot
+[migration-live]: /documentation/other-topics/migrate-to-live.html#migrate-to-the-quot-live-quot-cluster
+[apply-pipeline]: https://concourse.cloud-platform.service.justice.gov.uk/teams/main/pipelines/environments-terraform
+[live-1-namespace]: https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live-1.cloud-platform.service.justice.gov.uk
+[migrate-live-step]: /documentation/other-topics/migrate-to-live.html#step-3-migrate-your-namespace-environment-to-quot-live-quot
