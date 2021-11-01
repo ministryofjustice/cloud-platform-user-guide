@@ -16,11 +16,7 @@ file).
 
 ## Installation
 
-The CLI tool is written in [golang], and packaged as a single `cloud-platform`
-binary. You can get the latest version from the [releases] page of the github
-repository. Download whichever tarball is appropriate for your development
-environment, unpack it and put the `cloud-platform` binary somewhere on your
-`$PATH`
+The CLI tool is a single binary: `cloud-platform`.
 
 If you're on a Mac, you can do this using homebrew:
 
@@ -28,35 +24,43 @@ If you're on a Mac, you can do this using homebrew:
 brew install ministryofjustice/cloud-platform-tap/cloud-platform-cli
 ```
 
-or by running the following commands
+Alternatively, install the binary into your $PATH (downloaded from [GitHub releases]):
 
 ```bash
 $ tar xzv -C /usr/local/bin/ -f <(curl -sL $(curl -sL https://api.github.com/repos/ministryofjustice/cloud-platform-cli/releases/latest | jq -r '.assets[] | select(.browser_download_url | match("darwin_amd64")) | .browser_download_url'))
 ```
-(change amd64 to arm64 for Apple Silicon aka M1)
 
-After this, you should be able to run:
+(for Apple Silicon - M1 etc - change `amd64` to `arm64`)
+
+### Checking your install
+
+To check the CLI is installed, see if this runs successfully:
 
 ```bash
 $ cloud-platform version
 ```
 
-...to confirm that your installation is working.
-
 ### Keeping up to date
 
-To check if you are on latest version, run the command `cloud-platform version`. This will display the below message if your have the old cli version
+You should always use the latest version. To check, run:
+
+```bash
+$ cloud-platform version
+```
+
+If you're *not* on the latest version, you'll see this message:
 
 ```
 Update required. Current version: 1.XX.X, Latest version: 1.YY.Y
-
-To upgrade the cloud platform cli, run `brew update && brew upgrade cloud-platform-cli` or grab the
-latest version from
-https://api.github.com/repos/ministryofjustice/cloud-platform-cli/releases/latest
 ```
 
-If you installed it via brew then it'll be updated when you run `brew update && brew upgrade cloud-platform-cli`. Otherwise you can download the 
-[latest release](https://api.github.com/repos/ministryofjustice/cloud-platform-cli/releases/latest).
+To upgrade the cloud platform cli, if you installed it with homebrew:
+
+```bash
+brew update && brew upgrade cloud-platform-cli
+```
+
+Or if you installed the binary directly, for example at `/usr/local/bin/cloud-platform`, replace it with the latest binary by doing another [install](#installation)
 
 ## Functions
 
@@ -356,8 +360,7 @@ $ aws rds describe-db-instances --db-instance-identifier=cloud-platform-xxxxxxxx
 ```
 
 [cloud platform cli]: https://github.com/ministryofjustice/cloud-platform-cli#cloud-platform-tool-cli
-[releases]: https://github.com/ministryofjustice/cloud-platform-cli#cloud-platform-tool-cli/releases
-[golang]: https://golang.org
+[GitHub releases]: https://github.com/ministryofjustice/cloud-platform-cli#cloud-platform-tool-cli/releases
 [environments repository]: https://github.com/ministryofjustice/cloud-platform-environments
 [module documentation]: https://github.com/ministryofjustice/cloud-platform-terraform-serviceaccount#kubernetes-serviceaccount-module
 [GitHub Actions Secrets]: https://docs.github.com/en/actions/reference/encrypted-secrets
