@@ -9,110 +9,138 @@ review_in: 3 months
 This user guide is for service teams with applications deployed, or intending
 to deploy, to the Ministry of Justice Cloud Platform.
 
+<!--
+Information Architecture of this site is inspired by: https://docs.cloud.service.gov.uk/
+-->
+
 ## Cloud Platform's offering
 <!-- For users intending/evaluating whether they can use Cloud Platform -->
+<!-- Quick explanations - further detail should go elsewhere, to minimize the content before 'Getting Started' -->
 
-The Cloud Platform manages the infrastructure that your application runs on and
+The Cloud Platform allows manages the infrastructure that your application runs on and
 provides tooling for teams to deploy and manage their applications on that
 infrastructure.
 
 - [About the Cloud Platform](documentation/concepts/about-the-cloud-platform.html)
 - [What can be hosted on the Cloud Platform](documentation/concepts/what-can-be-hosted-on-the-cloud-platform.html)
-- [OFFICIAL SENSITIVE - can my service be hosted on the Cloud Platform?](documentation/concepts/official-sensitive.html)
 
-## Quickstart
-<!-- For developers, who want to dive in and achieve common basics, without reading too much -->
+## Getting started
+<!-- For developers, who want to dive in and achieve common basics, simply and quickly, without reading too much -->
 
 - [Technical overview of the Cloud Platform](documentation/concepts/cp-tech-overview.html)
-- [The Cloud Platform CLI](documentation/getting-started/cloud-platform-cli.html)
-- [Deploy your first Hello World application](documentation/deploying-an-app/helloworld-app-deploy.html)
-- [Create a GOV.UK Prototype Kit site](documentation/getting-started/prototype-kit.html)
-- [Set up continuous deployment using GitHub Actions](documentation/deploying-an-app/github-actions-continuous-deployment.html)
-
-## How-to guides
-<!-- For developers looking to do certain things with Cloud Platform -->
-
 - [How to use `kubectl` to connect to the cluster](documentation/getting-started/kubectl-config.html)
 - [Creating a Cloud Platform Environment](documentation/getting-started/env-create.html)
 - [Creating an ECR repository](documentation/getting-started/ecr-setup.html) for your docker images
-- [Setting up GitHub Actions CD with Helm](documentation/deploying-an-app/helm-cd-github-actions.html)
+- [Deploy your first Hello World application](documentation/deploying-an-app/helloworld-app-deploy.html)
+
+<!-- Topics
+Made up of:
+   * How-to guides
+            For developers looking to do certain things with Cloud Platform.
+            Is a series of steps.
+   * Concept   
+            For developers looking to understand Cloud Platform - it's main ideas & concepts, and how it works.
+            Each concept doc will typically set the context for a How-to guide.
+            Keep it simple and don't include implementation detail - this is for developers/users, not the CP team.
+   * Information
+            Not procedural, no steps
+-->
+
+## Deploy apps
+
+- [Deploying to the Cloud Platform](documentation/concepts/deploying.html) <!-- concept -->
+- [Deploying a `Hello World` application](documentation/deploying-an-app/helloworld-app-deploy.html)
+- [Deploying a multi-container application to the Cloud Platform](documentation/deploying-an-app/multicontainer-app-deploy.html)
+- [Create a GOV.UK Prototype Kit site](documentation/getting-started/prototype-kit.html)
+- [Using a custom domain](documentation/other-topics/custom-domain-cert.html)
 - [Creating a Route 53 Hosted Zone](documentation/other-topics/route53-zone.html) for your DNS records
+- [Zero Downtime Deployments](documentation/other-topics/zero-downtime-deployment.html)
+
+## Configuring CI
+
+- [Set up continuous deployment using GitHub Actions](documentation/deploying-an-app/github-actions-continuous-deployment.html)
+- [Setting up GitHub Actions CD with Helm](documentation/deploying-an-app/helm-cd-github-actions.html)
+- [Prerequisite for Live-1 deployment](documentation/deploying-an-app/prerequisite.html)
+- [Continuous Deployment of an application using CircleCI and Helm](documentation/deploying-an-app/using-circleci-for-continuous-deployment.html)
+- [Deploying an application to the Cloud Platform with Helm](documentation/deploying-an-app/app-deploy-helm.html)
+
+## AWS resources
+
 - [Adding AWS resources to your environment](documentation/deploying-an-app/add-aws-resources.html)
+- [Migrating an S3 bucket](documentation/other-topics/s3-bucket-migration.html)
+
+## Managing apps
+
+- [Kubectl quick reference](documentation/other-topics/quick-reference.html)
+- [The Cloud Platform CLI](documentation/getting-started/cloud-platform-cli.html)
+- [Adding a secret to an application](documentation/deploying-an-app/add-secrets-to-deployment.html)
 - [How do I run Rails database migrations?](documentation/deploying-an-app/running-rails-migrations.html)
-- [Removing an unneeded namespace](documentation/deploying-an-app/cleaning-up.html)
 
-## Concepts
-<!-- For developers looking to understand Cloud Platform -->
+## Managing RDS
 
-- [Kubernetes](documentation/concepts/kubernetes.html)
-- [Deploying to the Cloud Platform](documentation/concepts/deploying.html)
-- [Security Controls on the Cloud Platform](documentation/concepts/security-controls.html)
+- [Accessing your RDS database](documentation/other-topics/rds-external-access.html)
+- [Viewing RDS Database Metrics](documentation/other-topics/rds-metrics-prometheus.html)
+- [RDS Snapshots](documentation/other-topics/rds-snapshots.html)
+- [Upgrading an RDS instance](documentation/other-topics/upgrade-rds-db.html)
+- [Migrating an RDS instance](documentation/other-topics/aws-rds-migration.html)
+- [SSL connections with RDS](documentation/other-topics/rds-ssl.html)
 
-## Tutorials
- - [Deploying a `Hello World` application](documentation/deploying-an-app/helloworld-app-deploy.html)
- - [Deploying a multi-container application to the Cloud Platform](documentation/deploying-an-app/multicontainer-app-deploy.html)
+## Monitoring and alerting
 
-### Deploying with Helm and CircleCI
- - [Prerequisite for Live-1 deployment](documentation/deploying-an-app/prerequisite.html)
- - [Continuous Deployment of an application using CircleCI and Helm](documentation/deploying-an-app/using-circleci-for-continuous-deployment.html)
- - [Deploying an application to the Cloud Platform with Helm](documentation/deploying-an-app/app-deploy-helm.html)
-
-### Monitoring applications
 - [Using the Cloud Platform Prometheus, AlertManager and Grafana](documentation/monitoring-an-app/prometheus.html)
 - [Getting application metrics into Prometheus](documentation/monitoring-an-app/application-metrics.html)
 - [Creating your own custom alerts](documentation/monitoring-an-app/how-to-create-alarms.html)
 - [Creating Pingdom checks](documentation/monitoring-an-app/how-to-create-pingdom-checks.html)
 - [Using the CloudWatch data source in Grafana](documentation/monitoring-an-app/how-to-use-cloudwatch-datasource.html)
+- [Creating alerts for RDS](documentation/other-topics/alert-rds.html)
+- [Kibana Circleci Monitoring Dashboards](documentation/other-topics/kibana-circleci-monitoring-dashboards.html)
 
-### Application logging
+## Logging
+
 - [Application Log Collection and Storage](documentation/logging-an-app/log-collection-and-storage.html)
 - [Accessing Application Log Data](documentation/logging-an-app/access-logs.html)
 
-### Other topics
+## CP architecture <!-- concepts -->
 
-- [Adding a secret to an application](documentation/deploying-an-app/add-secrets-to-deployment.html)
-- [Cloud Platform Support](documentation/other-topics/cloud-platform-support.html)
-- [Zero Downtime Deployments](documentation/other-topics/zero-downtime-deployment.html)
-- [Using a custom domain](documentation/other-topics/custom-domain-cert.html)
-- [Creating alerts for RDS](documentation/other-topics/alert-rds.html)
-- [Accessing your RDS database](documentation/other-topics/rds-external-access.html)
-- [Viewing RDS Database Metrics](documentation/other-topics/rds-metrics-prometheus.html)
-- [RDS Snapshots](documentation/other-topics/rds-snapshots.html)
+- [Kubernetes](documentation/concepts/kubernetes.html)
+- [Security controls on the Cloud Platform](documentation/concepts/security-controls.html)
+- [Apply Pipeline](documentation/other-topics/apply-pipeline.html)
+- [Secrets overview](documentation/other-topics/secrets.html)
+
+## Guidance <!-- misc -->
+
+- [Namespace/Container Resource Limits](documentation/concepts/namespace-limits.html)
+- [Removing an unneeded namespace](documentation/deploying-an-app/cleaning-up.html)
 - [Setup Postgres container](documentation/other-topics/Setup-postgres-container.html)
 - [Time Zone Cronjobs](documentation/other-topics/TZ-Cronjobs.html)
-- [How to decommission unused template deploy services](documentation/other-topics/decommission-unused-template-deploy-services.html)
-- [Git-Crypt](documentation/other-topics/git-crypt-setup.html)
 - [Kubernetes Cronjobs](documentation/other-topics/Cronjobs.html)
 - [Kubernetes jobs](documentation/other-topics/k8s-jobs.html)
+- [Network Policies](documentation/other-topics/network-policy.html)
+- [How to decommission unused template deploy services](documentation/other-topics/decommission-unused-template-deploy-services.html)
+- [Git-Crypt](documentation/other-topics/git-crypt-setup.html)
 - [IP Filtering](documentation/other-topics/ip-filtering.html)
 - [Applying a Maintenance Page](documentation/other-topics/maintenance-page.html)
-- [Kubectl quick reference](documentation/other-topics/quick-reference.html)
 - [StatefulSets (Pods with Persistent Volumes)](documentation/other-topics/statefulsets.html)
 - [Storage Classes](documentation/other-topics/storage-classes.html)
-- [Troubleshooting guide](documentation/other-topics/troubleshooting.html)
 - [Long-running environments operations](documentation/other-topics/long-running-env-operations.html)
-- [Upgrading an RDS instance](documentation/other-topics/upgrade-rds-db.html)
-- [Migrating an RDS instance](documentation/other-topics/aws-rds-migration.html)
-- [SSL connections with RDS](documentation/other-topics/rds-ssl.html)
-- [Secrets overview](documentation/other-topics/secrets.html)
 - [ModSecurity - Web Application Firewall](documentation/other-topics/modsecurity.html)
-- [Network Policies](documentation/other-topics/network-policy.html)
 - [Persistent-Volume encryption and snapshot](documentation/other-topics/persistent-volume-encryption-snapshot.html)
-- [Migrating an S3 bucket](documentation/other-topics/s3-bucket-migration.html)
 - [Access cross AWS resources IRSA EKS cluster](documentation/other-topics/access-cross-aws-resources-irsa-eks.html)
 - [Access cross AWS resources IAM KOPS cluster](documentation/other-topics/access-cross-aws-resources-kops.html)
-- [Kibana Circleci Monitoring Dashboards](documentation/other-topics/kibana-circleci-monitoring-dashboards.html)
-- [Namespace/Container Resource Limits](documentation/concepts/namespace-limits.html)
 - [Checking the GitHub groups in your ID token](documentation/other-topics/check-id-token.html)
 - [Cloud Platform Disaster Recovery](documentation/other-topics/cloud-platform-disaster-recovery.html)
-- [Apply Pipeline](documentation/other-topics/apply-pipeline.html)
 - [Security testing and ITHC](documentation/other-topics/security-testing-and-ithc.html)
-
-## Reference
+- [OFFICIAL SENSITIVE - can my service be hosted on the Cloud Platform?](documentation/concepts/official-sensitive.html)
 - [Cloud Platform Operational Processes](documentation/reference/operational-processes.html)
 - [Kubernetes resources](documentation/reference/kubernetes.html)
 
-## Getting help
+## Troubleshooting
+
+- [Troubleshooting guide](documentation/other-topics/troubleshooting.html)
+
+## Support
+
+- [Cloud Platform Support](documentation/other-topics/cloud-platform-support.html)
 - [Ask Cloud Platform](documentation/reference/getting-help.html)
 
 ## Adding to the guide
@@ -124,4 +152,3 @@ the "GithHub" link at the top right of this page will take you to the repository
 guide.
 
 [tech-docs-template]: https://github.com/alphagov/tech-docs-template
-
