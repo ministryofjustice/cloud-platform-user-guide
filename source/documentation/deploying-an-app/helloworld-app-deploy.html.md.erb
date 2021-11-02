@@ -41,7 +41,7 @@ This guide assumes the following:
 * Kubectl is installed (`brew install kubectl` on a Mac with [Homebrew][homebrew] installed, or [follow these instructions](https://kubernetes.io/docs/tasks/tools/install-kubectl/))
 * You have [authenticated to the live-1 cluster]
 * AWS CLI is installed (`brew install awscli` on a Mac with [Homebrew][homebrew] installed)
-* You have installed the [Cloud Platform CLI]
+* [Cloud Platform CLI] is installed
 
 ## Step 1 - Create your namespace
 
@@ -152,7 +152,7 @@ This tells the cluster that our ingress should accept web traffic to the hostnam
 defined, and should route that traffic to port 4567 of the "service" called
 `rubyapp-service`.
 
-### service.yaml
+### `service.yaml`
 
 ```Yaml
 apiVersion: v1
@@ -174,7 +174,7 @@ This defines the service called `rubyapp-service` which listens on port 4567
 and forwards web traffic to port 4567 of any pods whose `app` label is
 `helloworld-rubyapp`.
 
-### deployment.yaml
+### `deployment.yaml`
 
 ```Yaml
 apiVersion: apps/v1
@@ -451,7 +451,7 @@ Now, if you reload the browser page showing the 'Hello world' message from the a
 [ingress-docs]: https://kubernetes.io/docs/concepts/services-networking/ingress/
 [assign pods to nodes]: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
 [ECR]: https://aws.amazon.com/ecr/
-[Cloud Platform CLI]: ../getting-started/cloud-platform-cli.html
+[Cloud Platform CLI]: ../getting-started/cloud-platform-cli.html#checking-your-install
 [custom-domain-guide]: ../other-topics/custom-domain-cert.html
 [Cloud Platform tech overview]: ../concepts/cp-tech-overview.html
 [authenticated to the live-1 cluster]: ../getting-started/kubectl-config.html
