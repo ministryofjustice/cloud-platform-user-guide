@@ -1,30 +1,27 @@
 ---
-title: Create a GOV.UK Prototype Kit site
-last_reviewed_on: 2021-11-04
+title: Publish prototypes on the web
+last_reviewed_on: 2021-11-05
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
 
-The cloud platform makes it easy to set up and host a [GOV.UK Prototype Kit]
-website.
-
-This guide will walk you through the process.
+You can share prototypes made with the [GOV.UK Prototype Kit] by publishing them on the web using a service called Cloud Platform.
 
 ## Before you start
 
-To complete the steps in this guide, you will need:
+To publish a prototype you'll need:
 
-* To be a member of at least one GitHub team in the [MoJ GitHub Organisation]
-* The [Cloud Platform CLI] installed
-* A local development environment including a terminal and a git client
+* to be a member of at least one GitHub team in the [MoJ GitHub Organisation]
+* to have the [Cloud Platform CLI] installed
+* to have a local development environment including a terminal and a git client
 
-## 1. Clone the `environments` repository
+## 1. Copy (Clone) the `environments` repository
 
 To create resources on the Cloud Platform, you need to raise a pull request
 against the [cloud-platform-environments] repository.
 
-Start by checking out a copy of the repository:
+Create a copy of the [cloud-platform-environments] repository:
 
 ```bash
 $ git clone git@github.com:ministryofjustice/cloud-platform-environments.git
@@ -33,29 +30,28 @@ $ cd cloud-platform-environments
 
 ## 2. Create your prototype kit site
 
-To create your prototype kit site, run:
+In the Cloud Platform CLI run:
 
 ```bash
 $ cloud-platform environment prototype create
 ```
 
-You will be asked several questions, the most important of which is the name of
-your prototype kit project.
+You'll be asked to name your prototype.
 
 This name will be used as:
 
-* The name of the [namespace] which will be created on the cloud platform
-* The name of the GitHub repository which will be created, and which will
-contain your prototype kit source code
-* The hostname of your prototype kit website
+* the [namespace] which will be created on the Cloud Platform
+* the name of the GitHub repository which will be created, and which will
+contain your code
+* the domain name your prototype kit will be published to
 
 > You must ensure that there is not already a namespace or github repository
 with this name
 
 For example, if you choose `my-prototype` as the name, you will create:
 
-* A namespace on the Cloud Platform called `my-prototype`
-* The github repository `https://github.com/ministryofjustice/my-prototype`
+* a namespace on the Cloud Platform called `my-prototype`
+* the GitHub repository `https://github.com/ministryofjustice/my-prototype`
 
 ...and your prototype kit website will be available at the URL:
 
@@ -72,27 +68,20 @@ several files in a folder called:
 namespaces/live.cloud-platform.service.justice.gov.uk/[name you chose]
 ```
 
-Create a new branch, `git add` the new folder and then raise a pull request.
+Create a new branch, `git add` the new folder and then raise a pull request (PR).
 
 Once a member of the Cloud Platform team has approved your PR, merge it.
 
 When you merge the PR, the [Apply Pipeline](/documentation/other-topics/apply-pipeline.html)
-will create your namespace and github repository. The github repository has a
-deployment workflow, implemented as a [GitHub Actions] workflow, which will
-continuously deploy any changes made to the `main` branch of the repository.
+will create your namespace and GitHub repository. 
 
-## Caveats
+## Seeing your published prototype
 
 There are a few things to be aware of, concerning your prototype kit site:
 
-* The deployment workflow usually takes around 5 minutes to run
+* It can take around 5 minutes for your protoype to be published
 
-* The very first run of the deployment workflow will fail. This is because the
-github repository (and its deployment workflow) has to be created before some
-of the resources the workflow depends on.  You can use the "re-run" button in
-the GitHub web interface, and the action should succeed.
-
-![GitHub Actions re-run button](/images/github-actions-rerun-button.png)
+* The first time it tries to publish it will fail. You’ll need to publish a second time to complete the set up.
 
 > You don't have to do this - when you push changes to the repository, they
 will be deployed successfully - but you may want to confirm that your site
@@ -117,28 +106,25 @@ resource "github_branch_protection" "default" {
 > The only way to permanently disable it is to remove it from the terraform
 source code.
 
-## Deleting your Prototype Kit site
+## Deleting your published prototype
 
-When you no longer need your prototype kit site, you can delete it as follows:
+When you no longer need your prototype to be published:
 
-1. Raise a PR removing your namespace folder from the
+> Note - These steps are to decommission the hosting infrastructure that your prototype is running on. This will **not** delete your prototype source code.
+
+1. raise a PR removing your namespace folder from the
 `cloud-platform-environments` repository, and wait for it to be approved by a
 member of the Cloud Platform team
 
-1. **Immediately before you merge the PR** use the GitHub web interface to
+2. **immediately before you merge the PR** use the GitHub web interface to
 delete your repository
 
-1. Merge the PR
+3. merge the PR
 
-> The [Apply Pipeline](/documentation/other-topics/apply-pipeline.html) has the GitHub privileges required to
-**create** repositories, but not to **delete** them. This is a deliberate
-safety feature.
-
-Shortly after you merge the PR, your namespace will be removed from the Cloud
-Platform.
+Your namespace will be removed from the Cloud Platform.
 
 [GOV.UK Prototype Kit]: https://govuk-prototype-kit.herokuapp.com/docs
-[MoJ GitHub Organisation]: https://github.com/ministryofjustice/
+[MoJ GitHub Organisation]: https://github.com/orgs/ministryofjustice/teams
 [Cloud Platform CLI]: ./cloud-platform-cli.html
 [cloud-platform-environments]: https://github.com/ministryofjustice/cloud-platform-environments
 [namespace]: ./env-create.html
