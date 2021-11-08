@@ -266,6 +266,13 @@ Earlier on in this migration you will have [migrated the ServiceAccount module](
 
 An example of GitHub Actions config is provided in this repo: https://github.com/ministryofjustice/cloud-platform-reference-app-github-action. It deploys the app to both the live-1 and live clusters.
 
+### Namespace dependencies
+
+If you have any terraform code referencing to secrets of your namespace mentioned in other namespaces in the ["live-1" directory][live-1-folder]
+copy those secrets manually from your namespace in `live-1` to `live` and then raise a PR removing those references.
+
+An example reference is in this PR [#5977](https://github.com/ministryofjustice/cloud-platform-environments/pull/5977)
+
 ## Step 7 - Trigger your pipeline
 
 Trigger your application pipeline. This is normally done manually or by a push to branch.
@@ -467,6 +474,19 @@ To roll back, going through the process in reverse, depending on how far you got
   No, the new EKS cluster is in the same VPC of the existing `live-1` cluster. Hence there is no change in the IP address from which the traffic will be sent.
 
   </details>
+
+  <details>
+  
+  <summary>**How do I copy user generated secrets / cross referenced namespace secrets from live-1 to live?**</summary>
+
+  Use the below command to copy a secret manually from `live-1` to `live`
+  
+  ```
+  kubectl --context live-1 -n <namespace-in-live-1> get secret <secret-name> -ojson | jq -r '. | {apiVersion, kind, metadata, data, type} | del(.metadata.annotations."kubectl.kubernetes.io/last-applied-configuration", .metadata.namespace, .metadata.creationTimestamp, .metadata.resourceVersion, .metadata.selfLink, .metadata.uid)' | kubectl --context live -n <namespace-in-live> create -f -
+```
+
+  </details>
+    
 
 ## Questions
 
