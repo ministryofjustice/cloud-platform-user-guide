@@ -130,16 +130,22 @@ Trigger your application pipeline. This is normally done manually or by a push t
 ## Step 8 - Test your application
 
 Test your application is working on the new cluster by performing manual tests, or if you configured an automated test, run the complete test suite to cover end to end functionality of your application.
- 
-As you will start with the migration of your dev namespaces, test your application in your development namespace by creating a new host in "live" and also with your existing host(same hostname as in live-1) using external-dns ingress annotation (`aws-weight`)
+
+As you will start with the migration of your dev namespaces, test your application in your development namespace by creating a new host in "live" and also with your existing host(same hostname as in live-1) using external-dns ingress annotation (`aws-weight`).
+
+If you have secrets that are not deployed in code or are manually created in `live-1`, you can copy the secrets from `live-1` to `live` using the following command:
+
+```bash
+kubectl --context live-1.cloud-platform.service.justice.gov.uk -n <namespace> get secret <secret name> -o json | jq -r '. | {apiVersion, kind, metadata, data, type} | del(.metadata.annotations."kubectl.kubernetes.io/last-applied-configuration", .metadata.namespace, .metadata.creationTimestamp, .metadata.resourceVersion, .metadata.selfLink, .metadata.uid)' | kubectl --context live.cloud-platform.service.justice.gov.uk -n <namespace> create -f -
+```
 
 ## Step 9 - Start sending real traffic
 
 Traffic flow is controlled by tweaking external-dns ingress annotation (`aws-weight`), which is used to determine the proportion of traffic sent to that ingress.
-Initially it is not expected to have any traffic because live’s ingresses have `external-dns.alpha.kubernetes.io/aws-weight: "0"`. 
+Initially it is not expected to have any traffic because live’s ingresses have `external-dns.alpha.kubernetes.io/aws-weight: "0"`.
 For example, by setting this value to 5, route53 will send 5% of real traffic to the application.
 
-It is advised to send between 1-10% of the traffic to the live cluster. Once the traffic flows into the live cluster and the application behaves as expected, 
+It is advised to send between 1-10% of the traffic to the live cluster. Once the traffic flows into the live cluster and the application behaves as expected,
 you could send 100% of the traffic into live cluster and 0% into live-1 cluster.
 
 NOTE: If results are not successful within the live cluster, rollback the annotations to their initial state (0% weight).
@@ -153,7 +159,7 @@ Once you have successfully migrated to the "Live" cluster you can remove your na
 rm -rf ./namespaces/live-1.cloud-platform.service.justice.gov.uk/<my-namespace-name>
 ```
 
-The deletion will need to be written back to the `main` branch. Please create a PR and have `Deletion of NS due to migration to live cluster` in the description. 
+The deletion will need to be written back to the `main` branch. Please create a PR and have `Deletion of NS due to migration to live cluster` in the description.
 
 ## Links for the new cluster
 
@@ -172,7 +178,7 @@ Authenticating to the Cluster: [login.live.cloud-platform.service.justice.gov.uk
 
 ## Troubleshooting
 
-### ttlSecondsAfterFinished 
+### ttlSecondsAfterFinished
 
 TTL Controller for Finished Resources(ttlSecondsAfterFinished) is not available in EKS yet. For users who use ttlSecondsAfterFinished to clear completed jobs, should setup [Jobs History Limits][job-history-limit] using failedJobsHistoryLimit and successfulJobsHistoryLimit.
 ## Feedback welcome
