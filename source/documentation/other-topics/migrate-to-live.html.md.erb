@@ -266,19 +266,23 @@ Earlier on in this migration you will have [migrated the ServiceAccount module](
 
 An example of GitHub Actions config is provided in this repo: https://github.com/ministryofjustice/cloud-platform-reference-app-github-action. It deploys the app to both the live-1 and live clusters.
 
-## Step 7 - Copy manually created secrets
+## Step 7 - Copy secrets that are manual
 
-If you have secrets that are not deployed in code or are manually created in `live-1`, copy the secrets from `live-1` to `live` 
+If you have kubernetes secrets that were manually created (not deployed automatically by your application CI/CD or terraform) in `live-1`, you'll now need to copy the secrets from `live-1` to `live`, as follows.
 
-If you have any terraform code referenced from other namespaces of ["live-1" directory][live-1-folder] that creates secrets in your namespace, 
-copy those secrets manually from `live-1` to `live`. An example reference is in this PR [#5977](https://github.com/ministryofjustice/cloud-platform-environments/pull/5977)
+It is hard to tell if a secret was created manually, but you can see all the kubernetes secrets in your namespaces on both clusters, in case this helps to identify them:
 
-To copy secrets from `live-1` to `live` use the following command:
+```bash
+kubectl --context live-1.cloud-platform.service.justice.gov.uk -n <namespace> get secrets
+kubectl --context live.cloud-platform.service.justice.gov.uk -n <namespace> get secrets
+```
 
+To copy a secret (including its value) into the new cluster:
+    
 ```bash
 kubectl --context live-1.cloud-platform.service.justice.gov.uk -n <namespace> get secret <secret name> -o json | jq -r '. | {apiVersion, kind, metadata, data, type} | del(.metadata.annotations."kubectl.kubernetes.io/last-applied-configuration", .metadata.namespace, .metadata.creationTimestamp, .metadata.resourceVersion, .metadata.selfLink, .metadata.uid)' | kubectl --context live.cloud-platform.service.justice.gov.uk -n <namespace> create -f -
 ```
-
+    
 ## Step 8 - Trigger your pipeline
 
 Trigger your application pipeline. This is normally done manually or by a push to branch.
