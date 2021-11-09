@@ -166,7 +166,7 @@ To migrate your namespace from "live-1" to "live" you'll need to copy your names
   cloud-platform environment migrate
   ```
 
-- Commit changes to your branch, and create a pull request.
+- Commit changes to your branch, and create a pull request. This will create your namespace in "live".
 
 The migrate command copies the folder. In some cases it makes minor changes to the terraform or alerts to you changes you need to make manually, as described in these points:
 
@@ -175,6 +175,8 @@ The migrate command copies the folder. In some cases it makes minor changes to t
 - If you have an Elasticsearch module, it adds an IRSA change, needed for EKS.
 
 - `Money to prisoners` and `Pathfinder to analytical platform` teams use kiam for [cross account IAM roles][iam-infra]: You'll need to use [IRSA][irsa] in EKS. These [roles][iam-infra] need to be defined inside  the [environments repo][env-repo] using the guidence [here][irsa-cross-account].
+
+- If your namespace has dependencies on another namespace (e.g. terraform in one namespace creates k8s resources in another namespace), please ask the CP team for advice about resolving it for your circumstance.
 
 If you want to skip any warnings and continue anyway, the cli has a `--skip-warnings` flag you can enable.
 
