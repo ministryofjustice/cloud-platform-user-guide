@@ -488,19 +488,6 @@ To roll back, going through the process in reverse, depending on how far you got
 
   </details>
 
-  <details>
-  
-  <summary>**How do I copy user generated secrets / cross referenced namespace secrets from live-1 to live?**</summary>
-
-  Use the below command to copy a secret manually from `live-1` to `live`
-
-```bash
-kubectl --context live-1.cloud-platform.service.justice.gov.uk -n <namespace> get secret <secret name> -o json | jq -r '. | {apiVersion, kind, metadata, data, type} | del(.metadata.annotations."kubectl.kubernetes.io/last-applied-configuration", .metadata.namespace, .metadata.creationTimestamp, .metadata.resourceVersion, .metadata.selfLink, .metadata.uid)' | kubectl --context live.cloud-platform.service.justice.gov.uk -n <namespace> create -f -
-```
-
-  </details>
-    
-
 ## Questions
 
 If you have questions, please ask us on Slack:
