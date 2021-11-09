@@ -268,11 +268,28 @@ Earlier on in this migration you will have [migrated the ServiceAccount module](
 
 An example of GitHub Actions config is provided in this repo: https://github.com/ministryofjustice/cloud-platform-reference-app-github-action. It deploys the app to both the live-1 and live clusters.
 
-## Step 7 - Trigger your pipeline
+## Step 7 - Copy secrets that are manual
+
+If you have kubernetes secrets that were manually created (not deployed automatically by your application CI/CD or terraform) in `live-1`, you'll now need to copy the secrets from `live-1` to `live`, as follows.
+
+It is hard to tell if a secret was created manually, but you can see all the kubernetes secrets in your namespaces on both clusters, in case this helps to identify them:
+
+```bash
+kubectl --context live-1.cloud-platform.service.justice.gov.uk -n <namespace> get secrets
+kubectl --context live.cloud-platform.service.justice.gov.uk -n <namespace> get secrets
+```
+
+To copy a secret (including its value) into the new cluster:
+    
+```bash
+kubectl --context live-1.cloud-platform.service.justice.gov.uk -n <namespace> get secret <secret name> -o json | jq -r '. | {apiVersion, kind, metadata, data, type} | del(.metadata.annotations."kubectl.kubernetes.io/last-applied-configuration", .metadata.namespace, .metadata.creationTimestamp, .metadata.resourceVersion, .metadata.selfLink, .metadata.uid)' | kubectl --context live.cloud-platform.service.justice.gov.uk -n <namespace> create -f -
+```
+    
+## Step 8 - Trigger your pipeline
 
 Trigger your application pipeline. This is normally done manually or by a push to branch.
 
-## Step 8 - Test your application
+## Step 9 - Test your application
 
 Test your application is working on the new cluster.
 
@@ -292,7 +309,7 @@ This could include:
     If your ingress name is `helloworld-ing` and host is `helloworld.service.justice.gov.uk`, then this command will create a duplicate ingress `helloworld-ing-duplicate` 
     with host `helloworld-duplicate.service.justice.gov.uk` in the given namespace.
 
-## Step 9 - Start sending real traffic
+## Step 10 - Start sending real traffic
 
 Traffic flow is controlled by tweaking external-dns ingress annotation (`aws-weight`), which is used to determine the proportion of traffic sent to that ingress.
 Initially it is not expected to have any traffic because live’s ingresses have `external-dns.alpha.kubernetes.io/aws-weight: "0"`.
@@ -331,7 +348,7 @@ Your namespace is successfully migrated to "live" cluster, once all of the traff
 
 NOTE: If results are not successful within the live cluster, roll back the annotations to their initial weights ('100' on "live-1", '0'  on "live").
 
-## Step 10 - Cleanup old "live-1" namespace
+## Step 11 - Cleanup old "live-1" namespace
 
 Once you have successfully migrated to the "live" cluster, you can tidy up by scaling down your deployment replica to 0 and stop your CI pipeline/job that deploys
 to the `live-1` cluster.
@@ -381,19 +398,22 @@ Easy roll back is a key feature of this migration process. At any point in this 
 
 To roll back, going through the process in reverse, depending on how far you got:
 
-- Step 10 "Clean-up old "live-1" namespace" -
+- Step 11 "Clean-up old "live-1" namespace" -
   Revert the pull request that deleted your [live-1-folder]. It doesn't get applied yet, because of the skipfile.
 
-- Step 9 - "Start sending real traffic" -
+- Step 10 - "Start sending real traffic" -
   Change the ingress weightings to 0 on "live", and 100 on "live-1". This directs all traffic to the live-1 cluster. There may be a lag, as users' DNS caches update.
 
   **At this point your application is running as it was pre-migration**
 
-- Step 8 - Test your application -
+- Step 9 - Test your application -
   It's a good idea to check it works fine.
-
-- (Step 7 - Trigger your pipeline -
+  
+- (Step 8 - Trigger your pipeline -
   Not needed - your app is deployed still on the old cluster)
+
+- Step 7 - Copy manually created secrets -
+  Not needed - The secrets still exists in `live-1`. Revert PRs if any raised for secrets mentioned on other namespaces in [live-1-folder][live-1-folder]
 
 - Step 6 - "Create a new step to your deployment pipeline" -
   You need to ensure your application's CI/CD deploys:
