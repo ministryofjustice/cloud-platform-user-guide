@@ -18,19 +18,24 @@ file).
 
 The CLI tool is a single binary: `cloud-platform`.
 
-If you're on a Mac, you can do this using homebrew:
+If you're on a Mac, you can install it using homebrew:
 
 ```bash
 brew install ministryofjustice/cloud-platform-tap/cloud-platform-cli
 ```
 
-Alternatively, install the binary into your $PATH (downloaded from [GitHub releases]):
+Alternatively, install the binary into your $PATH (choose from the [GitHub releases] for your system):
 
 ```bash
-$ tar xzv -C /usr/local/bin/ -f <(curl -sL $(curl -sL https://api.github.com/repos/ministryofjustice/cloud-platform-cli/releases/latest | jq -r '.assets[] | select(.browser_download_url | match("darwin_amd64")) | .browser_download_url'))
-```
+# Mac - Intel
+tar xzv -C /usr/local/bin/ -f <(curl -sL $(curl -sL https://api.github.com/repos/ministryofjustice/cloud-platform-cli/releases/latest | jq -r '.assets[] | select(.browser_download_url | match("darwin_amd64")) | .browser_download_url'))
 
-(for Apple Silicon - M1 etc - change `amd64` to `arm64`)
+# Mac - Apple Silicon - M1 etc
+tar xzv -C /usr/local/bin/ -f <(curl -sL $(curl -sL https://api.github.com/repos/ministryofjustice/cloud-platform-cli/releases/latest | jq -r '.assets[] | select(.browser_download_url | match("darwin_arm64")) | .browser_download_url'))
+
+# Linux - 64 bit
+tar xzv -C /usr/local/bin/ -f <(curl -sL $(curl -sL https://api.github.com/repos/ministryofjustice/cloud-platform-cli/releases/latest | jq -r '.assets[] | select(.browser_download_url | match("linux_amd64")) | .browser_download_url'))
+```
 
 ### Checking your install
 
@@ -360,7 +365,7 @@ $ aws rds describe-db-instances --db-instance-identifier=cloud-platform-xxxxxxxx
 ```
 
 [cloud platform cli]: https://github.com/ministryofjustice/cloud-platform-cli#cloud-platform-tool-cli
-[GitHub releases]: https://github.com/ministryofjustice/cloud-platform-cli#cloud-platform-tool-cli/releases
+[GitHub releases]: https://github.com/ministryofjustice/cloud-platform-cli/releases
 [environments repository]: https://github.com/ministryofjustice/cloud-platform-environments
 [module documentation]: https://github.com/ministryofjustice/cloud-platform-terraform-serviceaccount#kubernetes-serviceaccount-module
 [GitHub Actions Secrets]: https://docs.github.com/en/actions/reference/encrypted-secrets
