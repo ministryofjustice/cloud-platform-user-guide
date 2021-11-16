@@ -21,17 +21,17 @@ The Cloud Platform allows manages the infrastructure that your application runs 
 provides tooling for teams to deploy and manage their applications on that
 infrastructure.
 
-- [About the Cloud Platform](documentation/concepts/about-the-cloud-platform.html)
+- [About the Cloud Platform](documentation/concepts/about-the-cloud-platform.html)                      <!-- rank: 12 -->
 - [What can be hosted on the Cloud Platform](documentation/concepts/what-can-be-hosted-on-the-cloud-platform.html)
 
 ## Getting started
 <!-- For developers, who want to dive in and achieve common basics, simply and quickly, without reading too much -->
 
-- [Technical overview of the Cloud Platform](documentation/concepts/cp-tech-overview.html)
-- [How to use `kubectl` to connect to the cluster](documentation/getting-started/kubectl-config.html)
-- [Creating a Cloud Platform Environment](documentation/getting-started/env-create.html)
-- [Creating an ECR repository](documentation/getting-started/ecr-setup.html) for your docker images
-- [Deploy your first Hello World application](documentation/deploying-an-app/helloworld-app-deploy.html)
+- [Technical overview of the Cloud Platform](documentation/concepts/cp-tech-overview.html)              <!-- rank: 8 -->
+- [How to use `kubectl` to connect to the cluster](documentation/getting-started/kubectl-config.html)   <!-- rank: 2 -->
+- [Creating a Cloud Platform Environment](documentation/getting-started/env-create.html)                <!-- rank: 7 -->
+- [Creating an ECR repository](documentation/getting-started/ecr-setup.html) for your docker images     <!-- rank: 16 -->
+- [Deploy your first Hello World application](documentation/deploying-an-app/helloworld-app-deploy.html)<!-- rank: 4 -->
 
 <!-- Topics
 Made up of:
@@ -46,22 +46,27 @@ Made up of:
             Not procedural, no steps
 -->
 
+<!-- Ranking
+These are rankings by Page Views, over 12 months, as given by Google Analytics
+e.g. https://analytics.google.com/analytics/web/?authuser=0#/report/content-pages/a138188246w198786478p193295816/_u.date00=20201114&_u.date01=20211114&explorer-table.plotKeys=%5B%5D&explorer-table.rowStart=0&explorer-table.rowCount=25/
+-->
+
 ## Deploy apps
 
 - [Deploying to the Cloud Platform](documentation/concepts/deploying.html) <!-- concept -->
 - [Deploying a `Hello World` application](documentation/deploying-an-app/helloworld-app-deploy.html)
 - [Deploying a multi-container application to the Cloud Platform](documentation/deploying-an-app/multicontainer-app-deploy.html)
-- [Create a GOV.UK Prototype Kit site](documentation/getting-started/prototype-kit.html)
-- [Using a custom domain](documentation/other-topics/custom-domain-cert.html)
+- [Create a GOV.UK Prototype Kit site](documentation/getting-started/prototype-kit.html)                <!-- rank: 6 -->
+- [Using a custom domain](documentation/other-topics/custom-domain-cert.html)                           <!-- rank: 20 -->
 - [Creating a Route 53 Hosted Zone](documentation/other-topics/route53-zone.html) for your DNS records
 - [Zero Downtime Deployments](documentation/other-topics/zero-downtime-deployment.html)
 
 ## Configuring CI
 
-- [Set up continuous deployment using GitHub Actions](documentation/deploying-an-app/github-actions-continuous-deployment.html)
+- [Set up continuous deployment using GitHub Actions](documentation/deploying-an-app/github-actions-continuous-deployment.html) <!-- rank: 14 -->
 - [Setting up GitHub Actions CD with Helm](documentation/deploying-an-app/helm-cd-github-actions.html)
 - [Prerequisite for Live-1 deployment](documentation/deploying-an-app/prerequisite.html)
-- [Continuous Deployment of an application using CircleCI and Helm](documentation/deploying-an-app/using-circleci-for-continuous-deployment.html)
+- [Continuous Deployment of an application using CircleCI and Helm](documentation/deploying-an-app/using-circleci-for-continuous-deployment.html) <!-- rank: 13 -->
 - [Deploying an application to the Cloud Platform with Helm](documentation/deploying-an-app/app-deploy-helm.html)
 
 ## AWS resources
@@ -72,13 +77,13 @@ Made up of:
 ## Managing apps
 
 - [Kubectl quick reference](documentation/other-topics/quick-reference.html)
-- [The Cloud Platform CLI](documentation/getting-started/cloud-platform-cli.html)
-- [Adding a secret to an application](documentation/deploying-an-app/add-secrets-to-deployment.html)
+- [The Cloud Platform CLI](documentation/getting-started/cloud-platform-cli.html)                       <!-- rank: 5 -->
+- [Adding a secret to an application](documentation/deploying-an-app/add-secrets-to-deployment.html)    <!-- rank: 15 -->
 - [How do I run Rails database migrations?](documentation/deploying-an-app/running-rails-migrations.html)
 
 ## Managing RDS
 
-- [Accessing your RDS database](documentation/other-topics/rds-external-access.html)
+- [Accessing your RDS database](documentation/other-topics/rds-external-access.html)                    <!-- rank: 16 -->
 - [Viewing RDS Database Metrics](documentation/other-topics/rds-metrics-prometheus.html)
 - [RDS Snapshots](documentation/other-topics/rds-snapshots.html)
 - [Upgrading an RDS instance](documentation/other-topics/upgrade-rds-db.html)
@@ -87,9 +92,9 @@ Made up of:
 
 ## Monitoring and alerting
 
-- [Using the Cloud Platform Prometheus, AlertManager and Grafana](documentation/monitoring-an-app/prometheus.html)
-- [Getting application metrics into Prometheus](documentation/monitoring-an-app/application-metrics.html)
-- [Creating your own custom alerts](documentation/monitoring-an-app/how-to-create-alarms.html)
+- [Using the Cloud Platform Prometheus, AlertManager and Grafana](documentation/monitoring-an-app/prometheus.html)  <!-- rank: 9 -->
+- [Getting application metrics into Prometheus](documentation/monitoring-an-app/application-metrics.html) <!-- rank: 18 -->
+- [Creating your own custom alerts](documentation/monitoring-an-app/how-to-create-alarms.html)          <!-- rank: 10 -->
 - [Creating Pingdom checks](documentation/monitoring-an-app/how-to-create-pingdom-checks.html)
 - [Using the CloudWatch data source in Grafana](documentation/monitoring-an-app/how-to-use-cloudwatch-datasource.html)
 - [Creating alerts for RDS](documentation/other-topics/alert-rds.html)
@@ -98,7 +103,7 @@ Made up of:
 ## Logging
 
 - [Application Log Collection and Storage](documentation/logging-an-app/log-collection-and-storage.html)
-- [Accessing Application Log Data](documentation/logging-an-app/access-logs.html)
+- [Accessing Application Log Data](documentation/logging-an-app/access-logs.html)           <!-- rank: 25 -->
 
 ## CP architecture <!-- concepts -->
 
@@ -118,20 +123,20 @@ Made up of:
 - [Network Policies](documentation/other-topics/network-policy.html)
 - [How to decommission unused template deploy services](documentation/other-topics/decommission-unused-template-deploy-services.html)
 - [Git-Crypt](documentation/other-topics/git-crypt-setup.html)
-- [IP Filtering](documentation/other-topics/ip-filtering.html)
+- [IP Filtering](documentation/other-topics/ip-filtering.html)                               <!-- rank: 24 -->
 - [Applying a Maintenance Page](documentation/other-topics/maintenance-page.html)
 - [StatefulSets (Pods with Persistent Volumes)](documentation/other-topics/statefulsets.html)
 - [Storage Classes](documentation/other-topics/storage-classes.html)
 - [Long-running environments operations](documentation/other-topics/long-running-env-operations.html)
-- [ModSecurity - Web Application Firewall](documentation/other-topics/modsecurity.html)
+- [ModSecurity - Web Application Firewall](documentation/other-topics/modsecurity.html)      <!-- rank: 21 -->
 - [Persistent-Volume encryption and snapshot](documentation/other-topics/persistent-volume-encryption-snapshot.html)
-- [Access cross AWS resources IRSA EKS cluster](documentation/other-topics/access-cross-aws-resources-irsa-eks.html)
-- [Access cross AWS resources IAM KOPS cluster](documentation/other-topics/access-cross-aws-resources-kops.html)
+- [Access cross AWS resources IRSA EKS cluster](documentation/other-topics/access-cross-aws-resources-irsa-eks.html) <!-- rank: 23 -->
+- [Access cross AWS resources IAM KOPS cluster](documentation/other-topics/access-cross-aws-resources-kops.html) <!-- rank: 22 -->
 - [Checking the GitHub groups in your ID token](documentation/other-topics/check-id-token.html)
 - [Cloud Platform Disaster Recovery](documentation/other-topics/cloud-platform-disaster-recovery.html)
 - [Security testing and ITHC](documentation/other-topics/security-testing-and-ithc.html)
 - [OFFICIAL SENSITIVE - can my service be hosted on the Cloud Platform?](documentation/concepts/official-sensitive.html)
-- [Cloud Platform Operational Processes](documentation/reference/operational-processes.html)
+- [Cloud Platform Operational Processes](documentation/reference/operational-processes.html)  <!-- rank: 19 -->
 - [Kubernetes resources](documentation/reference/kubernetes.html)
 
 ## Troubleshooting
