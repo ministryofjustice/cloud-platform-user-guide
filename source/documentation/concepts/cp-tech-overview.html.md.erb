@@ -6,13 +6,19 @@ review_in: 3 months
 
 # <%= current_page.data.title %>
 
-The Cloud Platform (CP) is a [kubernetes] cluster, running in the "moj-cp" [Amazon AWS] account, inside a [Virtual Private Cloud (VPC)] which isolates the cluster and the AWS resources used by services running in the cluster.
+The Cloud Platform (CP) is a [kubernetes] cluster with associated AWS resources.
+
+An [Amazon AWS] account "cloud-platform-aws" contains all of the platform, including running services.
+
+A [Virtual Private Cloud (VPC)] provides a network for the platform, and offers control over incoming requests from the Internet.
 
 ![Cloud Platform Diagram](/images/cp-vpc-diagram.png)
 
+<!-- Source: https://docs.google.com/drawings/d/16qCxQa4REEulqXnYYK2j6az2zslBM9B_vqLqJI0zm4Q/edit -->
+
 ## Where your code runs
 
-Within the cluster, services are isolated in [namespaces], inside which [deployments] consist of one or more [docker containers]. The code you write will run inside those containers.
+Within the cluster, services are network-isolated from each other using [namespaces]. Inside a namespace you run [deployments], which consist of one or more [docker containers]. The code you write will run inside those containers.
 
 ## Your namespace(s)
 
@@ -24,12 +30,11 @@ All namespaces are defined in the [Cloud Platform Environments repository]. Foll
 
 The namespaces are defined in kubernetes YAML files. There is also a `resources` directory inside each namespace directory. This contains [terraform] code which defines any AWS resources (e.g. an [RDS database]) that your namespace requires.
 
-
 Typically, creating an AWS resource will also add [secrets] to your namespace, containing the access credentials required to use that resource.
 
 ## How your code gets to the cluster
 
-To deploy code to the CP, you will update a local YAML file which defines your deployment, and change the reference to your docker image.
+To deploy code to the CP, you will update a local YAML file which defines a deployment (which contains a [pod]), and change the reference to your docker image.
 
 ![Deploy Diagram](/images/cp-deploy-diagram.png)
 
@@ -41,18 +46,19 @@ As soon as you do this, the cluster will recognise that the container which is c
 
 1. Develop code in your local environment, and raise PRs in your team's Github repositories
 2. Review and merge PR
-3. On merge, your CI/CD pipeline (e.g. CircleCI):
+3. On merge, your CI/CD pipeline (e.g. GitHub Actions):
    1. creates docker image(s) from your code
    2. tags and pushes docker images to your docker repository (e.g. ECR or Docker Hub)
    3. updates your kubernetes yaml files (usually also in github) with new image tag values (this may be a manual step)
-4. Code is now ready to deploy to the cluster by using `kubectl apply` to apply the updated yaml file to the cluster (this may also be done via a CD pipeline)
-5. Kubernetes recognises that the state of the cluster (specifically, your namespace) doesn't match the desired state defined in your yaml files, and makes whatever changes are required (e.g. launches pods running your new docker image, and shuts down any pods running the old version)
+   4. deploy to the cluster by using `kubectl apply`, sending the updated yaml files to the cluster
+4. Kubernetes recognises that the state of the cluster (specifically, your namespace) doesn't match the desired state defined in your yaml files, and makes whatever changes are required. Typically it launches pods running your new docker image, and as they become responsive, it terminates pods running the old image version.
 
 [Kubernetes]: https://kubernetes.io
 [Amazon AWS]: https://aws.amazon.com/
 [Virtual Private Cloud (VPC)]: https://aws.amazon.com/vpc/
 [namespaces]: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
 [deployments]: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+[pod]: https://kubernetes.io/docs/concepts/workloads/
 [docker containers]: https://www.docker.com/resources/what-container
 [prisoner-money]: https://github.com/orgs/ministryofjustice/teams/prisoner-money
 [Cloud Platform Environments repository]: https://github.com/ministryofjustice/cloud-platform-environments
