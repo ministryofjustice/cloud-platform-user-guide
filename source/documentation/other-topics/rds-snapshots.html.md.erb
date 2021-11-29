@@ -75,7 +75,24 @@ module "example_team_rds" {
 }
 ```
 
-It is important to retain the original settings associated with the DB instance when restoring from the snapshot. So don't make any other changes to this file.
+Check the terraform plan for any change to the current values except `known after apply`. 
+
+Your RDS `db_allocated_storage` will be autoscaled to maximum of `10000` by default unless you have 
+set to specific number. Hence, the actual `db_allocated_storage` may be higher than what is set as default(10).  
+
+Check the actual "AllocatedStorage" value described in your RDS instance using the command
+
+```
+aws rds describe-db-instances --db-instance-identifier <your-rds-db-identifier>
+```
+
+If that is different to what is set for your RDS, update your RDS manifest to include the actual `db_allocated_storage` by adding
+
+```
+db_allocated_storage = "<the actual value you got from the above cli command>"
+```
+
+It is important to retain other original settings associated with the DB instance when restoring from the snapshot. So don't make any other changes to this file except the above mentioned.
 
 #### 4. Contact the Cloud Platform team about the restore, providing the `db-instance-identifier` and the PR raised.
 
