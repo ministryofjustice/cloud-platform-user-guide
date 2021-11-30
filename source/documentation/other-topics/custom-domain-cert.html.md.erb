@@ -1,6 +1,6 @@
 ---
 title: Using a custom domain
-last_reviewed_on: 2021-08-23
+last_reviewed_on: 2021-09-30
 review_in: 3 months
 ---
 
@@ -12,7 +12,7 @@ Every application running on the Cloud Platform is able to use a hostname for it
 HTTP endpoints, using a pre-defined domain:
 
 ```
-*.apps.live-1.cloud-platform.service.justice.gov.uk
+*.apps.live.cloud-platform.service.justice.gov.uk
 ```
 
 This works automatically, using a wildcard [TLS] certificate.
@@ -131,12 +131,12 @@ namespace where the certificate and key material will be stored.
      spec:
        tls:
        - hosts:
-         - my-app.apps.live-1.cloud-platform.service.justice.gov.uk
+         - my-app.apps.live.cloud-platform.service.justice.gov.uk
    +   - hosts:
    +     - <hostname>
    +     secretName: <my-cert-secret>
        rules:
-       - host: my-app.apps.live-1.cloud-platform.service.justice.gov.uk
+       - host: my-app.apps.live.cloud-platform.service.justice.gov.uk
          http:
            paths:
            - path: /
