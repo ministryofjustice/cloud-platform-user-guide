@@ -64,11 +64,11 @@ To access the credentials of the service account, a `ca.crt` and a `token` are g
 Once the service account is created, you can grab the ca.crt and token using the following commands:
 
 ```bash
-cloud-platform decode-secret -n <YOUR-NAMESPACE> -s <NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET> | jq -r '.data."ca.crt" | @base64'
+cloud-platform decode-secret -n <YOUR-NAMESPACE> -s <NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET> | jq -r '.data."ca.crt"'
 ```
 
 ```bash
-cloud-platform decode-secret -n <YOUR-NAMESPACE> -s <NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET> | jq -r '.data."token"'
+cloud-platform decode-secret -n <YOUR-NAMESPACE> -s <NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET> | jq -r '.data."token" | @base64'
 ```
 
 Both the ca.crt and token will be added as environment variables in the CircleCI console later in this document.
