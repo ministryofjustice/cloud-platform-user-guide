@@ -8,6 +8,12 @@ review_in: 3 months
 
 This page describes how to upgrade your RDS instance to use a different **major** version of PostgreSQL. You might want to do this if you are bringing your application up to date, or if AWS have announced they will no longer support your current version of PostgreSQL.
 
+**NOTE**: `t2` type instances are deprecated, so when upgrading you must ensure first that the database is of type `t3`; this means the upgrade will need one more PR as a first step, to change type. You can use the AWS CLI to check this with the generated RDS user credentials you have in the namespace secret, eg 
+```
+$ aws rds describe-db-instances --db-instance-identifier cloud-platform-0x0x0x | jq -r '.DBInstances[0].DBInstanceClass'
+db.t3.small
+```
+
 There are two ways to approach a database upgrade:
 
 ## 1. Don't upgrade, migrate
