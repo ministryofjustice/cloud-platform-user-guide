@@ -33,8 +33,8 @@ Schedule:
 
 - **Pilot** 20/9/21 - 31/9/21  - A small invited group will migrate their dev namespaces, to iron out teething problems with the process
 - **Stage 1** 27/10/21 - 30/11/21 - Widespread migration of dev namespaces - to confirm workloads run fine on the new cluster, and any challenges for teams migrating
-- **Stage 2** December-ish '21 - Widespread migration of production (and other) namespaces - e.g. staging, pre-prod and production
-- Then: live-1 cluster is switched off
+- **Stage 2** 4/1/22 - 31/1/22 - Widespread migration of production (and other) namespaces - e.g. staging, pre-prod and production
+- **live-1 deprecated** 31/1/22 - live-1 enters a wind-down period, during which the CP team will only provide a minimal level of service for this cluster, it will not be updated and any remaining services run on it at risk
 
   <details>
   <summary>**What is EKS and why is Cloud Platform adopting it?**</summary>
@@ -67,7 +67,7 @@ We continue use the word "live" to indicate that it is suitable for environments
   </details>
 
   <details>
-  <summary>**What are you migrating?**</summary>
+  <summary>**What are we migrating?**</summary>
 
 You will be migrating your Cloud Platform namespace of Kubernetes resources. This includes all permissions and resources defined in the .yaml and .tf files in your namespace [directory][live-1-folder]. The new Kubernetes cluster is in the same AWS account and VPC, so that already running AWS resources such as RDS and ECR don't change during this migration.
 
@@ -78,7 +78,7 @@ You will be migrating your Cloud Platform namespace of Kubernetes resources. Thi
 
 Users of modern digital services [expect](https://www.gov.uk/service-manual/technology/uptime-and-availability-keeping-your-service-online) government services to have no planned downtime, and good reliability. The Cloud Platform has the facility to move traffic to the new cluster gradually ('canarying'), using weighted DNS, so service teams are expected to make use of this. This is achieved by adding two lines of annotations to the ingress on each cluster and changing the weights. By initially directing only 1% of traffic onto the new cluster and building up, any issues with load, or edge case usage, can be caught early, and the migration can be rolled back. So this small change avoids planned downtime and reduces risk of unplanned downtime.
 
-We guide you to use the gradual process for all environments, not just production ones. This is because it is best to test the process works for the non-prod environments, and to familiarize yourself with the steps, before you run them on the production environment.
+This guide describes a gradual process for all environments, not just production ones. This is because it is best to test the process works for the non-prod environments, and to familiarize yourself with the steps, before you run them on the production environment.
 
   </details>
 
