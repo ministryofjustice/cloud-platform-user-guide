@@ -1,6 +1,6 @@
 ---
 title: Adding AWS resources to your environment
-last_reviewed_on: 2021-09-06
+last_reviewed_on: 2021-12-07
 review_in: 3 months
 ---
 
@@ -28,7 +28,7 @@ There are two ways to create Terraform resources for your namespace:
 
 In the [cloud-platform-environments][env-repo], `cd` into your namespace and create a new directory called `resources` (if it doesn't already exist). Inside this directory create a file with a sensible filename i.e. `rds.tf` and create a call to the module you require. 
 
-For example, if you wish to create an [RDS instance][rds-instance], go to the example in the module's repository and populate your `rds.tf` file using the example as a guide.
+For example, if you wish to create an [RDS mssql instance][rds-mssql-instance] or an [RDS mysql instance][rds-mysql-instance] or an [RDS postgresql instance][rds-postgresql-instance], go to the example in the module's repository and populate your `rds-.tf` file using the example as a guide.
 
 ### Use the cloud-platform cli
 
@@ -111,5 +111,7 @@ You can view all metrics AWS make available [here](https://docs.aws.amazon.com/A
 [cloud-platform]: ../getting-started/cloud-platform-cli.html
 [architecture decision record]: https://github.com/ministryofjustice/cloud-platform/blob/main/architecture-decision-record/015-Keeping-Terraform-modules-up-to-date.md#keeping-terraform-modules-up-to-date
 [Prometheus]: https://prometheus.cloud-platform.service.justice.gov.uk/graph
-[rds-instance]: https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance/blob/main/example/rds.tf
+[rds-mssql-instance]: https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance/blob/main/example/rds-mssql.tf
+[rds-mysql-instance]: https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance/blob/main/example/rds-mysql.tf
+[rds-postgresql-instance]: https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance/blob/main/example/rds-postgresql.tf
 [download-cli]: https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/cloud-platform-cli.html#installation
