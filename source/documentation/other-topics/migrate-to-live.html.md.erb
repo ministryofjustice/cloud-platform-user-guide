@@ -491,9 +491,11 @@ To roll back, going through the process in reverse, depending on how far you got
     
   <details>
   
-  <summary>**Does the new EKS cluster have different external IP addresses**</summary>
+  <summary>**Does the new EKS cluster have different external IP addresses?**</summary>
 
-  No, the new EKS cluster is in the same VPC of the existing `live-1` cluster. Hence there is no change in the IP address from which the traffic will be sent.
+  - Inbound traffic - Yes. Traffic to the new EKS cluster comes into `live` via ingress NLBs which are dedicated to the cluster. So the domain name for your service will point at these new IP addresses when you start to redirect traffic during: 'Step 10 - Start sending real traffic'.
+
+  - Outbound traffic - No. The new EKS cluster is in the same VPC of the existing `live-1` cluster. Requests leave the VPC using the same three NAT instances. Hence there is no change in the [IP addresses from which the traffic will be sent](/documentation/other-topics/ip-filtering.html#outbound-ip-filtering).
 
   </details>
 
