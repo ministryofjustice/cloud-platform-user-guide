@@ -334,7 +334,7 @@ This is identical to [this workflow step][ga-cd-authenticate] in the basic
     KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }}
   run: |
     echo "${{ secrets.KUBE_CERT }}" > ca.crt
-    kubectl config set-cluster ${KUBE_CLUSTER} --certificate-authority=./ca.crt --server=https://api.${KUBE_CLUSTER}
+    kubectl config set-cluster ${KUBE_CLUSTER} --certificate-authority=./ca.crt --server=https://${KUBE_CLUSTER}
     kubectl config set-credentials deploy-user --token=${{ secrets.KUBE_TOKEN }}
     kubectl config set-context ${KUBE_CLUSTER} --cluster=${KUBE_CLUSTER} --user=deploy-user --namespace=${{ secrets.KUBE_NAMESPACE }}
     kubectl config use-context ${KUBE_CLUSTER}

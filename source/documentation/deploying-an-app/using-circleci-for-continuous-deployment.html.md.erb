@@ -34,7 +34,7 @@ As part of the CircleCI deployment pipeline, CircleCI will need to authenticate 
 To create a service account:
 
 - Download the [cloud-platform-cli tool](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/cloud-platform-cli.html#the-cloud-platform-cli)
-- Run the command `cloud-platform environment serviceaccount create` in your [namespace](https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live-1.cloud-platform.service.justice.gov.uk) as outlined in the [instructions](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/cloud-platform-cli.html#the-cloud-platform-cli)
+- Run the command `cloud-platform environment serviceaccount create` in your [namespace](https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live.cloud-platform.service.justice.gov.uk) as outlined in the [instructions](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/cloud-platform-cli.html#the-cloud-platform-cli)
 - Add a `serviceaccount_name` variable called `circleci` (This doesn't have to be circleci, it's just easier for reference)
 - Ensure `github_owner` and `github_token` variables are defined in variables.tf. This is added by default if you created the environment using the [cloud-platform-cli tool]
 - Ensure github provider block is added to versions.tf and main.tf. This is added by default if you created the environment using the [cloud-platform-cli tool]
@@ -64,11 +64,14 @@ To access the credentials of the service account, a `ca.crt` and a `token` are g
 Once the service account is created, you can grab the ca.crt and token using the following commands:
 
 ```bash
-cloud-platform decode-secret -n <YOUR-NAMESPACE> -s <NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET> | jq -r '.data."ca.crt"'
+kubectl -n <YOUR-NAMESPACE> get secrets <NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET> -o json | jq -r '.data."ca.crt"'
 ```
+Note - CircleCI does not seem to accept the "ca.crt" @base64 decoded value as an environment variable, so run the above command to get the encoded "ca.crt" value and do the decode later at runtime as shown [here][ca-decode].
+
+Use the `cloud-platform decode-secret` CLI tool to view and Base64-decode the token:
 
 ```bash
-cloud-platform decode-secret -n <YOUR-NAMESPACE> -s <NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET> | jq -r '.data."token" | @base64'
+cloud-platform decode-secret -n <YOUR-NAMESPACE> -s <NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET> | jq -r '.data."token"'
 ```
 
 Both the ca.crt and token will be added as environment variables in the CircleCI console later in this document.
@@ -96,7 +99,7 @@ To deploy to a single namespace, select the "Project Settings" and then "Environ
 
 - ECR_ENDPOINT # This should be the ECR name your intend to push your images to e.g. `738437979232.dkr.ecr.eu-west-2.amazonaws.com/webops/cloud-platform-reference-app-ecr`
 
-- K8S_CLUSTER_NAME # The full name of the cluster e.g. `live-1.cloud-platform.service.justice.gov.uk`
+- K8S_CLUSTER_NAME # The full name of the "live" cluster `https://DF366E49809688A3B16EEC29707D8C09.gr7.eu-west-2.eks.amazonaws.com`
 - K8S_NAMESPACE # The name of the namespace/environment (see [Create a namespace][env-create])
 - K8S_CLUSTER_CERT # The CA Certificate for the cluster, can be acquired from the `Secret` that is generated for the `serviceaccount` (as stated above)
 - K8S_TOKEN # The access token generated for the `serviceaccount`.
@@ -143,6 +146,8 @@ jobs:
           fi
 ```
 
+Note - Update the aws ecr login command above if you are using AWS version 2.0. Click [here][login-to-repo] for reference.
+
 ### Deploy to Kubernetes
 
 Below is example of how you can first authenticate and then deploy to Kubernetes:
@@ -152,7 +157,7 @@ Below is example of how you can first authenticate and then deploy to Kubernetes
           name: Authenticate with cluster
           command: |
             echo -n ${K8S_CLUSTER_CERT} | base64 -d > ./ca.crt
-            kubectl config set-cluster ${K8S_CLUSTER_NAME} --certificate-authority=./ca.crt --server=https://api.${K8S_CLUSTER_NAME}
+            kubectl config set-cluster ${K8S_CLUSTER_NAME} --certificate-authority=./ca.crt --server=https://${K8S_CLUSTER_NAME}
             kubectl config set-credentials circleci --token=${K8S_TOKEN}
             kubectl config set-context ${K8S_CLUSTER_NAME} --cluster=${K8S_CLUSTER_NAME} --user=circleci --namespace=${K8S_NAMESPACE}
             kubectl config use-context ${K8S_CLUSTER_NAME}
@@ -183,3 +188,5 @@ https://circleci.com/docs/2.0/test/
 [env-create]: /documentation/getting-started/env-create.html#creating-a-cloud-platform-environment
 [create-sa]: /documentation/deploying-an-app/using-circleci-for-continuous-deployment.html#creating-a-service-account-for-circleci
 [deploy-kubernetes]: /documentation/deploying-an-app/using-circleci-for-continuous-deployment.html#deploy-to-kubernetes
+[ca-decode]: https://github.com/ministryofjustice/cloud-platform-reference-app/blob/main/.circleci/config.yml#L62
+[login-to-repo]: /documentation/deploying-an-app/helloworld-app-deploy.html#login-to-the-repository
