@@ -68,8 +68,10 @@ kubectl -n <YOUR-NAMESPACE> get secrets <NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET
 ```
 Note - Circle-ci don't like adding "ca.crt" @base64 decoded value as an environment variable, so run the above command to get the encoded "ca.crt" value and do the decode later at runtime as shown [here][ca-decode].
 
+Use the `cloud-platform decode-secret` CLI tool to view and Base64-decode the token:
+
 ```bash
-cloud-platform decode-secret -n <YOUR-NAMESPACE> -s <NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET> | jq -r '.data."token" | @base64'
+cloud-platform decode-secret -n <YOUR-NAMESPACE> -s <NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET> | jq -r '.data."token"'
 ```
 
 Both the ca.crt and token will be added as environment variables in the CircleCI console later in this document.
