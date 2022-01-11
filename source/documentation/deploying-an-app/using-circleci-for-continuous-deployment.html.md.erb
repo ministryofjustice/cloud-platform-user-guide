@@ -66,7 +66,7 @@ Once the service account is created, you can grab the ca.crt and token using the
 ```bash
 kubectl -n <YOUR-NAMESPACE> get secrets <NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET> -o json | jq -r '.data."ca.crt"'
 ```
-Note - Circle-ci don't like adding "ca.crt" @base64 decoded value as an environment variable, so run the above command to get the encoded "ca.crt" value and do the decode later at runtime as [here][ca-decode].
+Note - Circle-ci don't like adding "ca.crt" @base64 decoded value as an environment variable, so run the above command to get the encoded "ca.crt" value and do the decode later at runtime as shown [here][ca-decode].
 
 ```bash
 cloud-platform decode-secret -n <YOUR-NAMESPACE> -s <NAME-OF-CIRCLECI-SERVICE-ACCOUNT-SECRET> | jq -r '.data."token" | @base64'
