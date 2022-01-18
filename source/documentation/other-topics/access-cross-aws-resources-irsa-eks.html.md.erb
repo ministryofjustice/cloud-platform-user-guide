@@ -25,13 +25,12 @@ This article explains how to utilise IAM roles for Kubernetes Service Accounts (
     <details><summary>Click here to see a template code block</summary>
     <pre><code>
         module "irsa" {
-          source = "github.com/ministryofjustice/cloud-platform-terraform-irsa?ref=0.0.1"
+          source = "github.com/ministryofjustice/cloud-platform-terraform-irsa?ref=1.0.2"
           namespace        = "&lt;namespace&gt;"
           role_policy_arns = ["&lt;aws_iam_policy.&lt;namespace&gt;_&lt;policy_name&gt;.arn&gt;"]
         }
         data "aws_iam_policy_document" "&lt;namespace&gt;_&lt;policy_name&gt;" {
-          # "api" policy statements for the namespace
-          # allows direct access to "landing" S3 bucket
+          # Provide list of permissions and target AWS account resources to allow access to
           statement {
             actions = [
               "s3:PutObject",
@@ -72,13 +71,12 @@ This article explains how to utilise IAM roles for Kubernetes Service Accounts (
     <details><summary> Here is an example using the template above, with typical values provided</summary>
     <pre><code>
         module "irsa" {
-          source = "github.com/ministryofjustice/cloud-platform-terraform-irsa?ref=0.0.1"
+          source = "github.com/ministryofjustice/cloud-platform-terraform-irsa?ref=1.0.2"
           namespace        = "my-namespace"
           role_policy_arns = [aws_iam_policy.my_namespace_my_policy.arn]
         }
         data "aws_iam_policy_document" "my_namespace_my_policy" {
-          # "api" policy statements for the namespace/policy
-          # allows direct access to "landing" S3 bucket
+          # Provide list of permissions and target AWS account resources to allow access to
           statement {
             actions = [
               "s3:PutObject",

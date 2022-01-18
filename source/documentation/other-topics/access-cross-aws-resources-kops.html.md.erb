@@ -66,7 +66,7 @@ update the template below with the correct values and raise a PR.
             actions   = ["sts:AssumeRole"]
             resources = [aws_iam_role.&lt;namespace&gt;-&lt;role-name&gt;.arn]
           }
-          # Provide list of permissions and target AWS account resources to allow access from
+          # Provide list of permissions and target AWS account resources to allow access to
           statement {
             actions = [
               "&lt;some action&gt;",
@@ -135,7 +135,7 @@ update the template below with the correct values and raise a PR.
             actions   = ["sts:AssumeRole"]
             resources = [aws_iam_role.my-namespace-app-iam-role.arn]
           }
-          # Provide list of permissions and target AWS account resources to allow access from
+          # Provide list of permissions and target AWS account resources to allow access to
           statement {
             actions = [
               "s3.PutObject",
