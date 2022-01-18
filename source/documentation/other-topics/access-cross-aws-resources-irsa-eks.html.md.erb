@@ -45,10 +45,8 @@ This article explains how to utilise IAM roles for Kubernetes Service Accounts (
         resource "aws_iam_policy" "&lt;namespace&gt;_&lt;policy_name&gt;" {
           name   = "&lt;namespace&gt;-&lt;policy-name&gt;"
           policy = data.aws_iam_policy_document.&lt;namespace&gt;_&lt;policy_name&gt;.json
-        }
-        variable "&lt;namespace&gt;-tags" {
-          type = map(string)
-          default = {
+
+          tags = {
             business-unit          = "&lt;Which part of the MoJ is responsible for this service? (e.g HMPPS, Legal Aid Agency)&gt;"
             application            = "&lt;Application name&gt;"
             is-production          = "&lt;true/false&gt;"
@@ -73,7 +71,7 @@ This article explains how to utilise IAM roles for Kubernetes Service Accounts (
 
     <details><summary> Here is an example using the template above, with typical values provided</summary>
     <pre><code>
-          module "irsa" {
+        module "irsa" {
           source = "github.com/ministryofjustice/cloud-platform-terraform-irsa?ref=0.0.1"
           namespace        = "my-namespace"
           role_policy_arns = [aws_iam_policy.my_namespace_my_policy.arn]
@@ -94,10 +92,8 @@ This article explains how to utilise IAM roles for Kubernetes Service Accounts (
         resource "aws_iam_policy" "my_namespace_my_policy" {
           name   = "my-namespace-my-policy"
           policy = data.aws_iam_policy_document.my_namespace_my_policy.json
-        }
-        variable "my-namespace-tags" {
-          type = map(string)
-          default = {
+
+          tags = {
             business-unit          = "Cloud Platform"
             application            = "My Application"
             is-production          = "false"
