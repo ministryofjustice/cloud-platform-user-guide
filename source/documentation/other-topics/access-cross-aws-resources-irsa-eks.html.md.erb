@@ -64,7 +64,7 @@ This article explains how to utilise IAM roles for Kubernetes Service Accounts (
           }
           data = {
             role = module.irsa.aws_iam_role_name
-            serviceaccount = module.irsa.service_account_name
+            serviceaccount = module.irsa.service_account_name.name
           }
         }
     </code>
@@ -113,7 +113,7 @@ This article explains how to utilise IAM roles for Kubernetes Service Accounts (
           }
           data = {
             role = module.irsa.aws_iam_role_name
-            serviceaccount = module.irsa.service_account_name
+            serviceaccount = module.irsa.service_account_name.name
           }
         }
     </code>
