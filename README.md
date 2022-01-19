@@ -1,15 +1,23 @@
 # Cloud platform user guide
 
-The documentation for users of the Ministry of Justice cloud platform.
-It explains how to deploy and run applications on the cloud platform.
+The documentation for users of the Ministry of Justice cloud platform. It explains how to deploy and run applications on the Cloud Platform.
 
-It's built using the [GDS Tech Docs Template][tech-docs], and hosted
-using [GitHub Pages][gh-pages].
+This repo is an MOJ documentation site that uses the [GDS Tech Docs Template][tech-docs], and the docs get hosted using [GitHub Pages][gh-pages].
 
-## Pre-requisites
+(This repo pre-dates [template-documentation-site](https://github.com/ministryofjustice/template-documentation-site). The latter was abstracted out of this repo and improved. TODO: We should make this repo use that template, with its shared Docker image and no second repo.)
 
-* ruby 2.7.1
-* Install required gems using `bundle install`
+## Editing
+
+The guide is changed by editing `*.html.md.erb` files, found in the [source](source) folder.
+
+The syntax is Markdown. For guidance see: [Tech Docs Template - Write your content](https://tdt-documentation.london.cloudapps.digital/write_docs/content/). [kramdown](https://kramdown.gettalong.org/syntax.html) is what compiles the Markdown. 
+
+While editing the files locally, you can [preview the site](#previewing).
+
+Every change should be reviewed in a pull request, no matter how
+minor, and we've enabled [branch protection][] to enforce this.
+
+Merging the changes to the `main` branch are automatically [published](#publishing)
 
 ## Previewing
 
@@ -24,18 +32,50 @@ This will run a preview web server on http://localhost:4567
 This is only accessible on your computer, and won't be accessible
 to anyone else.
 
-## Making changes
+## Publishing
 
-To make changes, create a branch and edit the appropriate Markdown
-and ERB files in the `source` directory.
+Any changes you push/merge into the `main` branch should be published
+to GitHub Pages site automatically by a GitHub Action: [publish.yml](.github/workflows/publish.yml).
 
-Every change should be reviewed in a pull request, no matter how
-minor, and we've enabled [branch protection][] to enforce this.
+The markdown files in the `source` directory are compiled to HTML, and the
+resulting files are pushed to a [second repository] from where they are
+published via Github Pages.
 
-GDS Tech Docs (and therefore this site) uses [kramdown][] for its
-Markdown processing.
+The URL for the published site is: <https://user-guide.cloud-platform.service.justice.gov.uk/>
 
-[kramdown]: https://kramdown.gettalong.org/syntax.html
+> The publishing process creates files in `/docs` and pushes them to the
+> `gh-pages` branch to publish them. You should not edit any files in that
+> folder, because your changes will be lost the next time the site is
+> published.
+
+## Template configuration
+
+The template can be configured in [config/tech-docs.yml](config/tech-docs.yml)
+
+Key config:
+
+* `host:` - this should be the URL of your published GitHub Pages site, e.g:
+
+   ```
+   https://ministryofjustice.github.io/modernisation-platform
+   ```
+
+   > Do not include a `/` at the end of this URL
+
+* `service_link:` - This should be the docpath to your site. This is usually
+  `/[repo name]`, so if your repository is `ministryofjustice/awesome-docs`
+  `service_link` will be `/awesome-docs`
+
+Further configuration options are described here: [Tech Docs Template docs - Global Configuration](https://tdt-documentation.london.cloudapps.digital/configure_project/global_configuration/)
+
+## Link checking
+
+The publishing process automatically checks both internal and external links in
+the site. If you want to do the same check locally, run:
+
+```
+make check
+```
 
 ## Composing & Ordering Pages
 
@@ -53,33 +93,10 @@ are further down in the list.
 For more information, see the [Tech Docs Template documentation][tech-docs-multipage]
 for a basic multipage site.
 
-## Publishing changes
-
-There is a [Github Action][] which will publish your
-changes automatically, when your branch is merged into `main`
-
-The markdown files in the `source` directory are compiled to HTML, and the
-resulting files are pushed to a [second repository] from where they are
-published via Github Pages.
-
-So, you should not need to do anything else in order to update
-the user guide website.
-
-The github action is defined in `.github/workflows/publish.yml`
-
-## Link-checking
-
-The publishing process automatically checks both internal and external links in
-the site. If you want to do the same check locally, run:
-
-```
-make check
-```
-
 ## Updating the docker image
 
 If you need to make any changes to the docker image (i.e. if you make any
-changes to the Dockerfile or Gemfile), please use the github web interface to
+changes to the Dockerfile or Gemfile), please use the GitHub web interface to
 create a new [release]. A github action will build the docker image and push
 it to docker hub, tagged with the release number.
 
