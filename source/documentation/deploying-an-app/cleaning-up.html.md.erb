@@ -20,12 +20,12 @@ To delete a namespace and all its associated AWS resources, simply raise a
 So, if your namespace is called `mynamespace`, then you need to raise a [PR]
 deleting the folder:
 
-     namespaces/live-1.cloud-platform.service.justice.gov.uk/mynamespace
+     namespaces/live.cloud-platform.service.justice.gov.uk/mynamespace
 
 ...and all its contents, from the [cloud-platform-environments][envrepo] repository.
 
-Merging this [PR] will trigger the [Apply Pipeline](/documentation/other-topics/apply-pipeline.html),
-which will delete all of your namespace's AWS resources, followed by the
+Merging this [PR] will trigger the [detect-deleted-namespaces Pipeline][detect-deleted-namespaces],
+which will alert cloud-platform team to delete all of your namespace's AWS resources, followed by the
 namespace itself.
 
 > NB: If you have set up a CI/CD pipeline, which deploys into your namespace,
@@ -34,3 +34,4 @@ immediately recreated by your build pipeline.
 
 [envrepo]: https://github.com/ministryofjustice/cloud-platform-environments
 [PR]: https://help.github.com/en/articles/about-pull-requests
+[detect-deleted-namespaces]: https://concourse.cloud-platform.service.justice.gov.uk/teams/main/pipelines/environments-live/jobs/detect-deleted-namespaces

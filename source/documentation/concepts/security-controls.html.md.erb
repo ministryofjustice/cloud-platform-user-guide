@@ -16,7 +16,7 @@ The Cloud Platform (CP) is hosted in [Amazon AWS], and consists of three [kubern
 
 * live-1 - the "application" cluster, managed via [Kops], which runs all hosted services
 * manager - an [EKS] cluster which runs shared services such as monitoring and CI/CD pipelines
-* live - a newer "application" cluster, managed by EKS. Applications running on the live-1 cluster 
+* live - a newer "application" cluster, managed by EKS, which runs all hosted services.
 will be [migrated to the "live" cluster](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/migrate-to-live.html) during Autumn 2021. 
 
 ...plus additional AWS managed services such as database instances, S3 buckets,
