@@ -122,7 +122,7 @@ A little further down in the same file, you should see these lines:
 
 ```
   hosts:
-    - host: <DNS-PREFIX>.apps.live-1.cloud-platform.service.justice.gov.uk
+    - host: <DNS-PREFIX>.apps.live.cloud-platform.service.justice.gov.uk
 ```
 
 We need to replace `<DNS-PREFIX>` with a unique hostname for your instance of
@@ -132,7 +132,7 @@ I'm going to use `helm-cd` for this, but you should pick a different value.
 
 ```
   hosts:
-    - host: helm-cd.apps.live-1.cloud-platform.service.justice.gov.uk
+    - host: helm-cd.apps.live.cloud-platform.service.justice.gov.uk
 ```
 
 Commit and push your changes.
@@ -163,7 +163,7 @@ To confirm that the app. is working, visit the URL corresponding to the
 hostname you chose:
 
 ```
-https://helm-cd.apps.live-1.cloud-platform.service.justice.gov.uk
+https://helm-cd.apps.live.cloud-platform.service.justice.gov.uk
 ```
 
 ## Automating deployment

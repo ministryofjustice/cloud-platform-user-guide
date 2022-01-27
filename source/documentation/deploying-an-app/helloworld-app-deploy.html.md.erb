@@ -39,7 +39,7 @@ This guide assumes the following:
 
 * [Docker][docker] is installed and configured.
 * Kubectl is installed (`brew install kubectl` on a Mac with [Homebrew][homebrew] installed, or [follow these instructions](https://kubernetes.io/docs/tasks/tools/install-kubectl/))
-* You have [authenticated to the live-1 cluster]
+* You have [authenticated to the live cluster]
 * AWS CLI is installed (`brew install awscli` on a Mac with [Homebrew][homebrew] installed)
 * [Cloud Platform CLI] is installed
 
@@ -67,7 +67,7 @@ Edit your local copy of the `kubectl_deploy/ingress.yaml` file, and change the
 hostname for the application. The current hostname for the demo application is:
 
 ```
-helloworld-rubyapp.apps.live-1.cloud-platform.service.justice.gov.uk
+helloworld-rubyapp.apps.live.cloud-platform.service.justice.gov.uk
 ```
 
 We need a **unique** domain name for this instance of the application. There is a
@@ -75,7 +75,7 @@ We need a **unique** domain name for this instance of the application. There is 
 will stick to a domain name which matches:
 
 ```
-*.apps.live-1.cloud-platform.service.justice.gov.uk
+*.apps.live.cloud-platform.service.justice.gov.uk
 ```
 
 Choose a domain name for your application.
@@ -83,7 +83,7 @@ Choose a domain name for your application.
 We suggest something nobody else is likely to be using, such as:
 
 ```
-[your name]-helloworld.apps.live-1.cloud-platform.service.justice.gov.uk
+[your name]-helloworld.apps.live.cloud-platform.service.justice.gov.uk
 ```
 
 Replace the two instances of `helloworld-rubyapp` in the
@@ -111,7 +111,7 @@ directory to the namespace called `my-namespace` (or whatever you called it)."
 A few seconds later, you should be able to visit:
 
 ```
-https://[your domain name].apps.live-1.cloud-platform.service.justice.gov.uk
+https://[your domain name].apps.live.cloud-platform.service.justice.gov.uk
 ```
 
 ...in your web browser, and see the "Hello, World!" message.
@@ -136,9 +136,9 @@ kind: Ingress
 spec:
   tls:
   - hosts:
-    - helloworld-rubyapp.apps.live-1.cloud-platform.service.justice.gov.uk
+    - helloworld-rubyapp.apps.live.cloud-platform.service.justice.gov.uk
   rules:
-  - host: helloworld-rubyapp.apps.live-1.cloud-platform.service.justice.gov.uk
+  - host: helloworld-rubyapp.apps.live.cloud-platform.service.justice.gov.uk
     http:
       paths:
       - path: /
@@ -338,7 +338,7 @@ page.
 
 The application can be accessed from the internet at:
 
-    https://[your domain name].apps.live-1.cloud-platform.service.justice.gov.uk
+    https://[your domain name].apps.live.cloud-platform.service.justice.gov.uk
 
 As per the [guidance for domain names], our application should have some authentication to prevent citizens accidentally mistaking development websites for live government services. Whilst this isn't much of a problem with a 'hello world' site, it could be an issue for sites using the GDS prototype kit, which look exactly like live services. So, let's add [http basic authentication] to our application.
 
@@ -454,4 +454,4 @@ Now, if you reload the browser page showing the 'Hello world' message from the a
 [Cloud Platform CLI]: ../getting-started/cloud-platform-cli.html#checking-your-install
 [custom-domain-guide]: ../other-topics/custom-domain-cert.html
 [Cloud Platform tech overview]: ../concepts/cp-tech-overview.html
-[authenticated to the live-1 cluster]: ../getting-started/kubectl-config.html
+[authenticated to the live cluster]: ../getting-started/kubectl-config.html

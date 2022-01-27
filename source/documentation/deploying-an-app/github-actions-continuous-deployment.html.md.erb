@@ -89,7 +89,7 @@ Now that you have a docker image in your ECR, you can launch it in the cluster.
 Add this `kubernetes-deploy.yaml` file to your GitHub repository, making the following changes:
 
 * Replace the `image:` value with the one for your ECR
-* Replace the `dstest` in `dstest.apps.live-1.cloud-platform.service.justice.gov.uk` with a hostname that is unique to your application (e.g. use your own name, or the namespace name)
+* Replace the `dstest` in `dstest.apps.live.cloud-platform.service.justice.gov.uk` with a hostname that is unique to your application (e.g. use your own name, or the namespace name)
 
 * `kubernetes-deploy.yaml`
 
@@ -140,9 +140,9 @@ metadata:
 spec:
   tls:
   - hosts:
-    - dstest.apps.live-1.cloud-platform.service.justice.gov.uk
+    - dstest.apps.live.cloud-platform.service.justice.gov.uk
   rules:
-  - host: dstest.apps.live-1.cloud-platform.service.justice.gov.uk
+  - host: dstest.apps.live.cloud-platform.service.justice.gov.uk
     http:
       paths:
       - path: /
