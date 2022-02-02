@@ -1,6 +1,6 @@
 ---
 title: Kubernetes jobs
-last_reviewed_on: 2021-12-06
+last_reviewed_on: 2022-02-02
 review_in: 3 months
 ---
 
@@ -54,8 +54,6 @@ Verify the job is created:
 ### Clean up finished jobs
 
 When a Job completes Pods created by the Job are not deleted. Finished Jobs are usually no longer needed in the system. Use the [Time-to-live (TTL mechanism)][TTL-mechanism] for Jobs by settting `ttlSecondsAfterFinished`, so that a Job can be cleaned up automatically some time after it finishes.
-
-The Cloud Platform has this [delete-completed-jobs][concourse-job] concourse pipleline which will clean up any completed jobs which do not have `ttlSecondsAfterFinished` define. Deleting a completed Job will clean up any Pods it created. You can still see the logs of the deleted Pods in [kibana][kibana]
 
 > Note: Kubernetes uses UTC exclusively. Make sure you take that into account when you’re creating your schedule or setting up `ttlSecondsAfterFinished`.
 

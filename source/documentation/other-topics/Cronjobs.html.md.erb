@@ -1,6 +1,6 @@
 ---
 title: Kubernetes Cronjobs
-last_reviewed_on: 2021-12-06
+last_reviewed_on: 2022-02-02
 review_in: 3 months
 ---
 
@@ -55,8 +55,6 @@ kubectl get cronjob --namespace [your namespace]
 ### Clean up finished jobs
 
 Jobs created by CronJobs are usually not needed after they have run to completion. Use the [TTL mechanism] to automatically clean them up by settting `ttlSecondsAfterFinished`, to tell kubernetes when it can delete the completed Job.
-
-We also have a [delete-completed-jobs][concourse-job] concourse job which will clean up all completed jobs which do not have `ttlSecondsAfterFinished` defined. 
 
 Deleting completed Jobs cleans up the Pods they create, which helps the kubernetes cluster to use its CPU and memory resources efficiently. You can still see the logs of the deleted Pod in [kibana][kibana].
 
