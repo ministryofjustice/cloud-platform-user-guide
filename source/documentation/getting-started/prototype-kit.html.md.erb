@@ -12,6 +12,7 @@ You can share prototypes made with the [GOV.UK Prototype Kit] by publishing them
 
 To publish a prototype you'll need to:
 
+* have github repository with Gov.UK Prototype Kit code.
 * be a member of at least one GitHub team in the [MoJ GitHub Organisation]
 * have the [Cloud Platform CLI] installed
 * have a local development environment including a terminal and a git client
@@ -36,22 +37,21 @@ In the Cloud Platform CLI run:
 $ cloud-platform environment prototype create
 ```
 
-You'll be asked to name your prototype.
+You'll be asked to name your prototype/namespace, which should be the name of your prototype github repository.
 
 This name will be used as:
 
 * the [namespace] which will be created on the Cloud Platform
-* the name of the GitHub repository which will be created, and which will
-contain your code
+* the github repository name, to create files for building a docker image and a continuous deployment (CD) workflow, targeting the Cloud Platform.
 * the domain name your prototype kit will be published to
 
-> You must ensure that there is not already a namespace or github repository
-with this name
+> You must ensure that the namespace name should be the same as your prototype github repository and there is not already a namespace.
 
 For example, if you choose `my-prototype` as the name, you will create:
 
 * a namespace on the Cloud Platform called `my-prototype`
-* the GitHub repository `https://github.com/ministryofjustice/my-prototype`
+
+* these [template files][github-files] in your GitHub repository `https://github.com/ministryofjustice/my-prototype`
 
 ...and your prototype kit website will be available at the URL:
 
@@ -73,38 +73,27 @@ Create a new branch, `git add` the new folder and then raise a pull request (PR)
 Once a member of the Cloud Platform team has approved your PR, merge it.
 
 When you merge the PR, the [Apply Pipeline](/documentation/other-topics/apply-pipeline.html)
-will create your namespace and GitHub repository. 
+will create your namespace and these [template files][github-files] in your GitHub repository. 
 
 ## Seeing your published prototype
 
 There are a few things to be aware of, concerning your prototype kit site:
 
-* It can take around 5 minutes for your protoype to be published
+* It can take around 5 minutes for your prototype to be published
 
-* The first time it tries to publish it will fail. You’ll need to publish a second time to complete the set up.
+* The first time it tries to publish it will fail. You’ll need to publish a second time to complete the set-up.
 
 > You don't have to do this - when you push changes to the repository, they
 will be deployed successfully - but you may want to confirm that your site
 works before making any changes.
 
-* The GitHub repository is created with [branch protection] applied to the
-default `main` branch. If you don't want this, edit the `github-repo.tf` file
-in your namespace folder in the environments repository, and remove this
-stanza:
+* These [template files][github-files] created in the `main` branch. If you don't want any of these files in your git-hub repository or use your template files, edit the `github-repo.tf` file
+in your namespace folder in the environments repository, as shown in this [example][github-example] 
 
-```hcl
-resource "github_branch_protection" "default" {
-  repository_id          = github_repository.prototype.id
-  pattern                = "main"
-  enforce_admins         = true
-  require_signed_commits = true
-}
-```
-
-> If you use the GitHub UI to disable branch protection, the [Apply Pipeline](/documentation/other-topics/apply-pipeline.html) will re-enable it shortly afterwards.
+> If you push any changes to these files in your repository, the [Apply Pipeline](/documentation/other-topics/apply-pipeline.html) will overwrite it shortly afterwards.
 >
-> The only way to permanently disable it is to remove it from the terraform
-source code.
+> The only way to update them is through environments repository, as shown in this [example][github-example] or remove it from the terraform
+source code and copy those files in to your repository.
 
 ## Deleting your published prototype
 
@@ -131,3 +120,5 @@ Your namespace will be removed from the Cloud Platform.
 [GitHub Actions]: https://github.com/features/actions
 [race condition]: https://www.techopedia.com/definition/10313/race-condition
 [branch protection]: https://docs.github.com/en/github/administering-a-repository/about-protected-branches
+[github-files]: https://github.com/ministryofjustice/cloud-platform-terraform-github-prototype/tree/main/templates
+[github-example]: https://github.com/ministryofjustice/cloud-platform-terraform-github-prototype/blob/main/examples/github.tf#L11-L29
