@@ -1,6 +1,6 @@
 ---
 title: Cloud Platform IP Addresses
-last_reviewed_on: 2022-01-27
+last_reviewed_on: 2022-03-24
 review_in: 3 months
 ---
 
@@ -21,7 +21,7 @@ Allowed client IP source ranges can be specified using the nginx.ingress.kuberne
 An example configuration using `nginx.ingress.kubernetes.io/whitelist-source-range: 1.1.1.1/24,10.0.0.0/24`
 
    ```
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: <ingress-name>
@@ -41,9 +41,12 @@ spec:
     http:
       paths:
       - path: /
-      - backend:
-          serviceName: <my-svc>
-          servicePort: 3000
+        pathType: ImplementationSpecific
+          backend:
+            service:
+              name: <my-svc> 
+              port:
+                number: 80
   tls:
   - hosts:
     - my-app.apps.live.cloud-platform.service.justice.gov.uk

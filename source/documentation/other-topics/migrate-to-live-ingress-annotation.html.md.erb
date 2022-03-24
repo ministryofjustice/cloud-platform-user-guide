@@ -1,6 +1,6 @@
 ---
 title: Add external-dns annotations to your ingress resource in “live-1”
-last_reviewed_on: 2022-01-28
+last_reviewed_on: 2022-03-24
 review_in: 3 months
 ---
 
@@ -17,7 +17,7 @@ Teams should add two new ‘annotations’ to their existing ingress resources. 
 Here is the start of an example ingress, with a couple of existing annotations:
 
 ```
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
@@ -41,7 +41,7 @@ Note: you need to substitute in the correct <ingress-name> and <namespace-name> 
 Continuing with the example above, the ingress now looks like this, including the two new annotations:
 
 ```
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:

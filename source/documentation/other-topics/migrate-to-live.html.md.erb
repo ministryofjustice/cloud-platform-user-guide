@@ -1,6 +1,6 @@
 ---
 title: Migrate to the "live" cluster
-last_reviewed_on: 2022-02-02
+last_reviewed_on: 2022-03-24
 review_in: 3 months
 ---
 
@@ -124,7 +124,7 @@ You must add two new annotations to your existing `ingress` resource in "live-1"
 This looks as follows:
 
 ```yaml
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
@@ -206,7 +206,7 @@ Case 2: You have a **Helm chart**, with templated YAML, with a different values.
 Set the annotations in the new (live) ingress to have these two values:
 
 ```yaml
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
@@ -226,14 +226,6 @@ Once you have created a new live-ingress.yaml with the above two external-dns an
   ```bash
   kubectl --context live.cloud-platform.service.justice.gov.uk -n <namespace-name> apply -f live-ingress.yaml
   ```
-**NOTE**: You will see the below warning when you create new ingress in "live" cluster, please ignore this warning for now. 
-
-```bash
-Warning: networking.k8s.io/v1beta1 Ingress is deprecated in v1.19+, unavailable in v1.22+; use networking.k8s.io/v1 Ingress
-```
-
-The "live-1" cluster is running Kubernetes version "1.18", "live" cluster is upgraded to Kubernetes version "1.20", the networking.k8s.io/v1 API version, available since v1.19, and the networking.k8s.io/v1beta1 API version of IngressClass is no longer served as of v1.22. We will make sure everyone has migrated over to the new API version before we move to v1.22. There are quite a few changes to a number of different APIs on v1.22 of which we will communicate and give clear instructions on what needs to change, to what and by when.
-
 ## Step 6 - Create a new step to your deployment pipeline
 
 Your application's continuous deployment pipeline needs a couple of changes:
