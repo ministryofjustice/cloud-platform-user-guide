@@ -1,6 +1,6 @@
 ---
 title: Continuous Deployment of an application using Github Actions
-last_reviewed_on: 2022-02-15
+last_reviewed_on: 2022-03-24
 review_in: 3 months
 ---
 
@@ -128,7 +128,7 @@ spec:
   selector:
     app: webserver
 ---
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: <ingress-name>
@@ -146,9 +146,12 @@ spec:
     http:
       paths:
       - path: /
-        backend:
-          serviceName: nginx-service
-          servicePort: 8080
+        pathType: ImplementationSpecific
+          backend:
+            service:
+              name: nginx-service
+              port:
+                number: 8080
 ```
 (Note - Please change the `ingress-name` and `namespace-name` values in the above example. The `colour` should be `blue` for ingress in live-1 and `green` for ingress in EKS `live` cluster)
 

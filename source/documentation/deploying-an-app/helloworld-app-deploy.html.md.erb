@@ -1,6 +1,6 @@
 ---
 title: Deploying a 'Hello World' application to the Cloud Platform
-last_reviewed_on: 2021-12-22
+last_reviewed_on: 2022-03-23
 review_in: 3 months
 ---
 
@@ -125,7 +125,7 @@ This is how the YAML files link together:
 ### `ingress.yaml`
 
 ```Yaml
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
   name: <ingress-name>
   namespace: <namespace-name>
@@ -142,9 +142,12 @@ spec:
     http:
       paths:
       - path: /
-        backend:
-          serviceName: rubyapp-service
-          servicePort: 4567
+        pathType: ImplementationSpecific
+          backend:
+            service:
+              name: rubyapp-service
+              port:
+                number: 4567
 ```
 (Note - Please change the `ingress-name` and `namespace-name` values in the above example. The `colour` should be `blue` for ingress in live-1 and `green` for ingress in EKS `live` cluster)
 

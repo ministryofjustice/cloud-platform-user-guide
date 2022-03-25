@@ -1,6 +1,6 @@
 ---
 title: Using a custom domain
-last_reviewed_on: 2022-03-04
+last_reviewed_on: 2022-03-24
 review_in: 3 months
 ---
 
@@ -119,7 +119,7 @@ namespace where the certificate and key material will be stored.
 3. You will need to update your `Ingress` spec to include the new hostname.
 
    ```
-     apiVersion: networking.k8s.io/v1beta1
+     apiVersion: networking.k8s.io/v1
      kind: Ingress
      metadata:
        name: <ingress-name>
@@ -140,16 +140,22 @@ namespace where the certificate and key material will be stored.
          http:
            paths:
            - path: /
-             backend:
-               serviceName: <my-svc>
-               servicePort: 80
+             pathType: ImplementationSpecific
+               backend:
+                 service:
+                   name: <my-svc> 
+                   port:
+                     number: 80
    +   - host: <hostname>
    +     http:
    +       paths:
    +       - path: /
-   +         backend:
-   +           serviceName: <my-svc>
-   +           servicePort: 80
+   +         pathType: ImplementationSpecific
+               backend:
+                 service:
+                   name: <my-svc> 
+                   port:
+                     number: 80
    ```
 
 (Note - Please change the `ingress-name` and `namespace-name` values in the above example. The `colour` should be `blue` for ingress in live-1 and `green` for ingress in EKS `live` cluster)

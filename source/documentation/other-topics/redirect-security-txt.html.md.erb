@@ -1,6 +1,6 @@
 ---
 title: Setup Ingress to redirect security.txt 
-last_reviewed_on: 2021-10-04
+last_reviewed_on: 2022-03-24
 review_in: 3 months
 ---
 
@@ -27,7 +27,7 @@ To setup a permanent redirect to the central [`security.txt`](https://raw.github
 
     ```
     ---
-    apiVersion: networking.k8s.io/v1beta1
+    apiVersion: networking.k8s.io/v1
     kind: Ingress
     metadata:
     name: helloworld-rubyapp-ingress-security-txt-redirect
@@ -45,9 +45,12 @@ To setup a permanent redirect to the central [`security.txt`](https://raw.github
         http:
         paths:
         - path: /.well-known/security.txt
+          pathType: ImplementationSpecific
             backend:
-            serviceName: rubyapp-service
-            servicePort: 4567
+              service:
+                name: rubyapp-service
+                port:
+                  number: 4567
     ```
 
 - Apply your `ingress-redirect.yaml` file to the cluster
