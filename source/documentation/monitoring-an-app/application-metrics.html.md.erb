@@ -112,7 +112,7 @@ Create and apply a new resource `<application>-networkPolicy.yaml`, as below:
 
 We can now query our `/metric` endpoint using the Cloud Platform Prometheus.
 
-Head to Cloud Platform Prometheus [live cluster](https://prometheus.cloud-platform.service.justice.gov.uk/graph) and use the following promql query to view the application latency (remembering to change the namespace value):
+Head to the Cloud Platform's instance of [Prometheus](https://prometheus.cloud-platform.service.justice.gov.uk/graph) and use the following promql query to view the application latency (remembering to change the namespace value):
 
 ```
 http_server_request_duration_seconds_sum{namespace="my-namespace"}
