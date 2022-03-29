@@ -105,7 +105,7 @@ If the `*` is missing, then you need to set the context with the `use-context` c
 
 ### Using multiple kubeconfigs
 
-You can have two kubeconfig files, corresponding to different clusters, which is useful when working onmultiple clusters. This is a guide to being able to manage multiple kubeconfigs, so you can conveniently switch the cluster that kubectl connects to.
+You can have two kubeconfig files, corresponding to different clusters, which is useful when working on multiple clusters. This is a guide to being able to manage multiple kubeconfigs, so you can conveniently switch the cluster that kubectl connects to.
 
 Essentially we will [merge the kubeconfigs into a single file][kubectl-merge], and use `kubectl config use-context` to switch between them.
 
