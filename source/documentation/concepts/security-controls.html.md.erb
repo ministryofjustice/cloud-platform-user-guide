@@ -12,12 +12,10 @@ systems.
 
 ## Network architecture
 
-The Cloud Platform (CP) is hosted in [Amazon AWS], and consists of three [kubernetes] clusters:
+The Cloud Platform (CP) is hosted in [Amazon AWS], and consists of two [kubernetes] clusters:
 
-* live-1 - the "application" cluster, managed via [Kops], which runs all hosted services
 * manager - an [EKS] cluster which runs shared services such as monitoring and CI/CD pipelines
-* live - a newer "application" cluster, managed by EKS, which runs all hosted services.
-will be [migrated to the "live" cluster](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/migrate-to-live.html) during Autumn 2021. 
+* live - a [EKS] "application" cluster, managed by EKS, which runs all hosted services.
 
 ...plus additional AWS managed services such as database instances, S3 buckets,
 etc.
@@ -73,5 +71,4 @@ the namespaces in which the services run.
 [security groups]: https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html
 [worker nodes]: https://kubernetes.io/docs/concepts/architecture/nodes/
 [kubernetes secrets]: https://kubernetes.io/docs/concepts/configuration/secret/
-[Kops]: https://github.com/kubernetes/kops
 [EKS]: https://aws.amazon.com/eks/

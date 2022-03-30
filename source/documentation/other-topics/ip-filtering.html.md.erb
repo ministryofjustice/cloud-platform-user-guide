@@ -55,7 +55,7 @@ status:
     ingress:
     - hostname: <hostname>
    ```
-(Note - Please change the `ingress-name` and `namespace-name` values in the above example. The `colour` should be `blue` for ingress in live-1 and `green` for ingress in EKS `live` cluster)
+(Note - Please change the `ingress-name` and `namespace-name` values in the above example. The `colour` should be `green` for ingress in EKS `live` cluster)
 
 Testing with the annotation set:
 
@@ -83,14 +83,6 @@ IP traffic from the Cloud Platform will originate from the IP numbers of one our
 Currently, these are the IPs from which traffic will appear to come:
 
 ##### Live Cluster
-
-```
-35.178.209.113
-3.8.51.207
-35.177.252.54
-```
-
-##### Live-1 Cluster
 
 ```
 35.178.209.113
