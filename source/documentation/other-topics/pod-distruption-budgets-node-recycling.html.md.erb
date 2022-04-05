@@ -1,0 +1,93 @@
+---
+title: PodDisruptionBudgets and node recycling
+last_reviewed_on: 2022-04-05
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+### Introduction
+
+PodDisruptionBudget(PDB) is a feature which will help you run highly available applications and limit the 
+disruption to your application during nodes rollout and pods rescheduling, such as for upgrades or routine maintenance work on the Kubernetes nodes.
+
+Refer to the kubernetes documentation at [pod disruptions,](https://kubernetes.io/docs/concepts/workloads/pods/disruptions/) for detailed explainations.
+
+### Defining PodDisruptionBudget for your application: 
+
+You can configure PDB by defining the number or percentage of pods that can go down with `maxUnavailable` and 
+must stay up with `minAvailable`. PDB applies the budget by using a selector and currently 
+supports ReplicaSet, StatefulSet, and Deployment.
+
+Example PDB definitions using `minAvailable`
+
+```
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: my-pdp
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: my-app-name
+```
+
+If your application is defined with `3 deployment replicas`, then during node rollout, the cluster 
+will make sure you have 2 available and hence 1 pod is rescheduled at one time. 
+
+### Setting minAvailable to 100% or same as pod number
+
+If your deployment replicas is set to 1 and have a PodDisruptionBudget defined with `minAvailable: 100%` or `minAvailable: 1`,
+this will ensure none of your pods will ever be disrupted. This will halt any node rollout process by Cloud Platform team such as draining a node or doing
+a cluster upgrade. 
+
+Example PDB definitions using `minAvailable:1`
+
+```
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: helloworld-pdp
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: helloworld-rubyapp
+```
+
+Example of deployment for the above PDB
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloworld-rubyapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: helloworld-rubyapp
+  template:
+    metadata:
+      labels:
+        app: helloworld-rubyapp
+    spec:
+      containers:
+      - name: rubyapp
+        image: ministryofjustice/cloud-platform-helloworld-ruby:1.1
+        ports:
+        - containerPort: 4567
+```
+
+### Recycle-node pipeline and PDB with 100% availability
+
+Cloud Platform team runs a recycle-node pipeline which runs between midnight and 6am every working day where 
+the oldest worker node is gracefully replaced. This is to ensure the pods are not stuck around forever in one node 
+and things like namespace quota and limit range changes have the desired effects and not holding reservations for 
+the old values.
+
+If you have a deployment set as above with an unreasonable/aggressive PDB, the recycle-node pipeline tries to evict the pod gracefully 
+from the node, but after several unsuccessful retries it will evict the pod brutally which may bring downtime to your app. 
+Hence, ensure your configuration for replicas and PodDisruptionBudget will allow the application to be highly available and at the 
+same time let the Cloud Platform team to make changes to the cluster e.g draining a node or doing a cluster upgrade.
