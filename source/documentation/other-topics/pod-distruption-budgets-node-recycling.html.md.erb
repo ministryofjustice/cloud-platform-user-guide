@@ -1,6 +1,6 @@
 ---
-title: Best Practices for PodDisruptionBudgets 
-last_reviewed_on: 2022-03-30
+title: PodDisruptionBudgets and node recycling
+last_reviewed_on: 2022-04-05
 review_in: 3 months
 ---
 
@@ -86,7 +86,7 @@ the oldest worker node is gracefully replaced. This is to ensure the pods are no
 and things like namespace quota and limit range changes have the desired effects and not holding reservations for 
 the old values.
 
-If you have a deployment set as above with an unreasonable PDB, the recycle-node pipeline tries to evict the pod gracefully 
+If you have a deployment set as above with an unreasonable/aggressive PDB, the recycle-node pipeline tries to evict the pod gracefully 
 from the node, but after several unsuccessful retries it will evict the pod brutally which may bring downtime to your app. 
 Hence, ensure your configuration for replicas and PodDisruptionBudget will allow the application to be highly available and at the 
 same time let the Cloud Platform team to make changes to the cluster e.g draining a node or doing a cluster upgrade.
