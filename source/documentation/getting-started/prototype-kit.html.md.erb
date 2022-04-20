@@ -74,7 +74,25 @@ several files in a folder called:
 namespaces/live.cloud-platform.service.justice.gov.uk/[name you chose]
 ```
 
-Create a new branch, `git add` the new folder and then raise a pull request (PR).
+Create a new branch and add/commit the new folder to Git:
+
+```bash
+$ git checkout -b my-prototype
+$ git add .
+$ git commit -m "Added my-prototype prototype"
+```
+
+Push this branch to GitHub:
+
+```bash
+$ git push origin my-prototype
+```
+
+> Note: Please replace `my-prototype` in the commands above with the name you chose.
+
+And then raise a pull request (PR) by following the instructions that
+will appear on GitHub in the [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments)
+repository.
 
 Once a member of the Cloud Platform team has approved your PR, merge it.
 
