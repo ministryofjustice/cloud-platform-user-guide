@@ -57,11 +57,13 @@ For those interested in how it works: GitHub is being used as an OIDC provider. 
 
 6. Select 'Download Config File'.
 
-7. Move the downloaded file to `~/.kube/config`:
+7. Move the downloaded file to directory and rename the file to config `~/.kube/config`:
 
     ```bash
     mv kubecfg.yaml ~/.kube/config
     ```
+
+    The above command will rename the `kubecfg.yaml` file to `config` and move it into the `~/.kube` directory.
 
     If you've already got a kubeconfig, you may want to replace it, or merge with it - see [Using multiple kubeconfigs](#using-multiple-kubeconfigs).
 
