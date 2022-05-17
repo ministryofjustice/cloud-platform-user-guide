@@ -24,6 +24,7 @@ kind: Job
 metadata:
   name: job1
 spec:
+  ttlSecondsAfterFinished: 100
   template:
     spec:
       containers:
