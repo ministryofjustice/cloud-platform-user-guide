@@ -57,6 +57,8 @@ When a Job completes Pods created by the Job are not deleted. Finished Jobs are 
 
 > Note: Kubernetes uses UTC exclusively. Make sure you take that into account when you’re creating your schedule or setting up `ttlSecondsAfterFinished`.
 
+We have a [delete-completed-jobs][concourse-job] concourse job which will clean up all completed jobs which do not have `ttlSecondsAfterFinished` defined.
+
 [jobs-spec]: https://kubernetes.io/docs/concepts/workloads/controllers/job/#writing-a-job-spec
 [kubernetes-jobs]: https://kubernetes.io/docs/concepts/workloads/controllers/job/
 [TTL-mechanism]: https://kubernetes.io/docs/concepts/workloads/controllers/job/#ttl-mechanism-for-finished-jobs
