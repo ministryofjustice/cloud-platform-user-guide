@@ -159,7 +159,6 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  ingressClassName: {{ .Values.ingress.ingressClassName }}
   tls:
   {{- range .Values.ingress.hosts }}
   - hosts:
