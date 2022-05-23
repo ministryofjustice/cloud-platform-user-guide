@@ -1,47 +1,42 @@
 ---
-title: Removing Deprecated Ingress APIs for K8s 1.22
+title: Removing Deprecated Ingress APIs for Cloud Platform - Kubernetes v1.22
 last_reviewed_on: 2022-03-23
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
 
-Ingress APIs `extensions/v1beta1` and `networking.k8s.io/v1beta1` versions were deprecated and below guidance explains the changes required 
-for updating the ingress manifest which is used to create Ingress resources in the cluster. 
+All beta Ingress API versions such as `extensions/v1beta1` and `networking.k8s.io/v1beta1` have been deprecated and are not available in Kubernetes v1.22 or the new nginx-ingress-controller v1.2
 
-Updating the Ingress APIs are **required** before Cloud Platform kubernetes cluster can be upgraded from **1.21** to **1.22**.
+This user guide describes how to use the following stable Ingress API which is required for **all** ingresses:
 
-The replacement Ingress v1 APIs are already available within the current kubernetes version 1.21 and the existing persisted objects are accessible
-via the new `v1` API. Below are the details of the changes required.
+  - `networking.k8s.io/v1`
 
-- The backend `serviceName` field is renamed to `service.name`
-- Numeric backend `servicePort` fields are renamed to `service.port.number`
-- String backend `servicePort` fields are renamed to `service.port.name`
-- `pathType` is now required for each specified path. Options are `Prefix`, `Exact`, and `ImplementationSpecific`. 
-   To match the undefined `v1beta1` behavior, use `ImplementationSpecific`.
-- `spec.backend` is renamed to `spec.defaultBackend`
+The replacement Ingress v1 API is available within the current Cloud Platform Kubernetes version 1.21 and nginx-ingress-controller v0.47.0
 
-### How to identify that your ingress manifest is deprecated
+To view which apiVersion you are using, run the following kubectl command:
 
-When applying the ingress manifest into the cluster, you will see the below error which highlights that the 
-request for the ingress you are making is deprecated and changes are required.
+
+`kubectl --namespace <namespace> get ingress <ingress-name> -o yaml`
+
 
 ```
-Warning: networking.k8s.io/v1beta1 Ingress is deprecated in v1.19+, 
-unavailable in v1.22+; use networking.k8s.io/v1 Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
 ```
 
 ### Resources deployed using kubectl
 
-If your ingress manifest looks similar to below:
+If your ingress is using a beta version of the ingress API, it should look similar to the following:
 
 <pre>
-apiVersion: <b>networking.k8s.io/v1beta1</b>
+apiVersion: <b>networking.k8s.io/v1beta1</b> OR <b>extensions/v1beta1</b>
 kind: Ingress
 metadata:
   name: helloworld
   annotations:
-    external-dns.alpha.kubernetes.io/set-identifier: heloworld-mynamespace-green
+    kubernetes.io/ingress.class: nginx
+    external-dns.alpha.kubernetes.io/set-identifier: helloworld-mynamespace-green
     external-dns.alpha.kubernetes.io/aws-weight: "100"
 spec:
   tls:
@@ -57,39 +52,15 @@ spec:
           servicePort: 4567</b>
 </pre>
 
-OR 
-
-<pre>
-apiVersion: <b>extensions/v1beta1</b>
-kind: Ingress
-metadata:
-  name: helloworld
-  annotations:
-    external-dns.alpha.kubernetes.io/set-identifier: heloworld-mynamespace-green
-    external-dns.alpha.kubernetes.io/aws-weight: "100"
-spec:
-  tls:
-  - hosts:
-    - helloworld-app.apps.live.cloud-platform.service.justice.gov.uk
-  rules:
-  - host: helloworld-app.apps.live.cloud-platform.service.justice.gov.uk
-    http:
-      paths:
-      - <b>path: /
-        backend:
-          serviceName: helloworld
-          servicePort: 4567</b>
-</pre>
- 
-Migrate to use the <b>networking.k8s.io/v1</b> API version. Main changes include
+Convert the manifest to use the `networking.k8s.io/v1` API version syntax:
 
  * Change the `apiVersion` to `networking.k8s.io/v1`
  * Add `pathType: ImplementationSpecific` after `path: /`
- * Rename `-backend.serviceName` to `-backend.service.name`
- * for String servicePort rename `-backend.servicePort` to `-backend.service.port.name`
- * For Numeric servicePort rename `-backend.servicePort` to `-backend.service.port.number`
+ * For serviceName, rename `-backend.serviceName` to `-backend.service.name`
+ * For String servicePort, rename `-backend.servicePort` to `-backend.service.port.name`
+ * For Numeric servicePort, rename `-backend.servicePort` to `-backend.service.port.number`
 
-The manifest after changes will look like:
+The manifest should look like the below after the changes:
 
 <pre>
 apiVersion: <b>networking.k8s.io/v1</b>
@@ -97,7 +68,8 @@ kind: Ingress
 metadata:
   name: helloworld
   annotations:
-    external-dns.alpha.kubernetes.io/set-identifier: heloworld-mynamespace-green
+    kubernetes.io/ingress.class: nginx
+    external-dns.alpha.kubernetes.io/set-identifier: helloworld-mynamespace-green
     external-dns.alpha.kubernetes.io/aws-weight: "100"
 spec:
   tls:
@@ -111,7 +83,7 @@ spec:
         <b>pathType: ImplementationSpecific
         backend:
           service:
-            name: rubyapp-service
+            name: helloworld
             port:
               number: 4567</b>
 </pre>
@@ -121,12 +93,12 @@ To apply your changes:
 ```kubectl apply --filename ingress.yaml --namespace <namespace>```
 
 
-### Resources deployed using helm chart
+### Resources deployed using a helm chart
 
 **NOTE** - Check the helm version
 
-The Cloud Platform kubernetes version 1.21 is compatible with helm version 3.5.x so make sure you have the 
-correct version installed before updating the manifest. If you are on older helm versions, you might get error as below:
+The Cloud Platform runs on Kubernetes v1.21 and is compatible with helm version 3.5.x. Please make sure you have the 
+correct version installed before updating the manifest. If you are on older helm versions, you might get an error below:
 
 ```
 Error: UPGRADE FAILED: rendered manifests contain a new resource that already exists. 
@@ -170,22 +142,13 @@ spec:
 {{- end }}
 </pre>
 
-Migrate to use the networking.k8s.io/v1 API version. Main changes include
-
- * Change the `apiVersion` to `networking.k8s.io/v1`
- * Add `pathType: ImplementationSpecific` after `path: /`
- * Rename `-backend.serviceName` to `-backend.service.name`
- * for String servicePort rename `-backend.servicePort` to `-backend.service.port.name`
- * For Numeric servicePort rename `-backend.servicePort` to `-backend.service.port.number`
- * 
-
 The manifest after changes will look like:
 
 <pre>
   {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "app.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: <b>networking.k8s.io/v1beta1</b>
+apiVersion: <b>networking.k8s.io/v1</b>
 kind: Ingress
 metadata:
   name: {{ $fullName }}
@@ -196,6 +159,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
+  ingressClassName: {{ .Values.ingress.ingressClassName }}
   tls:
   {{- range .Values.ingress.hosts }}
   - hosts:
@@ -225,8 +189,6 @@ To apply your changes:
 helm upgrade -f <values-file.yaml> <your-release> <your-chart> --namespace <your-namespace>
 ```
 
-**NOTE: If you dont update your manifest to use the latest API versions after we upgraded to kubernetes 1.22, 
-you will get failures when deploying your application.**
 
 ### Getting help
 
