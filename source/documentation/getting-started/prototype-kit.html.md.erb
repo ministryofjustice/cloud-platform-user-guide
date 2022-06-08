@@ -14,7 +14,7 @@ To publish a prototype you'll need to:
 
 * be a member of at least one GitHub team in the [MoJ GitHub Organisation]
 * have the [Cloud Platform CLI] installed
-* have a local development environment including a terminal and a [git client] or [github desktop]
+* have a local development environment including a terminal and a [git client]/[github desktop]
 
 ### Assumptions
 
@@ -98,32 +98,67 @@ Create a copy of your prototype kit repository:
 ```bash
 $ git clone git@github.com:ministryofjustice/<your-prototype-repository>.git
 $ cd <your-prototype-repository>
+$ git checkout main 
 $ cloud-platform prototype deploy create
 ```
 
-This will create the files to build and deploy your prototype kit to the environment you created in the above steps.
+This will create the files to build and deploy your prototype kit to the environment you created in step 2 and 3.
 
-The github action file under ./github/workflows and the continuos deployment filenames are generated based on the git branch you are in.
-
-To generate the files for a specific branch, checkout to the branch and run the same command
-
-For example, if you branch is called `tooling`, then the files are generated as
+## 5. Push these files to github
 
 ```bash
-./.github/workflows/cd-tooling.yaml
-kubernetes-deploy-tooling.tpl
+$ git add .
+$ git commit -m "Add docker build and deployment files"
+$ git push origin main
 ```
-Once you add those files and pushed to the branch, the prototype kit will be deployed using the github action that is run by your repository.
+
+If you dont have permissions to push directly to the main/default branch, create a branch and raise PR to have it approved and merge.
+
+Create a new branch and add/commit the files to Git:
+
+```bash
+$git checkout -b my-branch
+$ git add .
+$ git commit -m "Add docker build and deployment files"
+$ git push origin my-branch
+```
+
+Once these files are pushed to your github repository, the prototype kit will be deployed using the github action that is run by your repository.
 
 Look under "Actions" tab on your github repository UI for the progress of the deployment.
 
 Your prototype will be deployed in the below url:
 
 ```
-https://<your-prototype-repository>-<branch>.apps.live.cloud-platform.service.justice.gov.uk
+https://<your-prototype-repository>-<main>.apps.live.cloud-platform.service.justice.gov.uk
 ```
 
-> The docker build files work only on the **latest version** of the prototype kit which we regularly update in the [moj-prototype-template]. Your deployment
+## 6. Publish prototype kit for changes on a specific branch
+
+The github action file under `./github/workflows` and the continuos deployment filenames are generated based on the git branch you are in.
+
+To generate the files for a specific branch, checkout to the branch and run the same command
+
+For example, if you branch is called `tooling`,
+
+```bash
+$ git clone git@github.com:ministryofjustice/<your-prototype-repository>.git
+$ cd <your-prototype-repository>
+$ git checkout tooling
+$ cloud-platform prototype deploy create
+```
+
+The files generated for deploying in specific branch are as below:
+
+```
+./.github/workflows/cd-tooling.yaml
+kubernetes-deploy-tooling.tpl
+Dockerfile
+.dockerignore
+start.sh
+```
+
+> The docker build files `Dockerfile,.dockerignore, start.sh` work only on the **latest version** of the prototype kit which we regularly update in the [moj-prototype-template]. Your deployment
 may break if your prototype kit is not the latest version.
 
 If you want to skip the docker build files when deploying to a branch, you can add a `--skip-docker-files` flag. For example: 
@@ -132,10 +167,10 @@ If you want to skip the docker build files when deploying to a branch, you can a
 $ cloud-platform prototype deploy create --skip-docker-files
 ```
 
-## Branch deployment and github actions files
+## Branch deployment and cleanup
 
-When you create the deployment files using `step 4` for a branch, those files are used to deploy the changes to that specific branch. If the branch is merged to the 
-main branch, these deployment files will get merged as well. You can do the cleanup by deleting the files specific to the branch. 
+When you create the deployment files using `step 5` for a branch, they are generated to deploy on that specific branch. If the branch is merged to the 
+main branch, these deployment files will get merged as well. You can do the cleanup by deleting the files specifically created for that branch. 
 
 ## Deleting your published prototype
 
