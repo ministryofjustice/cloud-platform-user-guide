@@ -76,6 +76,18 @@ These will work, but in order to deploy the docker images you built in the earli
 
 You also need to change the `host` entry in the `ingress.yaml` file, so that this instance of the application has a unique hostname (i.e. change `multi-container-demo.apps.live.cloud-platform.service.justice.gov.uk` to something like `[yourname]-demo.apps.live.cloud-platform.service.justice.gov.uk`)
 
+Additionally in the `ingress.yaml` file, you will need to amend the following line:
+
+```
+  - external-dns.alpha.kubernetes.io/set-identifier: <ingress-name>-<namespace-name>-green
+```
+
+`<ingress-name>` should be set to the name identifier of your ingress, in this case `multi-container-demo`.
+
+`<namespace-name>` should be set to the namespace which you are working within.
+
+`green` here is the correct value for ingress in EKS `live` cluster so leave as it is.
+
 > The cluster will not allow you to deploy an ingress with the same hostname as an existing ingress, so it's important to ensure your hostname is unique.
 
 In `rails-app-deployment.yaml` and `worker-deployment.yaml` you can see the configuration for two environment variables:

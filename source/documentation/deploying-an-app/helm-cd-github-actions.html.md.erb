@@ -118,6 +118,19 @@ By default this is `rds-instance-output` so this line should be:
 databaseUrlSecretName: rds-instance-output
 ```
 
+Next, you will see the line:
+
+```
+  - external-dns.alpha.kubernetes.io/set-identifier: <ingress-name>-<namespace-name>-green
+```
+
+We need to replace `<ingress-name>` with the name for our ingress - in the case of 
+this demo application `multi-container-app`.
+
+`<namespace-name>` will need to be replaced with the namespace which you are working within.
+
+`green` here is the correct value for ingress in EKS `live` cluster so leave as it is.
+
 A little further down in the same file, you should see these lines:
 
 ```
