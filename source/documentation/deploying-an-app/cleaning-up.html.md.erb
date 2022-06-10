@@ -1,6 +1,6 @@
 ---
 title: Removing an unneeded namespace
-last_reviewed_on: 2022-05-30
+last_reviewed_on: 2022-06-10
 review_in: 3 months
 ---
 
@@ -24,9 +24,9 @@ deleting the folder:
 
 ...and all its contents, from the [cloud-platform-environments][envrepo] repository.
 
-Merging this [PR] will trigger the [detect-deleted-namespaces Pipeline][detect-deleted-namespaces],
-which will alert cloud-platform team to delete all of your namespace's AWS resources, followed by the
-namespace itself.
+Merging this [PR] will trigger the [destroy-deleted-namespaces Pipeline](/documentation/other-topics/apply-pipeline.html),
+which will delete all of your non production (with namespace annotation "cloud-platform.justice.gov.uk/is-production = false") namespace's AWS resources, followed by the
+namespace itself, for production namespaces cloud-platform team will get an alert to manually delete the namespace.
 
 > NB: If you have set up a CI/CD pipeline, which deploys into your namespace,
 then this should be deleted first, so that anything you delete later is not
@@ -34,4 +34,4 @@ immediately recreated by your build pipeline.
 
 [envrepo]: https://github.com/ministryofjustice/cloud-platform-environments
 [PR]: https://help.github.com/en/articles/about-pull-requests
-[detect-deleted-namespaces]: https://concourse.cloud-platform.service.justice.gov.uk/teams/main/pipelines/environments-live/jobs/detect-deleted-namespaces
+[destroy-deleted-namespaces]: https://concourse.cloud-platform.service.justice.gov.uk/teams/main/pipelines/environments-live/jobs/destroy-deleted-namespaces
