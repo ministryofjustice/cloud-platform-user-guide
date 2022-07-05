@@ -19,13 +19,13 @@ and or Helm Charts to reflect this change, prior to the removal of the
 ### Do I need to update my application domain? 
 
 To check whether you have a Cloud Platform hosted application still configured to use the 
-live-1 domain, please consult [this page](https://reports.cloud-platform.service.justice.gov.uk/live_1_domains).
+`live-1` domain, please consult [this page](https://reports.cloud-platform.service.justice.gov.uk/live_1_domains).
 
 ### Downtime
 
-Switching your domain over may incur a short period of downtime. If you wish to
-avoid this you can follow [these steps](#zero-downtime-approach) described further down
-in this guide.
+Switching your domain over may incur a short period of downtime. If you wish to test
+your new `live` hostname is working before deleting your `live-1` hostname,  you can follow 
+[these steps](#staged-migration) described further down in this guide.
 
 ### Steps to follow
 
@@ -176,10 +176,10 @@ To apply your changes via Helm:
 Once you applied your updates you should be able to check that your ingress has been updated
 by visiting your URL on your web browser.
 
-### Zero downtime approach
+### Staged migration
 
-To avoid any downtime, you can edit your ingress to temporarily contain both live-1 and 
-live hostnames, removing the live-1 hostname once you are able to resolve via the new hostname.
+You can edit your ingress to temporarily contain both `live-1` and `live` hostnames, removing 
+the old hostname once you are able to resolve via the new hostname.
 
 For standard Kubernetes manifests, this can be achieved as follows:
 
