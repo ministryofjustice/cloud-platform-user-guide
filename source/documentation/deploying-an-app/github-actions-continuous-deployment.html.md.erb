@@ -1,6 +1,6 @@
 ---
 title: Continuous Deployment of an application using Github Actions
-last_reviewed_on: 2022-03-24
+last_reviewed_on: 2022-07-05
 review_in: 3 months
 ---
 
@@ -365,13 +365,59 @@ The final step in the GitHub Action is to apply the yaml file like this:
 Now if you raise and merge a PR making a change to `index.html`, you should see
 your GitHub Action run and deploy your changes to the cluster.
 
-For reference, this is the full [GitHub Action].
+For reference, your complete GitHub Action `cd.yaml` should look like below:
+
+```yaml
+name: Continuous Deployment
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'main'
+
+env:
+  KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build
+        run: docker build -t foo .
+      - name: Push to ECR
+        id: ecr
+        uses: jwalton/gh-ecr-push@v1
+        with:
+          access-key-id: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+          secret-access-key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+          region: eu-west-2
+          local-image: foo
+          image: ${{ secrets.ECR_NAME }}:${{ github.sha }}
+      - name: Update image tag
+        env:
+          ECR_URL: ${{ secrets.ECR_URL }}
+        run: export IMAGE_TAG=${{ github.sha }} && cat kubernetes-deploy.tpl | envsubst > kubernetes-deploy.yaml
+      - name: Authenticate to the cluster
+        env:
+          KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }}
+        run: |
+          echo "${{ secrets.KUBE_CERT }}" > ca.crt
+          kubectl config set-cluster ${KUBE_CLUSTER} --certificate-authority=./ca.crt --server=https://${KUBE_CLUSTER}
+          kubectl config set-credentials deploy-user --token=${{ secrets.KUBE_TOKEN }}
+          kubectl config set-context ${KUBE_CLUSTER} --cluster=${KUBE_CLUSTER} --user=deploy-user --namespace=${{ secrets.KUBE_NAMESPACE }}
+          kubectl config use-context ${KUBE_CLUSTER}
+      - name: Apply the updated manifest
+        run: |
+          kubectl -n ${KUBE_NAMESPACE} apply -f kubernetes-deploy.yaml
+```
 
 [ConfigMap]: https://kubernetes.io/docs/concepts/configuration/configmap/
 [ServiceAccount]: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
 [environments repository]: https://github.com/ministryofjustice/cloud-platform-environments
 [cloud platform cli]: ../getting-started/cloud-platform-cli.html
-[GitHub Action]: https://gist.github.com/862a8ad93de5f4b4838420437a97f3b2
 [GitHub Actions Secrets]: https://docs.github.com/en/free-pro-team@latest/actions/reference/encrypted-secrets
 [create serviceaccount]: ../getting-started/cloud-platform-cli.html#add-a-service-account-to-your-namespace
 [ECR module]: https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials#aws-ecr-terraform-module
