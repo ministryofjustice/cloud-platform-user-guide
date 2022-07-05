@@ -1,0 +1,246 @@
+---
+title: Migrating your application URL from live-1 to live domain
+last_reviewed_on: 2022-07-05
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+### Background
+
+Following the decomissioning of Cloud Platform live-1 Kubernetes cluster, we are now
+looking to ensure that all services currently running have their domain URL migrate
+to the new live domain `apps.live.cloud-platform.service.justice.gov.uk`
+
+We are asking all users of the platform to check/update their Kubernetes deployments 
+and or Helm Charts to reflect this change, prior to the removal of the 
+`*.apps.live-1.cloud-platform.services.justice.gov.uk` Route53 hosted zone in the near future.
+
+### Do I need to update my application domain? 
+
+To check whether you have a Cloud Platform hosted application still configured to use the 
+`live-1` domain, please consult [this page](https://reports.cloud-platform.service.justice.gov.uk/live_1_domains).
+
+### Downtime
+
+Switching your domain over may incur a short period of downtime. If you wish to test
+your new `live` hostname is working before deleting your `live-1` hostname,  you can follow 
+[these steps](#staged-migration) described further down in this guide.
+
+### Steps to follow
+
+To view your current domain URL for your given deployment, run the following kubectl command:
+
+`kubectl --namespace <namespace> get ingress`
+
+and take note of the URL shown under `HOSTS`:
+
+```
+HOSTS
+my-application.apps.live-1.cloud-platform.service.justice.gov.uk
+```
+
+### Resources deployed using kubectl
+
+If you are using standard Kubernetes deployment manifests, your ingress manifest should look 
+similar to the following:
+
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: helloworld
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    external-dns.alpha.kubernetes.io/set-identifier: helloworld-mynamespace-green
+    external-dns.alpha.kubernetes.io/aws-weight: "100"
+spec:
+  tls:
+  - hosts:
+    - my-application.apps.live-1.cloud-platform.service.justice.gov.uk
+  rules:
+  - host: my-application.apps.live-1.cloud-platform.service.justice.gov.uk
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: helloworld
+            port:
+              number: 4567
+```
+
+Update your manifest to use the live domain:
+
+- Change the `hosts` value under `spec`, `tls` to `my-application.apps.live.cloud-platform.service.justice.gov.uk`
+- Change the `host` value under `spec`, `rules` to `my-application.apps.live.cloud-platform.service.justice.gov.uk`
+
+Your manifest should appear like below after these changes:
+
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: helloworld
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    external-dns.alpha.kubernetes.io/set-identifier: helloworld-mynamespace-green
+    external-dns.alpha.kubernetes.io/aws-weight: "100"
+spec:
+  tls:
+  - hosts:
+    - my-application.apps.live.cloud-platform.service.justice.gov.uk
+  rules:
+  - host: my-application.apps.live.cloud-platform.service.justice.gov.uk
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: helloworld
+            port:
+              number: 4567
+```
+To apply your changes:
+
+`kubectl apply --filename ingress.yaml --namespace <namespace>`
+
+### Resources deployed using Helm
+
+If your ingress manifest looks similar to below:
+
+```
+{{- if .Values.ingress.enabled -}}
+{{- $fullName := include "app.fullname" . -}}
+{{- $ingressPath := .Values.ingress.path -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+  annotations:
+  {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  tls:
+  {{- range .Values.ingress.hosts }}
+  - hosts:
+    - {{ .host }}
+    {{ if .cert_secret }}secretName: {{ .cert_secret }}{{ end }}
+  {{- end }}
+  rules:
+  {{- range .Values.ingress.hosts }}
+    - host: {{ .host }}
+      http:
+        paths:
+          - path: {{ $ingressPath }}
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ $fullName }}
+                port: 
+                  name: http
+  {{- end }}
+{{- end }}
+```
+
+You are looking to change the value of `host` within your Helm chart `values.yaml`:
+
+```
+ingress:
+  ...
+  ...
+  hosts:
+    - host: my-application.apps.live-1.cloud-platform.service.justice.gov.uk
+```
+
+Afterwards, your `values.yaml` should look similar to the following:
+
+```
+ingress:
+  ...
+  ...
+  hosts:
+    - host: my-application.apps.live.cloud-platform.service.justice.gov.uk
+```
+To apply your changes via Helm:
+
+`helm upgrade -f <values-file.yaml> <your-release> <your-chart> --namespace <your-namespace>`
+
+### Check everything is working
+
+Once you applied your updates you should be able to check that your ingress has been updated
+by visiting your URL on your web browser.
+
+### Staged migration
+
+You can edit your ingress to temporarily contain both `live-1` and `live` hostnames, removing 
+the old hostname once you are able to resolve via the new hostname.
+
+For standard Kubernetes manifests, this can be achieved as follows:
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: helloworld
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    external-dns.alpha.kubernetes.io/set-identifier: helloworld-mynamespace-green
+    external-dns.alpha.kubernetes.io/aws-weight: "100"
+spec:
+  tls:
+  - hosts:
+    - my-application.apps.live.cloud-platform.service.justice.gov.uk
+  rules:
+  - host: my-application.apps.live-1.cloud-platform.service.justice.gov.uk
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: helloworld
+            port:
+              number: 4567
+  - host: my-application.apps.live.cloud-platform.service.justice.gov.uk
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: helloworld
+            port:
+              number: 4567
+```
+And running:
+
+`kubectl apply --filename ingress.yaml --namespace <namespace>`
+
+Once you are satisified that the new hostname is working, remove the `host:` block
+for live-1, and run the above apply command again.
+
+```yaml
+  - host: my-application.apps.live-1.cloud-platform.service.justice.gov.uk
+  http:
+    paths:
+    - path: /
+      pathType: ImplementationSpecific
+      backend:
+        service:
+          name: helloworld
+          port:
+            number: 4567
+```
+
+
+### Getting help
+
+If you have any questions, please contact us on [#ask-cloud-platform] Slack channel.
+
+[#ask-cloud-platform]: https://mojdt.slack.com/messages/C57UPMZLY
