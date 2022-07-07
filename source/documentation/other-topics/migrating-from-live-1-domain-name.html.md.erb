@@ -1,6 +1,6 @@
 ---
 title: Migrating your application URL from live-1 to live domain
-last_reviewed_on: 2022-07-05
+last_reviewed_on: 2022-07-06
 review_in: 3 months
 ---
 
@@ -21,13 +21,13 @@ and or Helm Charts to reflect this change, prior to the removal of the
 To check whether you have a Cloud Platform hosted application still configured to use the 
 `live-1` domain, please consult [this page](https://reports.cloud-platform.service.justice.gov.uk/live_1_domains).
 
-### Downtime
-
-Switching your domain over may incur a short period of downtime. If you wish to test
-your new `live` hostname is working before deleting your `live-1` hostname,  you can follow 
-[these steps](#staged-migration) described further down in this guide.
-
 ### Steps to follow
+
+> **IMPORTANT**: Switching your domain over will incur a short delay due to DNS propogation. We strongly
+advise you to test in non-production environments before making the change on any production environments. 
+
+> If you wish to test your new `live` hostname is resolvable before deleting your `live-1` hostname,  you can follow 
+[these steps](#staged-migration) described further down in this guide.
 
 To view your current domain URL for your given deployment, run the following kubectl command:
 
