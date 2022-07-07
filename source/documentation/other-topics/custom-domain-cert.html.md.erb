@@ -21,6 +21,8 @@ Most applications will need their own, application-specific `gov.uk` hostname.
 These hostnames (or usually, entire domains) are managed individually and a
 number of actions are required to set them up.
 
+> Note: Using pre-defined domain is only recommended for development/staging/uat environments, as this is cluster bound and we will not always be on the live cluster. For any production environments, we strongly recommend using the custom domain, as it will always be the same regardless of what cluster the domain lives on.
+
 ### Setup
 
 Domains are managed inside [DNS zones]. You can read more about the structure
