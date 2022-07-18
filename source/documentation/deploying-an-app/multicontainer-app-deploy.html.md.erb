@@ -1,6 +1,6 @@
 ---
 title: Deploying a multi-container application to the Cloud Platform
-last_reviewed_on: 2022-05-31
+last_reviewed_on: 2022-07-18
 review_in: 3 months
 ---
 
@@ -32,7 +32,7 @@ The [demo application][multi-demo], and this guide, assumes a DATABASE_URL envir
     # rds.tf
     ...
     data {
-      url = postgres://${module.module_name.database_username}:${module.module_name.database_password}@${module.module_name.rds_instance_endpoint}/${module.module_name.database_name}
+      url = "postgres://${module.module_name.database_username}:${module.module_name.database_password}@${module.module_name.rds_instance_endpoint}/${module.module_name.database_name}"
     }
     ...
 

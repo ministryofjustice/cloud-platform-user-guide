@@ -1,6 +1,6 @@
 ---
 title: Getting application metrics into Prometheus
-last_reviewed_on: 2022-05-31
+last_reviewed_on: 2022-07-18
 review_in: 3 months
 ---
 
@@ -23,7 +23,7 @@ We need to add the Prometheus Ruby client library via a gem to give us our `/met
 First, add the gem to your Gemfile and install with bundler. 
 
 ```
-gem `prometheus-client`
+gem 'prometheus-client'
 ```
 
 Next, we need to amend the `config.ru` file and include the two `rack` middlewares required by the `prometheus-client`. 
