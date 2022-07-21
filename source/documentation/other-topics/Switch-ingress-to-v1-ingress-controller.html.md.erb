@@ -1,6 +1,6 @@
 ---
 title: Switch ingress to the new nginx-ingress-controller v1.2
-last_reviewed_on: 2022-07-13
+last_reviewed_on: 2022-07-21
 review_in: 3 months
 ---
 
@@ -175,9 +175,9 @@ To apply the changes to the ingress, as a quick alternative to running your appl
 kubectl -n <namespace-name> apply -f ingress-new.yaml
 ```
 
-#### Verify traffic sent to the new ingress
+#### Verify and wait for traffic to be sent to the new ingress
 
-After you have applied new ingress with `external-dns.alpha.kubernetes.io/aws-weight` value set to "100", you can verify traffic is being sent to the new ingress using [grafana][grafana-live]
+After you have applied new ingress with `external-dns.alpha.kubernetes.io/aws-weight` value set to "100", wait for couple of minutes for the traffic to be sent to the new ingress, you can verify traffic is being sent to the new ingress using [grafana][grafana-live]
 
 Get the "hostname" used in your ingress for your namespace
 
