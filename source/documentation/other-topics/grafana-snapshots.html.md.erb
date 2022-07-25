@@ -1,16 +1,16 @@
 ---
-title: Publish Grafana Dashboard Snapshots
+title: Publish a Grafana Dashboard Snapshot
 last_reviewed_on: 2022-07-25
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
 
-## Introduction
+### Introduction
 
-You can publish a dashboard snapshot to users within and outside of the MOJ organisation.
+Cloud Platform users can publish a dashboard snapshot to users within and outside of the MOJ organisation.
 
-### Publish a Snapshots
+### Publish a Snapshot
 
 A dashboard snapshot shares an interactive dashboard publicly. Grafana strips sensitive data like queries (metric, template and annotation) and panel links, leaving only the visible metric data and series names embedded into your dashboard. Dashboard snapshots can be accessed by anyone with the link.
 
@@ -20,17 +20,19 @@ You can set an expiration time if you want the snapshot removed after a certain 
 
 #### Steps:
 
-* Click the `Share dashboard or panel` button next to the dashboard name on the dashboard page.
+1) Click the `Share dashboard or panel` button next to the dashboard name on the dashboard page.
 
 ![Dashboard share button](/images/grafana-snapshot1.png)
 
-* Select the `Snapshot` option.
-* Enter a name for the snapshot.
-* Select the `Expire` option.
+2) Select the `Snapshot` option.
 
+3) Enter a name for the snapshot.
+
+4) Select the `Expire` option.
+    
     Options are Never, 1 hour, 1 day and 7 days.
 
-* Click the `Local Snapshot` or `Publish to snapshot.raintank.io` button to publish.
+5) Click the `Local Snapshot` or `Publish to snapshot.raintank.io` button to publish.
 
 ![Dashboard share page](/images/grafana-snapshot2.png)
 
