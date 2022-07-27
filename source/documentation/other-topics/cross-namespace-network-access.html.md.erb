@@ -1,0 +1,47 @@
+---
+title: Cross Namespace Network Access
+last_reviewed_on: 2022-07-27
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+### Overview
+This following user guide is to demostrate how cross namespace network access works. The advised option is to use a service and network policy to communicate within the cluster. 
+
+### Usage
+Using a service and specifying a NetworkPolicy that allows Ingress from the source namespace, this allows a connection directly on an internal IP, with no Nginx in front.
+
+To do this adding a NetworkPolicy to `04-networkpolicy.yaml` in the source namespace
+ 
+Example:
+
+```
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-token-verification-api-dev
+  namespace: example-dev
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              component: token-verification-api-dev // This should match the namespace label
+```
+
+To also allow this change to work within the `00-namespace.yaml` a label will need to be added for component. This needs to match what is in the component in the matchLabels section on the NetworkPolicy
+
+Example:
+
+```
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    component: token-verification-api-dev // This should match the component in the NetworkPolicy
+```
