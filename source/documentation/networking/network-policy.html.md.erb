@@ -1,6 +1,6 @@
 ---
 title: Network Policies
-last_reviewed_on: 2022-05-09
+last_reviewed_on: 2022-07-28
 review_in: 3 months
 ---
 
@@ -40,7 +40,6 @@ metadata:
     cloud-platform.justice.gov.uk/source-code: "https://github.com/ministryofjustice/court-probation-service"
 ```
 
-
 ##  Network Policy  
 
 Once the relevant label has been added to the namespace, the policy can be created.   
@@ -76,4 +75,43 @@ To access a service in the target namespace **from the source namespace** we nee
 
 ```
 curl myservice.target-namespace
+```
+
+## Cross Namespace Network Access
+This following user guide is to demostrate how cross namespace network access works. The advised option is to use a service and network policy to communicate within the cluster. 
+
+Using a service and specifying a NetworkPolicy that allows Ingress from the source namespace, this allows a connection directly on an internal IP, without going via the Nginx reverse proxy in front. This increases throughput and reduces latency, with the caveat that logs will not be visible in the ingress Kibana index, only in the cluster (pod) logs.
+
+To do this adding a NetworkPolicy to `04-networkpolicy.yaml` in the source namespace
+ 
+Example:
+
+```
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-token-verification-api-dev
+  namespace: example-dev
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              component: token-verification-api-dev // This should match the namespace label
+```
+
+To also allow this change to work within the `00-namespace.yaml` a label will need to be added for component. This needs to match what is in the component in the matchLabels section on the NetworkPolicy
+
+Example:
+
+```
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    component: token-verification-api-dev // This should match the component in the NetworkPolicy
 ```
