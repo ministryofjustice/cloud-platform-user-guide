@@ -1,0 +1,40 @@
+---
+title: What is the Cloud Platform?
+last_reviewed_on: 2022-08-03
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+## Overview
+
+The Ministry of Justice's Cloud Platform is a modern, cloud-native hosting platform for digital services built within the Ministry of Justice.
+
+The Cloud Platform provides a way for teams to:
+
+- deploy a service or application into the cloud
+- utilise common tooling, such as monitoring, logging, alerting, and security scanning of container images, without teams needing to configure or manage the infrastructure
+- implement zero downtime deploys, scalability, and high availability of services
+
+The Cloud Platform team manage the cloud infrastructure that services run on, including common tooling infrastructure.
+
+## What can I host on the Cloud Platform?
+
+The Cloud Platform supports services and applications that:
+
+- run in Linux-based containers
+- are secure by default (i.e. up-to-date and follow MOJ's [Security Guidance](https://security-guidance.service.justice.gov.uk/))
+- want to use backing services from Amazon Web Services, such as Amazon RDS or Amazon Simple Queue Service
+- follow the [Twelve-Factor app method](https://12factor.net/) (specifically, [stateless](https://12factor.net/processes) and [disposable](https://12factor.net/disposability))
+- don't require Public Services Network (PSN) connectivity
+- are not classified as **Secret** or **Top Secret** (see below for more information)
+
+The current implementation of Cloud Platform uses [Kubernetes](https://kubernetes.io/) for container management and runs on Amazon Web Services.
+
+## What is the highest security classification I can host on the Cloud Platform?
+
+The Ministry of Justice follows the UK government's [Government Security Classification system](https://security-guidance.service.justice.gov.uk/government-classification-scheme/#government-classification-scheme).
+
+The Cloud Platform can host services up to, but not including, **Secret** within the Government Security Classification system.
+
+If you need formal assurance that your service can be hosted on the Cloud Platform, you should [contact the MOJ's security team](https://security-guidance.service.justice.gov.uk/user-guide/#security-team-asking-for-help).
