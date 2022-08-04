@@ -1,76 +1,76 @@
 ---
-title: The Cloud Platform CLI
-last_reviewed_on: 2022-07-29
+title: Cloud Platform CLI
+last_reviewed_on: 2022-08-04
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
 
-The [cloud platform cli] is a command-line tool to help you work with the cloud
-platform.
+The [Cloud Platform Command Line Interface](https://github.com/ministryofjustice/cloud-platform-cli) (CLI) lets you create and manage Cloud Platform namespaces and resources directly from the terminal, without needing to manually write Kubernetes YAML files or Terraform.
 
-The idea is to enable you to manage resources in your environment without
-always needing to craft your terraform or kubernetes yaml files by hand, and to
-simplify some common tasks (like checking the github teams in your kube config
-file).
+It also simplifies some common tasks that are needed to interact with the Cloud Platform.
 
-## Installation
+## Installing the Cloud Platform CLI
 
-The CLI tool is a single binary: `cloud-platform`.
+### Homebrew
 
-If you're on a Mac, you can install it using [Homebrew](https://brew.sh/):
+You can install the Cloud Platform CLI via [Homebrew](https://brew.sh):
 
-```bash
+```sh
 $ brew install ministryofjustice/cloud-platform-tap/cloud-platform-cli
 ```
 
-> Note: This only works if Homebrew is installed on your computer, please
-> visit Homebrew home page for up-to-date instructions on how to install it.
+### Manual installation
 
-Alternatively, install the binary into your $PATH (choose from the [GitHub releases] for your system):
+If you don't use `brew`, you can manually install the Cloud Platform CLI.
 
-```bash
-# Mac - Intel
-tar xzv -C /usr/local/bin/ -f <(curl -sL $(curl -sL https://api.github.com/repos/ministryofjustice/cloud-platform-cli/releases/latest | jq -r '.assets[] | select(.browser_download_url | match("darwin_amd64")) | .browser_download_url'))
+#### Mac
 
-# Mac - Apple Silicon - M1 etc
-tar xzv -C /usr/local/bin/ -f <(curl -sL $(curl -sL https://api.github.com/repos/ministryofjustice/cloud-platform-cli/releases/latest | jq -r '.assets[] | select(.browser_download_url | match("darwin_arm64")) | .browser_download_url'))
+##### Intel (64-bit)
 
-# Linux - 64 bit
-tar xzv -C /usr/local/bin/ -f <(curl -sL $(curl -sL https://api.github.com/repos/ministryofjustice/cloud-platform-cli/releases/latest | jq -r '.assets[] | select(.browser_download_url | match("linux_amd64")) | .browser_download_url'))
+```sh
+$ tar xzv -C /usr/local/bin/ -f <(curl -sL $(curl -sL https://api.github.com/repos/ministryofjustice/cloud-platform-cli/releases/latest | jq -r '.assets[] | select(.browser_download_url | match("darwin_amd64")) | .browser_download_url'))
 ```
 
-### Checking your install
+##### Apple Silicon (M1, M2, etc)
 
-To check the CLI is installed, see if this runs successfully:
+```sh
+$ tar xzv -C /usr/local/bin/ -f <(curl -sL $(curl -sL https://api.github.com/repos/ministryofjustice/cloud-platform-cli/releases/latest | jq -r '.assets[] | select(.browser_download_url | match("darwin_arm64")) | .browser_download_url'))
+```
 
-```bash
+#### Linux (64-bit)
+
+```sh
+$ tar xzv -C /usr/local/bin/ -f <(curl -sL $(curl -sL https://api.github.com/repos/ministryofjustice/cloud-platform-cli/releases/latest | jq -r '.assets[] | select(.browser_download_url | match("linux_amd64")) | .browser_download_url'))
+```
+
+## Verify your installation
+
+To check the Cloud Platform CLI has installed correctly, you can run:
+
+```sh
 $ cloud-platform version
 ```
 
-### Keeping up to date
+## Keeping up to date
 
-You should always use the latest version. To check, run:
+To check if you're using the latest version of Cloud Platform CLI, you can run:
 
-```bash
+```sh
 $ cloud-platform version
 ```
 
-If you're *not* on the latest version, you'll see this message:
+If you installed the Cloud Platform CLI using [Homebrew](https://brew.sh), you can run:
 
-```
-Update required. Current version: 1.XX.X, Latest version: 1.YY.Y
-```
-
-To upgrade the cloud platform cli, if you installed it with homebrew:
-
-```bash
-brew update && brew upgrade cloud-platform-cli
+```sh
+$ brew update && brew upgrade cloud-platform-cli
 ```
 
-Or if you installed the binary directly, for example at `/usr/local/bin/cloud-platform`, replace it with the latest binary by doing another [install](#installation)
+If you installed the Cloud Platform CLI using a different method, reinstall the CLI by following the [Manual installation](#manual-installation) instructions.
 
 ## Functions
+
+<!-- TODO: Autogenerate this or a commands page from cloud-platform-cli -->
 
 This describes the current capabilities of the CLI tool.
 
