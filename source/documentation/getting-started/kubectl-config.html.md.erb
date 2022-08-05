@@ -1,86 +1,102 @@
 ---
-title: How to use `kubectl` to connect to the cluster
-last_reviewed_on: 2022-07-20
+title: Connecting to the Cloud Platform's Kubernetes cluster
+last_reviewed_on: 2022-08-05
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
 
-This is a guide to installing and configuring `kubectl`, the official command-line tool for Kubernetes.
+To use the Ministry of Justice's Cloud Platform, you need to connect to the Cloud Platform's Kubernetes cluster.
 
-`kubectl` is used to deploy and manage applications on Kubernetes. Cloud Platform users will often use it, in addition to the [Cloud Platform CLI](/documentation/getting-started/cloud-platform-cli.html).
+This guide will take you through installing and configuring `kubectl`. `kubectl` is the official command line tool for Kubernetes.
 
-After working through this guide you should be able to use kubectl to query and update all the kubernetes resources in your namespace(s) on the Cloud Platform.
+Once installed and configured, you can use `kubectl` to deploy and manage your applications on the Cloud Platform, in addition to the [Cloud Platform CLI](/documentation/getting-started/cloud-platform-cli.html).
 
-## Installation
+## Installing `kubectl`
 
-To install `kubectl`, please follow the official docs: [Install kubectl][kubectl-install].
+>You should install a version of `kubectl` that is within one minor version of the Cloud Platform's Kubernetes cluster.
 
-### Kubectl version
+The Cloud Platform's current [Kubernetes cluster version is 1.21](https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/main/terraform/aws-accounts/cloud-platform-aws/vpc/eks/cluster.tf#L30). Therefore, you should install `kubectl` version 1.20, 1.21, or 1.22.
 
-Choose a kubectl version that is within one minor version difference of your cluster. For example, kubectl v1.20 should work with a Kubernetes cluster at v1.19, v1.20, and v1.21. (Although in practice there are rarely problems with even newer kubectl versions.)
+There is official documentation on how to install `kubectl`, including how to install a specific version:
 
-You can check the current cluster version here:
+- [Install kubectl on Linux](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
+- [Install kubectl on macOS](https://kubernetes.io/docs/tasks/tools/install-kubectl-macos/)
+- [Install kubectl on Windows](https://kubernetes.io/docs/tasks/tools/install-kubectl-windows/)
 
-* [live Kubernetes version](https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/main/terraform/aws-accounts/cloud-platform-aws/vpc/eks/cluster.tf#L30)
+## Authenticating with the Cloud Platform's Kubernetes cluster
 
-## Authentication
+Once you've [installed `kubectl`](#installing-kubectl), you will need to authenticate with the Cloud Platform's Kubernetes cluster.
 
-Next you'll need to ensure your GitHub user is in the right organization and team, and then do authentication.
+You will need to:
 
-### GitHub setup
+- be part of the `ministryofjustice` GitHub organisation
+- be part of the correct GitHub team(s) for your service
 
-The Cloud Platform uses GitHub for authentication and authorisation:
+### Joining the GitHub organisation
 
-1. Your GitHub user must be a member of the [Ministry of Justice organisation](https://github.com/orgs/ministryofjustice/people). See: [MOJ Technical Guidance - Member of the MoJ organisation](https://technical-guidance.service.justice.gov.uk/documentation/standards/storing-source-code.html#member-of-the-moj-organisation) (Note: you can only join if your user has 2FA enabled and your `...@digital.justice.gov.uk` email address has been added to it)
+You can request access to the `ministryofjustice` GitHub organisation by:
 
-2. Access to each Cloud Platform environment/namespace (e.g. `pvb-production`, `cla-staging`) is granted according to GitHub team membership (e.g. 'PVB' and 'CLA' teams). To check which team is authorized for a particular environment, look in the `00-namespace.yaml` e.g. [00-namespace.yaml](https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live.cloud-platform.service.justice.gov.uk/justicedata-test/00-namespace.yaml#L14)
+- [contacting the Operations Engineering team](https://operations-engineering.service.justice.gov.uk/#how-to-contact-us), or
+- getting your line manager to submit a ServiceNow request under the "GitHub for D&T staff - Add/Amend/Remove" item
 
-### Get a kubeconfig file
+### Joining the correct GitHub teams
 
-You'll login to the cluster using GitHub, and it will provide you with a token file, which you'll save on your machine as `~/.kube/config`
+You can find the correct GitHub team to join by:
 
-For those interested in how it works: GitHub is being used as an OIDC provider. Once you've logged in to GitHub, it provides a token, which is a signed JWT containing your GitHub username and list of teams you're in. GitHub passes it to Auth0 (OIDC broker), which passes it to Cloud Platform's login/Kuberos app, which provides it to you in a 'kubeconfig' file, containing the cluster API URL and token. This kubeconfig will be used when you run kubectl, to authenticate with the Kubernetes cluster in Cloud Platform.
+- finding your services namespace in [`cloud-platform-environments`](https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live.cloud-platform.service.justice.gov.uk)
+- in your namespace directory, view the `00-namespace.yaml` file
+- there will be a `cloud-platform.justice.gov.uk/team-name` key with a value of the GitHub team name to join
+- ask your team to add you to the listed GitHub team
 
-1. Browse to the login URL:
-   * `live` cluster: <https://login.cloud-platform.service.justice.gov.uk/>
+### Generating a kubeconfig file
 
-2. Select 'Sign in with GitHub'. (This page is hosted by Auth0.com)
+To access the Cloud Platform's Kubernetes cluster through `kubectl`, you will need to generate a `kubeconfig` file.
 
-3. You're redirected to github.com and will need to login, if you've not done so already.
+The `kubeconfig` file stores an authentication token for Kubernetes clusters.
 
-4. GitHub asks if 'MOJ Cloud Platforms Auth0' may access your GitHub user details. Select "Authorize".
+To generate a `kubeconfig` file for the Cloud Platform's Kubernetes cluster:
 
+1. Browse to the [login URL for the Cloud Platform](https://login.cloud-platform.service.justice.gov.uk/)
+2. Select "Continue with GitHub"
+3. Login to GitHub (if you're not already logged in)
+4. Authorise the "MOJ Cloud Platforms Auth0 (prod)" application in GitHub
     ![GitHub Authorize MoJ](/images/github-authorize-moj-new.png)
+5. Accept `live:kubernetes` requesting access to your justice-cloud-platform account
+6. Select "Download config file"
+7. Move the config file from `~/Downloads/kubecfg.yaml` to `~/.kube/config` by running:
 
-5. Auth0.com asks if 'live:kubernetes' app may access 'justice-cloud-platform account'. Select "Accept".
-
-6. Select 'Download Config File'.
-
-7. Move the downloaded file to directory and rename the file to config `~/.kube/config`:
-
-    ```bash
-    mv kubecfg.yaml ~/.kube/config
+    ```sh
+    $ mv ~/Downloads/kubecfg.yaml ~/.kube/config
     ```
 
-    The above command will rename the `kubecfg.yaml` file to `config` and move it into the `~/.kube` directory.
+8. Reduce the permissions on the file by running:
 
-    If you've already got a kubeconfig, you may want to replace it, or merge with it - see [Using multiple kubeconfigs](#using-multiple-kubeconfigs).
-
-8. Minimize the permissions on the file:
-
-    ```bash
-    chmod 600 ~/.kube/config
+    ```sh
+    $ chmod 600 ~/.kube/config
     ```
 
-9. Tell kubectl to use this config:
-    * `live` cluster:
+9. Tell `kubectl` to use this configuration by running:
 
-        ```bash
-        kubectl config use-context live.cloud-platform.service.justice.gov.uk
-        ```
+    ```sh
+    $ kubectl config use-context live.cloud-platform.service.justice.gov.uk
+    ```
 
-You should now be able to run `kubectl` commands. Try running `kubectl get namespaces` to list the namespaces in the cluster.
+10. Verify the configuration file by running:
+
+    ```sh
+    $ kubectl get namespaces
+    ```
+
+    Your output should be similar to:
+
+    ```
+    NAME                                              STATUS   AGE
+    abundant-namespace-dev                            Active   100d
+    ...
+    ```
+
+<!-- TODO: Update below or move to another reference article (5th Aug, 2020) -->
 
 #### Troubleshooting: "current" context
 
@@ -104,6 +120,8 @@ CURRENT   NAME                                         CLUSTER                  
 ```
 
 If the `*` is missing, then you need to set the context with the `use-context` command mentioned above.
+
+<!-- TODO: Update below or move to another reference article (5th Aug, 2020) -->
 
 ### Using multiple kubeconfigs
 
