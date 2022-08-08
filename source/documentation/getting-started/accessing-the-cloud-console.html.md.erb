@@ -1,0 +1,98 @@
+---
+title: Accessing the AWS console (read-only)
+last_reviewed_on: 2022-08-08
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+The Cloud Platform provides read-only access to the AWS console to help you visualise resources and debug ancillary services (such as S3, RDS, etc.) without needing to use the [AWS Command Line Interface (CLI)](https://aws.amazon.com/cli/).
+
+You can [login to the AWS console](https://justice-cloud-platform.eu.auth0.com/samlp/mQev56oEa7mrRCKAZRxSnDSoYt6Y7r5m?connection=github) to view your resources in `eu-west-2 (London)`.
+
+## Prerequisites
+
+### GitHub
+
+To access the AWS console, you will need to:
+
+- be part of the `ministryofjustice` GitHub organisation
+- be part of the correct GitHub team(s) for your service
+
+The [Connecting to the Cloud Platform’s Kubernetes cluster](/documentation/getting-started/kubectl-config.html) includes how to do this:
+
+- [Joining the GitHub organisation](/documentation/getting-started/kubectl-config.html#joining-the-github-organisation)
+- [Joining the correct GitHub teams](/documentation/getting-started/kubectl-config.html#joining-the-correct-github-teams)
+
+### Tagging your resources
+
+To be able to view your resources, you need to ensure they are tagged correctly.
+
+You need to tag your resources with a `GithubTeam` key and appropriate value.
+
+To do this:
+
+- find the `resources` directory in your namespace in [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live.cloud-platform.service.justice.gov.uk)
+- tag each resource you want to be visible with the `GithubTeam` key and your GitHub team slug as the value
+
+For example, to tag a resource to allow the `hmpps-interventions` GitHub team to view it:
+
+```hcl
+resource "aws_api_gateway_rest_api" "this" {
+  ...
+
+  tags = {
+    GithubTeam = "hmpps-interventions"
+  }
+}
+```
+
+#### All namespace resources
+
+To tag all of your resources, you can update the `provider "aws"` in `main.tf` to use default tags, instead of applying them singularly, like so:
+
+```hcl
+provider "aws" {
+  region = "eu-west-2"
+
+  default_tags = {
+    GithubTeam = "hmpps-interventions"
+  }
+}
+```
+
+## Login to the AWS console
+
+After you've configured the prerequisites, you can [login to the AWS console](https://justice-cloud-platform.eu.auth0.com/samlp/mQev56oEa7mrRCKAZRxSnDSoYt6Y7r5m?connection=github).
+
+>Ensure you select the `eu-west-2 (London)` region otherwise you won't be able to view anything.
+
+## Understanding the authentication workflow
+
+The Auth0 application that authenticates you will add a `PrincipalTag` key storing all of the GitHub teams your user is a member of. This is stored as a simple colon (`:`) separated string, which is matched against a resource's `GithubTeam` `ResourceTag` to allow you to view it.
+
+You can view the source-code for the implementation in the [cloud-platform-terraform-sso](https://github.com/ministryofjustice/cloud-platform-terraform-aws-sso) repository.
+
+## Caveats
+
+### Cloud Platform
+
+- Access to the AWS console has been designed, and will remain, as read-only. This is to ensure all of your resources are defined as infrastructure-as-code.
+
+- Not all Cloud Platform Terraform modules currently support setting the `GithubTeam` tag.
+
+- IAM policies for read-only access are currently a work in progress. We currently support:
+  - Identity and Access Management (IAM)
+  - Relational Database Service (RDS)
+  - Simple Notification Service (SNS)
+  - Simple Queue Service (SQS)
+  - Simple Storage Service (S3)
+  - Virtual Private Cloud (VPC)
+
+### AWS
+
+- Not all AWS resources support attribute-based access control. You can find out which resources AWS supports by checking the "Authorization based on tags" column in [AWS services that work with IAM](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_aws-services-that-work-with-iam.html).
+
+## Feedback
+
+Please reach out in [#ask-cloud-platform](https://mojdt.slack.com/archives/C57UPMZLY) if you have feedback.
