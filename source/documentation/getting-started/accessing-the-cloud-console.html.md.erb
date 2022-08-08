@@ -35,7 +35,7 @@ You need to tag your resources with a `GithubTeam` key and your GitHub team slug
 To tag all of your resources:
 
 - find the `resources` directory for your namespace in [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live.cloud-platform.service.justice.gov.uk)
-- update the provider declaration in `main.tf` to use `default_tags`, setting the `GithubTeam` key and your GitHub team slug as the value
+- update the provider declaration(s) in `main.tf` to use `default_tags`, setting the `GithubTeam` key and your GitHub team slug as the value
 
 For example, in `main.tf`, to allow resources to be visible to the `hmpps-interventions` GitHub team:
 
@@ -43,8 +43,10 @@ For example, in `main.tf`, to allow resources to be visible to the `hmpps-interv
 provider "aws" {
   region = "eu-west-2"
 
-  default_tags = {
-    GithubTeam = "hmpps-interventions"
+  default_tags {
+    tags = {
+      GithubTeam = "hmpps-interventions"
+    }
   }
 }
 ```
