@@ -28,28 +28,16 @@ The [Connecting to the Cloud Platform’s Kubernetes cluster](/documentation/get
 
 To be able to view your resources, you need to ensure they are tagged correctly.
 
-You need to tag your resources with a `GithubTeam` key and appropriate value.
+You need to tag your resources with a `GithubTeam` key and your GitHub team slug as the value.
 
-To do this:
+#### Tagging all of your namespace resources
 
-- find the `resources` directory in your namespace in [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live.cloud-platform.service.justice.gov.uk)
-- tag each resource you want to be visible with the `GithubTeam` key and your GitHub team slug as the value
+To tag all of your resources:
 
-For example, to tag a resource to allow the `hmpps-interventions` GitHub team to view it:
+- find the `resources` directory for your namespace in [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live.cloud-platform.service.justice.gov.uk)
+- update the provider declaration in `main.tf` to use `default_tags`, setting the `GithubTeam` key and your GitHub team slug as the value
 
-```hcl
-resource "aws_api_gateway_rest_api" "this" {
-  ...
-
-  tags = {
-    GithubTeam = "hmpps-interventions"
-  }
-}
-```
-
-#### All namespace resources
-
-To tag all of your resources, you can update the `provider "aws"` in `main.tf` to use default tags, instead of applying them singularly, like so:
+For example, in `main.tf`, to allow resources to be visible to the `hmpps-interventions` GitHub team:
 
 ```hcl
 provider "aws" {
@@ -60,6 +48,29 @@ provider "aws" {
   }
 }
 ```
+
+#### Tagging a singular resource
+
+To tag a singular resource:
+
+- find the `resources` directory for your namespace in [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live.cloud-platform.service.justice.gov.uk)
+- tag each resource you want to be visible with the `GithubTeam` key and your GitHub team slug as the value
+
+For example, to tag a resource to allow it to be visible to the `laa-apply-for-legal-aid` GitHub team:
+
+```hcl
+resource "aws_api_gateway_rest_api" "this" {
+  ...
+
+  tags = {
+    GithubTeam = "laa-apply-for-legal-aid"
+  }
+}
+```
+
+#### Tagging a module
+
+>This method isn't currently supported, but will be in the future. It is recommended you [tag all of your namespace resources](#tagging-all-of-your-namespace-resources) as `default_tags` are inherited by modules.
 
 ## Login to the AWS console
 
