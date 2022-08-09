@@ -54,6 +54,20 @@ intending to deploy to, the Ministry of Justice's Cloud Platform.
 - [Using a custom domain](documentation/other-topics/custom-domain-cert.html)
 - [Creating a Route 53 Hosted Zone](documentation/other-topics/route53-zone.html) for your DNS records
 
+## Security
+
+<!-- Make clear that IP Filtering should _not_ be used as a security control_. It's here because people conflate it with security -->
+
+- [Security Controls on the Cloud Platform](documentation/concepts/security-controls.html)
+- [IP Filtering](documentation/networking/ip-filtering.html)
+- [ModSecurity - Web Application Firewall](documentation/networking/modsecurity.html)
+- [Network Policies](documentation/networking/network-policy.html)
+- [Adding a secret to an application](documentation/deploying-an-app/add-secrets-to-deployment.html)
+- [Secrets overview](documentation/other-topics/secrets.html)
+- [Git-Crypt](documentation/other-topics/git-crypt-setup.html)
+- [Security testing and ITHC](documentation/other-topics/security-testing-and-ithc.html)
+- [Setup Ingress to redirect security.txt](documentation/networking/redirect-security-txt.html)
+
 ## How-to guides
 <!-- For developers looking to do certain things with Cloud Platform -->
 
@@ -69,7 +83,6 @@ intending to deploy to, the Ministry of Justice's Cloud Platform.
 
 - [Kubernetes](documentation/concepts/kubernetes.html)
 - [Deploying to the Cloud Platform](documentation/concepts/deploying.html)
-- [Security Controls on the Cloud Platform](documentation/concepts/security-controls.html)
 
 ## Tutorials
  - [Deploying a `Hello World` application](documentation/deploying-an-app/helloworld-app-deploy.html)
@@ -95,33 +108,25 @@ intending to deploy to, the Ministry of Justice's Cloud Platform.
 ### Networking
 
 - [Removing Deprecated Ingress APIs for Cloud Platform - Kubernetes v1.22](documentation/networking/apiversion-changes-ingress-k8s-1-22.html)
-- [IP Filtering](documentation/networking/ip-filtering.html)
-- [ModSecurity - Web Application Firewall](documentation/networking/modsecurity.html)
-- [Network Policies](documentation/networking/network-policy.html)
-- [Setup Ingress](documentation/networking/redirect-security-txt.html)
 - [Switch ingress to the new nginx-ingress-controller v1.2](documentation/networking/Switch-ingress-to-v1-ingress-controller.html#switch-ingress-to-the-new-nginx-ingress-controller-v1-2)
 
 ### Other topics
 
-- [Adding a secret to an application](documentation/deploying-an-app/add-secrets-to-deployment.html)
 - [Cloud Platform Support](documentation/other-topics/cloud-platform-support.html)
 - [Zero Downtime Deployments](documentation/other-topics/zero-downtime-deployment.html)
 - [PodDistruptionBudgets and Cluster maintenance](documentation/other-topics/pod-distruption-budgets-cluster-maintenance.html)
-- [Git-Crypt](documentation/other-topics/git-crypt-setup.html)
 - [Kubernetes Cronjobs](documentation/other-topics/Cronjobs.html)
 - [Kubernetes jobs](documentation/other-topics/k8s-jobs.html)
 - [Applying a Maintenance Page](documentation/other-topics/maintenance-page.html)
 - [Kubectl quick reference](documentation/other-topics/quick-reference.html)
 - [Troubleshooting guide](documentation/other-topics/troubleshooting.html)
 - [Long-running environments operations](documentation/other-topics/long-running-env-operations.html)
-- [Secrets overview](documentation/other-topics/secrets.html)
 - [Publish a Grafana Dashboard Snapshot](documentation/other-topics/grafana-snapshots.html)
 - [Access cross AWS resources IRSA EKS cluster](documentation/other-topics/access-cross-aws-resources-irsa-eks.html)
 - [Namespace/Container Resource Limits](documentation/concepts/namespace-limits.html)
 - [Checking the GitHub groups in your ID token](documentation/other-topics/check-id-token.html)
 - [Cloud Platform Disaster Recovery](documentation/other-topics/cloud-platform-disaster-recovery.html)
 - [Apply Pipeline](documentation/other-topics/apply-pipeline.html)
-- [Security testing and ITHC](documentation/other-topics/security-testing-and-ithc.html)
 - [Migrating from live-1 to live domain name](documentation/other-topics/migrating-from-live-1-domain-name.html)
 
 ## Reference
