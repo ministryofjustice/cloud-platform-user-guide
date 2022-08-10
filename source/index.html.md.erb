@@ -98,20 +98,22 @@ intending to deploy to, the Ministry of Justice's Cloud Platform.
 - [Application Log Collection and Storage](documentation/logging-an-app/log-collection-and-storage.html)
 - [Accessing Application Log Data](documentation/logging-an-app/access-logs.html)
 
+## Deprecations
+<!-- For developers who need to understand what Cloud Platform is deprecating as a result of things like upgrades (Kubernetes, nginx) -->
+
+- [Migrating from live-1 to live domain name](documentation/other-topics/migrating-from-live-1-domain-name.html)
+- [Removing Deprecated Ingress APIs for Cloud Platform - Kubernetes v1.22](documentation/networking/apiversion-changes-ingress-k8s-1-22.html)
+- [Switch ingress to the new nginx-ingress-controller v1.2](documentation/networking/Switch-ingress-to-v1-ingress-controller.html#switch-ingress-to-the-new-nginx-ingress-controller-v1-2)
+
+
 ## How-to guides
 <!-- For developers looking to do certain things with Cloud Platform -->
 
 - [Adding AWS resources to your environment](documentation/deploying-an-app/add-aws-resources.html)
 - [Removing an unneeded namespace](documentation/deploying-an-app/cleaning-up.html)
-- [Migrating from live-1 to live domain name](documentation/other-topics/migrating-from-live-1-domain-name.html)
 
 ### Deploying with Helm and CircleCI
 - [Deploying an application to the Cloud Platform with Helm](documentation/deploying-an-app/app-deploy-helm.html)
-
-### Networking
-
-- [Removing Deprecated Ingress APIs for Cloud Platform - Kubernetes v1.22](documentation/networking/apiversion-changes-ingress-k8s-1-22.html)
-- [Switch ingress to the new nginx-ingress-controller v1.2](documentation/networking/Switch-ingress-to-v1-ingress-controller.html#switch-ingress-to-the-new-nginx-ingress-controller-v1-2)
 
 ### Other topics
 
@@ -121,7 +123,6 @@ intending to deploy to, the Ministry of Justice's Cloud Platform.
 - [Publish a Grafana Dashboard Snapshot](documentation/other-topics/grafana-snapshots.html)
 - [Access cross AWS resources IRSA EKS cluster](documentation/other-topics/access-cross-aws-resources-irsa-eks.html)
 - [Checking the GitHub groups in your ID token](documentation/other-topics/check-id-token.html)
-- [Migrating from live-1 to live domain name](documentation/other-topics/migrating-from-live-1-domain-name.html)
 
 ## Reference
 <!-- For curious users who want to understand how Cloud Platform and Kubernetes fit together, including technical detail -->
