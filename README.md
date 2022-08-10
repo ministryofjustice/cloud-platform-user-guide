@@ -29,8 +29,7 @@ content](https://tdt-documentation.london.cloudapps.digital/write_docs/content/)
 ## Publishing changes
 
 Any changes that are merged into the `main` branch will be published
-automatically through the [`publish.yml` GitHub action]
-(.github/workflows/publish.yml).
+automatically through the [`publish.yml` GitHub action](.github/workflows/publish.yml).
 
 This website is hosted on [GitHub Pages](https://pages.github.com/).
 
