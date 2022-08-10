@@ -1,112 +1,47 @@
-# Cloud platform user guide
+# Cloud Platform user guide
 
-The documentation for users of the Ministry of Justice cloud platform. It explains how to deploy and run applications on the Cloud Platform.
+This repository holds the website and documentation for the the [Cloud Platform
+user guide](https://user-guide.cloud-platform.service.justice.gov.uk/#cloud-platform-user-guide).
 
-This repo is an MOJ documentation site that uses the [GDS Tech Docs Template][tech-docs], and the docs get hosted using [GitHub Pages][gh-pages].
+This repository utilises the Ministry of Justice's [template-documentation-site](https://github.com/ministryofjustice/template-documentation-site).
 
-(This repo pre-dates [template-documentation-site](https://github.com/ministryofjustice/template-documentation-site). The latter was abstracted out of this repo and improved. TODO: We should make this repo use that template, with its shared Docker image and no second repo.)
+>Want to give feedback on the documentation? [Open an issue on this repository](https://github.com/ministryofjustice/cloud-platform-user-guide/issues).
 
-## Editing
+## Running locally
 
-The guide is changed by editing `*.html.md.erb` files, found in the [source](source) folder.
+You can run this website locally by running:
 
-The syntax is Markdown. For guidance see: [Tech Docs Template - Write your content](https://tdt-documentation.london.cloudapps.digital/write_docs/content/). [kramdown](https://kramdown.gettalong.org/syntax.html) is what compiles the Markdown. 
-
-While editing the files locally, you can [preview the site](#previewing).
-
-Every change should be reviewed in a pull request, no matter how
-minor, and we've enabled [branch protection][] to enforce this.
-
-Merging the changes to the `main` branch are automatically [published](#publishing)
-
-## Previewing
-
-Preview changes locally by running this command:
-
-```bash
+```sh
 make preview
 ```
 
-This will run a preview web server on http://localhost:4567
+You can then browse to https://localhost:4567 to view the website.
 
-This is only accessible on your computer, and won't be accessible
-to anyone else.
+## Updating documentation
 
-## Publishing
+You can update the documentation by editing any of the `*.html.md.erb` files in
+the [source](source) directory.
 
-Any changes you push/merge into the `main` branch should be published
-to GitHub Pages site automatically by a GitHub Action: [publish.yml](.github/workflows/publish.yml).
+The syntax used in `*.html.md.erb` is Markdown, though it also supports some
+GOV.UK Design System specifics, as listed on [Tech Docs Template - Write your
+content](https://tdt-documentation.london.cloudapps.digital/write_docs/content/).
 
-The markdown files in the `source` directory are compiled to HTML, and the
-resulting files are pushed to a [second repository] from where they are
-published via Github Pages.
+## Publishing changes
 
-The URL for the published site is: <https://user-guide.cloud-platform.service.justice.gov.uk/>
+Any changes that are merged into the `main` branch will be published
+automatically through the [`publish.yml` GitHub action](.github/workflows/publish.yml).
 
-> The publishing process creates files in `/docs` and pushes them to the
-> `gh-pages` branch to publish them. You should not edit any files in that
-> folder, because your changes will be lost the next time the site is
-> published.
+This website is hosted on [GitHub Pages](https://pages.github.com/).
 
-## Template configuration
+## Configuring the website
 
-The template can be configured in [config/tech-docs.yml](config/tech-docs.yml)
+### Global configuration
 
-Key config:
+The [GOV.UK Tech Docs Template global configuration options](https://tdt-documentation.london.cloudapps.digital/configure_project/global_configuration/)
+can be used in this repository to configure the Cloud Platform user guide.
 
-* `host:` - this should be the URL of your published GitHub Pages site, e.g:
+### Structuring documentation and page configuration
 
-   ```
-   https://ministryofjustice.github.io/modernisation-platform
-   ```
-
-   > Do not include a `/` at the end of this URL
-
-* `service_link:` - This should be the docpath to your site. This is usually
-  `/[repo name]`, so if your repository is `ministryofjustice/awesome-docs`
-  `service_link` will be `/awesome-docs`
-
-Further configuration options are described here: [Tech Docs Template docs - Global Configuration](https://tdt-documentation.london.cloudapps.digital/configure_project/global_configuration/)
-
-## Link checking
-
-The publishing process automatically checks both internal and external links in
-the site. If you want to do the same check locally, run:
-
-```
-make check
-```
-
-## Composing & Ordering Pages
-
-Every page of the site needs a `source/[page name].html.md.erb`
-file.
-
-This file lists the partials which comprise the page, in the
-order in which they should appear. By convention, all such
-partials are in the `source/documentation` directory.
-
-These `source/[page name].html.md.erb` files have a 'weight' attribute
-which determines the order in which they will appear. Higher weights
-are further down in the list.
-
-For more information, see the [Tech Docs Template documentation][tech-docs-multipage]
-for a basic multipage site.
-
-## Updating the docker image
-
-If you need to make any changes to the docker image (i.e. if you make any
-changes to the Dockerfile or Gemfile), please use the GitHub web interface to
-create a new [release]. A github action will build the docker image and push
-it to docker hub, tagged with the release number.
-
-After changing the tag, you need to update the reference to the image in
-`.github/workflows/publish.yml` and the `makefile`.
-
-[branch protection]: https://help.github.com/articles/about-protected-branches/
-[tech-docs-multipage]: https://tdt-documentation.london.cloudapps.digital/multipage.html#repo-folder-structure
-[release]: https://github.com/ministryofjustice/cloud-platform-user-guide/releases
-[Github Action]: https://github.com/features/actions
-[tech-docs]: https://tdt-documentation.london.cloudapps.digital/
-[gh-pages]: https://pages.github.com/
-[second repository]: https://github.com/ministryofjustice/cloud-platform-user-guide-publish
+The [GOV.UK Tech Docs Template "Configure your documentation project"](https://tdt-documentation.london.cloudapps.digital/configure_project/)
+offers a range of guidance regarding configuration options to help structure
+documentation and configure pages separately.
