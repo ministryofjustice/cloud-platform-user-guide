@@ -84,6 +84,46 @@ spec:
               number: 4567
 </pre>
 
+The helm ingress template manifest changes will look like this:
+
+<pre>
+{{- if .Values.ingress.enabled -}}
+{{- $fullName := include "app.fullname" . -}}
+{{- $ingressPath := .Values.ingress.path -}}
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: helloworld
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+  annotations:
+    external-dns.alpha.kubernetes.io/set-identifier: helloworld-mynamespace-green
+    external-dns.alpha.kubernetes.io/aws-weight: "100"
+spec:
+  <b>ingressClassName: default</b> OR <b>modsec</b>
+  tls:
+  {{- range .Values.ingress.hosts }}
+  - hosts:
+    - {{ .host }}
+    {{ if .cert_secret }}secretName: {{ .cert_secret }}{{ end }}
+  {{- end }}
+  rules:
+  {{- range .Values.ingress.hosts }}
+    - host: {{ .host }}
+      http:
+        paths:
+          - path: {{ $ingressPath }}
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ $fullName }}
+                port: 
+                  name: http
+  {{- end }}
+{{- end }}
+
+</pre>
+
 
 ### Switch to the new ingress controller with zero downtime
 
