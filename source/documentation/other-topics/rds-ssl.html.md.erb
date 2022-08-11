@@ -1,6 +1,6 @@
 ---
 title: SSL connections with RDS
-last_reviewed_on: 2022-05-09
+last_reviewed_on: 2022-08-11
 review_in: 3 months
 ---
 
@@ -17,7 +17,7 @@ WARNING: psql major version 9.6, server major version 10.
 SSL connection (protocol: TLSv1.2, cipher: ECDHE-RSA-AES256-GCM-SHA384, bits: 256, compression: off)
 Type "help" for help.
 
-dba02192a049ed7ce8=> 
+dba02192a049ed7ce8=>
 ```
 
 Where `$url` is of the form `postgres://user:pass@host:port/db`.
@@ -25,10 +25,10 @@ Where `$url` is of the form `postgres://user:pass@host:port/db`.
 Additionally, AWS [offer strong assurances][aws-sec-wp] that a malicious actor cannot spoof their traffic or sniff
 another tenant's traffic, even if they operate inside the same VPC.
 
-However, best practice is to be explicit about insisting on an SSL connection when you communicate with your database. 
+However, best practice is to be explicit about insisting on an SSL connection when you communicate with your database.
 
-PostgreSQL implements various [modes of operation][libpq-ssl], each one offering a different level of security. Without 
-any additional setup, we can establish an encrypted connection by specifying `sslmode=require`, which forces an SSL connection 
+PostgreSQL implements various [modes of operation][libpq-ssl], each one offering a different level of security. Without
+any additional setup, we can establish an encrypted connection by specifying `sslmode=require`, which forces an SSL connection
 but does not verify the server certificate.
 
 ### Full verification of certificates
@@ -53,7 +53,7 @@ WARNING: psql major version 9.6, server major version 10.
 SSL connection (protocol: TLSv1.2, cipher: ECDHE-RSA-AES256-GCM-SHA384, bits: 256, compression: off)
 Type "help" for help.
 
-dba02192a049ed7ce8=> 
+dba02192a049ed7ce8=>
 ```
 
 This CA bundle can be added into your application's docker image. You can simply add the following directive in your
@@ -76,11 +76,11 @@ connections.
 
 ### Force SSL connections
 
-By default, RDS created on the Cloud Platform have SSL enabled.  
+By default, RDS created on the Cloud Platform have SSL enabled.
 
 This is done by having the field `force_ssl: true`, which completely disables unencrypted connections.
 
-It is possible to confirm the above by running a `psql` command, using `sslmode=disable`:  
+It is possible to confirm the above by running a `psql` command, using `sslmode=disable`:
 
 ```
 $ psql "$url?sslmode=disable"
