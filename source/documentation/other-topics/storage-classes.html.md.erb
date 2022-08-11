@@ -1,6 +1,6 @@
 ---
 title: Storage Classes
-last_reviewed_on: 2022-05-09
+last_reviewed_on: 2022-08-11
 review_in: 3 months
 ---
 
@@ -9,7 +9,7 @@ review_in: 3 months
 
 ### Introduction
 
-A [StorageClass] provides a way for administrators to describe the "classes" of storage they offer. Different classes map to options such as reclaim policy and to allow or not allow volume expansion determined by the cluster administrators. Kubernetes itself is unopinionated about what classes represent.
+A [StorageClass](https://kubernetes.io/docs/concepts/storage/storage-classes/) provides a way for administrators to describe the "classes" of storage they offer. Different classes map to options such as reclaim policy and to allow or not allow volume expansion determined by the cluster administrators. Kubernetes itself is unopinionated about what classes represent.
 
 As the Cloud Platform is hosted on AWS, the `Provisioner` is always set to AWS Elastic Block Store (AWS EBS)
 
@@ -19,12 +19,14 @@ The Cloud Platform currently offers 2 storage classes for users:
 
 | Name        | Provisioner | Reclaim Policy  | Allow Volume Expansion |
 | ---         | ---         | ---             | ---                 |
-| gp2         | aws-ebs     | Delete          | false               | 
-| gp2-expand  | aws-ebs     | Delete          | true                | 
+| gp2         | aws-ebs     | Delete          | false               |
+| gp2-expand  | aws-ebs     | Delete          | true                |
+| gp3         | ebs.csi.aws | Delete          | true                |
+| io1-expand  | aws-ebs     | Delete          | true                |
 
 The default class is `gp2`
 
-[AWS EBS storage classes] allows a number of different configuration points when creating each class. If you feel the above storage classes do not fit your requirements, please speak to the Cloud Platform team. 
+AWS EBS storage classes allows a number of different configuration points when creating each class. If you feel the above storage classes do not fit your requirements, please speak to the Cloud Platform team.
 
 For the official Kubernetes Storage Class documentation, click [StorageClass](https://kubernetes.io/docs/concepts/storage/storage-classes/)
 [AWS EBS storage classes](https://kubernetes.io/docs/concepts/storage/storage-classes/#aws-ebs)
