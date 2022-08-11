@@ -1,6 +1,6 @@
 ---
 title: Kubectl quick reference
-last_reviewed_on: 2022-05-04
+last_reviewed_on: 2022-08-11
 review_in: 3 months
 ---
 
@@ -41,15 +41,15 @@ $ kubectl -n <namespace> logs <pod>
 ##### Viewing kubernetes events
 
 To see kubernetes events, which can help debugging:
-  
+
 ```
 $ kubectl -n <namespace> get events
 ```
 
 ##### Container shell
-  
+
 You can get a shell inside a running container:
-  
+
 ```
 $ kubectl -n <namespace> exec -it <pod> sh
 ```
@@ -57,9 +57,9 @@ $ kubectl -n <namespace> exec -it <pod> sh
 For more information, click [here](https://kubernetes.io/docs/tasks/debug/debug-application/get-shell-running-container/)
 
 ##### Pod port-forwarding
-  
+
 To forward port `5000` on `localhost` to port `5001` in the `Pod`:
-  
+
 ```
 $ kubectl -n <namespace> port-forward <pod> 5000:5001
 ```
