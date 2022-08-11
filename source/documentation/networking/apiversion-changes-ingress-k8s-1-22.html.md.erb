@@ -145,7 +145,7 @@ spec:
 The manifest after changes will look like:
 
 <pre>
-  {{- if .Values.ingress.enabled -}}
+{{- if .Values.ingress.enabled -}}
 {{- $fullName := include "app.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
 apiVersion: <b>networking.k8s.io/v1</b>

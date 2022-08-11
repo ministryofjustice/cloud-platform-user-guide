@@ -84,6 +84,46 @@ spec:
               number: 4567
 </pre>
 
+The helm ingress template manifest changes will look like this:
+
+<pre>
+{{- if .Values.ingress.enabled -}}
+{{- $fullName := include "app.fullname" . -}}
+{{- $ingressPath := .Values.ingress.path -}}
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: helloworld
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+  annotations:
+    external-dns.alpha.kubernetes.io/set-identifier: helloworld-mynamespace-green
+    external-dns.alpha.kubernetes.io/aws-weight: "100"
+spec:
+  <b>ingressClassName: default</b> OR <b>modsec</b>
+  tls:
+  {{- range .Values.ingress.hosts }}
+  - hosts:
+    - {{ .host }}
+    {{ if .cert_secret }}secretName: {{ .cert_secret }}{{ end }}
+  {{- end }}
+  rules:
+  {{- range .Values.ingress.hosts }}
+    - host: {{ .host }}
+      http:
+        paths:
+          - path: {{ $ingressPath }}
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ $fullName }}
+                port: 
+                  name: http
+  {{- end }}
+{{- end }}
+
+</pre>
+
 
 ### Switch to the new ingress controller with zero downtime
 
@@ -117,6 +157,46 @@ spec:
             name: helloworld
             port:
               number: 4567
+</pre>
+
+The helm manifest changes will look like:
+
+<pre>
+{{- if .Values.ingress.enabled -}}
+{{- $fullName := include "app.fullname" . -}}
+{{- $ingressPath := .Values.ingress.path -}}
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: helloworld
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    external-dns.alpha.kubernetes.io/set-identifier: helloworld-mynamespace-green
+    <b>external-dns.alpha.kubernetes.io/aws-weight: "0"</b>
+spec:
+  tls:
+  {{- range .Values.ingress.hosts }}
+  - hosts:
+    - {{ .host }}
+    {{ if .cert_secret }}secretName: {{ .cert_secret }}{{ end }}
+  {{- end }}
+  rules:
+  {{- range .Values.ingress.hosts }}
+    - host: {{ .host }}
+      http:
+        paths:
+          - path: {{ $ingressPath }}
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ $fullName }}
+                port: 
+                  name: http
+  {{- end }}
+{{- end }}
+
 </pre>
 
 #### Step 2 - Create a new ingress resource
@@ -175,9 +255,58 @@ To apply the changes to the ingress, as a quick alternative to running your appl
 kubectl -n <namespace-name> apply -f ingress-new.yaml
 ```
 
+For the helm deployments, create a copy of your existing ingress template file and make the [above changes][create-new-ingress].
+
+The new ingress template file after changes will look like this:
+
+<pre>
+{{- if .Values.ingress.enabled -}}
+{{- $fullName := include "app.fullname" . -}}
+{{- $ingressPath := .Values.ingress.path -}}
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: <b>helloworld-new</b>
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+  annotations:
+    <b>external-dns.alpha.kubernetes.io/set-identifier: helloworld-new-mynamespace-green</b>
+    <b>external-dns.alpha.kubernetes.io/aws-weight: "100"</b>
+spec:
+  <b>ingressClassName: default</b> OR <b>modsec</b>
+  tls:
+  {{- range .Values.ingress.hosts }}
+  - hosts:
+    - {{ .host }}
+    {{ if .cert_secret }}secretName: {{ .cert_secret }}{{ end }}
+  {{- end }}
+  rules:
+  {{- range .Values.ingress.hosts }}
+    - host: {{ .host }}
+      http:
+        paths:
+          - path: {{ $ingressPath }}
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ $fullName }}
+                port: 
+                  name: http
+  {{- end }}
+{{- end }}
+
+</pre>
+
+To apply your changes:
+
+```
+helm upgrade -f <values-file.yaml> <your-release> <your-chart> --namespace <your-namespace>
+```
+
 #### Verify and wait for traffic to be sent to the new ingress
 
-After you have applied new ingress with `external-dns.alpha.kubernetes.io/aws-weight` value set to "100", wait for couple of minutes for the traffic to be sent to the new ingress, you can verify traffic is being sent to the new ingress using [grafana][grafana-live]
+After you have applied new ingress with `external-dns.alpha.kubernetes.io/aws-weight` value set to "100", wait for couple of minutes for the traffic to be sent to the new ingress, 
+you can verify traffic is being sent to the new ingress using [kibana][kibana-common]
 
 Get the "hostname" used in your ingress for your namespace
 
@@ -191,20 +320,27 @@ Using the "hostname" from the above command, make a cURL call every 5 seconds to
   while sleep 5; do curl -I https://<host-name>; done
 ```
 
-To view your ingress traffic, login to [grafana-live][grafana-live], in `Kubernetes-ingress traffic` dashboard, select your `ingress-name` and `namespace-name` from the drop-down and do a search, you will see traffic for your new ingress.
+To view your ingress logs, login to [kibana][kibana-common], select index `live_kubernetes_ingress*`, and do a search using `"host-name"` and `"new-ingress-name"`, you will see traffic for your new ingress. An example of this [kibana search][kibana-search-example]
 
 Your new ingress is successfully switched to the new ingress controller.
 
 #### Step 3 - Cleanup old ingress
 
-Once you have successfully switched to the new ingress controller, you can tidy up by deleting the old ingress and updating your CI pipeline/job with new ingress manifest that deploys
-to the cluster.
+Once you have successfully switched to the new ingress controller, you can tidy up by deleting the old ingress and updating your CI pipeline/job with new ingress manifest that deploys to the cluster.
+
+For the helm deployments, delete your old ingress template file. Apply the changes to delete the old ingress in your namespace.
+
+```
+helm upgrade -f <values-file.yaml> <your-release> <your-chart> --namespace <your-namespace>
+```
 
 ### Getting help
 
 If you have any questions, please contact us on [#ask-cloud-platform] Slack channel.
 
 [#ask-cloud-platform]: https://mojdt.slack.com/messages/C57UPMZLY
-[grafana-live]: https://grafana.live.cloud-platform.service.justice.gov.uk/d/f1e13059dfd23fdcaf479f4fa833f92610c2dfa5/kubernetes-ingress-traffic?orgId=1
 [nginx-ingress-controller]: https://kubernetes.github.io/ingress-nginx/
 [Deprecated-Ingress-API]: https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/apiversion-changes-ingress-k8s-1-22.html#removing-deprecated-ingress-apis-for-cloud-platform-kubernetes-v1-22
+[create-new-ingress]: https://user-guide.cloud-platform.service.justice.gov.uk/documentation/networking/Switch-ingress-to-v1-ingress-controller.html#step-2-create-a-new-ingress-resource
+[kibana-common]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/kibana#/discover?_g=()
+[kibana-search-example]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/goto/6760b9a46df46e3ded042b32e7712f67
