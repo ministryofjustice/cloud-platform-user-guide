@@ -1,6 +1,6 @@
 # Cloud Platform user guide
 
-This repository holds the website and documentation for the the [Cloud Platform
+This repository holds the website and documentation for the [Cloud Platform
 user guide](https://user-guide.cloud-platform.service.justice.gov.uk/#cloud-platform-user-guide).
 
 This repository utilises the Ministry of Justice's [template-documentation-site](https://github.com/ministryofjustice/template-documentation-site).
