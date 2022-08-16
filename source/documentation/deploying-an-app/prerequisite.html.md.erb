@@ -1,77 +1,64 @@
 ---
-title: Prerequisite for deployment on the Cloud Platform
-last_reviewed_on: 2022-06-16
+title: Requirements for deploying a container to the Cloud Platform
+last_reviewed_on: 2022-08-16
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
 
-We use two [Pod Security Policies][psp] in the Cloud Platform, _restricted_ and _privileged_.
+## Overview
 
-By default, any new environment/namespace will be assigned the
-_restricted_ policy
+The Cloud Platform Kubernetes cluster uses two ["Pod Securty Policies"][psp] for pod authorisation within the cluster. A pod is where your container image runs.
 
-### Impact
+Pods in the cluster are run one of two ways, as a:
 
-The main impact of the _restricted_ policy is that it prevents pods/containers
-from running as the root user. 
+- `restricted` pod, for normal applications
+- `privileged` pod, for services to manage cluster-wide things such as automated TLS certificates
 
-A container's user is usually defined in its
-Dockerfile. If no user is explicitly specified in the Dockerfile, the chances
-are that it will run as root.
+By default, and as is best practice, any [new namespace](/documentation/getting-started/env-create.html) on the Cloud Platform will use the `restricted` policy for its pods.
 
-> Not being able to use root also implies that
-> it is impossible to bind to a privileged port (e.g. 80, 443).
+## Requirements for your container image
 
-The policies only take effect after the container has started. Anything in the
-Dockerfile can be run as root at image build time e.g. to install required
-software.
+### Running container images as non-root
 
-### How to adapt to the pod security policies
+#### Overview
 
-Most of the time, your application's Dockerfile can be easily adapted by:
+The main thing to note is that `restricted` namespaces cannot run container images as a `root` user once deployed onto the Cloud Platform. This also means that your container image cannot bind services to `system` ports (e.g. 80 for HTTP, 443 for HTTPS).
 
- - Creating a user with a UID which is greater than 1 (which is the UID
-   reserved for root)
+You can use `root` commands during build time (e.g. to install software), but not after your container has started running on the Cloud Platform.
 
- - Giving this user any required permissions to access the files/directories
-   the application requires.
+A container's user is usually defined in its `Dockerfile`. If no user is explicitly defined, it is likely it will run as `root`.
 
- - Adding a `USER` clause in your Dockerfile to switch to your non-root user
+#### How to run your container image as non-root
 
-Example:
+>Some Docker images will have a unprivileged variant. For example, if you run `nginx`, you can use [`nginx-unprivileged`](https://hub.docker.com/r/nginxinc/nginx-unprivileged).
+
+Most of the time, you can adapt your `Dockerfile` by:
+
+1. creating a user with a UID that is greater than 1 (which is the UID reserved for root)
+2. giving this user the required permissions to access the files/directories that are required for the application
+3. adding a `USER` instruction to use a non-root user
+
+For example, to run `busybox` as a non-root user, you can:
 
 ```yaml
 FROM busybox
 
-RUN mkdir -p /opt/myFolder && \
-    adduser --disabled-password myNewUser -u 1001 && \
-    chown -R myNewUser:myNewUser /opt/myFolder
+RUN mkdir -p /opt/your-folder && \
+    adduser --disabled-password nonRootUser -u 1001 && \
+    chown -R nonRootUser:nonRootUser /opt/your-folder
 
 USER 1001
 
 CMD myApplication
 ```
 
-Depending on the base image, you might also need to explicitly create a group
-for the user. In the busybox example above, a 'myNewUser' group is implicitly
-created by the adduser command.
+Depending on your base image, you might need to explicitly create a group for the user. In the above example, a "nonRootUser" group is implicitly created by the `adduser` command. An example of how to do this can be found in the [multi-container demo application](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/main/rails-app/Dockerfile).
 
-> **You must specify the user by its numeric UID**, as above, not by its
-> username.  If you use the username (`USER myNewUser`) then the pod security
-> policy will not be able to tell that that is a non-root user, and your
-> container will not be scheduled.
+> **[Pod Security Policies][psp] require that you specify the user by its numeric UID**, not by its username. This is because Pod Security Policies cannot tell that a username is for a non-root user.
 
-A more complete example can be found here :
-[Dockerfile](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/blob/master/rails-app/Dockerfile)
+## Getting support
 
-#### Adapting the NGINX image
-
-Since NGINX binds itself to a privileged port by default, it will not be able
-to run as-is with the _restricted_ policy.
-
-The cloud-platform team will update this page with relevant documentation
-regarding nginx, as soon as it is ready.  In the meantime, feel free to reach
-out to the cloud-platform team for help : [Getting Help](/documentation/reference/getting-help.html#getting-help)
+If you need help with any of the above requirements, your local team or the [Cloud Platform can provide advice](/#getting-help).
 
 [psp]: https://kubernetes.io/docs/concepts/policy/pod-security-policy/
