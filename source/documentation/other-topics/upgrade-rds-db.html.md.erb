@@ -1,22 +1,36 @@
 ---
-title: Upgrade an RDS database
-last_reviewed_on: 2022-06-09
+title: Upgrading your RDS database
+last_reviewed_on: 2022-08-24
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
 
-This page describes how to upgrade your RDS instance to use a different **major** version of PostgreSQL. You might want to do this if you are bringing your application up to date, or if AWS have announced they will no longer support your current version of PostgreSQL.
+This page describes how to upgrade your RDS database to a new minor or major version, or a different instance class. You might want to do this to bring your application up to date, or if AWS or your database engine provider have announced they'll stop supporting a particular version.
 
-**NOTE**: `t2` type instances are deprecated, so when upgrading you must ensure first that the database is of type `t3`; this means the upgrade will need one more PR as a first step, to change type. You can use the AWS CLI to check this with the generated RDS user credentials you have in the namespace secret, eg 
-```
-$ aws rds describe-db-instances --db-instance-identifier cloud-platform-0x0x0x | jq -r '.DBInstances[0].DBInstanceClass'
-db.t3.small
-```
+There are two ways to upgrade your RDS database and both require downtime, which will vary based on method, database instance class, and storage size.
 
-There are two ways to approach a database upgrade:
+> **Important:** `db.t2` instance classes are [previous generation instances](https://aws.amazon.com/rds/previous-generation/). You should upgrade your instance class to either `db.t3` or `db.t4g` as part of your upgrade.
 
-## 1. Don't upgrade, migrate
+## Important information to know when upgrading your database
+
+### Engine version upgrades (e.g. PostgreSQL 10 to 12)
+
+- Single-AZ and multi-AZ databases are upgraded by AWS in the same way. A multi-AZ database does not improve downtime for engine version upgrades, as AWS upgrades the primary and standby/replica instances **at the same time** _unless_ you're using SQL Server, where AWS will perform a rolling upgrade. Downtime for this change varies by method, database instance class, storage size, and more.
+
+- AWS provide a list of supported versions to upgrade to for each database engine:
+  - [PostgreSQL](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.PostgreSQL.html#USER_UpgradeDBInstance.PostgreSQL.MajorVersion)
+  - [MySQL](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.MySQL.html#USER_UpgradeDBInstance.MySQL.Major)
+  - [SQL Server](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.SQLServer.html#USER_UpgradeDBInstance.SQLServer.Major)
+
+### Database instance class changes (e.g. db.t2 to db.t3)
+
+- A multi-AZ database instance class change will have reduced downtime as AWS will change the standby/replica instance is upgraded first (and promoted to `primary`, followed by the new (old `primary`) standby database. Downtime for this change using a multi-AZ configuration is typically around ~120 seconds.
+- You will need to [check your database engine version supports the instance class](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.DBInstanceClass.html#Concepts.DBInstanceClass.Support) you are changing to.
+
+## Upgrading through migration
+
+>Note: This method causes downtime.
 
 Instead of trying to upgrade your existing RDS instance:
 
@@ -37,7 +51,9 @@ Instead of trying to upgrade your existing RDS instance:
 
 If you want to use this method, you can treat it like any other [database migration](aws-rds-migration.html) (but easier, because everything is in the same namespace).
 
-## 2. Upgrade your existing RDS instance
+## Upgrading in place
+
+>Note: This method causes downtime.
 
 The upgrade process involves these steps:
 
@@ -192,4 +208,3 @@ When this PR is merged, the [Apply Pipeline](/documentation/other-topics/apply-p
 [AWS CLI tool]: https://aws.amazon.com/cli/
 [cloud platform cli]: ../getting-started/cloud-platform-cli.html
 [long-running]: ./long-running-env-operations.html
-
