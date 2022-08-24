@@ -25,7 +25,7 @@ There are two ways to upgrade your RDS database and both require downtime, which
 
 ### Database instance class changes (e.g. db.t2 to db.t3)
 
-- A multi-AZ database instance class change will have reduced downtime as AWS will change the standby/replica instance is upgraded first (and promoted to `primary`, followed by the new (old `primary`) standby database. Downtime for this change using a multi-AZ configuration is typically around ~120 seconds.
+- A multi-AZ database instance class change will have reduced downtime as AWS will change the standby/replica instance first (and promote it to `primary`, followed by the new (old `primary`) standby database. Downtime for this change using a multi-AZ configuration is typically around ~120 seconds.
 - You will need to [check your database engine version supports the instance class](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.DBInstanceClass.html#Concepts.DBInstanceClass.Support) you are changing to.
 
 ## Upgrading through migration
