@@ -125,7 +125,7 @@ See the [module documentation] for more information.
 
 There is a maximum number of images per repository for Amazon Elastic Container Registry (ECR). If a new image is created and pushed to ECR on every code change, repositories can quickly fill up with new revisions. So it is important to regularly delete images which are no longer required.
 
-You can delete an image with the AWS CLI using this [guide][delete-ecr-image].
+Create lifecycle policies for your ECR repository as shown in this [example][life-cycle-policy]. This provides a way to automate the cleaning up of your container images by expiring images based on age or count.
 
 You can create [custom-alerts][custom-alerts] to monitor the number of ECR images in your Repository using [Prometheus ecr-metrics][ecr-metrics].
 
@@ -147,3 +147,4 @@ Try [deploying an app][deploy-helm] with [Helm](https://helm.sh/), a Kubernetes 
 [GitHub Actions Secrets]: https://docs.github.com/en/actions/reference/encrypted-secrets
 [module documentation]: https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials#aws-ecr-terraform-module
 [GitHub Actions]: ../deploying-an-app/github-actions-continuous-deployment.html
+[life-cycle-policy]: https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials/blob/main/examples/ecr.tf#L34-L77
