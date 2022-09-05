@@ -68,7 +68,6 @@ kind: Ingress
   name: <ingress-name>
   namespace: <namespace-name>
   annotations:
-    kubernetes.io/ingress.class: "modsec01"
     external-dns.alpha.kubernetes.io/set-identifier: <ingress-name>-<namespace-name>-<colour>
     external-dns.alpha.kubernetes.io/aws-weight: "100"
     nginx.ingress.kubernetes.io/enable-modsecurity: "true"
@@ -76,6 +75,7 @@ kind: Ingress
       SecRuleEngine On
 spec:
   tls:
+    ingressClassName: modsec
   - hosts:
     - <application_url> 
   rules:

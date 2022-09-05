@@ -32,11 +32,11 @@ To setup a permanent redirect to the central [`security.txt`](https://raw.github
     metadata:
     name: helloworld-rubyapp-ingress-security-txt-redirect
     annotations:
-        kubernetes.io/ingress.class: nginx
         external-dns.alpha.kubernetes.io/set-identifier: <ingress-name>-<namespace-name>-<blue/green>
         external-dns.alpha.kubernetes.io/aws-weight: "100"
         nginx.ingress.kubernetes.io/permanent-redirect: https://raw.githubusercontent.com/ministryofjustice/security-guidance/main/contact/vulnerability-disclosure-security.txt
     spec:
+    ingressClassName: default
     tls:
     - hosts:
         - helloworld-demo-app.apps.live.cloud-platform.service.justice.gov.uk

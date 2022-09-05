@@ -134,10 +134,10 @@ metadata:
   name: <ingress-name>
   namespace: <namespace-name>
   annotations:
-    kubernetes.io/ingress.class: nginx
     external-dns.alpha.kubernetes.io/set-identifier: <ingress-name>-<namespace-name>-<colour>
     external-dns.alpha.kubernetes.io/aws-weight: "100"
 spec:
+  ingressClassName: default
   tls:
   - hosts:
     - dstest.apps.live.cloud-platform.service.justice.gov.uk
