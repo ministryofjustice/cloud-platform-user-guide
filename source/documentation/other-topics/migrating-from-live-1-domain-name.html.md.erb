@@ -51,11 +51,11 @@ kind: Ingress
 metadata:
   name: helloworld
   annotations:
-    kubernetes.io/ingress.class: nginx
     external-dns.alpha.kubernetes.io/set-identifier: helloworld-mynamespace-green
     external-dns.alpha.kubernetes.io/aws-weight: "100"
 spec:
   tls:
+    ingressClassName: default
   - hosts:
     - my-application.apps.live-1.cloud-platform.service.justice.gov.uk
   rules:
@@ -84,11 +84,11 @@ kind: Ingress
 metadata:
   name: helloworld
   annotations:
-    kubernetes.io/ingress.class: nginx
     external-dns.alpha.kubernetes.io/set-identifier: helloworld-mynamespace-green
     external-dns.alpha.kubernetes.io/aws-weight: "100"
 spec:
   tls:
+    ingressClassName: default
   - hosts:
     - my-application.apps.live.cloud-platform.service.justice.gov.uk
   rules:
@@ -126,6 +126,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
+  ingressClassName: default
   tls:
   {{- range .Values.ingress.hosts }}
   - hosts:
@@ -189,11 +190,11 @@ kind: Ingress
 metadata:
   name: helloworld
   annotations:
-    kubernetes.io/ingress.class: nginx
     external-dns.alpha.kubernetes.io/set-identifier: helloworld-mynamespace-green
     external-dns.alpha.kubernetes.io/aws-weight: "100"
 spec:
   tls:
+    ingressClassName: default
   - hosts:
     - my-application.apps.live.cloud-platform.service.justice.gov.uk
   rules:
