@@ -1,0 +1,196 @@
+---
+title: "Kubernetes: namespace definition files"
+last_reviewed_on: 2022-09-06
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+## Environment definition files
+
+To set up an environment we create 5 Kubernetes YAML files in the directory for
+your namespace:
+
+* [`00-namespace.yaml`](#00-namespace-yaml)
+* [`01-rbac.yaml`](#01-rbac-yaml)
+* [`02-limitrange.yaml`](#02-limitrange-yaml)
+* [`03-resourcequota.yaml`](#03-resourcequota-yaml)
+* [`04-networkpolicy.yaml`](#04-networkpolicy-yaml)
+
+These files define key elements of the namespace and restrictions we want to
+place on it so that we have security and resource allocation properties. We describe each
+of these files [in more detail below](#00-namespace-yaml) in case you want to
+make future changes.
+
+In addition to the Kubernetes configuration files, we create three terraform files:
+
+  * resources/main.tf
+  * resources/versions.tf
+  * resources/variables.tf
+
+These files define the standard terraform backend and providers which you will
+need when you add terraform modules to create the AWS resources your service
+will use (e.g. an [ECR][ecr-setup] for your docker images, [RDS
+databases][create-rds], and S3 buckets). The `resources/variables.tf` file
+contains attributes of your namespace which those later terraform files will
+refer to.
+
+## Namespace YAML files
+
+These files define key elements of the namespace and restrictions we want to
+place on it so that we have security and resource allocation properties.
+
+### `00-namespace.yaml`
+
+The `00-namespace.yaml` file defines the namespace so that the Kubernetes
+cluster knows to create the namespace and what to call it.
+
+```YAML
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: myapp-dev
+  labels:
+    cloud-platform.justice.gov.uk/is-production: "false"
+    cloud-platform.justice.gov.uk/environment-name: "development"
+  annotations:
+    cloud-platform.justice.gov.uk/application: "My Service"
+    ...
+```
+
+The namespace is your (team's) 'private' part of the cluster. The name of your
+namespace must be unique across the whole of the cluster. If you try to create a
+new namespace using the name of one which already exists, you will get an error
+when you try to apply the generated kubernetes config files (or when the [Apply
+Pipeline](/documentation/other-topics/apply-pipeline.html) applies them on your
+behalf).
+
+For 'real' services, this is very unlikely to be a problem - most services have
+distinct names, so namespace name conflicts are unlikely. But, if you are
+creating a test/dummy namespace in order to learn how the platform works, it's
+better to avoid generic names like 'dummy', 'test' or 'example'. Add something
+unique (e.g. your name) to minimise the risk of trying to re-use a name by
+mistake.
+
+### `01-rbac.yaml`
+
+We will also create a `RoleBinding` resource by adding the `01-rbac.yaml` file.
+This will provide us with [access policies] on the namespace we have created in
+the cluster.
+
+A role binding resource grants the permissions defined in a role to a user or
+set of users. A role can be another resource we can create but in this instance
+we will reference a Kubernetes default role `ClusterRole - admin`.
+
+This `RoleBinding` resource references the `ClusterRole - admin` to provide
+admin permissions on the namespace to the set of users defined under
+`subjects`. In this case, the `<yourTeam>` GitHub group will have admin access
+to any resources within the namespace `myapp-dev`.
+
+```YAML
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: myapp-dev-admins  ### Your namespace with `-admin` e.g. `<servicename-env>-admin`
+  namespace: myapp-dev ### Your namespace `<servicename-env>`
+subjects:
+  - kind: Group
+    name: "github:<yourTeam>" ### Make this the name of the GitHub team you want to give access to
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: admin
+  apiGroup: rbac.authorization.k8s.io
+```
+
+### `02-limitrange.yaml`
+
+As we are working on a shared Kubernetes cluster it is useful to put in place
+limits on the resources that each namespace, pod and container can use. This
+helps to stop us accidentally entering a situation where one service impacts
+the performance of another through using more resources than are available.
+
+The first Kubernetes limit we can use is a [LimitRange] which we define in
+`02-limitrange.yaml`.
+
+The LimitRange object specifies two key resource limits on containers,
+`defaultRequest` and `default`. `defaultRequest` is the memory and cpu a
+container will request on startup. This is what the Kubernetes scheduler uses
+to determine whether there is enough space on the cluster to run your
+application and what your application will start up with when it is created.
+`default` is the limit at which your application will be killed or throttled.
+
+```YAML
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: limitrange
+  namespace: myapp-dev ### Your namespace `<servicename-env>`
+spec:
+  limits:
+  - default:
+      cpu: 1000m
+      memory: 1000Mi
+    defaultRequest:
+      cpu: 10m
+      memory: 100Mi
+    type: Container
+```
+
+### `03-resourcequota.yaml`
+
+The [ResourceQuota] object allows us to set a total limit on the resources
+which are made available to a namespace. On the Cloud Platform, we take a
+simple approach, and merely limit the maximum number of pods which a namespace
+is allowed to launch.
+
+```YAML
+
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: namespace-quota
+  namespace: myapp-dev ### Your namespace `<servicename-env>`
+spec:
+  hard:
+    pods: "50"
+```
+
+### `04-networkpolicy.yaml`
+
+The [NetworkPolicy] object defines how groups of pods are allowed to
+communicate with each other and other network endpoints. By default pods are
+non-isolated, they accept traffic from any source. We apply a network policy to
+restrict where traffic can come from, allowing traffic only from the [ingress
+controller] and other pods in your namespace.
+
+```YAML
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default
+  namespace: myapp-dev ### Your namespace `<servicename-env>`
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector: {}
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-ingress-controllers
+  namespace: myapp-dev
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          component: ingress-controllers
+```
