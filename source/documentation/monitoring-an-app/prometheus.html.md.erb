@@ -18,12 +18,12 @@ Below is a high-level overview
 
 ### Prometheus
 
-Prometheus is an open-source systems monitoring and alerting toolkit originally built at SoundCloud. 
-The Cloud Platform uses [Prometheus Operator from CoreOS](https://github.com/coreos/prometheus-operator) which allows a number of 
+Prometheus is an open-source systems monitoring and alerting toolkit originally built at SoundCloud.
+The Cloud Platform uses [Prometheus Operator from CoreOS](https://github.com/coreos/prometheus-operator) which allows a number of
 Prometheus instances to be installed on a cluster (although we currently use a single Prometheus instance for the whole cluster).
 
-Prometheus scrapes metrics from instrumented jobs, either directly or via an intermediary push gateway for short-lived jobs. 
-It stores all scraped samples locally and runs rules over this data to either aggregate and record new time series from existing data, 
+Prometheus scrapes metrics from instrumented jobs, either directly or via an intermediary push gateway for short-lived jobs.
+It stores all scraped samples locally and runs rules over this data to either aggregate and record new time series from existing data,
 or to generate alerts. Grafana or other API consumers can be used to visualize the collected data.
 
 To export metrics from your application into the [Cloud Platform Prometheus](https://prometheus.cloud-platform.service.justice.gov.uk/),
@@ -31,7 +31,7 @@ see: [Getting application metrics into Prometheus](/documentation/monitoring-an-
 
 ### AlertManager
 
-[AlertManager] handles alerts sent by client applications such as the Prometheus server. It takes care of deduplicating, grouping, 
+[AlertManager] handles alerts sent by client applications such as the Prometheus server. It takes care of deduplicating, grouping,
 and routing them to the correct receiver integration such as PagerDuty. It also takes care of the silencing and inhibition of alerts.
 
 To create and send application-specific alerts to a Slack channel see: [Creating your own custom alerts
@@ -39,42 +39,42 @@ To create and send application-specific alerts to a Slack channel see: [Creating
 
 ### Thanos
 
-[Thanos] is an open source project that is capable of integrating with a Prometheus deployment, enabling a long-term, scalable storage. 
-By adding Thanos sidecar to Prometheus, it uploads the data every two hours to storage(an S3 bucket in our case). 
+[Thanos] is an open source project that is capable of integrating with a Prometheus deployment, enabling a long-term, scalable storage.
+By adding Thanos sidecar to Prometheus, it uploads the data every two hours to storage(an S3 bucket in our case).
 It also serves real-time metrics that are not uploaded in bucket.
 
-Thanos Components including Thanos querier, Store and Compactor has been installed in Cloud Platform monitoring stack.    
+Thanos Components including Thanos querier, Store and Compactor has been installed in Cloud Platform monitoring stack.
 
 Thanos Querier which is similar to Prometheus is able to query a Prometheus instance(through sidecar) and a Thanos Store at the same time.
 It allows you to query several months worth of Prometheus metrics and create Grafana dashboards based on that.
 
-Thanos Compactor applies the compaction procedure to Prometheus block data stored in an S3 bucket. 
+Thanos Compactor applies the compaction procedure to Prometheus block data stored in an S3 bucket.
 Thanos also downsampling data that are stored in  the s3 bucket. For each resolutions available, here is the retention period
  > raw - 30 days
 
  > 5m(five minutes) resolution - 6 months
- 
+
  > 1h(one hour) resolution - 1 year
- 
+
 Because of the downsampling of data blocks, using Grafana dashboards is <b>not suitable</b> for monitoring the uptime of the application for monthly/quarterly/yearly basis.
 
 ### Grafana
 
-[Grafana] allows you to query, visualize, alert on and understand your metrics no matter where they are stored. Create, explore, 
+[Grafana] allows you to query, visualize, alert on and understand your metrics no matter where they are stored. Create, explore,
 and share dashboards with your team and foster a data driven culture.
 
 #### Creating dashboards
 
-Grafana is set up as a stateless app, managed entirely through code. This helps achieve better availability, 
+Grafana is set up as a stateless app, managed entirely through code. This helps achieve better availability,
 but it means that dashboards you create will not automatically persist in its database.
 
 To create a dashboard:
 
-  1. Login to Grafana (see the links below) with your GitHub account. All users are able to edit dashboards but cannot save the changes. 
+  1. Login to Grafana (see the links below) with your GitHub account. All users are able to edit dashboards but cannot save the changes.
   Find the dashboard titled 'Blank Dashboard' and modify it as you see fit. Select "Prometheus" as datasource for querying metrics past 24 hours.
   If you want to query long-term metrics, select the "Thanos" as datasource.
 
-  2. When you are happy with your dashboard, click the share icon on the top right corner, select the `Export` tab, check 
+  2. When you are happy with your dashboard, click the share icon on the top right corner, select the `Export` tab, check
     the `Export for sharing externally` box and click on `View JSON`. Copy the resulting JSON string into a `ConfigMap` in your namespace.
 
     To do this, create a YAML file like this:
@@ -105,10 +105,11 @@ To create a dashboard:
 > To build dashboards for long-term metrics, select the "Thanos" as datasource.
 
 ### Pushgateway
-[Pushgateway] allow ephemeral and batch jobs to expose their metrics to Prometheus. Since these kinds of jobs may not exist long enough to be scraped, they can instead push their metrics to a Pushgateway. 
+
+[Pushgateway] allow ephemeral and batch jobs to expose their metrics to Prometheus. Since these kinds of jobs may not exist long enough to be scraped, they can instead push their metrics to a Pushgateway.
 The Pushgateway then exposes these metrics to Prometheus.
 
-You can install pushgateway into your namespace by adding the [module](https://github.com/ministryofjustice/cloud-platform-terraform-pushgateway) to your resources folder of 
+You can install pushgateway into your namespace by adding the [module](https://github.com/ministryofjustice/cloud-platform-terraform-pushgateway) to your resources folder of
 [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments) repo.
 
 ### How to access monitoring tools
@@ -120,6 +121,11 @@ Prometheus: [https://prometheus.cloud-platform.service.justice.gov.uk](https://p
 AlertManager: [https://alertmanager.cloud-platform.service.justice.gov.uk](https://alertmanager.cloud-platform.service.justice.gov.uk/)
 
 Grafana: [https://grafana.cloud-platform.service.justice.gov.uk](https://grafana.cloud-platform.service.justice.gov.uk)
+
+
+### Other monitoring tools
+
+[Sentry](https://sentry.io/welcome/) isn't supported by the Cloud Platform team, but it is a useful tool for monitoring errors in your application. If you'd like to read more, head over to the [operations-engineering](https://operations-engineering.service.justice.gov.uk/documentation/services/sentry.html#sentry-io) page.
 
 ### Further documentation
 
