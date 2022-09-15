@@ -1,6 +1,6 @@
 ---
 title: ModSecurity - Web Application Firewall
-last_reviewed_on: 2022-07-07
+last_reviewed_on: 2022-09-15
 review_in: 3 months
 ---
 
@@ -10,14 +10,20 @@ review_in: 3 months
 > #### Quick Start
 > We have a dedicated ingress-controller with ModSecurity enabled. 
 >
-> To enable and point your application to this ingress-controller, use the following annotations on your ingress manifest file:
+> To enable and point your application to this ingress-controller, use the following annotations and ingressClassName on your ingress manifest file:
 >
 >```
->annotations:
->  kubernetes.io/ingress.class: "modsec01"
->  nginx.ingress.kubernetes.io/enable-modsecurity: "true"
->  nginx.ingress.kubernetes.io/modsecurity-snippet: |
->   SecRuleEngine On
+>apiVersion: networking.k8s.io/v1
+>kind: Ingress
+>  name: <ingress-name>
+>  namespace: <namespace-name>
+>  annotations:
+>    nginx.ingress.kubernetes.io/enable-modsecurity: "true"
+>    nginx.ingress.kubernetes.io/modsecurity-snippet: |
+>      SecRuleEngine On
+>spec:
+>  tls:
+>    ingressClassName: modsec
 >```
 
 ### Introduction
@@ -95,17 +101,20 @@ spec:
 ### Logging
 
 All disruptive actions are logged in the ModSecurity audit log file and the error log for for nginx ingress-controller. 
-Fluent-bit is used to ship error logs into the Cloud Platform ELK stack. To view any possible logs, log into [Kibana](https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/), 
-select `kubernetes_ingress` index and search for `ModSecurity`. You can filter down to a particular host using `log_processed.http_host.log is "host: "test-ingress.url"`
+Fluent-bit is used to ship error logs into the Cloud Platform ELK stack. 
+
+To view your modsec ingress logs, log into [kibana][kibana-common], select index `live_kubernetes_ingress*` and search for `ModSecurity`. You can filter down to a particular host using `host-name`. An example of this [kibana search][kibana-search-example]
+
+To get the detailed modsec audit log for a malicious event transaction, do a search using the `unique_id` value from the above search result. An example of this modsec [unique_id search][kibana-unique-id-example]
 
 Error Log Example:
 
 ```
-2019/01/01 11:00:00 [warn] 12647#12647: *1158975 [client 12.123.1.12] ModSecurity: Access denied with code 403 (phase 2). Matched "Operator `Ge'
+2019/01/01 11:00:00 [error] 12647#12647: *1158975 [client 12.123.1.12] ModSecurity: Access denied with code 403 (phase 2). Matched "Operator `Ge'
  with parameter `5' against variable `TX:ANOMALY_SCORE' (Value: `5' ) [file "/etc/nginx/owasp-modsecurity-crs/rules/
  REQUEST-949-BLOCKING-EVALUATION.conf"] [line "01"] [id "00001"] [rev ""] [msg "Inbound Anomaly Score Exceeded (Total Score: 5)"] [data ""] 
  [severity "2"] [ver ""] [maturity "0"] [accuracy "0"] [tag "application-multi"] [tag "language-multi"] [tag "platform-multi"] [tag 
- "attack-generic"] [hostname "12.123.1.12"] [uri "/"] [unique_id "12345678.12345"] [ref ""],
+ "attack-generic"] [hostname "12.123.1.12"] [uri "/"] [unique_id "1663242265"] [ref ""],
 client: 12.123.1.12, server: test-ingress.url, request: "GET /?exec=/bin/bash HTTP/2.0", host: "test-ingress.url"
 ```
 
@@ -134,3 +143,24 @@ Traditional Detection or Passive Mode is the most basic operating mode where all
 
 Anomaly scoring mode implements the concept of Collaborative Detection and Delayed Blocking. Rule logic has been set to decouple the inspection/detection from the blocking functionality. The individual rules can be run so that the detection remains, however instead of applying any disruptive action at that point, the rules will contribute to a transactional anomaly score collection. In addition, each rule will also store meta-data about each rule match (such as the Rule ID, Attack Category, Matched Location and Matched Data) for later logging. 
 For more information in anomaly scoring, click [here](https://www.modsecurity.org/CRS/Documentation/anomaly.html#anomaly-scoring-mode)
+
+#### Sensitive logs
+
+Audit log is quite large as it logs everything about the request, like Request Header, Response Header, Request Body and Body Response, etc. So, Modsec ingress-controller is configured with [`SecAuditLogParts AEFHKZ`][modsec-config] to be logged in the error logs. Please make sure you don't send any [sensitive information][sensitive-info] in the [log parts][modsecurity-handbook].
+
+```
+A	Audit log header (mandatory)
+E	Response body
+F	Response headers
+H	Audit log trailer, which contains additional data
+K	Contains a list of all rules that matched for the transaction
+Z	Final boundary (mandatory)
+```
+
+
+[kibana-common]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/kibana#/discover?_g=()
+[kibana-search-example]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/goto/17b7ef970df556e2ff6959efbae7b6d3
+[kibana-unique-id-example]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/goto/8e23159905320c2396eee5e37346ed41
+[modsec-config]: https://github.com/ministryofjustice/cloud-platform-terraform-ingress-controller/blob/main/templates/modsecurity.conf#L231
+[modsecurity-handbook]: https://www.feistyduck.com/library/modsecurity-handbook-free/online/ch04-logging.html
+[sensitive-info]: https://coreruleset.org/docs/concepts/false_positives_tuning/#sensitive-information-and-regulatory-compliance
