@@ -1,6 +1,6 @@
 ---
 title: Applying a Maintenance Page
-last_reviewed_on: 2022-06-17
+last_reviewed_on: 2022-09-20
 review_in: 3 months
 ---
 
@@ -31,7 +31,7 @@ To use this example, deploy the files into your namespace (you may want to creat
 
 The deployment will create a pod called maintenance-page-* and a service named maintenance-page-svc.
 
-To redirect traffic to your maintenance page, change the `serviceName` field in your **current** ingress 
+To redirect traffic to your maintenance page, change the `serviceName` field in your **current** ingress
 to point to `maintenance-page-svc` and redeploy the ingress. Also, check the `servicePort` matches the one mentioned in the service you want to deploy.
 
 By changing the current ingress you can ensure that you do not incur any downtime.
