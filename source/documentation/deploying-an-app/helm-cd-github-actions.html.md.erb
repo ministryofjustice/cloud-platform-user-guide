@@ -1,6 +1,6 @@
 ---
 title: Setting up GitHub Actions CD with Helm
-last_reviewed_on: 2022-06-17
+last_reviewed_on: 2022-09-20
 review_in: 3 months
 ---
 
@@ -124,7 +124,7 @@ Next, you will see the line:
   - external-dns.alpha.kubernetes.io/set-identifier: <ingress-name>-<namespace-name>-green
 ```
 
-We need to replace `<ingress-name>` with the name for our ingress - in the case of 
+We need to replace `<ingress-name>` with the name for our ingress - in the case of
 this demo application `multi-container-app`.
 
 `<namespace-name>` will need to be replaced with the namespace which you are working within.

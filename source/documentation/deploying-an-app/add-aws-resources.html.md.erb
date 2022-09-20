@@ -1,6 +1,6 @@
 ---
 title: Adding AWS resources to your environment
-last_reviewed_on: 2022-06-17
+last_reviewed_on: 2022-09-20
 review_in: 3 months
 ---
 
@@ -23,7 +23,7 @@ There are two ways to create Terraform resources for your namespace:
 
 ### Manually create a Terraform manifest
 
-In the [cloud-platform-environments][env-repo], `cd` into your namespace and create a new directory called `resources` (if it doesn't already exist). Inside this directory create a file with a sensible filename i.e. `rds.tf` and create a call to the module you require. 
+In the [cloud-platform-environments][env-repo], `cd` into your namespace and create a new directory called `resources` (if it doesn't already exist). Inside this directory create a file with a sensible filename i.e. `rds.tf` and create a call to the module you require.
 
 For example, if you wish to create an [RDS mssql instance][rds-mssql-instance] or an [RDS mysql instance][rds-mysql-instance] or an [RDS postgresql instance][rds-postgresql-instance], go to the example in the module's repository and populate your `rds-.tf` file using the example as a guide.
 
@@ -94,7 +94,7 @@ Refer to the [terraform documentation on modules][tf-modules-docs] for more info
 
 All resources are monitored by AWS CloudWatch by default. We use [CloudWatch Exporter](https://github.com/prometheus/cloudwatch_exporter) to export a number of the metrics for the [Terraform Modules][tf-modules-list] we provide into Prometheus.
 
-To view the current set of metrics available: 
+To view the current set of metrics available:
 
 * Log into [Prometheus]
 * Click on 'insert metric at cursor'
