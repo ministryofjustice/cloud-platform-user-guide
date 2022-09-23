@@ -146,7 +146,7 @@ The Common Name field in certificates is limited to 64 characters. As a conseque
          - my-app.apps.live.cloud-platform.service.justice.gov.uk
    +   - hosts:
    +     - <hostname>
-   +     secretName: <my-cert-secret>
+   +     secretName: <my-cert-secret`, `my-svc` must all be replaced with >
        rules:
        - host: my-app.apps.live.cloud-platform.service.justice.gov.uk
          http:
@@ -169,8 +169,10 @@ The Common Name field in certificates is limited to 64 characters. As a conseque
                    port:
                      number: 80
    ```
-`
-(Note: The `colour` should be `green` for ingress in EKS `live` cluster)
+
+`ingress-name`, `namespace-name`, `hostname`, `my-cert-secret`, `my-svc` must all be replaced with actual values.
+
+(Note: The `colour` must be `green` for ingress in EKS `live` cluster)
 
 Once you've made the changes to your `Ingress`, the cluster (and more
 specifically, `external-dns`) will update the necessary records defined in it.
