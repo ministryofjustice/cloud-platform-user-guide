@@ -1,6 +1,6 @@
 ---
 title: Using a custom domain
-last_reviewed_on: 2022-06-27
+last_reviewed_on: 2022-09-23
 review_in: 3 months
 ---
 
@@ -73,7 +73,7 @@ namespace where the certificate and key material will be stored.
 
    ```
    ---
-   apiVersion: cert-manager.io/v1alpha3
+   apiVersion: cert-manager.io/v1
    kind: Certificate
    metadata:
      name: <my-cert>
@@ -137,10 +137,10 @@ The Common Name field in certificates is limited to 64 characters. As a conseque
        name: <ingress-name>
        namespace: <namespace-name>
        annotations:
-         kubernetes.io/ingress.class: nginx
          external-dns.alpha.kubernetes.io/set-identifier: <ingress-name>-<namespace-name>-<colour>
          external-dns.alpha.kubernetes.io/aws-weight: "100"
      spec:
+       ingressClassName: default
        tls:
        - hosts:
          - my-app.apps.live.cloud-platform.service.justice.gov.uk
@@ -170,7 +170,9 @@ The Common Name field in certificates is limited to 64 characters. As a conseque
                      number: 80
    ```
 
-(Note - Please change the `ingress-name` and `namespace-name` values in the above example. The `colour` should be `green` for ingress in EKS `live` cluster)
+`ingress-name`, `namespace-name`, `hostname`, `my-cert-secret`, `my-svc` must all be replaced with actual values.
+
+(Note: The `colour` must be `green` for ingress in EKS `live` cluster)
 
 Once you've made the changes to your `Ingress`, the cluster (and more
 specifically, `external-dns`) will update the necessary records defined in it.
