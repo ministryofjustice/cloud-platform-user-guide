@@ -1,30 +1,30 @@
 ---
 title: Checking the GitHub groups in your ID token
-last_reviewed_on: 2022-06-27
+last_reviewed_on: 2022-09-28
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
 
 This guide explains how you can confirm that the token in your `~/.kube/config`
-file lists the correct github groups.
+file lists the correct GitHub groups.
 
 Inside your `~/.kube/config` file there is an `id-token` value. This token is
 the credential that the cluster uses to decide which operations you are
 authorised to do.
 
-In particular, the token contains a list of the github groups you are in, and
+In particular, the token contains a list of the GitHub groups you are in, and
 this is used to grant/block access to specific namespaces in the cluster.
 
 The token is a [JWT](https://en.wikipedia.org/wiki/JSON_Web_Token) and you can
-check that the correct github groups are listed by decoding it to view the
+check that the correct GitHub groups are listed by decoding it to view the
 contents.
 
 > Please do not paste your ID token into an online JWT decoder. Your token is
 an important security credential and needs to be kept secret, just like
 passwords or AWS keypairs.
 
-The easiest way to check which github groups are listed in your id-token is to
+The easiest way to check which GitHub groups are listed in your id-token is to
 use the [cloud platform CLI] tool. If you have the CLI installed, just run:
 
 ```
@@ -48,7 +48,7 @@ You should see a JSON output similar to this:
 The groups listed here must include a group specified in you namespace's
 `01-rbac.yml` file, in the [environments repository].
 
-If you do not see the github group corresponding to the namespace you are
+If you do not see the GitHub group corresponding to the namespace you are
 trying to work on, you will get:
 
 ```

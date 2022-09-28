@@ -1,6 +1,6 @@
 ---
 title: Troubleshooting guide
-last_reviewed_on: 2022-06-27
+last_reviewed_on: 2022-09-28
 review_in: 3 months
 ---
 
@@ -141,7 +141,7 @@ The remainder of this document covers particular errors you might encounter, and
   - [My pod shows 'CreateContainerConfigError' after deployment](#my-pod-shows-39-createcontainerconfigerror-39-after-deployment)
   - [My pod shows 'CrashLoopBackOff' after deployment](#my-pod-shows-crashloopbackoff-after-deployment)
   - [My pod shows 'ImagePullBackOff' after deployment](#my-pod-shows-imagepullbackoff-after-deployment)
-  - [I get the error 'container is unhealthy, it will be killed and re-created’](#i-get-the-error-39-container-is-unhealthy-it-will-be-killed-and-re-created-39)
+  - [I get the error 'container is unhealthy, it will be killed and re-created'](#i-get-the-error-39-container-is-unhealthy-it-will-be-killed-and-re-created-39)
   - [I get the error 'Error from server (Forbidden)' when trying to run kubectl commands](#i-get-the-error-39-error-from-server-forbidden-39-when-trying-to-run-kubectl-commands)
 
 ### My pod shows 'CreateContainerConfigError' after deployment
@@ -150,7 +150,7 @@ The remainder of this document covers particular errors you might encounter, and
 You have deployed an application to the Cloud Platform and its status shows `CreateContainerConfigError` (you can get the status by running `kubect get pods -n <namespace>`).
 
 #### Cause
-There are a number of reasons why this error will appear but the most probable cause is a missing secret or environment variable.
+There are a number of reasons why this error will appear, but the most probable cause is a missing secret or environment variable.
 
 #### Troubleshooting
 To investigate this issue you'll want to look at the events of your pod. Run `kubectl -n <namespace> describe <pod_name>`, in the section titled `Events` you'll have something similar to:
@@ -271,8 +271,8 @@ Possible causes include:
 
 * First confirm that you're a member of the GitHub team assigned in your [rbac.yaml] file, which is located in the [cloud-platform-environments] repository.
 * If you're not a member, get someone in the team to [add you to it][add-to-team] (please note, the Cloud Platform team cannot do this for you), and then [re-authenticate] to the cluster.
-* If you're already in the right github teams, try to [re-authenticate] to the cluster.
-* If that doesn't work, [check that your github team memberships are recorded in your id-token][token-groups].
+* If you're already in the right GitHub teams, try to [re-authenticate] to the cluster.
+* If that doesn't work, [check that your GitHub team memberships are recorded in your id-token][token-groups].
 * If they aren't, [re-authenticate] to the cluster **using an icognito/private browsing window**.
 
     Sometimes browser caching seems to cause problems with the authentication process, and using an icognito browser window usually resolves the problem.
