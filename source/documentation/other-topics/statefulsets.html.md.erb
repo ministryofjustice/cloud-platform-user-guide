@@ -1,6 +1,6 @@
 ---
 title: StatefulSets (Pods with Persistent Volumes)
-last_reviewed_on: 2022-06-27
+last_reviewed_on: 2022-09-28
 review_in: 3 months
 ---
 
@@ -10,9 +10,9 @@ review_in: 3 months
 ### Introduction
 
 Like a Deployment, a [StatefulSet](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/) manages Pods that are based on an identical container spec. Unlike a Deployment, a StatefulSet maintains a sticky identity for each of their Pods. These pods are created from the same spec, but are not interchangeable: each has a persistent identifier (UID) that it maintains across any rescheduling. It also provides guarantees on the ordering and uniqueness of the Pods.
-StatefulSets also require a [headless service] to manage network identities for pods. Each Pod gets a sticky network sub-domain and [SRV record] that does not change if a Pod is deleted and recreated.
+  StatefulSets also require a [headless service] to manage network identities for pods. Each Pod gets a sticky network subdomain and [SRV record] that does not change if a Pod is deleted and recreated.
 
-You can see an example below where a Pod is deleted, but then recreated with the same `name` using the StatefulSet spec. 
+You can see an example below where a Pod is deleted, but then recreated with the same `name` using the StatefulSet spec.
 
 ```bash
 kubectl get pods
@@ -20,10 +20,10 @@ NAME    READY   STATUS    RESTARTS   AGE
 web-0   1/1     Running   0          3d
 web-1   1/1     Running   0          3d
 
-kubectl delete pod web-0 
+kubectl delete pod web-0
 pod "web-0" deleted
 
-kubectl get pods 
+kubectl get pods
 NAME    READY   STATUS              RESTARTS   AGE
 web-0   0/1     ContainerCreating   0          7s
 web-1   1/1     Running             0          3d
@@ -31,7 +31,7 @@ web-1   1/1     Running             0          3d
 
 ### Headless Service
 
-As mentioned above, a [headless service] is required for StatefulSets, where the network type `clusterIP` has a value of `None`. This does not predefine an IP for the service. 
+As mentioned above, a [headless service] is required for StatefulSets, where the network type `clusterIP` has a value of `None`. This does not predefine an IP for the service.
 
 ```yaml
 apiVersion: v1
@@ -99,7 +99,7 @@ Once all pods are created for the StatefulSet, they have a unique identity based
 The pods are named using the following: [StatefulSet_Name]-[Ordinal_Index] e.g. web-0
 
 ```bash
-kubectl get pods 
+kubectl get pods
 NAME    READY   STATUS    RESTARTS   AGE
 web-0   1/1     Running   0          22m
 web-1   1/1     Running   0          22m
@@ -112,7 +112,7 @@ web-6   1/1     Running   0          20m
 All [PersistentVolumeClaims] would have all been created also. The PersistentVolumeClaims are named using the following: [VolumeClaim_Name]-[StatefulSet_Name]-[Ordinal_Index]
 
 ```bash
-kubectl get pvc 
+kubectl get pvc
 NAME        STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
 www-web-0   Bound    pvc-0ca662d1-9299-11e9-b4c5-0a5b8815a91e   4Gi        RWO            gp2-expand      29m
 www-web-1   Bound    pvc-1cc800d2-9299-11e9-b4c5-0a5b8815a91e   4Gi        RWO            gp2-expand      28m
@@ -122,10 +122,10 @@ www-web-4   Bound    pvc-4ebb8afd-9299-11e9-b4c5-0a5b8815a91e   4Gi        RWO  
 www-web-5   Bound    pvc-641f5a61-9299-11e9-b4c5-0a5b8815a91e   4Gi        RWO            gp2-expand      26m
 www-web-6   Bound    pvc-6c2a187c-9299-11e9-b4c5-0a5b8815a91e   4Gi        RWO            gp2-expand      26m
 ```
-If a Pod is deleted, it will be rescheduled, with the same name, and the corresponding above PersistentVolumeClaims will be attached. 
+If a Pod is deleted, it will be rescheduled, with the same name, and the corresponding above PersistentVolumeClaims will be attached.
 The Pod also has and will keep a network ID that persists through restarts.
 
-If a StatefulSet is deleted, the PersistentVolumeClaims (PVCs) remain along with PersistentVolumes (PVs). PVCs and PVs have to be deleted separately.  
+If a StatefulSet is deleted, the PersistentVolumeClaims (PVCs) remain along with PersistentVolumes (PVs). PVCs and PVs have to be deleted separately.
 
 ### Advisory note: Expanding Persistent Volumes
 
