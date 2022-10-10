@@ -68,6 +68,7 @@ spec:
       annotations:
         message: <alert_message>
         runbook_url: <http://my-support-docs>
+        dashboard_url: <http://my-dashboard>
 ```
 - Run:
 
@@ -97,10 +98,11 @@ spec:
         severity: cp-team
       annotations:
         message: Namespace {{ $labels.namespace }} is using {{ printf "%0.0f" $value}}% of its {{ $labels.resource }} quota.
-        runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md###alert-name-kubequotaexceeded
+        runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/blob/master/runbook.md#alert-name-kubequotaexceeded
+        dashboard_url: https://grafana.live.cloud-platform.service.justice.gov.uk/d/application-alerts/application-alerts?orgId=1&var-namespace=cloud-platform-reference-app
 ```
 
-The `alert` name, `message` and `runbook_url` annotations will be sent to the Slack channel when the rule has been triggered.
+The `alert` name, `message`, `runbook_url` and `dashboard_url` annotations will be sent to the Slack channel when the rule has been triggered.
 
 For information type alerts, you can also add a label `status_icon: information` to have an information icon on the alert title.
 
