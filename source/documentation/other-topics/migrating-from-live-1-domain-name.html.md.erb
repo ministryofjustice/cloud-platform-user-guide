@@ -1,6 +1,6 @@
 ---
-title: Migrating your application URL from live-1 to live domain
-last_reviewed_on: 2022-07-06
+title: Migrating your application URL from live-1 to non-cluster specific domain
+last_reviewed_on: 2022-10-18
 review_in: 3 months
 ---
 
@@ -10,7 +10,7 @@ review_in: 3 months
 
 Following the decomissioning of Cloud Platform live-1 Kubernetes cluster, we are now
 looking to ensure that all services currently running have their domain URL migrate
-to the new live domain `apps.live.cloud-platform.service.justice.gov.uk`
+to non-cluster specific domain `*.apps.cloud-platform.service.justice.gov.uk`. Please read our ADR on [Domain names](https://github.com/ministryofjustice/cloud-platform/blob/main/architecture-decision-record/025-Domain-names.md)
 
 We are asking all users of the platform to check/update their Kubernetes deployments 
 and or Helm Charts to reflect this change, prior to the removal of the 
@@ -26,7 +26,7 @@ To check whether you have a Cloud Platform hosted application still configured t
 > **IMPORTANT**: Switching your domain over will incur a short delay due to DNS propogation. We strongly
 advise you to test in non-production environments before making the change on any production environments. 
 
-> If you wish to test your new `live` hostname is resolvable before deleting your `live-1` hostname,  you can follow 
+> If you wish to test your new non-cluster specific hostname is resolvable before deleting your `live-1` hostname, you can follow 
 [these steps](#staged-migration) described further down in this guide.
 
 To view your current domain URL for your given deployment, run the following kubectl command:
@@ -73,8 +73,8 @@ spec:
 
 Update your manifest to use the live domain:
 
-- Change the `hosts` value under `spec`, `tls` to `my-application.apps.live.cloud-platform.service.justice.gov.uk`
-- Change the `host` value under `spec`, `rules` to `my-application.apps.live.cloud-platform.service.justice.gov.uk`
+- Change the `hosts` value under `spec`, `tls` to `my-application.apps.cloud-platform.service.justice.gov.uk`
+- Change the `host` value under `spec`, `rules` to `my-application.apps.cloud-platform.service.justice.gov.uk`
 
 Your manifest should appear like below after these changes:
 
@@ -90,9 +90,9 @@ spec:
   tls:
     ingressClassName: default
   - hosts:
-    - my-application.apps.live.cloud-platform.service.justice.gov.uk
+    - my-application.apps.cloud-platform.service.justice.gov.uk
   rules:
-  - host: my-application.apps.live.cloud-platform.service.justice.gov.uk
+  - host: my-application.apps.cloud-platform.service.justice.gov.uk
     http:
       paths:
       - path: /
@@ -166,7 +166,7 @@ ingress:
   ...
   ...
   hosts:
-    - host: my-application.apps.live.cloud-platform.service.justice.gov.uk
+    - host: my-application.apps.cloud-platform.service.justice.gov.uk
 ```
 To apply your changes via Helm:
 
@@ -179,7 +179,7 @@ by visiting your URL on your web browser.
 
 ### Staged migration
 
-You can edit your ingress to temporarily contain both `live-1` and `live` hostnames, removing 
+You can edit your ingress to temporarily contain both `live-1` and non-cluster specific hostnames, removing 
 the old hostname once you are able to resolve via the new hostname.
 
 For standard Kubernetes manifests, this can be achieved as follows:
@@ -196,7 +196,7 @@ spec:
   tls:
     ingressClassName: default
   - hosts:
-    - my-application.apps.live.cloud-platform.service.justice.gov.uk
+    - my-application.apps.cloud-platform.service.justice.gov.uk
   rules:
   - host: my-application.apps.live-1.cloud-platform.service.justice.gov.uk
     http:
@@ -208,7 +208,7 @@ spec:
             name: helloworld
             port:
               number: 4567
-  - host: my-application.apps.live.cloud-platform.service.justice.gov.uk
+  - host: my-application.apps.cloud-platform.service.justice.gov.uk
     http:
       paths:
       - path: /
