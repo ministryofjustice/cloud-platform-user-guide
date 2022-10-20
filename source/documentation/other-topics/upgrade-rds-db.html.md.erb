@@ -45,6 +45,16 @@ $ aws rds describe-orderable-db-instance-options --engine postgres --db-instance
 ]
 ```
 
+### Speeding up your upgrade
+
+You can speed up your upgrade by temporarily changing your database instance class to something larger. This provides more CPU and memory which can be utilised by RDS during the upgrade to increase upgrade speeds.
+
+For example, if you're running a `db.t3.large`, you can change it to a `db.t3.xlarge`, doubling the CPU and memory for RDS to use during the upgrade.
+
+You should do this before starting the actual upgrade, and scale down when your upgrade is finished. This makes the data migration much faster and the cost difference will only be for a few hours.
+
+You can [view instance types](https://aws.amazon.com/rds/instance-types/) to find what database instance to use during the upgrade.
+
 ## Upgrading through migration
 
 >Note: This method causes downtime.
