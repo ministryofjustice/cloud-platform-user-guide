@@ -1,6 +1,6 @@
 ---
 title: Getting application metrics into Prometheus
-last_reviewed_on: 2022-07-18
+last_reviewed_on: 2022-10-24
 review_in: 3 months
 ---
 
@@ -20,13 +20,13 @@ To keep this document short we will assume you already have an application up an
 ### Changing the application code
 We need to add the Prometheus Ruby client library via a gem to give us our `/metrics` endpoint.
 
-First, add the gem to your Gemfile and install with bundler. 
+First, add the gem to your Gemfile and install with bundler.
 
 ```
 gem 'prometheus-client'
 ```
 
-Next, we need to amend the `config.ru` file and include the two `rack` middlewares required by the `prometheus-client`. 
+Next, we need to amend the `config.ru` file and include the two `rack` middlewares required by the `prometheus-client`.
 
 ```
 require_relative 'config/environment'
@@ -45,7 +45,7 @@ If you're running this locally, you'll now be able to query your `/metrics` endp
 curl localhost:3000/metrics
 ```
 
-Build, tag and push your application changes to your code repository and deploy the latest version into your Cloud Platform namespace. Confirm your `/metrics` endpoint is now accessible from your url. 
+Build, tag and push your application changes to your code repository and deploy the latest version into your Cloud Platform namespace. Confirm your `/metrics` endpoint is now accessible from your url.
 
 ```
 curl https://myapp.cloud-platform/metrics
@@ -55,7 +55,7 @@ curl https://myapp.cloud-platform/metrics
 
 We need to expose the metrics endpoint with a `Service` and tell the Cloud Platform Prometheus to scrape the endpoint with a `ServiceMonitor` object in Kubernetes. A `ServiceMonitor` is a custom resource definition ([CRD](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#customresourcedefinitions/)) that allows you to automatically generate Prometheus scrape configuration based on a specified resource.
 
-In this example, we're using the same port to expose both our application and metrics endpoint so we'll need to query our existing `Service` for the current port name. However, if you're exposing a different port you'll need to either amend your current `Service` or create a new one. 
+In this example, we're using the same port to expose both our application and metrics endpoint so we'll need to query our existing `Service` for the current port name. However, if you're exposing a different port you'll need to either amend your current `Service` or create a new one.
 
 Let's find out our current port name and number by running:
 
@@ -84,7 +84,7 @@ Create and apply your service monitor `<application>-serviceMonitor.yaml`, as be
 This will tell Prometheus to go and scrape that endpoint every 15 seconds and store any exposed metrics.
 
 ### Add a NetworkPolicy resource
- 
+
 The Prometheus server is in the 'monitoring' namespace, but by default, any network connections from outside your application's namespace will be blocked. So, to allow prometheus to scrape your application's `/metrics` endpoint, we need to add a network policy to allow connections from the monitoring namespace.
 
 Create and apply a new resource `<application>-networkPolicy.yaml`, as below:
@@ -99,7 +99,7 @@ Create and apply a new resource `<application>-networkPolicy.yaml`, as below:
      podSelector:
        matchLabels:
          app: rails-app
-     policyTypes:                                                                                                                                                         
+     policyTypes:
      - Ingress
      ingress:
      - from:
