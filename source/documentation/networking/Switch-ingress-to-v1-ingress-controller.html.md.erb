@@ -1,6 +1,6 @@
 ---
 title: Switch ingress to the new nginx-ingress-controller v1.2
-last_reviewed_on: 2022-07-21
+last_reviewed_on: 2022-10-24
 review_in: 3 months
 ---
 
@@ -13,14 +13,14 @@ An ingress-controller is a specialised load balancer for Kubernetes. The Cloud P
 Currently all service teams are using 1 of 2 ingress-controllers using one of the following annotations:
 
   - `kubernetes.io/ingress.class: nginx`   - This is the default ingress-controller
-  - `kubernetes.io/ingress.class: modsec01`  - This ingress-controller has the modsec WAF enabled. 
+  - `kubernetes.io/ingress.class: modsec01`  - This ingress-controller has the modsec WAF enabled.
 
 These ingress-controllers are running on version **v0.47.0**
 
 
 Unfortunately, there is a breaking change in the upgrade path of the nginx-ingress-controller to v1.0 and above. This would require all service teams to make changes to all ingress manifests at the same time as the upgrade.
 
-To avoid this, the Cloud Platform team have released a new set of nginx-ingress-controllers **(v1.2)** alongside the current nginx-ingress-controllers **(v0.47.0)**. 
+To avoid this, the Cloud Platform team have released a new set of nginx-ingress-controllers **(v1.2)** alongside the current nginx-ingress-controllers **(v0.47.0)**.
 
 There are number of benefits to using the new v1.2 ingress controllers:
 
@@ -29,7 +29,7 @@ There are number of benefits to using the new v1.2 ingress controllers:
 - Retiring support for TLS 1.0 and 1.1 (mitigate security risks, address Service Team ITHC report and to align to NCSC recommendations)
 - Prerequisite for Kubernetes 1.22 upgrade
 
-Service teams using the Cloud Platform are asked to switch to the new releases of the nginx-ingress-controller(v1.2). 
+Service teams using the Cloud Platform are asked to switch to the new releases of the nginx-ingress-controller(v1.2).
 
 ### Pre-requisite - Ingress API Version
 
@@ -40,16 +40,16 @@ Service teams using the Cloud Platform are asked to switch to the new releases o
 > Please follow the [Deprecated Ingress API](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/networking/apiversion-changes-ingress-k8s-1-22.html#removing-deprecated-ingress-apis-for-cloud-platform-kubernetes-v1-22) document on how to check and if required, change to the stable Ingress API version.
 
 
-### Switch to the new nginx-ingress-controller 
+### Switch to the new nginx-ingress-controller
 
-> **IMPORTANT**: There may be downtime of up to 10 minutes while switching to the new ingress controller due to DNS propagation. Please test in non-production environments before making the change on your production applications.  
+> **IMPORTANT**: There may be downtime of up to 10 minutes while switching to the new ingress controller due to DNS propagation. Please test in non-production environments before making the change on your production applications.
 
 > Alternatively you can follow the steps later in this document to switch to the new nginx-ingress-controller(v1.2) without downtime.
 
 There are 2 releases of the new nginx-ingress-controller(v1.2). They can be selected using the new `IngressClassName` field:
 
   - `ingressClassName: default` - This is the default ingress-controller
-  - `ingressClassName: modsec`  - This ingress-controller has the modsec WAF enabled. 
+  - `ingressClassName: modsec`  - This ingress-controller has the modsec WAF enabled.
 
 To switch to the new nginx-ingress-controller(v1.2):
 
@@ -117,7 +117,7 @@ spec:
             backend:
               service:
                 name: {{ $fullName }}
-                port: 
+                port:
                   name: http
   {{- end }}
 {{- end }}
@@ -192,7 +192,7 @@ spec:
             backend:
               service:
                 name: {{ $fullName }}
-                port: 
+                port:
                   name: http
   {{- end }}
 {{- end }}
@@ -204,7 +204,7 @@ spec:
 Create a new Ingress with a different ingress name to the existing one with the following changes:
 
 1. Create a new ingress name different to the existing one:
-  
+
     `name: helloworld-new`
 
 2. Update set-identifier annotation to match with the new ingress name (`-green` remains the same):
@@ -290,7 +290,7 @@ spec:
             backend:
               service:
                 name: {{ $fullName }}
-                port: 
+                port:
                   name: http
   {{- end }}
 {{- end }}
@@ -305,7 +305,7 @@ helm upgrade -f <values-file.yaml> <your-release> <your-chart> --namespace <your
 
 #### Verify and wait for traffic to be sent to the new ingress
 
-After you have applied new ingress with `external-dns.alpha.kubernetes.io/aws-weight` value set to "100", wait for couple of minutes for the traffic to be sent to the new ingress, 
+After you have applied new ingress with `external-dns.alpha.kubernetes.io/aws-weight` value set to "100", wait for couple of minutes for the traffic to be sent to the new ingress,
 you can verify traffic is being sent to the new ingress using [kibana][kibana-common]
 
 Get the "hostname" used in your ingress for your namespace
