@@ -221,6 +221,9 @@ e.g. To upgrade from PostgreSQL 9.5 to 9.6 (this is a [major version upgrade]), 
 ```
 -  db_engine_version          = "9.5"
 +  db_engine_version          = "9.6"
+  # use "allow_major_version_upgrade" when upgrading the major version of an engine
++  allow_major_version_upgrade = "true"
+  
 ...
 -  rds_family = "postgres9.5"
 +  rds_family = "postgres9.6"
