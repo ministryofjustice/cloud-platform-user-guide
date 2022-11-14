@@ -1,6 +1,6 @@
 ---
 title: Publish prototypes on the web
-last_reviewed_on: 2022-07-18
+last_reviewed_on: 2022-11-14
 review_in: 3 months
 ---
 
@@ -8,7 +8,7 @@ review_in: 3 months
 
 You can share prototypes made with the [GOV.UK Prototype Kit] by publishing them on the web using an MoJ service called Cloud Platform.
 
-**Note - This process can only be used to deploy prototypes based on the [GOV.UK Prototype Kit]. This process will not work for any other types of apps e.g. Design History. If in any doubt please contact #ask-cloud-platform, or speak to your development team before you follow these instructions.** 
+**Note - This process can only be used to deploy prototypes based on the [GOV.UK Prototype Kit]. This process will not work for any other types of apps e.g. Design History. If in any doubt please contact #ask-cloud-platform, or speak to your development team before you follow these instructions.**
 
 ## Before you start
 
@@ -100,14 +100,14 @@ Create a copy of your prototype kit repository:
 ```bash
 $ git clone git@github.com:ministryofjustice/<your-prototype-repository>.git
 $ cd <your-prototype-repository>
-$ git checkout main 
+$ git checkout main
 $ cloud-platform prototype deploy create
 ```
 
 This will create the files to build and deploy your prototype kit to the environment you created in step 2 and 3.
 
 > The deployment files work only on the **latest version** of the prototype kit which we regularly update in the [moj-prototype-template]. Your deployment
-may break if your prototype kit is not the latest version. 
+may break if your prototype kit is not the latest version.
 
 Use the instructions to [update your prototype kit] to latest version
 
@@ -168,7 +168,7 @@ start.sh
 > The docker build files `Dockerfile,.dockerignore, start.sh` work only on the **latest version** of the prototype kit which we regularly update in the [moj-prototype-template]. Your deployment
 may break if your prototype kit is not the latest version.
 
-If you want to skip the docker build files when deploying to a branch, you can add a `--skip-docker-files` flag. For example: 
+If you want to skip the docker build files when deploying to a branch, you can add a `--skip-docker-files` flag. For example:
 
 ```bash
 $ cloud-platform prototype deploy create --skip-docker-files
@@ -176,8 +176,8 @@ $ cloud-platform prototype deploy create --skip-docker-files
 
 ## Branch deployment and cleanup
 
-When you create the deployment files using `step 5` for a branch, they are generated to deploy on that specific branch. If the branch is merged to the 
-main branch, these deployment files will get merged as well. You can do the cleanup by deleting the files specifically created for that branch. 
+When you create the deployment files using `step 5` for a branch, they are generated to deploy on that specific branch. If the branch is merged to the
+main branch, these deployment files will get merged as well. You can do the cleanup by deleting the files specifically created for that branch.
 
 ## Deleting your published prototype
 

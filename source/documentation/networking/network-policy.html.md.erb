@@ -1,14 +1,14 @@
 ---
 title: Network Policies
-last_reviewed_on: 2022-07-28
+last_reviewed_on: 2022-11-14
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
 
-# Overview 
+# Overview
 
-Network Policies are used to regulate connectivity between Kubernetes namespaces.  
+Network Policies are used to regulate connectivity between Kubernetes namespaces.
 Every namespace in the cluster has network policies which only allow inbound traffic from the _ingress controllers_ namespace (so that incoming requests can be routed to your web applications).
 
 A network policy allows connection based on `PodSelector` and/or `NamespaceSelector`.  The policy will then filter requests based on namespace or pod labels.
@@ -17,8 +17,8 @@ A network policy allows connection based on `PodSelector` and/or `NamespaceSelec
 
 This example demonstrates using a `namespaceSelector` to route traffic based on a namespace label.
 
-Any namespace label can be used in the network policy.   
-For clarity, and to avoid overlap with other namespaces, let's make our label key:   
+Any namespace label can be used in the network policy.
+For clarity, and to avoid overlap with other namespaces, let's make our label key:
    `cloud-platform.justice.gov.uk/namespace`
 
 
@@ -30,7 +30,7 @@ kind: Namespace
 metadata:
   name: source-namespace
   labels:
-    cloud-platform.justice.gov.uk/namespace: "source-namespace"  # this is the label 
+    cloud-platform.justice.gov.uk/namespace: "source-namespace"  # this is the label
     cloud-platform.justice.gov.uk/is-production: "false"
     cloud-platform.justice.gov.uk/environment-name: "dev"
   annotations:
@@ -40,9 +40,9 @@ metadata:
     cloud-platform.justice.gov.uk/source-code: "https://github.com/ministryofjustice/court-probation-service"
 ```
 
-##  Network Policy  
+##  Network Policy
 
-Once the relevant label has been added to the namespace, the policy can be created.   
+Once the relevant label has been added to the namespace, the policy can be created.
 
 The policy below allows all traffic from namespaces which have a label called `cloud-platform.justice.gov.uk/namespace` with the the value `source-namespace` to route to the namespace called `target-namespace`.
 
@@ -78,12 +78,12 @@ curl myservice.target-namespace
 ```
 
 ## Cross Namespace Network Access
-This following user guide is to demostrate how cross namespace network access works. The advised option is to use a service and network policy to communicate within the cluster. 
+This following user guide is to demostrate how cross namespace network access works. The advised option is to use a service and network policy to communicate within the cluster.
 
 Using a service and specifying a NetworkPolicy that allows Ingress from the source namespace, this allows a connection directly on an internal IP, without going via the Nginx reverse proxy in front. This increases throughput and reduces latency, with the caveat that logs will not be visible in the ingress Kibana index, only in the cluster (pod) logs.
 
 To do this adding a NetworkPolicy to `04-networkpolicy.yaml` in the source namespace
- 
+
 Example:
 
 ```

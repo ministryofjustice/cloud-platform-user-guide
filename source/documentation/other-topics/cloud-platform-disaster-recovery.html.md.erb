@@ -1,6 +1,6 @@
 ---
 title: Cloud Platform Disaster Recovery
-last_reviewed_on: 2022-07-29
+last_reviewed_on: 2022-11-14
 review_in: 3 months
 ---
 
@@ -20,7 +20,7 @@ Cloud Platform is provided to Service Teams as a managed service. To ensure busi
 
 In the case of all of the above the Cloud Platform Team is responsible for recovery.
 
-*However, it's possible that in the event of the loss of the platform or a namespace that we may require Service Teams to redeploy their services. It is also possible that any resources not added to your namespace folder in the [Environments Repo](https://github.com/ministryofjustice/cloud-platform-environments) (e.g. custom Prometheus rules) may require recovery by the Service Team themselves.*  
+*However, it's possible that in the event of the loss of the platform or a namespace that we may require Service Teams to redeploy their services. It is also possible that any resources not added to your namespace folder in the [Environments Repo](https://github.com/ministryofjustice/cloud-platform-environments) (e.g. custom Prometheus rules) may require recovery by the Service Team themselves.*
 
 The Cloud Platform Team is continually reviewing and identifying risks to the our users and the platform. As each threat is identified we are testing and creating recovery plans.
 
@@ -30,7 +30,7 @@ The Cloud Platform Team is continually reviewing and identifying risks to the ou
 * Persistent volumes and other stateful resources - Kubernetes is designed and works best for stateless applications. In the event of a disaster it is likely that any stateful resources would be lost. In this instance it would be the responsibility of the Service Team to back-up these resources, or treat them as ephemeral. An alternative would be to use AWS managed persistent resources such as RDS or S3.
 * Redeployment of applications - The Cloud Platform doesn't manage tenant deployment pipelines. If there is a need to deploy a service as part of any restoration you will be asked to do so by the Cloud Platform Team.
 * Only retain AWS RDS Snapshots for as long as they are required. Please clean-up any snapshots regularly.
-* 3rd party managed services (e.g. Github, CircleCI, Sentry.io) - These 3rd party managed services will offer some form of back-up and recovery as part of their managed service, however these processes are out of the scope of recovery by the Cloud Platform. If you need more information please contact #ask-operations-engineering. 
+* 3rd party managed services (e.g. Github, CircleCI, Sentry.io) - These 3rd party managed services will offer some form of back-up and recovery as part of their managed service, however these processes are out of the scope of recovery by the Cloud Platform. If you need more information please contact #ask-operations-engineering.
 * Ensure your `slack-channel` annotation is kept up to date so that the Cloud Platform Team knows how best to contact your team.
 * Ensure you team is added to the #cloud-platform-update slack channel so that you can ensure you receive important messages from the Cloud Platform Team.
 

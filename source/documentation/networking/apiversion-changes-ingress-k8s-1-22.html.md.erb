@@ -1,6 +1,6 @@
 ---
 title: Removing Deprecated Ingress APIs for Cloud Platform - Kubernetes v1.22
-last_reviewed_on: 2022-07-29
+last_reviewed_on: 2022-11-14
 review_in: 3 months
 ---
 
@@ -97,11 +97,11 @@ To apply your changes:
 
 **NOTE** - Check the helm version
 
-The Cloud Platform runs on Kubernetes v1.21 and is compatible with helm version 3.5.x. Please make sure you have the 
+The Cloud Platform runs on Kubernetes v1.21 and is compatible with helm version 3.5.x. Please make sure you have the
 correct version installed before updating the manifest. If you are on older helm versions, you might get an error below:
 
 ```
-Error: UPGRADE FAILED: rendered manifests contain a new resource that already exists. 
+Error: UPGRADE FAILED: rendered manifests contain a new resource that already exists.
 Unable to continue with update: existing resource conflict: namespace: XXX, name: YYYY,
 existing_kind: networking.k8s.io/v1, Kind=Ingress, new_kind: networking.k8s.io/v1, Kind=Ingress
 ```
@@ -175,7 +175,7 @@ spec:
             backend:
               service:
                 name: {{ $fullName }}
-                port: 
+                port:
                   name: http</b>
   {{- end }}
 {{- end }}
