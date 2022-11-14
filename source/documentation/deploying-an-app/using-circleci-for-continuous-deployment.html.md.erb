@@ -1,6 +1,6 @@
 ---
 title: Continuous Deployment of an application using CircleCI and Helm
-last_reviewed_on: 2022-07-29
+last_reviewed_on: 2022-11-14
 review_in: 3 months
 ---
 
@@ -104,7 +104,7 @@ To deploy to a single namespace, select the "Project Settings" and then "Environ
 - K8S_CLUSTER_CERT # The CA Certificate for the cluster, can be acquired from the `Secret` that is generated for the `serviceaccount` (as stated above)
 - K8S_TOKEN # The access token generated for the `serviceaccount`.
 ```
-   
+
 ## Configuring CircleCI
 
 This is a really simple example of adding a build and deploy section to your configuration. If you'd rather see this in action, please checkout the [cloud-platform-reference-app](https://github.com/ministryofjustice/cloud-platform-reference-app/blob/main/.circleci/config.yml)

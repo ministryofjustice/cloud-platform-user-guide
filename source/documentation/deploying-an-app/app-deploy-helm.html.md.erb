@@ -1,6 +1,6 @@
 ---
 title: Deploying an application to the Cloud Platform with Helm
-last_reviewed_on: 2022-07-29
+last_reviewed_on: 2022-11-14
 review_in: 3 months
 ---
 
@@ -58,7 +58,7 @@ If you receive the below error message then you've either not typed in your name
     $ Error from server (Forbidden): pods is forbidden: User "test-user" cannot list pods in the namespace "demo"
 
 #### Using Helm
-Helm allows you to manage application deployment to Kubernetes using Charts. You can read about of some of the many features of [Helm Charts](https://helm.sh/docs/topics/charts/). 
+Helm allows you to manage application deployment to Kubernetes using Charts. You can read about of some of the many features of [Helm Charts](https://helm.sh/docs/topics/charts/).
 We've chosen to use Helm as the default way to deploy applications to the Cloud Platform as it provides useful tooling as an interface to the YAML files that Kubernetes uses to run.
 
 ##### Installing and configuring Helm
@@ -119,7 +119,7 @@ Run the following (replacing `<namespace-name>` with your environment name:
 ```bash
 helm install multi-container-app . \
 --values values.yaml \
---namespace <namespace-name> 
+--namespace <namespace-name>
 ```
 
 > Note: We're naming it like this as app names and host names have to be unique on the cluster.
@@ -132,7 +132,7 @@ Congratulations on getting this far. If all went well your pods are now deployed
 
 Let's check:
 
-    $ kubectl get pods --namespace <namespace-name> 
+    $ kubectl get pods --namespace <namespace-name>
 
 If the deploy was successful you should be greeted with something similar to the below:
 
@@ -371,11 +371,11 @@ kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
   name: tiller
-  namespace: myapp-dev ### Your namespace 
+  namespace: myapp-dev ### Your namespace
 subjects:
 - kind: ServiceAccount
   name: tiller
-  namespace: myapp-dev ### Your namespace 
+  namespace: myapp-dev ### Your namespace
 roleRef:
   kind: ClusterRole
   name: admin

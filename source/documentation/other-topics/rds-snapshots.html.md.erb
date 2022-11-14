@@ -1,6 +1,6 @@
 ---
 title: RDS Snapshots
-last_reviewed_on: 2022-08-10
+last_reviewed_on: 2022-11-14
 review_in: 3 months
 ---
 
@@ -75,10 +75,10 @@ module "example_team_rds" {
 }
 ```
 
-Check the terraform plan for any change to the current values except `known after apply`. 
+Check the terraform plan for any change to the current values except `known after apply`.
 
-Your RDS `db_allocated_storage` will be autoscaled to maximum of `10000` by default unless you have 
-set to specific number. Hence, the actual `db_allocated_storage` may be higher than what is set as default(10).  
+Your RDS `db_allocated_storage` will be autoscaled to maximum of `10000` by default unless you have
+set to specific number. Hence, the actual `db_allocated_storage` may be higher than what is set as default(10).
 
 Check the actual "AllocatedStorage" value described in your RDS instance using the command
 
