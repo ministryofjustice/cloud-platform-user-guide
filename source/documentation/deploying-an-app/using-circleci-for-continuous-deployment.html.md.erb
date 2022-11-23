@@ -1,6 +1,6 @@
 ---
 title: Continuous Deployment of an application using CircleCI and Helm
-last_reviewed_on: 2022-11-14
+last_reviewed_on: 2022-11-23
 review_in: 3 months
 ---
 
@@ -33,8 +33,8 @@ As part of the CircleCI deployment pipeline, CircleCI will need to authenticate 
 
 To create a service account:
 
-- Download the [cloud-platform-cli tool](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/cloud-platform-cli.html#the-cloud-platform-cli)
-- Run the command `cloud-platform environment serviceaccount create` in your [namespace](https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live.cloud-platform.service.justice.gov.uk) as outlined in the [instructions](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/cloud-platform-cli.html#the-cloud-platform-cli)
+- Download the [cloud-platform-cli tool]
+- Run the command `cloud-platform environment serviceaccount create` in your [namespace](https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live.cloud-platform.service.justice.gov.uk) as outlined in the [instructions](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/cloud-platform-cli.html#add-a-service-account-to-your-namespace)
 - Add a `serviceaccount_name` variable called `circleci` (This doesn't have to be circleci, it's just easier for reference)
 - Ensure `github_owner` and `github_token` variables are defined in variables.tf. This is added by default if you created the environment using the [cloud-platform-cli tool]
 - Ensure github provider block is added to versions.tf and main.tf. This is added by default if you created the environment using the [cloud-platform-cli tool]
@@ -78,7 +78,7 @@ Both the ca.crt and token will be added as environment variables in the CircleCI
 
 ## Setting up CircleCI
 
-MoJ Digital have an account with CircleCI, to [login](https://circle.com) you must be a member of the `ministryofjustice` GitHub organisation. Use the GitHub integration and enter your credentials if required.
+MoJ Digital have an account with CircleCI, to [login](https://app.circle.com) you must be a member of the `ministryofjustice` GitHub organisation. Use the GitHub integration and enter your credentials if required.
 
 To setup your repository, simply go to "Projects", enter your repository name and select "Set Up Project". You'll be presented with a default `.circleci/config.yml` file, copy the contents of this file and create it in the root of your repository. An example of this can be found [here](https://github.com/ministryofjustice/cloud-platform-reference-app/tree/main/.circleci)
 
@@ -94,13 +94,13 @@ To deploy to a single namespace, select the "Project Settings" and then "Environ
 
 ```
 - AWS_DEFAULT_REGION # This should be set to `eu-west-2`.
-- AWS_ACCESS_KEY_ID # If you're deploying to ECR you can find this value in a [namespace secret](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/ecr-setup.html#accessing-the-credentials).
+- AWS_ACCESS_KEY_ID # If you're deploying to ECR you can find this value in a namespace secret: (https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/ecr-setup.html#accessing-the-credentials).
 - AWS_SECRET_ACCESS_KEY # As above, this should be stored in a namespace secret and is used for ECR.
 
 - ECR_ENDPOINT # This should be the ECR name your intend to push your images to e.g. `738437979232.dkr.ecr.eu-west-2.amazonaws.com/webops/cloud-platform-reference-app-ecr`
 
-- K8S_CLUSTER_NAME # The full name of the "live" cluster `https://DF366E49809688A3B16EEC29707D8C09.gr7.eu-west-2.eks.amazonaws.com`
-- K8S_NAMESPACE # The name of the namespace/environment (see [Create a namespace][env-create])
+- K8S_CLUSTER_NAME # The full name of the "live" cluster `DF366E49809688A3B16EEC29707D8C09.gr7.eu-west-2.eks.amazonaws.com`
+- K8S_NAMESPACE # The name of the namespace/environment (see https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/env-create.html#creating-a-cloud-platform-environment)
 - K8S_CLUSTER_CERT # The CA Certificate for the cluster, can be acquired from the `Secret` that is generated for the `serviceaccount` (as stated above)
 - K8S_TOKEN # The access token generated for the `serviceaccount`.
 ```
@@ -190,3 +190,4 @@ https://circleci.com/docs/2.0/test/
 [deploy-kubernetes]: /documentation/deploying-an-app/using-circleci-for-continuous-deployment.html#deploy-to-kubernetes
 [ca-decode]: https://github.com/ministryofjustice/cloud-platform-reference-app/blob/main/.circleci/config.yml#L62
 [login-to-repo]: /documentation/deploying-an-app/helloworld-app-deploy.html#login-to-the-repository
+[cloud-platform-cli tool]: /documentation/getting-started/cloud-platform-cli.html
