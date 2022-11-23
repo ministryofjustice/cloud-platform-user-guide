@@ -64,9 +64,10 @@ To generate a `kubeconfig` file for the Cloud Platform's Kubernetes cluster:
     ![GitHub Authorize MoJ](/images/github-authorize-moj-new.png)
 5. Accept `live:kubernetes` requesting access to your justice-cloud-platform account
 6. Select "Download config file"
-7. Move the config file from `~/Downloads/kubecfg.yaml` to `~/.kube/config` by running:
+7. Move the config file to the location expected by kubectl: `~/.kube/config`:
 
     ```sh
+    $ mkdir ~/.kube
     $ mv ~/Downloads/kubecfg.yaml ~/.kube/config
     ```
 
