@@ -15,6 +15,7 @@ review_in: 3 months
 >```
 >apiVersion: networking.k8s.io/v1
 >kind: Ingress
+>metadata:
 >  name: <ingress-name>
 >  namespace: <namespace-name>
 >  annotations:
@@ -71,6 +72,7 @@ Example:
 ```yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
+metadata:
   name: <ingress-name>
   namespace: <namespace-name>
   annotations:
