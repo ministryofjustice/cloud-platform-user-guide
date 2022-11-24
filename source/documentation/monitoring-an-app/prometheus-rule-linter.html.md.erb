@@ -13,11 +13,16 @@ This is a guide of how to use the prometheus operator linter to check `Prometheu
 Github Respository: [cloud-platform-po-linter](https://github.com/ministryofjustice/cloud-platform-po-linter)
 
 ### Using Linter in Github Actions
+
 This Linter should be ran on pull request on new PrometheusRule yaml if their is a error the binary will return with a error detailing the incorrect syntax.
 
-Required:
+Required to run linter:
 
-- `secrets.GITHUB_TOKEN`: This should be the repository key to allow binary to run on the pull request
+- `GITHUB_OAUTH_TOKEN`: This should be the repository key to allow binary to run on the pull request
+- `REPO_DIRECTORY`: This is the directory where the yaml file will be stored
+
+Required for commenting results to Pull Request:
+
 - `steps.po-linter.outputs.po-linter`: This is needed if you want to print error.
 
 ### Example 
@@ -48,6 +53,7 @@ jobs:
         id: po-linter
         env:
           GITHUB_OAUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_DIRECTORY: <DIRECTORY>
           
       - name: Result
         uses: actions/github-script@v6
