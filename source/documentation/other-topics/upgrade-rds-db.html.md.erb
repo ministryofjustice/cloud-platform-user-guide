@@ -1,6 +1,6 @@
 ---
 title: Upgrading your RDS database
-last_reviewed_on: 2022-08-24
+last_reviewed_on: 2022-11-24
 review_in: 3 months
 ---
 
@@ -172,14 +172,14 @@ $ aws rds describe-db-instances --db-instance-identifier $db \
 
 {
   "engine": "postgres",
-  "version": "9.5.22",
+  "version": "10.21",
   "db_parameter_group": "cloud-platform-cdd5540ee12aa320"
 }
 ```
 
 ##### Tell your RDS instance to (temporarily) use the default parameter group
 
-Your RDS instance's existing parameter group is tied to the `db_engine`. e.g. a PostgreSQL 9.5 parameter group cannot be used with a PostgreSQL 9.6 RDS instance. So, the existing parameter group must be deleted, and a new one created when your RDS instance is updated. But, you can't delete a parameter group if it has any RDS instances using it. So, the first step is to remove your RDS instance from its database parameter group.
+Your RDS instance's existing parameter group is tied to the `db_engine`. e.g. a PostgreSQL 10 parameter group cannot be used with a PostgreSQL 11 RDS instance. So, the existing parameter group must be deleted, and a new one created when your RDS instance is updated. But, you can't delete a parameter group if it has any RDS instances using it. So, the first step is to remove your RDS instance from its database parameter group.
 
 > If you have configured any specific PostgreSQL settings for your database, such that your application will not work using the default parameter group, you may need to create a new parameter group based on the new PostgreSQL version, and use that instead of the default parameter group here.
 
@@ -201,11 +201,11 @@ default.postgres9.5
 default.postgres9.6
 ```
 
-For example, to change to the default PostgreSQL 9.5 parameter group:
+For example, to change to the default PostgreSQL 10 parameter group:
 
 ```
 aws rds modify-db-instance --db-instance-identifier $db \
-  --db-parameter-group-name default.postgres9.5
+  --db-parameter-group-name default.postgres10
 ```
 
 This will output a few screenfuls of JSON, which you can ignore. After making the change, repeat the `describe-db-instances` command to confirm that the change has worked.
@@ -216,23 +216,30 @@ This will output a few screenfuls of JSON, which you can ignore. After making th
 
 After your RDS instance has been removed from the existing database parameter group, you can raise a PR in the environments repository to upgrade your RDS instance.
 
-e.g. To upgrade from PostgreSQL 9.5 to 9.6 (this is a [major version upgrade]), you would change your `resources/rds.tf` file like this:
+> Note:
+> For PostgreSQL databases, version semantics have changed from [version 10 onwards] (https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.PostgreSQL.html#:~:text=new%20DB%20instance.-,PostgreSQL%20version%20numbers,-The%20version%20numbering)
+> and now follows a pattern of *major.minor*
+
+
+e.g. To upgrade from PostgreSQL 10.21 to 11 (this is a [major version upgrade]), you would change your `resources/rds.tf` file like this:
 
 ```
--  db_engine_version          = "9.5"
-+  db_engine_version          = "9.6"
+-  db_engine_version          = "10.21"
++  db_engine_version          = "11"
   # use "allow_major_version_upgrade" when upgrading the major version of an engine
 +  allow_major_version_upgrade = "true"
   
 ...
--  rds_family = "postgres9.5"
-+  rds_family = "postgres9.6"
+-  rds_family = "postgres10"
++  rds_family = "postgres11"
 ```
+Be sure to include the additional field `allow_major_version_upgrade = "true"` for major version upgrades.
 
 When this PR is merged, the [Apply Pipeline](/documentation/other-topics/apply-pipeline.html) will upgrade your RDS instance.
 
 > In testing, data in the database was preserved, and the total downtime of the RDS instance was approx. 7 minutes. You need to carry out your own tests in your non-production namespace(s) to confirm that this behaviour is similar and acceptable, for your service.
 
+For further options and details, see [here](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance)
 [major version upgrade]: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.PostgreSQL.html#USER_UpgradeDBInstance.PostgreSQL.MajorVersion
 [parameter group]: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithParamGroups.html
 [AWS CLI tool]: https://aws.amazon.com/cli/
