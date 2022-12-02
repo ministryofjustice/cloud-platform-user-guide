@@ -40,16 +40,17 @@ To create and send application-specific alerts to a Slack channel see: [Creating
 ### Thanos
 
 [Thanos] is an open source project that is capable of integrating with a Prometheus deployment, enabling a long-term, scalable storage.
-By adding Thanos sidecar to Prometheus, it uploads the data every two hours to storage(an S3 bucket in our case).
-It also serves real-time metrics that are not uploaded in bucket.
+By adding a Thanos sidecar to Prometheus, it uploads the data every two hours to storage (an S3 bucket in our case).
+It also serves real-time metrics that are not uploaded to the bucket.
 
-Thanos Components including Thanos querier, Store and Compactor has been installed in Cloud Platform monitoring stack.
+Thanos components including Thanos querier, Store and Compactor has been installed in Cloud Platform monitoring stack.
 
 Thanos Querier which is similar to Prometheus is able to query a Prometheus instance(through sidecar) and a Thanos Store at the same time.
 It allows you to query several months worth of Prometheus metrics and create Grafana dashboards based on that.
 
 Thanos Compactor applies the compaction procedure to Prometheus block data stored in an S3 bucket.
-Thanos also downsampling data that are stored in  the s3 bucket. For each resolutions available, here is the retention period
+Thanos also downsampling data that are stored in  the s3 bucket. For each resolutions available, here is the retention period:
+
  > raw - 30 days
 
  > 5m(five minutes) resolution - 6 months
@@ -60,17 +61,17 @@ Because of the downsampling of data blocks, using Grafana dashboards is <b>not s
 
 ### Grafana
 
-[Grafana] allows you to query, visualize, alert on and understand your metrics no matter where they are stored. Create, explore,
+Grafana allows you to query, visualize, alert on and understand your metrics no matter where they are stored. Create, explore,
 and share dashboards with your team and foster a data driven culture.
 
 #### Creating dashboards
 
-Grafana is set up as a stateless app, managed entirely through code. This helps achieve better availability,
+Grafana is set up as a stateless app, that teams configure entirely through code. This helps achieve better availability,
 but it means that dashboards you create will not automatically persist in its database.
 
 To create a dashboard:
 
-  1. Login to Grafana (see the links below) with your GitHub account. All users are able to edit dashboards but cannot save the changes.
+  1. Login to Grafana (see the [links below](#how-to-access-monitoring-tools)) with your GitHub account. All users are able to edit dashboards but cannot save the changes.
   Find the dashboard titled 'Blank Dashboard' and modify it as you see fit. Select "Prometheus" as datasource for querying metrics past 24 hours.
   If you want to query long-term metrics, select the "Thanos" as datasource.
 
