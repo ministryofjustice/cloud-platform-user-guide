@@ -71,8 +71,8 @@ but it means that dashboards you create will not automatically persist in its da
 To create a dashboard:
 
   1. Login to Grafana (see the links below) with your GitHub account. All users are able to edit dashboards but cannot save the changes.
-  Find the dashboard titled 'Blank Dashboard' and modify it as you see fit. Select "Prometheus" as datasource for querying metrics past 24 hours.
-  If you want to query long-term metrics, select the "Thanos" as datasource.
+  Find the dashboard titled 'Blank Dashboard' and modify it as you see fit. Select "Prometheus" as datasource for querying metrics from the most recent 24 hours.
+  If you want to query long-term metrics, select "Thanos" as the datasource.
 
   2. When you are happy with your dashboard, click the share icon on the top right corner, select the `Export` tab, check
     the `Export for sharing externally` box and click on `View JSON`. Copy the resulting JSON string into a `ConfigMap` in your namespace.
@@ -104,6 +104,8 @@ To create a dashboard:
 
 > To build dashboards for long-term metrics, select the "Thanos" as datasource.
 
+> Copying JSON into a new dashboard is a good technique BUT you must remember to change the "title" and "uid" to be new and unique values. If you create a ConfigMap with values that duplicate any other in Cloud Platform, then until this is resolved, Grafana will NOT apply changes to ANY dashboards! Issue is described here: [Grafana #39467](https://github.com/grafana/grafana/issues/39467)
+       
 ### Pushgateway
 
 [Pushgateway] allow ephemeral and batch jobs to expose their metrics to Prometheus. Since these kinds of jobs may not exist long enough to be scraped, they can instead push their metrics to a Pushgateway.
