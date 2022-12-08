@@ -97,6 +97,8 @@ To create a dashboard:
 
     Make sure that the JSON string is properly indented. Also, name of the key in the `ConfigMap` must end in `-dashboard.json` (as in `my-dashboard.json` above). Please note that you can have multiple dashboards exported in a single `ConfigMap` as well.
 
+  **Note**: Grafana is unable to provision new dashboards if any of the dashboards use duplicate UID and dashboard titles. Please ensure you have a unique UID and dashboard title in your Grafana dashboard config.
+
   3. Use `kubectl` to apply the `ConfigMap` above, and your dashboard should be visible in Grafana shortly.
 
 
