@@ -8,7 +8,7 @@ review_in: 3 months
 
 ## Introduction
 
-The **Apply Pipeline** is the part of Cloud Platform that continuously deploys the [environments repo](https://github.com/ministryofjustice/cloud-platform-environments) into Cloud Platform's Kubernetes cluster and AWS account. Service teams typically define their Kubernetes namespace and AWS resources in the environments repo, and and the Apply Pipeline is what gets it applied.
+The **Apply Pipeline** is the part of Cloud Platform that continuously deploys the [environments repo](https://github.com/ministryofjustice/cloud-platform-environments) into Cloud Platform's Kubernetes cluster and AWS account. Service teams typically define their Kubernetes namespace and AWS resources in the environments repo, and the Apply Pipeline is what gets it applied.
 
 (Don't confuse it with the **application pipelines**, which are created and managed by service teams. These deploy the Kubernetes resources which make up the application. The application in turn relies on the resources created by the Apply Pipeline - the namespace the application runs in and AWS services that it uses.)
 
@@ -33,7 +33,7 @@ You can see the running of the Apply Pipeline in [Concourse's "Apply-namespace-c
 
 Usage:
 
-* Sign in using your GitHub identity
+* Sign in using your GitHub identity. (The first time, it takes you to a github.com page where you need to agree to Cloud Platform's Concourse instance being allowed to view your GitHub identity.)
 * Select the build corresponding to your PR merge (other people's changes to environments also show up here). The latest build is at the top, but you can also identify your one by the merge commit hash.
 * Select `task: apply-namespace-changes` to see the logs, where terraform is applied.
 
