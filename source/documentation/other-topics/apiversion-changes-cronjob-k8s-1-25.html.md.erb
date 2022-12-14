@@ -1,0 +1,56 @@
+---
+title: Updating CronJob API version for Cloud Platform - deprecated Kubernetes v1.21
+last_reviewed_on: 2022-12-14
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+The `batch/v1beta1` API version of CronJob is deprecated as of Kubernetes release v1.21, and will no longer be served as of v1.25.
+
+Cloud Platform users are encouraged to ensure any CronJob manifests are migrated to use the `batch/v1` API version, which is supported on our current cluster version (v1.22 as of writing).
+
+Further details can be found within the [Kubernetes deprecation guide](https://kubernetes.io/docs/reference/using-api/deprecation-guide/#cronjob-v125)
+
+### Steps required
+
+To view which apiVersion you are using, run the following kubectl command:
+
+
+`kubectl --namespace <namespace> get cronjob <cronjob-name> -o yaml`
+
+
+```
+apiVersion: batch/v1beta1
+kind: CronJob
+...
+```
+
+
+You are only required to update `apiVersion` as the following complete example shows:
+
+```
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: hello
+spec:
+  schedule: "1 2-14 * * 0-1,5-6"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 100
+      template:
+        spec:
+          containers:
+          - name: hello
+            image: bitnami/nginx
+            args:
+            - /bin/sh
+            - -c
+            - date; echo "Hello, World!"
+          restartPolicy: OnFailure
+```
+
+For additional information on creating CronJobs see [here](/documentation/other-topics/Cronjobs.html)
