@@ -1,6 +1,6 @@
 ---
 title: Kubernetes Cronjobs
-last_reviewed_on: 2022-11-28
+last_reviewed_on: 2022-12-14
 review_in: 3 months
 ---
 
@@ -15,7 +15,7 @@ CronJobs use [Job][kubernetes-jobs] objects to complete their tasks. A CronJob c
 The example cron job below prints the current time and a hello message every first minute of every hour from 0200 to 1400 UTC on Sunday, Monday, Friday, and Saturday:
 
 ```
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: hello
