@@ -15,7 +15,7 @@ The AWS Route53 documentation provides some [guidance](https://docs.aws.amazon.c
 Each domain label (that is, each dot separated text component of a domain name) may be no more than `63` characters in length. However, Cloud Platform's DNS component currently prepends some
 Route53 records with an additional string of `6` characters. 
 
-This means that for the time being we have implmented a Kubernetes level policy which will not permit the creation of an `Ingress` object whose hostname fields contain 
+This means that for the time being we have implemented a Kubernetes level policy which will not permit the creation of an `Ingress` object whose hostname fields contain 
 domain labels of length greater than `57` characters.
           
 [environments repository]: https://github.com/ministryofjustice/cloud-platform-environments
