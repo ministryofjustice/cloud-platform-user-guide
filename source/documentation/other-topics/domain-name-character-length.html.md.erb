@@ -1,0 +1,21 @@
+---
+title: DNS Domain Name length considerations
+last_reviewed_on: 2022-12-19
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+### Overview
+
+The AWS Route53 documentation provides some [guidance](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/DomainNameFormat.html) on length constraints when it comes to domain names.
+
+### Domain Label length
+
+Each domain label (that is, each dot separated text component of a domain name) may be no more than `63` characters in length. However, Cloud Platform's DNS component currently prepends some
+Route53 records with an additional string of `6` characters. 
+
+This means that for the time being we have implmented a Kubernetes level policy which will not permit the creation of an `Ingress` object whose hostname fields contain 
+domain labels of length greater than `57` characters.
+          
+[environments repository]: https://github.com/ministryofjustice/cloud-platform-environments
