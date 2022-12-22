@@ -1,6 +1,6 @@
 ---
 title: ModSecurity - Web Application Firewall
-last_reviewed_on: 2022-09-15
+last_reviewed_on: 2022-12-22
 review_in: 3 months
 ---
 
@@ -8,7 +8,7 @@ review_in: 3 months
 
 
 > #### Quick Start
-> We have a dedicated ingress-controller with ModSecurity enabled. 
+> We have a dedicated ingress-controller with ModSecurity enabled.
 >
 > To enable and point your application to this ingress-controller, use the following annotations and ingressClassName on your ingress manifest file:
 >
@@ -31,17 +31,17 @@ review_in: 3 months
 
 #### What is a Web Application Firewall (WAF)?
 
-A Web Application Firewall or WAF helps protect web applications by filtering and monitoring HTTP traffic between a web application and the Internet. A WAF is a [layer 7](https://en.wikipedia.org/wiki/OSI_model) defense and is one of the most common means of protecting against malicious web application security flaws at the application layer. However, it must be noted that a WAF is not designed and does not protect against all types of attacks. 
+A Web Application Firewall or WAF helps protect web applications by filtering and monitoring HTTP traffic between a web application and the Internet. A WAF is a [layer 7](https://en.wikipedia.org/wiki/OSI_model) defense and is one of the most common means of protecting against malicious web application security flaws at the application layer. However, it must be noted that a WAF is not designed and does not protect against all types of attacks.
 
 #### ModSecurity
 
-[ModSecurity](https://github.com/SpiderLabs/ModSecurity) is an open source, cross platform web application firewall (WAF) developed by Trustwave's SpiderLabs. It has a robust event-based programming language which provides protection from a range of attacks against web applications and allows for HTTP traffic monitoring and logging. 
+[ModSecurity](https://github.com/SpiderLabs/ModSecurity) is an open source, cross platform web application firewall (WAF) developed by Trustwave's SpiderLabs. It has a robust event-based programming language which provides protection from a range of attacks against web applications and allows for HTTP traffic monitoring and logging.
 
 For the Cloud Platform, ModSecurity has been configured as an opt-in feature. New and current applications will require a specific set of annotations to be added to their ingress manifest file.
 
 ### Ingress Annotations
 
-We have a dedicated ingress-controller with ModSecurity enabled separate from the default ingress-controller. 
+We have a dedicated ingress-controller with ModSecurity enabled separate from the default ingress-controller.
 To point your application to the ModSec ingress-controller, add the following annotation to your ingress manifest file:
 
 ```yaml
@@ -58,8 +58,8 @@ This annotation enables ModSecurity for the ingress on the nginx ingress-control
 ```yaml
 nginx.ingress.kubernetes.io/modsecurity-snippet: |
       SecRuleEngine On
-```  
-The `SecRuleEngine On` configures ModSecurity to actively block traffic classed as malicious using Anomaly Scoring.  
+```
+The `SecRuleEngine On` configures ModSecurity to actively block traffic classed as malicious using Anomaly Scoring.
 
 ```yaml
 nginx.ingress.kubernetes.io/modsecurity-transaction-id: "$request_id"
@@ -85,9 +85,9 @@ spec:
   tls:
     ingressClassName: modsec
   - hosts:
-    - <application_url> 
+    - <application_url>
   rules:
-  - host: <application_url> 
+  - host: <application_url>
     http:
       paths:
       - path: /
@@ -102,8 +102,8 @@ spec:
 
 ### Logging
 
-All disruptive actions are logged in the ModSecurity audit log file and the error log for for nginx ingress-controller. 
-Fluent-bit is used to ship error logs into the Cloud Platform ELK stack. 
+All disruptive actions are logged in the ModSecurity audit log file and the error log for for nginx ingress-controller.
+Fluent-bit is used to ship error logs into the Cloud Platform ELK stack.
 
 To view your modsec ingress logs, log into [kibana][kibana-common], select index `live_kubernetes_ingress*` and search for `ModSecurity`. You can filter down to a particular host using `host-name`. An example of this [kibana search][kibana-search-example]
 
@@ -114,8 +114,8 @@ Error Log Example:
 ```
 2019/01/01 11:00:00 [error] 12647#12647: *1158975 [client 12.123.1.12] ModSecurity: Access denied with code 403 (phase 2). Matched "Operator `Ge'
  with parameter `5' against variable `TX:ANOMALY_SCORE' (Value: `5' ) [file "/etc/nginx/owasp-modsecurity-crs/rules/
- REQUEST-949-BLOCKING-EVALUATION.conf"] [line "01"] [id "00001"] [rev ""] [msg "Inbound Anomaly Score Exceeded (Total Score: 5)"] [data ""] 
- [severity "2"] [ver ""] [maturity "0"] [accuracy "0"] [tag "application-multi"] [tag "language-multi"] [tag "platform-multi"] [tag 
+ REQUEST-949-BLOCKING-EVALUATION.conf"] [line "01"] [id "00001"] [rev ""] [msg "Inbound Anomaly Score Exceeded (Total Score: 5)"] [data ""]
+ [severity "2"] [ver ""] [maturity "0"] [accuracy "0"] [tag "application-multi"] [tag "language-multi"] [tag "platform-multi"] [tag
  "attack-generic"] [hostname "12.123.1.12"] [uri "/"] [unique_id "1663242265"] [ref ""],
 client: 12.123.1.12, server: test-ingress.url, request: "GET /?exec=/bin/bash HTTP/2.0", host: "test-ingress.url"
 ```
@@ -143,7 +143,7 @@ The Paranoia Level (PL) setting allows you to choose the desired level of rule c
 
 Traditional Detection or Passive Mode is the most basic operating mode where all of the rules are run as individual entities. In this mode no intelligence is shared between rules and each rule has no information about any previous rule matches. That is to say, in this mode, if a rule triggers, it will execute any disruptive/logging actions specified on the current rule.
 
-Anomaly scoring mode implements the concept of Collaborative Detection and Delayed Blocking. Rule logic has been set to decouple the inspection/detection from the blocking functionality. The individual rules can be run so that the detection remains, however instead of applying any disruptive action at that point, the rules will contribute to a transactional anomaly score collection. In addition, each rule will also store meta-data about each rule match (such as the Rule ID, Attack Category, Matched Location and Matched Data) for later logging. 
+Anomaly scoring mode implements the concept of Collaborative Detection and Delayed Blocking. Rule logic has been set to decouple the inspection/detection from the blocking functionality. The individual rules can be run so that the detection remains, however instead of applying any disruptive action at that point, the rules will contribute to a transactional anomaly score collection. In addition, each rule will also store meta-data about each rule match (such as the Rule ID, Attack Category, Matched Location and Matched Data) for later logging.
 For more information in anomaly scoring, click [here](https://www.modsecurity.org/CRS/Documentation/anomaly.html#anomaly-scoring-mode)
 
 #### Sensitive logs
