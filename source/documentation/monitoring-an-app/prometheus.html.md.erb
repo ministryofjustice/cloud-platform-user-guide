@@ -61,52 +61,106 @@ Because of the downsampling of data blocks, using Grafana dashboards is <b>not s
 
 ### Grafana
 
-Grafana allows you to query, visualize, alert on and understand your metrics no matter where they are stored. Create, explore,
-and share dashboards with your team and foster a data driven culture.
+Grafana is displaying dashboards of your metrics, typically using data from Prometheus or Thanos.
 
-#### Creating dashboards
+> Create, explore, and share dashboards with your team and foster a data driven culture
 
-Grafana is set up as a stateless app, that teams configure entirely through code. This helps achieve better availability,
-but it means that dashboards you create will not automatically persist in its database.
+A dashboard is defined by a ConfigMap (Kubernetes resource i.e. YAML), containing Grafana JSON, which contains one or more PromQL queries.
 
-To create a dashboard:
+The JSON can be generated using the Grafana web UI. Alternatively you can copy an existing dashboard JSON, simply adjust a few of the values.
+
+#### Configure a dashboard using the Grafana UI
+
+Although Grafana's web UI allows you to create and edit dashboard panels, please note that changes made are not persisted - they are only temporary. Instead, Grafana displays dashboards that are defined in ConfigMaps, which are kubernetes resources in team namespaces. Teams can create and edit these by using `kubectl`, as described below. Or even better, store the ConfigMap's YAML in a file in your repo, and setup CI/CD to deploy it to your namespace, in a similar way to you deploy your app.
+
+1. Sign in to Grafana - see the [links below](#how-to-access-monitoring-tools) - with your GitHub account.
+
+2. Go to the ['Blank Dashboard'](https://grafana.live.cloud-platform.service.justice.gov.uk/d/9Wt0Wu5Vz) (either using that link or search for a dashboard with that name). All users are able to edit dashboards but cannot save the changes.
+
+3. Use the UI to modify the dashboard as you see fit.
+
+    * To edit a panel, click/select "Panel title" and from the drop-down menu that appears, select "Edit".
+
+    Tips:
+
+    * You can see the long list of metrics available by selecting "Code" mode and then "Metrics browser"
+    * "Data source" should normally be "Prometheus", for querying metrics of the past 24 hours. Or if you want to query long-term metrics, select "Thanos".
+    * Another way to play with the query is to copy the PromQL query into the [Prometheus web UI](https://prometheus.cloud-platform.service.justice.gov.uk/graph). If you have a Grafana variable such as `$namespace`, which Grafana populates from a dropdown, then you will have to insert a real value when working with the query in Prometheus.
+
+3. When you are happy with your dashboard, to get the JSON:
+
+    * select the "gear" icon at the top, taking you to Dashboard Settings
+    * select "JSON Model" in the side-nav
+    * select the JSON and copy it to the clipboard
+
+4. To save the dashboard: [Save the dashboard JSON in a ConfigMap](#save-the-dashboard-json-in-a-configmap)
+
+#### Configure a dashboard by copying an existing one
+
+Other teams may have just the dashboard you want, and it is often easier to copy them and adjust a few little things.
+
+1. Sign in to Grafana - see the [links below](#how-to-access-monitoring-tools) - with your GitHub account.
+
+2. Find the dashboard you want to copy.
+
+3. To get the JSON:
+
+    * select the "gear" icon at the top, taking you to Dashboard Settings
+    * select "JSON Model" in the side-nav
+    * select the JSON and copy it to the clipboard
+
+4. In an editor make some adjustments. You must change:
+
+    * the "uid" needs to be unique across Cloud Platform dashboards. It should be 8+ characters using: [A-Za-z0-9]
+    * the "title" (at the top level) needs to be unique across Cloud Platform dashboards
+
+   You probably want to adjust other things too:
+
+    * the dashboard probably has a "Namespace" drop-down control - these dropdowns are under the "templating", so you likely want to change the "regex" value that determines which namespaces are offered, and the "current" i.e. default namespace.
 
 
-  1. Login to Grafana (see the [links below](#how-to-access-monitoring-tools)) with your GitHub account. All users are able to edit dashboards but cannot save the changes.
-  Find the dashboard titled 'Blank Dashboard' and modify it as you see fit. Select "Prometheus" as datasource for querying metrics past 24 hours.
-  If you want to query long-term metrics, select the "Thanos" as datasource.
+5. To save the dashboard: [Save the dashboard JSON in a ConfigMap](#save-the-dashboard-json-in-a-configmap)
 
-  2. When you are happy with your dashboard, click the share icon on the top right corner, select the `Export` tab, check
-    the `Export for sharing externally` box and click on `View JSON`. Copy the resulting JSON string into a `ConfigMap` in your namespace.
+#### Save the dashboard JSON in a ConfigMap
 
-    To do this, create a YAML file like this:
+Once you have got a dashboard JSON string, paste it into a `ConfigMap` in your namespace:
 
-    ```YAML
-    ---
+1. Create a YAML file based on this one:
+
+      ```YAML
     apiVersion: v1
     kind: ConfigMap
     metadata:
-      name: <my-dashboard>
-      namespace: <my-namespace>
+      name: register-my-goose-ingress-dashboard
+      namespace: register-my-goose-uat
       labels:
         grafana_dashboard: ""
     data:
-      my-dashboard.json: |
+      register-my-goose-dashboard.json: |
         {
-          [ ...your JSON document goes here, minus the outermost braces... ]
+          ...your JSON document goes here...
         }
-    ```
+      ```
 
-    Make sure that the JSON string is properly indented. Also, name of the key in the `ConfigMap` must end in `-dashboard.json` (as in `my-dashboard.json` above). Please note that you can have multiple dashboards exported in a single `ConfigMap` as well.
+2. Substitute your own values for the `name`, `namespace`, JSON filename and the contents of the JSON document.
 
-  3. Use `kubectl` to apply the `ConfigMap` above, and your dashboard should be visible in Grafana shortly.
+    Ensure:
+    
+    * the "uid" and "title" (at the top level) are unique amongst Cloud Platform dashboards. (If you create a ConfigMap with values that duplicate any other in Cloud Platform, then until this is resolved, Grafana will NOT apply changes to ANY dashboards! Issue is described here: [Grafana #39467](https://github.com/grafana/grafana/issues/39467))
+    * the filename must be unique amongst Cloud Platform dashboards (otherwise you'll see "Dashboard not found" errors)
+    * the filename must end in `-dashboard.json`
+    * the JSON string must be properly indented
 
+    Note: you can have multiple dashboards exported in a single `ConfigMap` as well
 
-> To build dashboards for your Cloudwatch metrics, see: [Using the CloudWatch data source in Grafana](/documentation/monitoring-an-app/how-to-use-cloudwatch-datasource.html)
+3. Use `kubectl` to apply the `ConfigMap` above, and your dashboard should be visible in Grafana within about a minute.
+#### Tips
 
-> To build dashboards for long-term metrics, select the "Thanos" as datasource.
+These dashboards are infrastructure, so like other infrastructure as code, it's a good idea to store the YAML as a file in your app's git repo, and set-up CI/CD to deploy changes to the ConfigMap. This allows changes to be PR-reviewed by team mates, and changes to be tracked, reverted, and deployment is easier.
 
-> Copying JSON into a new dashboard is a good technique BUT you must remember to change the "title" and "uid" to be new and unique values. If you create a ConfigMap with values that duplicate any other in Cloud Platform, then until this is resolved, Grafana will NOT apply changes to ANY dashboards! Issue is described here: [Grafana #39467](https://github.com/grafana/grafana/issues/39467)
+Cloudwatch metrics can be shown in a dashboard - see: [Using the CloudWatch data source in Grafana](/documentation/monitoring-an-app/how-to-use-cloudwatch-datasource.html)
+
+Metrics over a longer term than 24h can be shown. To build dashboards for long-term metrics, select "Thanos" as the "Data source".
        
 ### Pushgateway
 
