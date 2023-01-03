@@ -102,7 +102,6 @@ The upgrade process involves these steps:
 
 The rest of this page will describe this process in detail.
 
-> If you have any read replicas, AWS will upgrade those as well, as soon as you upgrade the primary RDS instance. You will need to adjust the terraform code which defines your replicas, after the upgrade.
 
 #### Use the AWS CLI to get your existing database configuration
 
@@ -237,6 +236,17 @@ Be sure to include the additional field `allow_major_version_upgrade = "true"` f
 
 When this PR is merged, the [Apply Pipeline](/documentation/other-topics/apply-pipeline.html) will upgrade your RDS instance.
 
+### RDS read replica
+
+If teams using read replica for RDS, Amazon RDS creates a second DB instance using a snapshot of the source DB instance. If you have any read replicas, and upgrade the Primary(source) RDS instance using the [procedure] above, AWS uses the engine's native asynchronous replication to change or upgrade the read replica whenever there is a change or upgrade to the source DB instance.
+
+You will need to adjust the terraform code as below which defines your replicas, after the upgrade.
+
+```
+  db_engine_version = "11"
+  rds_family        = "postgres11"
+```
+
 > In testing, data in the database was preserved, and the total downtime of the RDS instance was approx. 7 minutes. You need to carry out your own tests in your non-production namespace(s) to confirm that this behaviour is similar and acceptable, for your service.
 
 For further options and details, see [here](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance)
@@ -245,3 +255,4 @@ For further options and details, see [here](https://github.com/ministryofjustice
 [AWS CLI tool]: https://aws.amazon.com/cli/
 [cloud platform cli]: ../getting-started/cloud-platform-cli.html
 [long-running]: ./long-running-env-operations.html
+[procedure]: documentation/other-topics/upgrade-rds-db.html#procedure
