@@ -1,5 +1,5 @@
 ---
-title: CircleCI Security Incident - Post Secret Rotation Guidance
+title: CircleCI Security Incident - Secret Rotation Guidance
 last_reviewed_on: 2023-01-13
 review_in: 3 months
 ---
@@ -35,7 +35,7 @@ be rotated.
 ECR Module AWS secrets have already been rotated in a previous activity, so will not be covered
 during this process.
 
-#### Non-Module defined AWS Secrets -- ?? Need expanding?
+#### Non Module defined AWS Secrets
 
 In addition to the above modules, if you have any `iam_user` Terraform resources defined in your namespace, their associated keys will also be rotated. For example,
 you may have similar to the following in your `namespace/resources` folder:
@@ -73,15 +73,18 @@ resource.
 >wherever they are used for their service. It is for this reason that the team has elected to follow a 'user merge' managed approach 
 >for triggering the rotation of these secrets.
 
-The Cloud Platform team will raise a PR _*per namespace*_ on your behalf, which you will need to approve for merging. Cloud Platform will then merge the PR, 
-triggering a recreation of all AWS secrets within this namespace.
+The Cloud Platform team will raise a PR _*per namespace*_ in the [`cloud-platform-environments`](https://github.com/ministryofjustice/cloud-platform-environments/pulls) 
+repository, which will be pre-approved for merging by the namespace owners. 
+
+_*NOTE*_: Once this merge has been confirmed, the 
+rotation process will be triggered, so it is important that any pre-requesite checks are carried out before proceeding.
 
 ### Steps to follow
 
 >IMPORTANT: As with any service impacting change, we strongly encourage you to carry out thorough testing of this rotation
-process within non production environments before proceeding with your production namespaces. The Cloud Platform team has conducted
-testing of secrets rotation against all modules and in many scenarios services relying on any of the impacted resources will
-immediately fail to work as expected. We recommend that all pods in your namespace are recycled following completing of rotation
+process using PRs for your non-production environments before proceeding with production namespaces. The Cloud Platform team has conducted
+testing of secrets rotation against all modules and in many scenarios, services relying on any of the impacted resources will
+immediately fail to work as expected. We recommend that all pods in your namespace are recycled following completion of rotation
 PR.
 
 It is advised that before merging the secret rotation PR that you check the values of all of your namespace's AWS secrets. This will
@@ -135,9 +138,12 @@ of your Kubernetes `secrets`.
 
 ### How do I know when my secrets rotation has completed?
 
+Once you confirm your rotation PR merge, you can expect your namespace secrets to be rotated shortly afterwards.
+
 The secrets rotation process will update existing Kubernetes `secrets` in namespaces rather than replacing them entirely; therefore it
-is not possible to rely on checking the age of your `secrets` as this will not change. There are two checks that you can follow to 
-confirm rotation has completed:
+is not possible to rely on checking the age of your `secrets` as this will not change. 
+
+There are two checks that you can follow to confirm rotation has completed:
 
 - Monitoring the Concourse `apply-namespace-changes-live` pipeline for your PR. Each job run in this pipeline outputs the following 
 information at the beginning of the `task: apply-namespace-changes` stage:
@@ -152,7 +158,26 @@ The Concourse pipeline URL will be provided via comms during the rotation proces
 commands. Once you have observed these have been updated you are ready to proceed with updating your environment with the new
 values.
 
+### Post rotation activities
 
+We highly recommend that users work through the rotation process in non-production environments in order to assess
+the impact this may have on workloads, and to implement strategies to restore normal service. We have to assume that every
+application utilises secrets in unique ways, as attempting to cover every scenario in this guide is not possible.
+
+In testing, Cloud Platform have found that where deployments are mounting Kubernetes `secrets` as application environment
+variables, a recycling of all namespace pods is recommended to restore service.
+
+NOTE: Please take extra care to ensure that you are targeting the correct cluster context and namespace when running the
+following, or similar, commands:
+
+```bash
+$ kubectl delete --all pods -n <YOUR-NAMESPACE>
+```
+You can then check for pod statuses:
+
+```bash
+$ kubectl get pods -n <YOUR-NAMESPACE>
+```
 
 
 <!--- RDS PASSWORD ROTATION : NOT FOR NOW.....
