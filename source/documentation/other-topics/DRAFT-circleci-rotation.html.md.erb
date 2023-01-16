@@ -30,7 +30,6 @@ be rotated.
 - S3
 - SNS Topic
 - SQS
-- ElastiCache -- ??
 - DMS
 
 ECR Module AWS secrets have already been rotated in a previous activity, so will not be covered
@@ -38,19 +37,52 @@ during this process.
 
 #### Non-Module defined AWS Secrets -- ?? Need expanding?
 
-In addition to the above modules, if you have any `iam_user` Terraform resources defined in your namespace, these will also be rotated. To determine if
-you have any of these, search your namespace code for `iam_user`. 
+In addition to the above modules, if you have any `iam_user` Terraform resources defined in your namespace, their associated keys will also be rotated. For example,
+you may have similar to the following in your `namespace/resources` folder:
+
+```bash
+resource "aws_iam_user" "user" {
+  name = "s3-bucket-user-${random_id.id.hex}"
+  path = "/path/to/iamuser"
+}
+
+resource "aws_iam_access_key" "user" {
+  user = aws_iam_user.user.name
+}
+
+resource "kubernetes_secret" "aws_iam_secret" {
+  metadata {
+    name      = "s3-bucket"
+    namespace = var.namespace
+  }
+
+  data = {
+    destination_bucket = "s3://${var.namespace}"
+    user_arn           = aws_iam_user.user.arn
+    access_key_id      = aws_iam_access_key.user.id
+    secret_access_key  = aws_iam_access_key.user.secret
+  }
+}
+```
+The rotation process will recreate the `aws_iam_access_key` resource and update the `access_key_id` and `secret_access_key` fields in the `kubernetes_secret`
+resource.
 
 ### Rotation Process
 
->IMPORTANT: It is the responsibility of application owners to identify and carry out any remediation activites to update these values
+>NOTE: It is the responsibility of application owners to identify and carry out any remediation activites to update these values
 >wherever they are used for their service. It is for this reason that the team has elected to follow a 'user merge' managed approach 
 >for triggering the rotation of these secrets.
 
-The Cloud Platform team will raise a PR _*per namespace*_ on your behalf, which will you will be asked to merge. Upon merging, this PR will trigger a 
-recreation of all AWS secrets within this namespace.
+The Cloud Platform team will raise a PR _*per namespace*_ on your behalf, which you will need to approve for merging. Cloud Platform will then merge the PR, 
+triggering a recreation of all AWS secrets within this namespace.
 
 ### Steps to follow
+
+>IMPORTANT: As with any service impacting change, we strongly encourage you to carry out thorough testing of this rotation
+process within non production environments before proceeding with your production namespaces. The Cloud Platform team has conducted
+testing of secrets rotation against all modules and in many scenarios services relying on any of the impacted resources will
+immediately fail to work as expected. We recommend that all pods in your namespace are recycled following completing of rotation
+PR.
 
 It is advised that before merging the secret rotation PR that you check the values of all of your namespace's AWS secrets. This will
 assist in verifying the rotation has completed once applied via our Concourse pipeline. This can be done for each of your Kubernetes secrets
@@ -65,9 +97,12 @@ Or use the `cloud-platform decode-secret` CLI command to automatically `base64` 
 ```bash
 $ cloud-platform decode-secret -n <YOUR-NAMESPACE> -s <AWS-RESOURCE-SECRET>
 ```
-As an example of the above command, RDS Module `secrets` output would be similar to the following:
+An example of the above command for obtaining RDS Module `secrets` output would be similar to the following:
 
 ```bash
+$ cloud-platform decode-secret -n my-namespace -s rds-postgresql-instance-output
+```
+```json
 {
     "apiVersion": "v1",
     "data": {
@@ -92,7 +127,8 @@ As an example of the above command, RDS Module `secrets` output would be similar
 }
 ```
 
-The values we are paying attention to here are `access_key_id` and `secret_access_key`.
+The values being updated here are `access_key_id` and `secret_access_key`. You will need to follow a similar process for each 
+of your Kubernetes `secrets`.
 
 >NOTE: There are teams which share AWS secrets to other relying namespaces, for example ECR & RDS credentials. This will need to be taken into
 >consideration as applications running in these other namespaces will also be impacted.
