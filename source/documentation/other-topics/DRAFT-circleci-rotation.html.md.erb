@@ -1,0 +1,103 @@
+---
+title: CircleCI Security Incident - Post Secret Rotation Guidance
+last_reviewed_on: 2023-01-13
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+## Overview
+
+Following the announcement of the [CircleCI Security Alert](https://circleci.com/blog/january-4-2023-security-alert/) issued 04/01/2023, the Cloud Platform
+team has been focusing on working to ensure that all secrets impacted by this event have been rotated.
+
+### Is my Cloud Platform namespace affected?
+
+As part of our investigation into this incident, we have identified a number of namespaces which require AWS secrets to be rotated. Prior to
+commencing the rotation work, we will be sending out comms in the `cloud-platform-update` and `ask-cloud-platform`
+Slack channels. These comms will contain a list of all affected namespaces.
+
+### Impacted Services
+
+#### Cloud Platform Terraform Modules
+
+If your Cloud Platform workload utilises any of the following Cloud Platform Terraform Modules, AWS Access ID and Secret Access Keys will
+be rotated. 
+
+- RDS
+- RDS Aurora
+- DynamoDB
+- S3
+- SNS Topic
+- SQS
+- ElastiCache -- ??
+- DMS -- ??
+
+ECR Module AWS secrets have already been rotated in a previous activity, so will not be covered
+during this process.
+
+#### Non-Module defined AWS Secrets -- ?? Need expanding?
+
+In addition to the above modules, if you have any `iam_user` Terraform resources defined in your namespace, these will also be rotated. To determine if
+you have any of these, search your namespace code for `iam_user`. 
+
+### Rotation Process
+
+>IMPORTANT: It is the responsibility of application owners to identify and carry out any remediation activites to update these values
+>wherever they are used for their service. It is for this reason that the team has elected to follow a 'user merge' managed approach 
+>for triggering the rotation of these secrets.
+
+The Cloud Platform team will raise a PR _*per namespace*_ on your behalf, which will you will be asked to merge. Upon merging, this PR will trigger a 
+recreation of all AWS secrets within this namespace.
+
+### Steps to follow
+
+It is advised that before merging the secret rotation PR that you check the values of all of your namespace's AWS secrets. This will
+assist in verifying the rotation has completed once applied via our Concourse pipeline. This can be done for each of your Kubernetes secrets
+containing AWS secrets as follows:
+
+```bash
+$ kubectl  -n <YOUR-NAMESPACE> get secret <AWS-RESOURCE-SECRET>  -o yaml
+```
+
+Or use the `cloud-platform decode-secret` CLI command to automatically `base64` decode the values:
+
+```bash
+$ cloud-platform decode-secret -n <YOUR-NAMESPACE> -s <AWS-RESOURCE-SECRET>
+```
+
+>NOTE: There are teams which share AWS secrets to other relying namespaces, for example ECR & RDS credentials. This will need to be taken into
+>consideration as applications running in these other namespaces will also be impacted.
+
+### How do I know when my secrets rotation has completed?
+
+The secrets rotation process will update existing Kubernetes `secrets` in namespaces rather than replacing them entirely; therefore it
+is not possible to rely on checking the age of your `secrets` as this will not change. There are two checks that you can follow to 
+confirm rotation has completed:
+
+- Monitoring the Concourse `apply-namespace-changes-live` pipeline for your PR. Each job run in this pipeline outputs the following 
+information at the beginning of the `task: apply-namespace-changes` stage:
+
+```
+Found PR: [PR number]
+Applying Namespace: [namespace being applied]
+```
+The Concourse pipeline URL will be provided via comms during the rotation process.
+
+- Conducting a "before and after" check of your AWS secrets values using the above `kubectl` or `cloud-platform decode-secret` CLI
+commands. Once you have observed these have been updated you are ready to proceed with updating your environment with the new
+values.
+
+
+
+
+<!--- RDS PASSWORD ROTATION : NOT FOR NOW.....
+
+### RDS Database Password Rotation
+
+
+
+In the coming weeks, we will also be rotating all impacted RDS database passwords as a matter of diligence.
+-->
+
+[article]: https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/using-circleci-for-continuous-deployment.html#add-variables-to-circleci
