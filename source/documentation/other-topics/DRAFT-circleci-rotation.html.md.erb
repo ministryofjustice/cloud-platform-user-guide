@@ -65,6 +65,34 @@ Or use the `cloud-platform decode-secret` CLI command to automatically `base64` 
 ```bash
 $ cloud-platform decode-secret -n <YOUR-NAMESPACE> -s <AWS-RESOURCE-SECRET>
 ```
+As an example of the above command, RDS Module `secrets` output would be similar to the following:
+
+```bash
+{
+    "apiVersion": "v1",
+    "data": {
+        "access_key_id": "xxxxxxx",
+        "database_name": "db1234567",
+        "database_password": "xxxxxxx",
+        "database_username": "dbuser",
+        "rds_instance_address": "cloud-platform-xxxxxxx.xxxxxxx.eu-west-2.rds.amazonaws.com",
+        "rds_instance_endpoint": "cloud-platform-xxxxxxx.xxxxxxx.eu-west-2.rds.amazonaws.com:5432",
+        "secret_access_key": "xxxxxxx",
+        "url": "postgres://xxxxxxx:xxxxxxx@cloud-platform-xxxxxxx.xxxxxxx.eu-west-2.rds.amazonaws.com:5432/db1234567"
+    },
+    "kind": "Secret",
+    "metadata": {
+        "creationTimestamp": "2023-01-11T13:37:38Z",
+        "name": "rds-postgresql-instance-output",
+        "namespace": "your-namespace",
+        "resourceVersion": "11111111",
+        "uid": "xxxxxxx-xxxxxxx-xxxxxxx"
+    },
+    "type": "Opaque"
+}
+```
+
+The values we are paying attention to here are `access_key_id` and `secret_access_key`.
 
 >NOTE: There are teams which share AWS secrets to other relying namespaces, for example ECR & RDS credentials. This will need to be taken into
 >consideration as applications running in these other namespaces will also be impacted.
