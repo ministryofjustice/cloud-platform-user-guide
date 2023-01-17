@@ -1,6 +1,6 @@
 ---
 title: CircleCI Security Incident - Secrets Rotation Guidance
-last_reviewed_on: 2023-01-13
+last_reviewed_on: 2023-01-17
 review_in: 3 months
 ---
 
@@ -21,8 +21,8 @@ Slack channels. These comms will contain a list of all affected namespaces.
 
 #### Cloud Platform Terraform Modules
 
-If your Cloud Platform workload utilises any of the following Cloud Platform Terraform Modules, AWS Access ID and Secret Access Keys will
-be rotated. 
+If your Cloud Platform workload utilises any of the following Cloud Platform Terraform Modules, their [AWS Access Key](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html) 
+and associated Secret Access Keys will be rotated. 
 
 - RDS
 - RDS Aurora
@@ -37,7 +37,7 @@ during this process.
 
 #### Non Module defined AWS Secrets
 
-In addition to the above modules, if you have any `iam_user` Terraform resources defined in your namespace, their associated keys will also be rotated. For example,
+In addition to the above modules, if you have any `iam_user` Terraform resources defined in your namespace, their associated access keys will also be rotated. For example,
 you may have similar to the following in your `namespace/resources` folder:
 
 ```bash
@@ -86,7 +86,7 @@ testing of secrets rotation against all modules and in many scenarios, services 
 immediately fail to work as expected. You must ensure **all pods in your namespace are recycled** following completion of rotation
 PR.
 
-It is advised that before merging the secret rotation PR that you check the values of all of your namespace's AWS secrets. This will
+It is advised that before merging your secret rotation PR that you check the values of all of your namespace's AWS secrets. This will
 assist in verifying the rotation has completed once applied via our Concourse pipeline. This can be done for each of your Kubernetes secrets
 containing AWS secrets as follows:
 
@@ -129,7 +129,7 @@ $ cloud-platform decode-secret -n my-namespace -s rds-postgresql-instance-output
 }
 ```
 
-The values being updated here are `access_key_id` and `secret_access_key`. You will need to follow a similar process for each 
+The values being updated here are `access_key_id` and `secret_access_key`. You will need to carry out similar checks for each 
 of your Kubernetes `secrets`.
 
 >NOTE: There are teams which share AWS secrets to other relying namespaces, for example ECR & RDS credentials. This will need to be taken into
@@ -140,7 +140,7 @@ values yourself.**
 
 ### Tracking Secrets Rotation Status
 
-At this stage you will be ready to merge your PR. Once you confirm your rotation PR merge, you can expect your namespace secrets to be rotated 
+At this stage you will be ready to merge your rotation PR. Once you confirm your rotation PR merge, you can expect your namespace secrets to be rotated 
 shortly afterwards.
 
 The secrets rotation process will update existing Kubernetes `secrets` in namespaces rather than replacing them entirely; therefore it
@@ -157,14 +157,15 @@ This will look like the following:
 
 ![Image of GitHub Concourse URL comment](/images/concourse_circleci.png)
 
-If you fail to receive a link in GitHub following merge, you can head over to the Concourse `apply-namespace-changes-live` pipeline and manually locate your job. 
-Each job run in this pipeline outputs the following information at the beginning of the `task: apply-namespace-changes` stage:
+If you fail to receive a link in GitHub following your merge, you can head over to the Concourse [`apply-namespace-changes-live`](https://concourse.cloud-platform.service.justice.gov.uk/teams/main/pipelines/environments-live/jobs/apply-namespace-changes-live/) 
+pipeline and search for your build. Each build run in this pipeline outputs the following information:
 
 ```
 Found PR: [PR number]
 Applying Namespace: [namespace being applied]
 ```
-The Concourse pipeline URL will be provided via comms during the rotation process.
+
+This information can be found by expanding the `task: apply-namespace-changes` pane in the build view.
 
 #### Monitoring Kubernetes Secrets
 Conducting a "before and after" check of your AWS secrets values using the above `kubectl` or `cloud-platform decode-secret` CLI
@@ -180,8 +181,8 @@ application utilises secrets in unique ways, as attempting to cover every scenar
 In testing, Cloud Platform have found that where deployments are mounting Kubernetes `secrets` as application environment
 variables, a **recycling of all namespace pods is required** to restore service.
 
-**NOTE:** Please take extra care to ensure that you are targeting the correct cluster context and namespace when running the
-following, or similar, commands:
+**NOTE:** Please take extra care to ensure that you are targeting the correct [cluster context](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#-em-current-context-em-) 
+and namespace when running the following, or similar, commands:
 
 ```bash
 $ kubectl delete --all pods -n <YOUR-NAMESPACE>
