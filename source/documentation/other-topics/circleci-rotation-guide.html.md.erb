@@ -138,10 +138,21 @@ values yourself.**
 
 
 
-### Tracking Secrets Rotation Status
+### Triggering Rotation of Secrets 
 
-At this stage you will be ready to merge your rotation PR. Once you confirm your rotation PR merge, you can expect your namespace secrets to be rotated 
+At this stage you should be ready to merge your rotation PR. Once you confirm your rotation PR merge, you can expect your namespace secrets to be rotated 
 shortly afterwards.
+
+Pre-approved rotation PRs will be named following the convention:
+
+`Rotate Secrets in Namespace: <NAMESPACE>`
+
+To locate your PR merge, head over to the `cloud-platform-environments` repo "Pull requests" view [here](https://github.com/ministryofjustice/cloud-platform-environments/pulls),
+and use the search bar to locate your namespace rotation PR, as demonstrated in the image below:
+
+![Image of GitHub PR Search](/images/github_pr_search.png)
+
+### Tracking Secrets Rotation Status
 
 The secrets rotation process will update existing Kubernetes `secrets` in namespaces rather than replacing them entirely; therefore it
 is not possible to rely on checking the age of your `secrets` as this will not change. 
