@@ -90,11 +90,19 @@ It is advised that before merging your secret rotation PR that you check the val
 assist in verifying the rotation has completed once applied via our Concourse pipeline. This can be done for each of your Kubernetes secrets
 containing AWS secrets as follows:
 
+To get a list of all Kubernetes `secrets` in your namespace:
+
+```bash
+$ kubectl -n <YOUR-NAMESPACE> get secrets
+```
+
+To retrieve the values stored in a given secret:
+
 ```bash
 $ kubectl -n <YOUR-NAMESPACE> get secret <SECRET-NAME> -o yaml
 ```
 
-Or use the `cloud-platform decode-secret` CLI command to automatically `base64` decode the values:
+You can use the `cloud-platform decode-secret` CLI command to automatically `base64` decode the values:
 
 ```bash
 $ cloud-platform decode-secret -n <YOUR-NAMESPACE> -s <SECRET-NAME>
