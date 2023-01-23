@@ -31,3 +31,28 @@ This guide covers only secrets provided by the Cloud Platform system (your appli
   [Ask the Cloud Platform team](/documentation/reference/getting-help.html) to rotate the credentials related to AWS resources such as ECR, RDS etc., which have been [created by terraform](/documentation/deploying-an-app/add-aws-resources.html). 
   The team will run the instructions from the runbook [Rotate User AWS Credentials](https://runbooks.cloud-platform.service.justice.gov.uk/rotate-user-aws-credentials.html#rotate-user-aws-credentials) to regenerate the AWS credentials. 
   This will recreate the kubernetes-secret in the same name and the values are updated automatically in the `mountPath` which the pod consumes.
+
+### Certificate tls keys
+
+  Delete the secrets related to the certificates that are used to create the [certificate resource][obtain-certicate]. The [secret name][secretName] will be shown in your certificate manifest file.
+
+    ```bash
+    $kubectl get secrets -n <yournamespace>
+    c100-application-tls-long-domain      kubernetes.io/tls                     2      325d
+    c100-application-tls-short-domain     kubernetes.io/tls                     2      325d
+    circleci-token-msrhd                  kubernetes.io/service-account-token   3      17d
+    default-token-pztpp                   kubernetes.io/service-account-token   3      325d
+    $
+    $kubectl delete secret c100-application-tls-long-domain -n <yournamespace>
+
+  After the secret is deleted the replacement secret is generated immediately. This will not change the duration of the certificate or the renew process.
+
+  You will receive below error message while the new secret is created, it might incur some service downtime (in tests, deleting a secret of a certificate resulted in approx. 7 seconds downtime)
+
+    ```bash
+    SSL: no alternative certificate subject name matches target host name 'xxxxxxx.service.justice.gov.uk'
+    failed to verify the legitimacy of the server and therefore could not establish a secure connection to it.
+
+
+  [obtain-certicate]: /documentation/other-topics/custom-domain-cert.html#obtaining-a-certificate
+  [secretName]: https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live.cloud-platform.service.justice.gov.uk/c100-application-production/certificate.yaml#L7
