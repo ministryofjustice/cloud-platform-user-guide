@@ -96,8 +96,7 @@ This guide covers only secrets provided by the Cloud Platform system (your appli
   You will need to delete all pods in the corresponding namespace to allow new pods to be created, which will pick up the new DB password from the kubernetes secret.
 
   It is possible that applications might experience downtime if, for example, a pod which was launched with the old password drops a DB connection and tries to open a new one (which will fail, because the password is no longer valid).
-  Similarly, a pod launched with the old password (e.g. a cron job), which then waits to open a DB connection will fail to connect if the password has been replaced since the pod was launched. In the case of cron jobs, these pods
-  should just fail and be relaunched successfully.
+  Similarly, a pod launched with the old password (e.g. a cron job), which then waits to open a DB connection will fail to connect if the password has been replaced since the pod was launched.
 
 
   [obtain-certicate]: /documentation/other-topics/custom-domain-cert.html#obtaining-a-certificate
