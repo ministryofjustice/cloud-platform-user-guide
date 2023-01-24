@@ -22,7 +22,7 @@ This guide covers only secrets provided by the Cloud Platform system (your appli
     es-snapshot-bucket                                         Opaque                                2      144d
     $
     $kubectl delete secret circleci-token-XXXXX -n <yournamespace>
-
+    ```
   After the secret is deleted the replacement secret is generated immediately. Check the age of the newly generated secret to confirm. 
   
   Decode the secret using `cloud-platform decode-secret -n <yournamespace> -s circleci-token-XXXXX` to use it in your deployment pipeline.
@@ -44,20 +44,21 @@ This guide covers only secrets provided by the Cloud Platform system (your appli
     default-token-pztpp                   kubernetes.io/service-account-token   3      325d
     $
     $kubectl delete secret c100-application-tls-long-domain -n <yournamespace>
-
+    ```
   After the secret is deleted the replacement secret is generated immediately. This will not change the duration of the certificate or the renew process.
 
   You will receive below error message while the new secret is created, it might incur some service downtime (in tests, deleting a secret of a certificate resulted in approx. 7 seconds downtime)
 
-    ```bash
+    ```
     SSL: no alternative certificate subject name matches target host name 'xxxxxxx.service.justice.gov.uk'
     failed to verify the legitimacy of the server and therefore could not establish a secure connection to it.
+    ```
 
-  ### AWS RDS DB password
+### AWS RDS DB password
 
   Rotate RDS DB password using the [terraform module][terraform module]. You will need to change your `resources/rds.tf` file and add a new variable "db_password_rotated_date" in the terraform code as below and update the "dd-mm-yyyy" value to the current date.
 
-    ```
+    ```bash
       db_password_rotated_date = "dd-mm-yyyy"
     ```
 
@@ -68,30 +69,30 @@ This guide covers only secrets provided by the Cloud Platform system (your appli
 
   You can verify the database password change by decoding its rds secret contents using the [cloud platform cli]:
 
-  ```
-  cloud-platform decode-secret -n [your namespace] -s [rds secret name]
-  ```
+    ```bash
+    cloud-platform decode-secret -n [your namespace] -s [rds secret name]
+    ```
 
   Here is a redacted example:
 
-  ```
-  cloud-platform decode-secret -n dstest -s rds-instance-output
+    ```bash
+    cloud-platform decode-secret -n dstest -s rds-instance-output
 
-  {
-      "apiVersion": "v1",
-      "data": {
-          "database_password": "new-password",
-          "database_username": "xxxxxxxxxx",
-          "url": "postgres://xxxxxxxxxx:new-password@cloud-platform-1111111111111111.cdwm328dlye6.eu-west-2.rds.amazonaws.com:5432/db2axxxxxxxxxxxxxx"
-      },
-      "kind": "Secret",
-      "metadata": {
-          "name": "rds-instance-output",
-          "namespace": "dstest",
-      },
-      "type": "Opaque"
-  }
-  ```
+    {
+        "apiVersion": "v1",
+        "data": {
+            "database_password": "new-password",
+            "database_username": "xxxxxxxxxx",
+            "url": "postgres://xxxxxxxxxx:new-password@cloud-platform-1111111111111111.cdwm328dlye6.eu-west-2.rds.amazonaws.com:5432/db2axxxxxxxxxxxxxx"
+        },
+        "kind": "Secret",
+        "metadata": {
+            "name": "rds-instance-output",
+            "namespace": "dstest",
+        },
+        "type": "Opaque"
+    }
+    ```
 
   You will need to delete all pods in the corresponding namespace to allow new pods to be created, which will pick up the new DB password from the kubernetes secret.
 
