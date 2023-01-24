@@ -53,6 +53,54 @@ This guide covers only secrets provided by the Cloud Platform system (your appli
     SSL: no alternative certificate subject name matches target host name 'xxxxxxx.service.justice.gov.uk'
     failed to verify the legitimacy of the server and therefore could not establish a secure connection to it.
 
+  ### AWS RDS DB password
+
+  Rotate RDS DB password using the [terraform module][terraform module]. You will need to change your `resources/rds.tf` file and add a new variable "db_password_rotated_date" in the terraform code as below and update the "dd-mm-yyyy" value to the current date.
+
+    ```
+      db_password_rotated_date = "dd-mm-yyyy"
+    ```
+
+  > Note: Make sure you are using the latest version of the [RDS module][rds-module-version].
+
+  Applying this will recreate the password for an RDS instance, and the database_password stored as Kubernetes secrets in your namespace will be updated with the new one.
+
+
+  You can verify the database password change by decoding its rds secret contents using the [cloud platform cli]:
+
+  ```
+  cloud-platform decode-secret -n [your namespace] -s [rds secret name]
+  ```
+
+  Here is a redacted example:
+
+  ```
+  cloud-platform decode-secret -n dstest -s rds-instance-output
+
+  {
+      "apiVersion": "v1",
+      "data": {
+          "database_password": "new-password",
+          "database_username": "xxxxxxxxxx",
+          "url": "postgres://xxxxxxxxxx:new-password@cloud-platform-1111111111111111.cdwm328dlye6.eu-west-2.rds.amazonaws.com:5432/db2axxxxxxxxxxxxxx"
+      },
+      "kind": "Secret",
+      "metadata": {
+          "name": "rds-instance-output",
+          "namespace": "dstest",
+      },
+      "type": "Opaque"
+  }
+  ```
+
+  You will need to delete all pods in the corresponding namespace to allow new pods to be created, which will pick up the new DB password from the kubernetes secret.
+
+  It is possible that applications might experience downtime if, for example, a pod which was launched with the old password drops a DB connection and tries to open a new one (which will fail, because the password is no longer valid).
+  Similarly, a pod launched with the old password (e.g. a cron job), which then waits to open a DB connection will fail to connect if the password has been replaced since the pod was launched.
+
 
   [obtain-certicate]: /documentation/other-topics/custom-domain-cert.html#obtaining-a-certificate
   [secretName]: https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live.cloud-platform.service.justice.gov.uk/c100-application-production/certificate.yaml#L7
+  [cloud platform cli]: ../getting-started/cloud-platform-cli.html
+  [terraform module]: https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance
+  [rds-module-version]: https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance/releases
