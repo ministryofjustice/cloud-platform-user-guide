@@ -155,11 +155,11 @@ spec:
       paths:
       - path: /
         pathType: ImplementationSpecific
-          backend:
-            service:
-              name: nginx-service
-              port:
-                number: 8080
+        backend:
+          service:
+            name: nginx-service
+            port:
+              number: 8080
 ```
 (Note - Please change the `ingress-name` and `namespace-name` values in the above example. The `colour` should be `green` for ingress in EKS `live` cluster)
 
