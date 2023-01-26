@@ -57,7 +57,7 @@ This guide covers only secrets provided by the Cloud Platform system (your appli
 
 ### AWS RDS DB password
 
-  Rotate RDS DB password using the [terraform module][terraform module]. You will need to change your `resources/rds.tf` file and add a new variable "db_password_rotated_date" in the terraform code as below and update the "dd-mm-yyyy" value to the current date.
+  Rotate RDS DB password using the [terraform module][terraform rds module]. You will need to change your `resources/rds.tf` file and add a new variable "db_password_rotated_date" in the terraform code as below and update the "dd-mm-yyyy" value to the current date.
 
   ```bash
     db_password_rotated_date = "dd-mm-yyyy"
@@ -101,8 +101,86 @@ This guide covers only secrets provided by the Cloud Platform system (your appli
   Similarly, a pod launched with the old password (e.g. a cron job), which then waits to open a DB connection will fail to connect if the password has been replaced since the pod was launched.
 
 
+### AWS Elasticache AUTH token
+
+  Elasticache Redis server supports two AUTH tokens at a given time. Hence, rotating the current AUTH token involves multiple steps. 
+  
+  1. **Rotate Elasticache AUTH token using the [terraform module][terraform elasticache module]**
+
+    You will need to change your `resources/elasticache.tf` file and add a new variable 
+    "auth_token_rotated_date" in the terraform code as below and update the "dd-mm-yyyy:hh:mm" value to the current date.
+
+    ```
+    auth_token_rotated_date = "yyyy-mm-dd"
+    ```
+
+    > Note: Make sure you are using the latest version of the [Elasticache module][elasticache-module-version].
+
+    This follow the **ROTATE** strategy and when applying this adds an additional AUTH token to the server and remove the the oldest AUTH token from the server. 
+    Hence the previous token will be retained allowing a server to support up to two most recent AUTH tokens at a given time. This also update the `auth_token` stored as a Kubernetes secret in your namespace.
+
+    You can fetch the latest auth token by decoding the contents of kubernetes secret using the [cloud platform cli]:
+
+    ```
+    cloud-platform decode-secret -n [your namespace] -s [elasticache-redis-secret-name]
+    ```
+
+      Here is a redacted example:
+
+    ```
+    cloud-platform decode-secret -n dstest -s elasticache-redis-output
+    {
+        "apiVersion": "v1",
+        "data": {
+            "access_key_id": "XXXXXXX",
+            "auth_token": "XXXXXXXXXXX",
+            "member_clusters": "[\"cp-1111111-001\",\"cp-222222222-002\"]",
+            "primary_endpoint_address": "master.cp-1111111.XXXX.XXX.cache.amazonaws.com"
+            "replication_group_id": "cp-1111111",
+            "secret_access_key": "XXXXXXX"
+        },
+        "kind": "Secret",
+        "metadata": {
+            "creationTimestamp": "2023-01-19T17:47:37Z",
+            "name": "elasticache-redis-output",
+            "namespace": "dstest",
+        },
+        "type": "Opaque"
+    }
+    ```
+
+  2. **Recycle the pods in your namespace**
+  
+    Elasticache support two AUTH tokens, you can delete the pod one by one to allow new pods to pick up the new AUTH token from the kubernetes secret.
+    While testing, there was no downtime experience as the previous AUTH token will still be supported. 
+
+  3. **Update the Redis server to support and use only the latest AUTH token**
+
+    In the event of Security Incident when an AUTH token is exposed, you will have to use SET Strategy after rotating the secrets using Step 1. 
+    This will update the server to support just a single AUTH token.
+
+    Terraform doesnot support **SET** strategy yet, see [open issue]. Hence you will have to use AWS CLI to update the elasticache.
+
+    To access to your Elasticache using AWS CLI, you will need the `access_key_id` and `secret_access_key` which are stored as a kubernetes secret explained in Step 1 and Set up an AWS profile using AWS CLI.
+    
+    Decode `replication_group_id` and the latest `auth_token` from the kubernetes secret and run the below command
+
+    ```
+      aws elasticache modify-replication-group \
+        --replication-group-id <replication_group_id from the secret> \
+        --auth-token <auth_token from the secret> \
+        --auth-token-update-strategy SET \
+        --apply-immediately
+    ```
+
+  To read more on how to modify the AUTH token see [AWS documentation][AWS Elasticache AUTH]
+
   [obtain-certicate]: /documentation/other-topics/custom-domain-cert.html#obtaining-a-certificate
   [secretName]: https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live.cloud-platform.service.justice.gov.uk/c100-application-production/certificate.yaml#L7
   [cloud platform cli]: ../getting-started/cloud-platform-cli.html
-  [terraform module]: https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance
+  [terraform rds module]: https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance
+  [terraform elasticache module]: https://github.com/ministryofjustice/cloud-platform-terraform-elasticache-cluster
   [rds-module-version]: https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance/releases
+  [elasticache-module-version]: https://github.com/ministryofjustice/cloud-platform-terraform-elasticache-cluster/releases
+  [open issue]: https://github.com/hashicorp/terraform-provider-aws/issues/11524
+  [AWS Elasticache AUTH]: https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/auth.html
