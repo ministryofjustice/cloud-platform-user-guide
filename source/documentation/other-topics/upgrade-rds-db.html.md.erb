@@ -1,6 +1,6 @@
 ---
 title: Upgrading your RDS database
-last_reviewed_on: 2022-11-24
+last_reviewed_on: 2023-02-08
 review_in: 3 months
 ---
 
@@ -10,7 +10,7 @@ This page describes how to upgrade your RDS database to a new minor or major ver
 
 There are two ways to upgrade your RDS database and both require downtime, which will vary based on method, database instance class, and storage size.
 
-> **Important:** `db.t2` and `db.m4` instance classes are [previous generation instances](https://aws.amazon.com/rds/previous-generation/). You should upgrade your instance class as part of your upgrade, for example `db.t3`/`db.t4g` or `db.m5` respectively.
+> **Important:** `db.t2` and `db.m4` instance classes are [previous generation instances](https://aws.amazon.com/rds/previous-generation/). You should upgrade your instance class **before** your upgrade, for example `db.t3`/`db.t4g` or `db.m5` respectively.
 
 ## Important information to know when upgrading your database
 
@@ -51,7 +51,7 @@ You can speed up your upgrade by temporarily changing your database instance cla
 
 For example, if you're running a `db.t3.large`, you can change it to a `db.t3.xlarge`, doubling the CPU and memory for RDS to use during the upgrade.
 
-You should do this before starting the actual upgrade, and scale down when your upgrade is finished. This makes the data migration much faster and the cost difference will only be for a few hours.
+You should do this **before** starting the actual upgrade, and scale down when your upgrade is finished. This makes the data migration much faster and the cost difference will only be for a few hours.
 
 You can [view instance types](https://aws.amazon.com/rds/instance-types/) to find what database instance to use during the upgrade.
 
@@ -85,6 +85,7 @@ If you want to use this method, you can treat it like any other [database migrat
 The upgrade process involves these steps:
 
 * Raise and merge a PR to [tell the Apply Pipeline to skip your namespace][long-running]
+* Amend the `db_instance_class` of your RDS to a suitable version, raise and merge the PR (Optional only if you want to speed up the upgrade or change your instance class)
 * Alter your RDS instance to use the default [parameter group] for your **current** PostgreSQL version
 * Raise and merge a PR to change your PostgreSQL version to the one you want - the Apply Pipeline will handle the upgrade for you
 * Raise another PR to [remove the "skip file"][long-running] from your namespace
