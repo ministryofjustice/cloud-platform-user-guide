@@ -196,7 +196,7 @@ This guide covers only secrets provided by the Cloud Platform system (your appli
     ...
   }  
   ```  
-  If you planning on rotating your Elasticache AUTH token at the point of upgrade process, you can now continue with Step 1 above, since the upgrade and token rotation can be applied in a single PR.
+  If you are planning on rotating your Elasticache AUTH token at the point of the upgrade process, you can now continue with Step 1 above, since the upgrade and token rotation can be applied in a single PR.
   
   >**Note:** During testing of a Redis engine upgrade, Cloud Platform team have found the process takes around 11 minutes to complete via Concourse pipeline. You will need to carry out your own tests
   in **non-production** namespaces to confirm similar and acceptable behaviour for your service.
