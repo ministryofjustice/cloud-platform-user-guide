@@ -103,6 +103,11 @@ This guide covers only secrets provided by the Cloud Platform system (your appli
 
 ### AWS Elasticache AUTH token
 
+  > **Important:**
+  > Redis AUTH token modification is only supported by clusters running Redis engine version `5.0.5` and above.
+  > Before proceeding with the steps below you will need to ensure your engine version meets this requirement, and if not
+  > you will need to [upgrade](#upgrading-redis-engine) your Redis engine.
+     
   Elasticache Redis server supports two AUTH tokens at a given time. Hence, rotating the current AUTH token involves multiple steps. 
   
   1. **Rotate Elasticache AUTH token using the [terraform module][terraform elasticache module]**
@@ -114,12 +119,13 @@ This guide covers only secrets provided by the Cloud Platform system (your appli
     auth_token_rotated_date = "yyyy-mm-dd"
     ```
 
-    > Note: Make sure you are using the latest version of the [Elasticache module][elasticache-module-version].
+    > **Note:** Make sure you are using the latest version of the [Elasticache module][elasticache-module-version]. You may also wish to check 
+    whether your `kubernetes_secret` is already set to contain `access_key_id` and `secret_access_key` data, as shown in the example code [here](https://github.com/ministryofjustice/cloud-platform-terraform-elasticache-cluster/blob/main/example/elasticache.tf#L47-L48).
 
     This follow the **ROTATE** strategy and when applying this adds an additional AUTH token to the server and remove the the oldest AUTH token from the server. 
-    Hence the previous token will be retained allowing a server to support up to two most recent AUTH tokens at a given time. This also update the `auth_token` stored as a Kubernetes secret in your namespace.
+    Hence the previous token will be retained allowing a server to support up to two most recent AUTH tokens at a given time. This also update the `auth_token` stored as a Kubernetes secret in your namespace.   
 
-    You can fetch the latest auth token by decoding the contents of kubernetes secret using the [cloud platform cli]:
+    You can fetch the latest auth token by decoding the contents of your kubernetes secret using the [cloud platform cli]:
 
     ```
     cloud-platform decode-secret -n [your namespace] -s [elasticache-redis-secret-name]
@@ -151,7 +157,7 @@ This guide covers only secrets provided by the Cloud Platform system (your appli
 
   2. **Recycle the pods in your namespace**
   
-    Elasticache support two AUTH tokens, you can delete the pod one by one to allow new pods to pick up the new AUTH token from the kubernetes secret.
+    Elasticache support two AUTH tokens, you can delete your pods one by one to allow new pods to pick up the new AUTH token from the kubernetes secret.
     While testing, there was no downtime experience as the previous AUTH token will still be supported. 
 
   3. **Update the Redis server to support and use only the latest AUTH token**
@@ -159,7 +165,7 @@ This guide covers only secrets provided by the Cloud Platform system (your appli
     In the event of Security Incident when an AUTH token is exposed, you will have to use SET Strategy after rotating the secrets using Step 1. 
     This will update the server to support just a single AUTH token.
 
-    Terraform doesnot support **SET** strategy yet, see [open issue]. Hence you will have to use AWS CLI to update the elasticache.
+    Terraform does not support **SET** strategy yet, see [open issue]. Hence you will have to use AWS CLI to update the elasticache.
 
     To access to your Elasticache using AWS CLI, you will need the `access_key_id` and `secret_access_key` which are stored as a kubernetes secret explained in Step 1 and Set up an AWS profile using AWS CLI.
     
@@ -173,8 +179,29 @@ This guide covers only secrets provided by the Cloud Platform system (your appli
         --apply-immediately
     ```
 
-  To read more on how to modify the AUTH token see [AWS documentation][AWS Elasticache AUTH]
+  To read more on how to modify the AUTH token see [AWS documentation][AWS Elasticache AUTH]  
+### Upgrading Redis Engine
 
+  > **Important:**
+  > Upgrading your Redis engine version will incur a period of **downtime**, see the AWS documentation [here](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/VersionManagement.html) for details.
+  > Please take note that if you are upgrading from a version earlier than `5.0.5` then DNS propagation may increase downtime (AWS suggests this may be 30 seconds to 1 minute)
+
+  Update your `resources/elasticache.tf` resource to set your desired engine version and corresponding parameter group. If this is not set explicitly in your module call, the Elasticache module currently defaults to engine version [`5.0.6`](https://github.com/ministryofjustice/cloud-platform-terraform-elasticache-cluster/blob/main/variables.tf#L46).
+
+  ```
+  module "redis_cluster" {
+    ...
+    engine_version          = "6.x"
+    parameter_group_name    = "default.redis6.x"
+    ...
+  }  
+  ```  
+  If you planning on rotating your Elasticache AUTH token at the point of upgrade process, you can now continue with Step 1 above, since the upgrade and token rotation can be applied in a single PR.
+  
+  >**Note:** During testing of a Redis engine upgrade, Cloud Platform team have found the process takes around 11 minutes to complete via Concourse pipeline. You will need to carry out your own tests
+  in **non-production** namespaces to confirm similar and acceptable behaviour for your service.
+
+  
   [obtain-certicate]: /documentation/other-topics/custom-domain-cert.html#obtaining-a-certificate
   [secretName]: https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live.cloud-platform.service.justice.gov.uk/c100-application-production/certificate.yaml#L7
   [cloud platform cli]: ../getting-started/cloud-platform-cli.html
