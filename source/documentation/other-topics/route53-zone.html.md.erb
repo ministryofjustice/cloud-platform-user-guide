@@ -13,7 +13,7 @@ This short guide will run through the process of creating a [Route 53 Hosted Zon
 
 ## Pre-Requisites
 
-This guide assumes you have an environment already created in the `Live` cluster and defined in the [cloud-platform-environments repository][env-repo].
+This guide assumes you have an environment already created in the `Live` cluster and defined in the [cloud-platform-environments repository][env-repo]. If you have a service runnig on a `*.apps.live.cloud-platform.service.justice.gov.uk/` URL, then you are on the Live cluster already.
 
 ## Terraform files
 
@@ -35,10 +35,10 @@ provider "aws" {
 ```
 Note: If you already have that file defined in your environment, do not recreate it.
 
-### variable.tf
+### variables.tf
 
 This file declares the variables fields utilisised in the route53.tf file below<br>   
-Fill in the variable  _namespace_  field below with your existing kubernetes namespace.
+Fill in the variables below with your settings. Fill _namespace_ field below with your existing kubernetes namespace, all the _example_ fields below with desired values (all lowercase, and no spaces), and the _domain_ variable with your desired URL (pay special attention if your URL contains "justice" or not).
 
 ```
 variable "namespace" {
@@ -72,25 +72,31 @@ variable "infrastructure-support" {
 variable "owner" {
   default     = "example-owner"
   }
+
+variable "domain" {
+  default = "YOURDOMAIN.service.(justice).gov.uk"
+}
 ```
-Note: If you already have that file defined in your environment, do not recreate it
+
+Note: If you already have that file defined in your environment, do not recreate it, but make sure that all the variables mentioned above are included, for example, the _domain_
 
 ### route53.tf
 
-Fill in the _name_  field below with your domain name.
+Make sure to replace the placeholders and example values below with relevant ones. If you are referring from variables in variables.tf, use `var.VARIABLE NAME`, so for example, the "domain" variable defined in `variable.tf` can be referenced as `var.domain`. 
 
+Note: Please follow the convention on when to use `_` vs `-`.
 ```
 resource "aws_route53_zone" "example_team_route53_zone" {
-  name = "YOUR DOMAIN GOES HERE"
+  name = var.domain
 
   tags = {
     team_name              = var.team_name
-    business-unit          = var.business-unit
+    business-unit          = var.business_unit
     application            = var.application
-    is-production          = var.is-production
-    environment-name       = var.environment-name
-    owner                  = var.owner    
-    infrastructure-support = var.infrastructure-support
+    is-production          = var.is_production
+    environment-name       = var.environment
+    owner                  = var.githib_owner
+    infrastructure_support = var.infrastructure_support
     namespace              = var.namespace
   }
 }
@@ -110,7 +116,7 @@ resource "kubernetes_secret" "example_route53_zone_sec" {
 
 ## Creating the resource
 
-Make sure to replace the placeholders and example values above with relevant ones. If you are referring from variables in variables.tf, replace with `var.VARIABLE NAME`. Commit your changes to a branch and raise a pull request.
+Commit your changes to a new branch and raise a pull request.
 Once approved, you can merge and the changes will be applied.
 Shortly after, to confirm the zone has been created, you should be able to access the `Zone_ID` as Secret on kubernetes in your namespace.
 
