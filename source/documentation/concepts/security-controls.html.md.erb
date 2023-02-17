@@ -63,6 +63,20 @@ Such resources are secured by credentials, potentially including encryption
 keys, which are usually made available to services via [kubernetes secrets] in
 the namespaces in which the services run.
 
+### Image scanning
+
+The CP uses [Amazon ECR] to store container images. Images are scanned for
+vulnerabilities using [Amazon ECR Image Scanning].
+
+We also have [Trivy-Operator] running in the CP, which scans images for
+vulnerabilities and reports them to the [Cloud Platform Vulnerability Dashboard].
+At present, we don't take any action on the vulnerabilities reported, but this is
+something we plan to address in the future.
+
+[Trivy-Operator]: https://aquasecurity.github.io/trivy-operator/latest
+[Cloud Platform Vulnerability Dashboard]: https://grafana.live.cloud-platform.service.justice.gov.uk/d/trivy_starboard_operator123/trivy-operator-image-vulnerability?from=now-3h&to=now
+[Amazon ECR Image Scanning]: https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html
+[Amazon ECR]: https://aws.amazon.com/ecr/
 [Amazon AWS]: https://aws.amazon.com/
 [kubernetes]: https://kubernetes.io/
 [namespaces]: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
