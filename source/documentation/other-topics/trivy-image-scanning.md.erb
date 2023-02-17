@@ -1,0 +1,79 @@
+---
+title: Trivy vulnerability scanning
+last_reviewed_on: 2023-02-17
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+Cloud Platform uses [Trivy] to scan Docker images for vulnerabilities. It lives
+inside the cluster and will scan any image that is deployed to it. At this point
+in time, there is no action required from the user, but it's strongly recommended
+that you are aware of the following:
+
+- Trivy is a vulnerability scanner, not a vulnerability fixer. It will tell you
+if there are vulnerabilities in your image, but it will not fix them for you.
+
+- Trivy is a static analysis tool. It will scan your image for vulnerabilities
+when it is deployed to the cluster, but it will not scan your image for vulnerabilities
+when you build it. You should run Trivy locally on your image before you deploy
+it to the cluster.
+
+- Trivy is not a vulnerability database. It will not tell you if a vulnerability
+has been fixed in a later version of the image. You should check the image's
+documentation to see if there are any newer versions available.
+
+
+## How to use Trivy
+
+As Trivy is installed inside the cluster, you can see the results of the scan
+by running the following command:
+
+```bash
+kubectl get vuln -n [your namespace]
+```
+
+This will return a list of all the images that have been deployed to your namespace
+and the results of the scan.
+
+If you want to see the results of the scan for a specific image, you can run the
+following command:
+
+```bash
+kubectl describe vuln [your image name] -n [your namespace]
+```
+
+This will return a list of all the vulnerabilities found in the image, along with
+the severity of the vulnerability.
+
+You can also see the results of the scan in the [Cloud Platform Grafana Dashboard].
+
+## How to fix vulnerabilities
+
+If you find that your image has vulnerabilities, you should fix them as soon as
+possible. The best way to do this is to update your image to use a newer version
+of the software that has the vulnerability.
+
+
+## How to run Trivy locally
+
+You can run Trivy locally on your image before you deploy it to the cluster. This
+will give you a list of vulnerabilities that are present in your image, so you
+can fix them before you deploy it.
+
+To run Trivy locally, you will need to install it on your machine. You can find
+installation instructions on the [Trivy GitHub page].
+
+Once you have installed Trivy, you can run it on your image by running the
+following command:
+
+```bash
+trivy image [your image name]
+```
+
+This will return a list of all the vulnerabilities found in the image, along with
+the severity of the vulnerability.
+
+[Trivy]: https://aquasecurity.github.io/trivy/latest
+[Cloud Platform Grafana Dashboard]: https://grafana.live.cloud-platform.service.justice.gov.uk/d/trivy_starboard_operator123/trivy-operator-image-vulnerability
+[Trivy GitHub page]: https://github.com/aquasecurity/trivy#get-trivy
