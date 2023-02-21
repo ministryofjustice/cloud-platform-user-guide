@@ -1,6 +1,6 @@
 ---
 title: ModSecurity - Web Application Firewall
-last_reviewed_on: 2022-12-22
+last_reviewed_on: 2023-02-21
 review_in: 3 months
 ---
 
@@ -42,10 +42,10 @@ For the Cloud Platform, ModSecurity has been configured as an opt-in feature. Ne
 ### Ingress Annotations
 
 We have a dedicated ingress-controller with ModSecurity enabled separate from the default ingress-controller.
-To point your application to the ModSec ingress-controller, add the following annotation to your ingress manifest file:
+To point your application to the ModSec ingress-controller, add the following to your ingress `spec` field:
 
 ```yaml
-kubernetes.io/ingress.class: "modsec01"
+ingressClassName: modsec
 ```
 
 To enable ModSecurity for your application, add the following annotation to your ingress manifest file:
@@ -53,7 +53,9 @@ To enable ModSecurity for your application, add the following annotation to your
 ```yaml
 nginx.ingress.kubernetes.io/enable-modsecurity: "true"
 ```
-This annotation enables ModSecurity for the ingress on the nginx ingress-controller in detection only mode. There is no disruptive action if a critical rule triggers, but it is logged in the nginx-ingress.log file. The `SecRuleEngine` is set to `Detection Only Mode`.
+The above annotation enables ModSecurity for the ingress on the nginx ingress-controller in detection only mode. There is no disruptive action if a critical rule triggers, but it is logged in the nginx-ingress.log file. The `SecRuleEngine` defaults to `Detection Only Mode`.
+
+Adding the annotation below, `SecRuleEngine On` configures ModSecurity to actively block traffic classed as malicious using Anomaly Scoring:
 
 ```yaml
 nginx.ingress.kubernetes.io/modsecurity-snippet: |
