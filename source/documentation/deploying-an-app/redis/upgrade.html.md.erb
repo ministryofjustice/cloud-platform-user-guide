@@ -1,0 +1,81 @@
+---
+title: Upgrading a Redis version or changing the instance type
+last_reviewed_on: 2023-02-22
+review_in: 12 months
+---
+
+# <%= current_page.data.title %>
+
+If you have a Redis cluster in the Cloud Platform, you should keep it up to date and use the most cost effective instance type for your needs.
+
+AWS publishes an [ElastiCache for Redis end-of-life schedule](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/deprecated-engine-versions.html) and [supported Redis versions](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/supported-engine-versions.html) guide to help you keep up to date.
+
+## Upgrading a Redis version
+
+>Note: This will cause some downtime (usually minutes, dependent on how much data is in your cluster).
+
+To upgrade your Redis cluster version, complete these three steps:
+
+1. Raise and merge a PR to tell the [apply pipeline to skip your namespace](/documentation/other-topics/long-running-env-operations.html#long-running-environments-operations)
+
+2. Raise and merge a PR that updates the following attributes for your ElastiCache for Redis cluster, which is typically in `resources/elasticache.tf` in your namespace:
+
+    ```hcl
+    module "redis_cluster" {
+      ...
+      engine_version       = "6.2"
+      parameter_group_name = "default.redis6.x"
+      ...
+    }
+    ```
+
+    These two attributes must match the version you are upgrading to. The table below shows the attribute pairs to use.
+
+    As soon as this PR is merged, the upgrade will begin.
+
+    #### Engine version and parameter groups
+
+    | Version to upgrade to | engine_version | parameter_group_name |
+    |-|-|-|
+    | Redis 5.0 | `5.0.6` | `default.redis5.0` |
+    | Redis 6.0 | `6.0` | `default.redis6.x` |
+    | Redis 6.2 | `6.2` | `default.redis6.x` |
+    | Redis 7.0 | `7.0` | `default.redis7` |
+
+3. Raise and merge a PR to remove the `APPLY_PIPELINE_SKIP_THIS_NAMESPACE` file added in step 1
+
+### Upgrade paths
+
+Redis aims to maintain backwards compatibility when releasing a new major version. This means that you can upgrade your Redis cluster through multiple major versions in one upgrade step.
+
+For example, you can upgrade from ElastiCache for Redis `4.0.10` directly to ElastiCache for Redis `6.2.6` or ElastiCache for Redis `7.0`.
+
+| Current Redis version | You should upgrade to |
+|-|-|
+| 4.0.x | 6.2.x or 7.0 |
+| 5.0.x | 6.2.x or 7.0 |
+| 6.0.x | 6.2.x or 7.0 |
+
+## Changing your Redis instance type
+
+>Note: This will cause some downtime (usually minutes, dependent on how much data is in your cluster).
+
+To change your Redis instance type, complete these three steps:
+
+1. Raise and merge a PR to tell the [apply pipeline to skip your namespace](/documentation/other-topics/long-running-env-operations.html#long-running-environments-operations)
+
+2. Raise and merge a PR that updates the `node_type` attribute for your ElastiCache for Redis cluster, which is typically in `resources/elasticache.tf` in your namespace:
+
+    ```hcl
+    module "redis_cluster" {
+      ...
+      node_type = "cache.t4g.small"
+      ...
+    }
+    ```
+
+    The [Creating a Redis cluster](/documentation/deploying-an-app/redis/create.html#table-of-instance-types) guide can help you decide which `node_type` to use.
+
+    As soon as this PR is merged, the instance type change will begin.
+
+3. Raise and merge a PR to remove the `APPLY_PIPELINE_SKIP_THIS_NAMESPACE` file added in step 1
