@@ -1,0 +1,186 @@
+---
+title: SQL Server Backup and Restore
+last_reviewed_on: 2023-02-24
+review_in: 6 months
+---
+
+# <%= current_page.data.title %>
+
+## Overview
+
+RDS supports _native_ backup and restore for SQL Server backup files (commonly saved with a .bak extension). Given the serverless nature of RDS, backup files have to be accessed from a correctly configured S3 bucket.
+
+If you have a .bak file you wish to restore, or want to backup an existing RDS running SQL server this guide is for you.
+
+## What you'll need
+
+[Cloud Platform CLI]
+
+[AWS CLI](https://aws.amazon.com/cli/)
+
+[DBeaver](https://dbeaver.io/), or a similar database tool that can talk to SQL Server
+
+Additionally, this guide assumes that you already have an S3 bucket and RDS SQL Server already setup in a cloud platform environment. If this is not the case you can find information about how to do this at [Adding AWS resources to your environment](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/add-aws-resources.html)
+
+## Setup
+
+#### 1. Add an IAM role to your S3 bucket
+
+Add this to your s3 terraform file to create a new IAM role - this role will be used allow RDS to access your S3 bucket.
+
+
+```yaml
+resource "aws_iam_role" "sqlserver_backup_s3_iam_role" {
+  name = "sqlserver-backup-s3-iam-role"
+  path = "/"
+
+  assume_role_policy = jsonencode({
+     Version = "2012-10-17",
+     Statement = [
+       {
+        Effect = "Allow",
+        Principal = {
+          Service = "rds.amazonaws.com"
+        },
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+```
+
+#### 2. Assign permissions to the new role
+
+Add this to your s3 terraform file - this assigns a role policy to our new role that allows the role to read, write and list objects (files) in the bucket. NB this assumes your bucket can be identified within your terraform module as 's3_bucket'.
+
+```yaml
+resource "aws_iam_role_policy" "sqlserver_backup_s3_iam_role_policy" {
+  name = "sqlserver-backup-s3-iam-role-policy"
+  role = aws_iam_role.sqlserver_backup_s3_iam_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:ListBucket",
+          "s3:GetBucketLocation"
+        ],
+        Resource = module.s3_bucket.bucket_arn
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:ListMultipartUploadParts",
+          "s3:AbortMultipartUpload"
+        ],
+        Resource = "${module.s3_bucket.bucket_arn}/*"
+      }
+    ]
+  })
+}
+```
+
+#### 3. Enable backup/restore to RDS
+
+Add this to your rds terraform file - this creates a new option group that enables backup and restore using the role we create in our s3 terraform file. Make sure the major_engine_version is suitable for that set in the rds module. (eg if db_engine_version is set to 15.00.4198.2.v1, then your major_engine_version should be set to 15.00).
+
+
+```yaml
+resource "aws_db_option_group" "sqlserver_backup_rds_option_group" {
+  name                     = "sqlserver-backup"
+  option_group_description = "Enable SQL Server Backup/Restore"
+  engine_name              = "sqlserver-ex"
+  major_engine_version     = "15.00"
+
+  option {
+    option_name = "SQLSERVER_BACKUP_RESTORE"
+
+    option_settings {
+      name  = "IAM_ROLE_ARN"
+      value = aws_iam_role.sqlserver_backup_s3_iam_role.arn
+    }
+  }
+}
+```
+
+Finally, add this option group to the rds terraform module 
+
+```yaml
+option_group_name    = aws_db_option_group.sqlserver_backup_rds_option_group.name
+```
+
+Then commit these changes to a new branch and create a PR to deploy them into your cloud platform environment.
+
+## Restoring a backup
+
+Here's how to take a .bak file and restore it to your RDS SQL Server in Cloud Platform
+
+#### 1. Get the access details for your S3 bucket
+
+Use the [Cloud Platform CLI] to get the access keys and arn of the bucket, and hostname, username and password for your database
+
+````bash
+cloud-platform decode-secret -n <your namespace> -s <your s3 bucket secrets>
+cloud-platform decode-secret -n <your namespace> -s <your rds secrets>
+````
+
+#### 2. Copy the .bak file into your s3 bucket
+
+Use the AWS CLI to copy the .bak file into your S3 bucket
+
+````bash
+AWS_ACCESS_KEY_ID=<access_key_id from secret> AWS_SECRET_ACCESS_KEY=<secret_access_key from secret> aws s3 cp <SQL_SERVER_BACKUP_FILENAME> s3://<bucket_name from secret>/
+````
+
+#### 3. Port forward from your local machine to RDS
+
+Because the RDS instance is created within it's own VPC you cannot directly access it from your local machine. See [Accessing your RDS database](/documentation/other-topics/rds-external-access.html) for how to forward traffic on port 1433 from your local machine to your RDS instance.
+
+#### 4. Execute SQL to run the restore.
+
+Open DBeaver and connect to your RDS instance. You'll connect to 127.0.0.1:1433 (which is now forwarding to your RDS in cloud plaform), using the username and password from your RDS secret in step 1.
+
+Once connected run the following SQL command:
+
+````sql
+exec msdb.dbo.rds_restore_database @restore_db_name='<database name>', @s3_arn_to_restore_from='arn:aws:s3:::<bucket_name from secret>/<backup filename>'
+````
+
+This creates a new task, of type RESTORE, that runs in the background. To check on its progress you can execute the following SQL
+
+````sql
+exec msdb.dbo.rds_task_status
+````
+
+The 'complete' row reports on the percentage complete of the task. Once it's at 100, the restore task is complete and you can access your database.
+Don't forget to kill the port forwarding pod when you're finished with
+
+````bash
+kubectl delete pod port-forward-pod -n <your namespace>
+````
+
+## Backing up a database
+
+This follows similar steps to the above. Obviously you won't be copying a .bak file into the S3 bucket. But once you've connected to your RDS instance you can execute the following command to create a .bak backup in your S3 bucket.
+
+````sql
+exec msdb.dbo.rds_backup_database @source_db_name='<database name>', @s3_arn_to_backup_to='arn:aws:s3:::<bucket name>/<backup filename>', @type='FULL', @number_of_files=1;
+````
+
+As previously you can use the following SQL to check on the status of the backup task
+
+````sql
+exec msdb.dbo.rds_task_status
+````
+
+## Other information
+
+- Daily RDS snapshots are automatically provided by cloud platform. Backups created using this process are of most use for copying data between RDS and another SQL Server type (eg running on an on-prem or VPS server somewhere)
+- It might be prudent to use S3's lifecycle capability to automatically expire (ie delete) backup objects in your bucket. For reasons of cost, security etc it's not 
+- Further information on RDS's native backup and restore for SQL Server can be found at https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/SQLServer.Procedural.Importing.html
+
+[Cloud Platform CLI]: ../getting-started/cloud-platform-cli.html
