@@ -17,14 +17,14 @@ This guide assumes the following:
 * You have a slack channel to send alerts to
 
 ## Create a Pingdom check
-Add the below 2 files in in the resources directory of your namespace in your [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live.cloud-platform.service.justice.gov.uk) repository. You can define the conditions of your check using the resources outlined in the [Terraform community provider](https://github.com/russellcardullo/terraform-provider-pingdom). Here's a working example of a [basic check](https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live.cloud-platform.service.justice.gov.uk/claim-criminal-injuries-compensation-uat/resources/pingdom.tf). 
+Add the below 2 files in in the resources directory of your namespace in your [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live.cloud-platform.service.justice.gov.uk) repository. You can define the conditions of your check using the resources outlined in the [Terraform community provider](https://github.com/DrFaust92/terraform-provider-pingdom). Here's a working example of a [basic check](https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live.cloud-platform.service.justice.gov.uk/claim-criminal-injuries-compensation-uat/resources/pingdom.tf).
 
 1. Add the below code to the `required_providers` block in `versions.tf`
 
     ```hcl
         pingdom = {
-          source  = "russellcardullo/pingdom"
-          version = "1.1.3"
+          source  = "DrFaust92/pingdom"
+          version = "~> 1.3.1"
         }
     ```
     A working example of `versions.tf` with pingdom included will look like this.
@@ -40,8 +40,8 @@ Add the below 2 files in in the resources directory of your namespace in your [c
           source = "hashicorp/kubernetes"
         }
         pingdom = {
-          source  = "russellcardullo/pingdom"
-          version = "1.1.3"
+          source  = "DrFaust92/pingdom"
+          version = "~> 1.3.1"
         }
       }
     }
@@ -72,14 +72,14 @@ Add the below 2 files in in the resources directory of your namespace in your [c
   **Note**: You'll need to include the `provider "pingdom"` and `terraform` blocks either in this file or in a `main.tf` file.
  
 
-  You can define the conditions of your check using the resources outlined in the [Terraform community provider](https://github.com/russellcardullo/terraform-provider-pingdom). 
+  You can define the conditions of your check using the resources outlined in the [Terraform community provider](https://github.com/DrFaust92/terraform-provider-pingdom).
 
   Here's a working example of a [basic check](https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live.cloud-platform.service.justice.gov.uk/claim-criminal-injuries-compensation-uat/resources/pingdom.tf).
 
   This basic check simply checks that the host/url (in this case; uat.claim-criminal-injuries-compensation.service.justice.gov.uk) returns a 200 every minute (resolution = 1 minute). 
   When six (sendnotificationwhendown = 6) consecutive checks fail it triggers an alarm. 
 
-  [This](https://github.com/russellcardullo/terraform-provider-pingdom#pingdom-check) page explains all the attributes used in the check.
+  [This](https://github.com/DrFaust92/terraform-provider-pingdom#pingdom-check) page explains all the attributes used in the check.
 
   All resources, including Pingdom checks **must** be tagged and adhere to the technical guidance outlined [here](https://ministryofjustice.github.io/technical-guidance/documentation/standards/documenting-infrastructure-owners.html). Ensure your check has appropriate tags before submitting a pull request.
 
