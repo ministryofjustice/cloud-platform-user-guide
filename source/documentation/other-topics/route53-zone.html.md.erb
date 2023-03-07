@@ -1,6 +1,6 @@
 ---
 title: Creating a Route 53 Hosted Zone
-last_reviewed_on: 2022-12-21
+last_reviewed_on: 2023-03-07
 review_in: 3 months
 ---
 
@@ -85,7 +85,8 @@ Note: If you already have that file defined in your environment, do not recreate
 Make sure to replace the placeholders and example values below with relevant ones. If you are referring from variables in variables.tf, use `var.VARIABLE NAME`, so for example, the "domain" variable defined in `variable.tf` can be referenced as `var.domain`. 
 
 Note: Please follow the convention on when to use `_` vs `-`.
-```
+
+```hcl
 resource "aws_route53_zone" "example_team_route53_zone" {
   name = var.domain
 
