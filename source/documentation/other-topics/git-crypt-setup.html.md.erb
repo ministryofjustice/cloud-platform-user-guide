@@ -33,17 +33,13 @@ The user that generated the gpg will need to do the following:
 2. Export the gpg key: `gpg --armor --export --output ./<key id>.gpg <key id>`
 3. Send the exported .gpg to the existing member of the team.
 
-
 The existing member of your team will need to do the following steps:
 
-1. Branch the repo that you want to add the user to
-2. Download the exported gpg key from the user
+1. Branch the repo that you want to add the user to.
+2. Download the exported gpg key from the user.
 3. Import the key: `gpg --import <key id>.gpg`
 4. Add the user `git-crypt add-gpg-user <user email address>`
-5. `push` the changes and create a PR to merge the branch
-
-
-
+5. `push` the changes and create a PR to merge the branch.
 
 ### Usage
 
