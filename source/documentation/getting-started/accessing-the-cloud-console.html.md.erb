@@ -28,7 +28,7 @@ The [Connecting to the Cloud Platform’s Kubernetes cluster](/documentation/get
 
 To be able to view your resources, you need to ensure they are tagged correctly.
 
-You need to tag your resources with a `GithubTeam` key and your GitHub team slug as the value. Please note that changing this value at a later date could trigger a recreation (deletion followed by creation) of associated resources.
+You need to tag your resources with a `GithubTeam` key and your GitHub team slug as the value. Please note, changing the github team name through `var.team_name` in `variables.tf` will cause a resource recreation (deletion followed by creation), so make sure to check the terraform plan when changing this value.
 
 #### Tagging all of your namespace resources
 
