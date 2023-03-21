@@ -51,11 +51,9 @@ It allows you to query several months worth of Prometheus metrics and create Gra
 Thanos Compactor applies the compaction procedure to Prometheus block data stored in an S3 bucket.
 Thanos also downsampling data that are stored in  the s3 bucket. For each resolutions available, the following retention periods apply:
 
- > raw - 30 days
-
- > 5m(five minutes) resolution - 6 months
-
- > 1h(one hour) resolution - 1 year
+* raw - 30 days
+* 5m(five minutes) resolution - 6 months
+* 1h(one hour) resolution - 1 year
 
 Because of the downsampling of data blocks, using Grafana dashboards is <b>not suitable</b> for monitoring the uptime of the application for monthly/quarterly/yearly bases.
 
@@ -82,19 +80,21 @@ and setup CI/CD to deploy it to your namespace, in a similar way to you deploy y
 
 3. Use the UI to modify the dashboard as you see fit.
 
-    * To edit a panel, click/select "Panel title" and from the drop-down menu that appears, select "Edit".
+    To edit a panel, click/select "Panel title" and from the drop-down menu that appears, select "Edit".
 
     Tips:
 
-    * You can see the long list of metrics available by selecting "Code" mode and then "Metrics browser"
-    * "Data source" should normally be "Prometheus", for querying metrics of the past 24 hours. Or if you want to query long-term metrics, select "Thanos".
-    * Another way to play with the query is to copy the PromQL query into the [Prometheus web UI](https://prometheus.cloud-platform.service.justice.gov.uk/graph). If you have a Grafana variable such as `$namespace`, which Grafana populates from a dropdown, then you will have to insert a real value when working with the query in Prometheus.
+    You can see the long list of metrics available by selecting "Code" mode and then "Metrics browser"
+
+    "Data source" should normally be "Prometheus", for querying metrics of the past 24 hours. Or if you want to query long-term metrics, select "Thanos".
+
+    Another way to play with the query is to copy the PromQL query into the [Prometheus web UI](https://prometheus.cloud-platform.service.justice.gov.uk/graph). If you have a Grafana variable such as `$namespace`, which Grafana populates from a dropdown, then you will have to insert a real value when working with the query in Prometheus.
 
 3. When you are happy with your dashboard, to get the JSON:
 
-    * select the "gear" icon at the top, taking you to Dashboard Settings
-    * select "JSON Model" in the side-nav
-    * select the JSON and copy it to the clipboard
+    1. select the "gear" icon at the top, taking you to Dashboard Settings
+    2. select "JSON Model" in the side-nav
+    3. select the JSON and copy it to the clipboard
 
 4. To save the dashboard: [Save the dashboard JSON in a ConfigMap](#save-the-dashboard-json-in-a-configmap)
 
@@ -108,19 +108,16 @@ Other teams may have just the dashboard you want, and it is often easier to copy
 
 3. To get the JSON:
 
-    * select the "gear" icon at the top, taking you to Dashboard Settings
-    * select "JSON Model" in the side-nav
-    * select the JSON and copy it to the clipboard
+    1. select the "gear" icon at the top, taking you to Dashboard Settings
+    2. select "JSON Model" in the side-nav
+    3. select the JSON and copy it to the clipboard
 
 4. In an editor make some adjustments. You must change:
 
-    * the "uid" needs to be unique across Cloud Platform dashboards. It should be 8+ alphanumeric characters using: [A-Za-z0-9]
-    * the "title" (at the top level) needs to be unique across Cloud Platform dashboards
+    1. the "uid" needs to be unique across Cloud Platform dashboards. It should be 8+ alphanumeric characters using: [A-Za-z0-9]
+    2. the "title" (at the top level) needs to be unique across Cloud Platform dashboards
 
-   You probably want to adjust other things too:
-
-    * the dashboard probably has a "Namespace" drop-down control - these dropdowns are under the "templating", so you likely want to change the "regex" value that determines which namespaces are offered, and the "current" i.e. default namespace.
-
+    You probably want to adjust the "Namespace" drop-down control. Dropdowns like these are under the "templating", so you likely want to change the "regex" value that determines which namespaces are offered, and the "current" i.e. default namespace.
 
 5. To save the dashboard: [Save the dashboard JSON in a ConfigMap](#save-the-dashboard-json-in-a-configmap)
 
@@ -149,10 +146,10 @@ Once you have got a dashboard JSON string, paste it into a `ConfigMap` in your n
 
     Ensure:
     
-    * the "uid" and "title" (at the top level) are unique amongst Cloud Platform dashboards. (If you create a ConfigMap with values that duplicate any other in Cloud Platform, then until this is resolved, Grafana will NOT apply changes to ANY dashboards! Issue is described here: [Grafana #39467](https://github.com/grafana/grafana/issues/39467))
-    * the filename must be unique amongst Cloud Platform dashboards (otherwise you'll see "Dashboard not found" errors)
-    * the filename must end in `-dashboard.json`
-    * the JSON string must be properly indented
+    1. the "uid" and "title" (at the top level) are unique amongst Cloud Platform dashboards. (If you create a ConfigMap with values that duplicate any other in Cloud Platform, then until this is resolved, Grafana will NOT apply changes to ANY dashboards! Issue is described here: [Grafana #39467](https://github.com/grafana/grafana/issues/39467))
+    2. the filename must be unique amongst Cloud Platform dashboards (otherwise you'll see "Dashboard not found" errors)
+    3. the filename must end in `-dashboard.json`
+    4. the JSON string must be properly indented
 
     Note: you can have multiple dashboards exported in a single `ConfigMap` as well
 
