@@ -1,0 +1,111 @@
+---
+title: Creating an OpenSearch domain
+last_reviewed_on: 2023-04-04
+review_in: 12 months
+---
+
+# <%= current_page.data.title %>
+
+To create an OpenSearch domain in the Cloud Platform, follow the [example guidance](https://github.com/ministryofjustice/cloud-platform-terraform-opensearch/tree/main/examples) in the module.
+
+## Choosing an appropriate cluster configuration and instance type
+
+[Amazon OpenSearch Service](https://aws.amazon.com/opensearch-service/) (which manages your OpenSearch domain) supports a wide range of instance types and cluster configurations. Some instance types are considered "previous generation" and should not be used.
+
+Instance types are named based on their family/purpose, generation, any additional capabilities, and size.
+
+For Amazon OpenSearch Service, instance types will always be suffixed with `search`.
+
+### Non-production domains
+
+If you're creating an OpenSearch domain in a non-production environment, you should look to use a cost-effective cluster configuration and instance type.
+
+Typically, this means:
+
+- not turning on [dedicated primary nodes](#understanding-dedicated-primary-nodes) in your cluster configuration
+- using two instances, instead of three
+- using a smaller instance type than production
+
+As a starting point, you should look to use this cluster configuration for your non-production domains:
+
+```hcl
+module "opensearch" {
+  ...
+  # Non-production cluster configuration
+  cluster_config = {
+    instance_count = 2
+    instance_type  = "t3.small.search"
+  }
+
+  ebs_options = {
+    volume_size = 10 # Storage (GBs) per node
+  }
+  ...
+}
+```
+
+If you find your OpenSearch domain is running out of CPU or memory, try changing the instance type (`small`) to a larger instance type such as `medium`.
+
+If you find your OpenSearch domain is running out of storage, change `ebs_options.volume_size` to something larger (see [EBS volume size quotas](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/limits.html#ebsresource) for minimum and maximum EBS volume sizes per node).
+
+### Production domains
+
+If you're creating an OpenSearch domain in a production environment, you should look to:
+
+- turn on [dedicated primary nodes](#understanding-dedicated-primary-nodes) in your cluster configuration
+- use the right instance type for your domain
+- use ultrawarm storage where appropriate
+
+As a starting point, you should look to use this cluster configuration for your production domains:
+
+```hcl
+module "opensearch" {
+  ...
+  # Production cluster configuration
+  cluster_config = {
+    # Nodes
+    instance_count = 3 # should always a multiple of 3, to split nodes evenly across three availability zones
+    instance_type  = "m6g.large.search"
+
+    # Dedicated primary nodes
+    dedicated_master_enabled = true
+    dedicated_master_count   = 3 # can only either be 3 or 5
+    dedicated_master_type    = "m6g.large.search"
+
+    # Ultrawarm nodes (omit if you aren't going to use this)
+    warm_enabled = true
+    warm_count   = 3
+    warm_type    = "ultrawarm1.medium.search"
+  }
+
+  ebs_options = {
+    volume_size = 100 # Storage (GBs per node)
+  }
+  ...
+}
+```
+
+If you find your OpenSearch domain is running out of CPU or memory, try changing the instance type (`large`) to a larger instance type such as `xlarge`.
+
+If you find your OpenSearch domain is running out of storage, change `ebs_options.volume_size` to something larger (see [EBS volume size quotas](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/limits.html#ebsresource) for minimum and maximum EBS volume sizes per node).
+
+## What are dedicated primary nodes?
+
+[Dedicated primary nodes](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-dedicatedmasternodes.html) can be used to offset cluster management tasks which improves cluster stability. Dedicated primary nodes **do not** hold data or process data upload requests, and can carry out these tasks instead of your cluster instances:
+
+- tracking all nodes in the cluster
+- tracking the number of indexes, and number of shards belonging to each index in the cluster
+- maintaining routing information for nodes in the cluster
+- tracking the cluster state and replicating those changes across the cluster
+- monitoring the health of all cluster nodes
+
+For each _production_ domain, you should use **3** dedicated primary nodes. You should [never use an even number of dedicated primary nodes](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-dedicatedmasternodes.html#dedicatedmasternodes-number), regardless of how many cluster instances you have.
+
+### Instance types for dedicated primary nodes
+
+Dedicated primary node instance types are highly coupled against your instance, index, and shard count. The table below shows what instance type to use based on instance count and shard count.
+
+| Instance count | Maximum shard count | Dedicated primary node instance type to use |
+|-|-|-|
+| 1 to 10  | 10K | `m6g.large.search`   |
+| 11 to 30 | 30K | `c6g.2xlarge.search` |
