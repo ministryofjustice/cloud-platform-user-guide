@@ -1,0 +1,78 @@
+---
+title: Upgrading an OpenSearch version or changing the instance type
+last_reviewed_on: 2023-04-05
+review_in: 12 months
+---
+
+# <%= current_page.data.title %>
+
+If you have an OpenSearch domain in the Cloud Platform, you should keep it up to date and use the most cost effective instance type for your needs.
+
+AWS publishes a [Supported upgrade paths for Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/version-migration.html#supported-upgrade-paths) guide to help you keep up to date.
+
+## Upgrading an OpenSearch version
+
+>Note: This will cause some downtime (usually upwards of 60 minutes, dependent on how much data is in your domain - an empty domain takes 30 minutes).
+
+To upgrade your OpenSearch domain version, complete these three steps:
+
+1. Raise and merge a PR to tell the [apply pipeline to skip your namespace](/documentation/other-topics/long-running-env-operations.html#long-running-environments-operations)
+
+2. Raise and merge a PR that updates the following attributes for your OpenSearch domain, which is typically in `resources/opensearch.tf` in your namespace:
+
+    ```hcl
+    module "opensearch" {
+      ...
+      engine_version = "OpenSearch_1.3"
+      ...
+    }
+    ```
+
+    As soon as this PR is merged, the upgrade will begin.
+
+3. Raise and merge a PR to remove the `APPLY_PIPELINE_SKIP_THIS_NAMESPACE` added in step 1
+
+### Upgrade paths
+
+OpenSearch does not always maintain backwards compatibility when releasing a new major version. This means you need to check for any breaking changes in the version you are upgrading to.
+
+You should read the AWS documentation on [Supported upgrade paths for OpenSearch domains](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/version-migration.html#supported-upgrade-paths) to understand how to upgrade your domain to the latest OpenSearch version, including any breaking changes.
+
+## Changing your OpenSearch instance types
+
+>Note: This will cause some downtime (usually upwards of 30 minutes, dependent on how much data is in your domain - an empty domain takes 15 minutes).
+
+To change your OpenSearch instance types, complete these three steps:
+
+1. Raise and merge a PR to tell the [apply pipeline to skip your namespace](/documentation/other-topics/long-running-env-operations.html#long-running-environments-operations)
+
+2. Raise and merge a PR that updates the `instance_type`, `dedicated_master_type` or `warm_type` attributes for your OpenSearch domain, which is typically in `resources/opensearch.tf` in your namespace:
+
+    ```hcl
+    module "opensearch" {
+      ...
+      cluster_config = {
+        # instance type
+        ...
+        instance_type = "m6g.large.search"
+        ...
+
+        # or dedicated primary nodes
+        ...
+        dedicated_master_type "m6g.large.search"
+        ...
+
+        # or warm nodes
+        ...
+        warm_type = "ultrawarm1.medium.search"
+        ...
+      }
+      ...
+    }
+    ```
+
+    The [Creating an OpenSearch domain](/documentation/deploying-an-app/opensearch/create.html) guide can help you decide which `cluster_config` to use. You should note that if your instance type is of the `t3` class, you cannot use dedicated primary nodes or warm nodes.
+
+    As soon as this PR is merged, the instance type change will begin.
+
+3. Raise and merge a PR to remove the `APPLY_PIPELINE_SKIP_THIS_NAMESPACE` file added in step 1
