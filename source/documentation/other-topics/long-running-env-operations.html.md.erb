@@ -1,6 +1,6 @@
 ---
 title: Long-running environments operations
-last_reviewed_on: 2022-12-30
+last_reviewed_on: 2023-04-05
 review_in: 3 months
 ---
 
@@ -23,15 +23,14 @@ individual namespaces during long-running operations.
 To use this feature:
 
 1. Prepare the terraform code change which implements your namespace change.
-1. Before raising your PR, include a file called `APPLY_PIPELINE_SKIP_THIS_NAMESPACE` (this file merely has to exist - its contents are irrelevant).
-
+2. Before raising your PR, include a file called `APPLY_PIPELINE_SKIP_THIS_NAMESPACE` (this file merely has to exist - its contents are irrelevant).
 > The file needs to be in the top-level folder for your namespace, e.g:
 ```
 namespaces/live.cloud-platform.service.justice.gov.uk/mynamespace/APPLY_PIPELINE_SKIP_THIS_NAMESPACE
 ```
 
-1. Raise your PR, and approve it when it is merged.
-1. After your change has completed successfully, raise another PR to remove the `APPLY_PIPELINE_SKIP_THIS_NAMESPACE` file.
+3. Raise your PR, and approve it when it is merged.
+4. After your change has completed successfully, raise another PR to remove the `APPLY_PIPELINE_SKIP_THIS_NAMESPACE` file.
 
 [apply pipeline]: https://concourse.cloud-platform.service.justice.gov.uk/teams/main/pipelines/environments-live/jobs/apply-live
 [Terraform state locking]: https://www.terraform.io/language/state/locking
