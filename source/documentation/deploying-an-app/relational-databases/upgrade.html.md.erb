@@ -1,0 +1,81 @@
+---
+title: Upgrading a database version or changing the instance type
+last_reviewed_on: 2023-04-12
+review_in: 12 months
+---
+
+# <%= current_page.data.title %>
+
+If you have a relational database in the Cloud Platform, you should keep it up to date and use the most cost effective instance type for your needs.
+
+AWS publishes an end-of-life schedule for major and minor versions of [PostgreSQL](https://docs.aws.amazon.com/AmazonRDS/latest/PostgreSQLReleaseNotes/postgresql-release-calendar.html), [MariaDB](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/MariaDB.Concepts.VersionMgmt.html), and [MySQL](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/MySQL.Concepts.VersionMgmt.html) to help keep your database up to date.
+
+## Things to note before upgrading a database version or changing the instance type
+
+>A minor database version upgrade, a major database version upgrade, or changing your database instance type **will always** cause downtime.
+
+>There is no rule of thumb to work out how long it will take, but tests show an empty database using a `db.t4g.micro` will take around 10 minutes.
+
+>If you want to speed up your database version upgrade, you can temporarily change your instance type to provide more vCPU and memory to accomodate this. For example, changing a `db.t4g.micro` to a `db.t4g.small` will provide you with more vCPU and memory before upgrading your database version.
+
+>If you do this, you should change it back to the original size (`micro`, `small`, `medium`, etc) after the upgrade is complete. This ensures that the increased cost is limited. See [changing your database instance type](#changing-your-database-instance-type) for details on how to do this.
+
+## Upgrading to a new minor database version
+
+>Note: This will cause some downtime. See [Things to note before upgrading your database](things-to-note-before-upgrading-a-database-version-or-changing-the-instance-type) for further information.
+
+To upgrade your minor database version, complete these three steps:
+
+1. Raise and merge a PR to tell the [apply pipeline to skip your namespace](/documentation/other-topics/long-running-env-operations.html#long-running-environments-operations)
+
+2. Raise and merge a PR that updates the following attribute for your database, which is typically in `resources/rds.tf` in your namespace:
+
+    ```hcl
+    module "rds" {
+      ...
+      db_engine_version = "14.7" # the appropriate new minor version
+      ...
+    }
+    ```
+
+    As soon as this PR is merged, the upgrade will begin.
+
+3. Raise and merge a PR to remove the `APPLY_PIPELINE_SKIP_THIS_NAMESPACE` added in step 1
+
+### Upgrade paths
+
+You should refer to the end-of-life schedule for major and minor versions for [PostgreSQL](https://docs.aws.amazon.com/AmazonRDS/latest/PostgreSQLReleaseNotes/postgresql-release-calendar.html), [MariaDB](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/MariaDB.Concepts.VersionMgmt.html), and [MySQL](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/MySQL.Concepts.VersionMgmt.html) to understand your upgrade paths. Typically, you will be able to upgrade to the latest minor version available on RDS.
+
+## Upgrading to a new major database version
+
+>Note: This will cause some downtime. See [Things to note before upgrading your database](things-to-note-before-upgrading-a-database-version-or-changing-the-instance-type) for further information.
+
+Please refer to the [Upgrading your RDS database: upgrading in-place](/documentation/other-topics/upgrade-rds-db.html#upgrading-in-place) guide for details on how to upgrade your database to a new major version.
+
+### Upgrade paths
+
+You should refer to the major version upgrade paths for [PostgreSQL](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.PostgreSQL.html#USER_UpgradeDBInstance.PostgreSQL.MajorVersion), [MariaDB](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.MariaDB.html#USER_UpgradeDBInstance.MariaDB.Major), and [MySQL](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.MySQL.html#USER_UpgradeDBInstance.MySQL.Major) to understand your upgrade paths from your current database engine version.
+
+## Changing your database instance type
+
+>Note: This will cause some downtime. See [Things to note before upgrading your database](things-to-note-before-upgrading-a-database-version-or-changing-the-instance-type) for further information.
+
+To change your database instance type, complete these three steps:
+
+1. Raise and merge a PR to tell the [apply pipeline to skip your namespace](/documentation/other-topics/long-running-env-operations.html#long-running-environments-operations)
+
+2. Raise and merge a PR that updates the `db_instance_class` attribute for your database, which is typically in `resources/rds.tf` in your namespace:
+
+    ```hcl
+    module "rds" {
+      ...
+      db_instance_class = "db.t4g.small"
+      ...
+    }
+    ```
+
+    The [Creating a relational database](/documentation/deploying-an-app/relational-databases/create.html#choosing-an-appropriate-instance-type) guide can help you decide which `db_instance_class` to use.
+
+    As soon as this PR is merged, the instance type change will begin.
+
+3. Raise and merge a PR to remove the `APPLY_PIPELINE_SKIP_THIS_NAMESPACE` file added in step 1
