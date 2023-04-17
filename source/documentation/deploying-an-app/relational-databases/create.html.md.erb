@@ -1,6 +1,6 @@
 ---
 title: Creating a relational database
-last_reviewed_on: 2023-04-12
+last_reviewed_on: 2023-04-17
 review_in: 12 months
 ---
 
@@ -58,35 +58,37 @@ As a general rule of thumb, you should always use the latest generation you can.
 
 #### PostgreSQL
 
-| PostgreSQL version | Environment type | Instance type |
-|-|-|-|
-| **11.x to 12.6** | Non-production | `db.t3.micro` |
-|                  | Production     | `db.t3.small` |
-| **12.7 to 15.x** | Non-production | `db.t4g.micro` |
-|                  | Production     | `db.t4g.small` |
+| PostgreSQL version | Environment type | Instance type | Maximum allocated storage (GiB) |
+|-|-|-|-|
+| **11.x to 12.6** | Non-production | `db.t3.micro` | `"500"` |
+|                  | Production     | `db.t3.small` | `"10000"` |
+| **12.7 to 15.x** | Non-production | `db.t4g.micro` | `"500"` |
+|                  | Production     | `db.t4g.small` | `"10000"` |
 
 #### MariaDB
 
-| MariaDB version | Environment type | Instance type |
-|-|-|-|
-| **10.4.x to 10.6.x** | Non-production | `db.t4g.micro` |
-|                      | Production     | `db.t4g.small` |
+| MariaDB version | Environment type | Instance type | Maximum allocated storage (GiB) |
+|-|-|-|-|
+| **10.4.x to 10.6.x** | Non-production | `db.t4g.micro` | `"500"` |
+|                      | Production     | `db.t4g.small` | `"10000"` |
 
 #### MySQL
 
-| MySQL version | Environment type | Instance type |
-|-|-|-|
-| **8.0.28 to 8.0.x** | Non-production | `db.t4g.micro` |
-|                     | Production     | `db.t4g.small` |
+| MySQL version | Environment type | Instance type | Maximum allocated storage (GiB) |
+|-|-|-|-|
+| **8.0.28 to 8.0.x** | Non-production | `db.t4g.micro` | `"500"` |
+|                     | Production     | `db.t4g.small` | `"10000"` |
 
 If you find your Amazon RDS database is running out of CPU or memory, try changing the instance type (`micro`, `small`) to a larger instance type such as `medium`.
+
+If you find your Amazon RDS database is running out of storage, try changing your maximum allocated storage to a larger size. `micro` instance sizes are limited to a maximum of 6,114 GiB and `small` instance sizes are limited to a maximum of `16,384` GiB.
 
 ## Statistics
 
 At the time of writing, the following instance types were in use (along with how many) on the Cloud Platform. This can be useful to help you rightsize your instance type compared to other users of the Cloud Platform.
 
 <!--
-  Below was last updated 2023-04-12.
+  Below was last updated 2023-04-17.
 
   You can generate this yourself to replace by doing the following:
 
@@ -99,14 +101,14 @@ At the time of writing, the following instance types were in use (along with how
   4 "db.m6g.large"
   3 "db.m6g.xlarge"
   2 "db.r6g.large"
- 61 "db.t2.small"
+ 59 "db.t2.small"
   1 "db.t3.2xlarge"
   4 "db.t3.large"
  15 "db.t3.medium"
-131 "db.t3.small"
+129 "db.t3.small"
   4 "db.t3.xlarge"
   1 "db.t4g.large"
  10 "db.t4g.medium"
-  5 "db.t4g.micro"
- 93 "db.t4g.small"
+  4 "db.t4g.micro"
+ 97 "db.t4g.small"
 ```
