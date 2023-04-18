@@ -170,8 +170,8 @@ Z	Final boundary (mandatory)
 
 Pre-requisites:
 
-1) You have tagged your ingress with your github team name [see here](#-ingress-annotations)
-1) You are a member of the same github team that you are trying to access
+1. You have tagged your ingress with your github team name [see here](#-ingress-annotations)
+1. You are a member of the same github team that you are trying to access
 
 To prevent PII from leaking we restrict the logs you can access. This access is based on the github team you tagged your ingress with and the github teams you are a member of. This information is mapped as you login from github to opensearch, you will only be able to view logs which are tagged with a github team which you are a member of.
 
