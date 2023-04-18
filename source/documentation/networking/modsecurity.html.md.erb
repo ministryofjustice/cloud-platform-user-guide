@@ -22,7 +22,7 @@ review_in: 3 months
 >    nginx.ingress.kubernetes.io/enable-modsecurity: "true"
 >    nginx.ingress.kubernetes.io/modsecurity-snippet: |
 >      SecRuleEngine On
->      SecDefaultAction "phase:2,pass,log,tag:github_team=$YOUR_GITHUB_TEAM_NAME"
+>      SecDefaultAction "phase:2,pass,log,tag:github_team=<my-great-team-name>"
 >spec:
 >  tls:
 >    ingressClassName: modsec
@@ -61,7 +61,7 @@ Adding the annotation below, `SecRuleEngine On` configures ModSecurity to active
 ```yaml
 nginx.ingress.kubernetes.io/modsecurity-snippet: |
       SecRuleEngine On
-      SecDefaultAction "phase:2,pass,log,tag:github_team=$YOUR_GITHUB_TEAM_NAME"
+      SecDefaultAction "phase:2,pass,log,tag:github_team=<my-great-team-name>"
 ```
 The `SecRuleEngine On` configures ModSecurity to actively block traffic classed as malicious using Anomaly Scoring.
 
@@ -87,7 +87,7 @@ metadata:
     nginx.ingress.kubernetes.io/enable-modsecurity: "true"
     nginx.ingress.kubernetes.io/modsecurity-snippet: |
       SecRuleEngine On
-      SecDefaultAction "phase:2,pass,log,tag:github_team=my-great-team-name"
+      SecDefaultAction "phase:2,pass,log,tag:github_team=<my-great-team-name>"
 spec:
   tls:
     ingressClassName: modsec
@@ -175,7 +175,7 @@ Pre-requisites:
 
 To prevent PII from leaking we restrict the logs you can access. This access is based on the github team you tagged your ingress with and the github teams you are a member of. This information is mapped as you login from github to opensearch, you will only be able to view logs which are tagged with a github team which you are a member of.
 
-Login [here](https://search-cp-live-modsec-audit-nuhzlrjwxrmdd6op3mvj2k5mye.eu-west-2.es.amazonaws.com/_dashboards)
+Login [here](https://logs.cloud-platform.service.justice.gov.uk/_dashboards)
 
 [kibana-common]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/kibana#/discover?_g=()
 [kibana-search-example]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/goto/17b7ef970df556e2ff6959efbae7b6d3
