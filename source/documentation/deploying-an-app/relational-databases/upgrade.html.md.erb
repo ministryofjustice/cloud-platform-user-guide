@@ -46,7 +46,72 @@ You should refer to the end-of-life schedule for major and minor versions for [P
 
 >Note: This will cause downtime. See [Things to note before upgrading your database](#things-to-note-before-upgrading-a-database-version-or-changing-the-instance-type).
 
-Please refer to the [Upgrading your RDS database: upgrading in-place](/documentation/other-topics/upgrade-rds-db.html#upgrading-in-place) guide for details on how to upgrade your database to a new major version.
+To upgrade your major database version, complete these eight steps:
+
+1. Find your current database version and instance type
+
+    In your namespace, find your database configuration and note the value for these four attributes:
+
+    ```hcl
+    module "rds" {
+      ...
+      db_engine         = "xyz"    # your database engine
+      db_engine_version = "x.x.x"  # your current database engine version
+      db_instance_class = "db.x.x" # your current database instance type
+      rds_family        = "xyzx.x" # your current parameter group version
+      ...
+    }
+    ```
+
+2. Understand your major version upgrade paths from your current `db_engine_version` by reading [Upgrade paths for major version upgrades](/documentation/deploying-an-app/relational-databases/upgrade.html#upgrading-to-a-new-major-database-version-upgrade-paths)
+
+3. Check if your current **and** new major database version supports the instance type you're currently using by reading [Supported DB engines for DB instance classes](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.DBInstanceClass.html#Concepts.DBInstanceClass.Support)
+
+    If not, follow the [Changing your database instance type](/documentation/deploying-an-app/relational-databases/upgrade.html#changing-your-database-instance-type) guide first to change your instance class to one that is supported by your current and new major database version. You **must** change your instance type **before** attempting to upgrade, otherwise it will fail.
+
+    If you are unsure which instance type to choose, the [Creating a relational database](/documentation/deploying-an-app/relational-databases/create.html#table-of-instance-types) guide can help you choose what instance type to use based on your **current** version.
+
+4. Raise and merge a PR to tell the [apply pipeline to skip your namespace](/documentation/other-topics/long-running-env-operations.html#long-running-environments-operations)
+
+5. Raise and merge a PR that updates the `prepare_for_major_upgrade`, `db_engine`, `db_engine_version` and `rds_family` attributes to your **new** major version:
+
+    ```hcl
+    module "rds" {
+      ...
+      prepare_for_major_upgrade = true
+      db_engine                 = "postgres"
+      db_engine_version         = "14.7"
+      rds_family                = "postgres14"
+      ...
+    }
+    ```
+
+    As soon as this PR is merged, the major version upgrade will begin.
+
+6. Once the major version upgrade has finished, raise and merge a PR that turns off the `prepare_for_major_upgrade` attribute that was turned on in step 5:
+
+    ```hcl
+    module "rds" {
+      ...
+      prepare_for_major_upgrade = false
+      ...
+    }
+    ```
+
+    If you have a read replica of your database, you will also need to update the `db_engine_version` and `rds_family` attributes to your **new** major version after the upgrade of your primary database has finished:
+
+    ```hcl
+    module "read_replica" {
+      ...
+      db_engine_version = "14" # you shouldn't include the minor version here
+      rds_family        = "postgres14"
+      ...
+    }
+    ```
+
+7. Optionally, as the major upgrade already has downtime, it might be worthwhile changing your database instance type to the latest generation supported by your **new** major version
+
+8. Raise and merge a PR to remove the `APPLY_PIPELINE_SKIP_THIS_NAMESPACE` file added in step 1
 
 ### Upgrade paths
 
