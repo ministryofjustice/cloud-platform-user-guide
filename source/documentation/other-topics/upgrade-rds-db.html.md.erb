@@ -1,7 +1,259 @@
 ---
 title: Upgrading your RDS database
+last_reviewed_on: 2023-02-08
+review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
 
-This page has now moved to [Upgrading a database version or changing the instance type](http://localhost:4567/documentation/deploying-an-app/relational-databases/upgrade.html#upgrading-a-database-version-or-changing-the-instance-type).
+This page describes how to upgrade your RDS database to a new minor or major version, or a different instance class. You might want to do this to bring your application up to date, or if AWS or your database engine provider have announced they'll stop supporting a particular version.
+
+There are two ways to upgrade your RDS database and both require downtime, which will vary based on method, database instance class, and storage size.
+
+> **Important:** `db.t2` and `db.m4` instance classes are [previous generation instances](https://aws.amazon.com/rds/previous-generation/). You should upgrade your instance class **before** your upgrade, for example `db.t3`/`db.t4g` or `db.m5` respectively.
+
+## Important information to know when upgrading your database
+
+### Engine version upgrades (e.g. PostgreSQL 10 to 12)
+
+- Single-AZ and multi-AZ databases are upgraded by AWS in the same way. A multi-AZ database does not improve downtime for engine version upgrades, as AWS upgrades the primary and standby/replica instances **at the same time** _unless_ you're using SQL Server, where AWS will perform a rolling upgrade. Downtime for this change varies by method, database instance class, storage size, and more.
+
+- AWS provide a list of supported versions to upgrade to for each database engine:
+  - [PostgreSQL](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.PostgreSQL.html#USER_UpgradeDBInstance.PostgreSQL.MajorVersion)
+  - [MySQL](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.MySQL.html#USER_UpgradeDBInstance.MySQL.Major)
+  - [SQL Server](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.SQLServer.html#USER_UpgradeDBInstance.SQLServer.Major)
+
+### Database instance class changes (e.g. db.t2 to db.t3)
+
+- A multi-AZ database instance class change will have reduced downtime as AWS will change the standby/replica instance first (and promote it to `primary`, followed by the new (old `primary`) standby database. Downtime for this change using a multi-AZ configuration is typically around ~120 seconds.
+- You will need to [check your database engine version supports the instance class](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.DBInstanceClass.html#Concepts.DBInstanceClass.Support) you are changing to. You can use the AWS CLI to query database engine version support for a given instance class with the following command:
+
+```
+aws rds describe-orderable-db-instance-options --engine [your db engine] --db-instance-class [db instance class] --query 'OrderableDBInstanceOptions[].EngineVersion'
+```
+
+For example:
+
+```
+$ aws rds describe-orderable-db-instance-options --engine postgres --db-instance-class db.m4.large --query 'OrderableDBInstanceOptions[].EngineVersion'
+
+[
+    "10.17",
+    "10.18",
+    ...
+    "12.11"
+]
+```
+
+### Speeding up your upgrade
+
+You can speed up your upgrade by temporarily changing your database instance class to something larger. This provides more CPU and memory which can be utilised by RDS during the upgrade to increase upgrade speeds.
+
+For example, if you're running a `db.t3.large`, you can change it to a `db.t3.xlarge`, doubling the CPU and memory for RDS to use during the upgrade.
+
+You should do this **before** starting the actual upgrade, and scale down when your upgrade is finished. This makes the data migration much faster and the cost difference will only be for a few hours.
+
+You can [view instance types](https://aws.amazon.com/rds/instance-types/) to find what database instance to use during the upgrade.
+
+## Upgrading through migration
+
+>Note: This method causes downtime.
+
+Instead of trying to upgrade your existing RDS instance:
+
+* Create a new RDS instance, using the PostgreSQL version you want
+* Migrate all your application data
+* Change your application configuration (environment variables) to use the new RDS instance
+* Delete your olds RDS instance
+
+### Advantages
+
+* Can be done with little or no downtime
+* Very predictable
+* Easily reversible at any stage
+
+### Disadvantages
+
+* Requires more planning and attention
+
+If you want to use this method, you can treat it like any other [database migration](aws-rds-migration.html) (but easier, because everything is in the same namespace).
+
+## Upgrading in place
+
+>Note: This method causes downtime.
+
+The upgrade process involves these steps:
+
+* Raise and merge a PR to [tell the Apply Pipeline to skip your namespace][long-running]
+* Amend the `db_instance_class` of your RDS to a suitable version, raise and merge the PR (Optional only if you want to speed up the upgrade or change your instance class)
+* Alter your RDS instance to use the default [parameter group] for your **current** PostgreSQL version
+* Raise and merge a PR to change your PostgreSQL version to the one you want - the Apply Pipeline will handle the upgrade for you
+* Raise another PR to [remove the "skip file"][long-running] from your namespace
+
+### Advantages
+
+* Very easy to do
+
+### Disadvantages
+
+* Incurs some service downtime (in tests, an almost empty database upgrading from PostgreSQL 9.5 to 9.6 resulted in approx. 7 minutes downtime)
+* It is possible (although unlikely) that version-specific custom parameters could result in problems you don't see until the upgrade fails
+
+### Procedure
+
+The rest of this page will describe this process in detail.
+
+
+#### Use the AWS CLI to get your existing database configuration
+
+When your RDS instance is created, an IAM user is also created, and the AWS credentials are stored as kubernetes secrets in your namespace.
+
+We will use these credentials with the [AWS CLI tool] to describe and then modify your RDS instance.
+
+##### Get your RDS instance identifier and IAM user credentials
+
+```
+kubectl -n [your namespace] get secret
+```
+
+This will give you a list of the secrets in your namespace. Identify the RDS
+instance secret via its name, and decode its contents using the [cloud platform cli]:
+
+```
+cloud-platform decode-secret -n [your namespace] -s [secret name]
+```
+
+Here is a redacted example:
+
+```
+cloud-platform decode-secret -n dstest -s rds-instance-output
+
+{
+    "apiVersion": "v1",
+    "data": {
+        "access_key_id": "AKIAXXXXXXXXXXXXXXXX",
+        "database_name": "db2axxxxxxxxxxxxxx",
+        "database_password": "xxxxxxxxxxxxxxxx",
+        "database_username": "xxxxxxxxxx",
+        "rds_instance_address": "cloud-platform-1111111111111111.cdwm328dlye6.eu-west-2.rds.amazonaws.com",
+        "rds_instance_endpoint": "cloud-platform-1111111111111111.cdwm328dlye6.eu-west-2.rds.amazonaws.com:3306",
+        "secret_access_key": "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq",
+        "url": "postgres://xxxxxxxxxx:XXXXXXXXXXXXXXXX@cloud-platform-1111111111111111.cdwm328dlye6.eu-west-2.rds.amazonaws.com:5432/db2axxxxxxxxxxxxxx"
+    },
+    "kind": "Secret",
+    "metadata": {
+        "creationTimestamp": "2020-06-19T13:43:31Z",
+        "name": "rds-instance-output",
+        "namespace": "dstest",
+        "resourceVersion": "276902169",
+        "selfLink": "/api/v1/namespaces/poornima-dev/secrets/rds-instance-output",
+        "uid": "1f4243d8-ee57-4756-af09-5a8084a89988"
+    },
+    "type": "Opaque"
+}
+```
+
+Use the values you see to set the following environment variables:
+
+```
+export db=cloud-platform-1111111111111111
+export AWS_ACCESS_KEY_ID=AKIAXXXXXXXXXXXXXXXX
+export AWS_SECRET_ACCESS_KEY="qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"
+export AWS_REGION=eu-west-2
+```
+
+Now you can get the relevant configuration details of your RDS instance like this:
+
+```
+$ aws rds describe-db-instances --db-instance-identifier $db \
+  | jq ".DBInstances[] | {engine: .Engine, version: .EngineVersion, db_parameter_group: .DBParameterGroups[].DBParameterGroupName}"
+
+# Output should be something like this:
+
+{
+  "engine": "postgres",
+  "version": "10.21",
+  "db_parameter_group": "cloud-platform-cdd5540ee12aa320"
+}
+```
+
+##### Tell your RDS instance to (temporarily) use the default parameter group
+
+Your RDS instance's existing parameter group is tied to the `db_engine`. e.g. a PostgreSQL 10 parameter group cannot be used with a PostgreSQL 11 RDS instance. So, the existing parameter group must be deleted, and a new one created when your RDS instance is updated. But, you can't delete a parameter group if it has any RDS instances using it. So, the first step is to remove your RDS instance from its database parameter group.
+
+> If you have configured any specific PostgreSQL settings for your database, such that your application will not work using the default parameter group, you may need to create a new parameter group based on the new PostgreSQL version, and use that instead of the default parameter group here.
+
+This is the list of default parameter groups. Use the one matching the **current** database engine version of your RDS instance:
+
+```
+default.aurora-postgresql11
+default.aurora-postgresql9.6
+default.aurora5.6
+default.mariadb10.4
+default.mysql5.7
+default.postgres10
+default.postgres11
+default.postgres12
+default.postgres13
+default.postgres14
+default.postgres9.4
+default.postgres9.5
+default.postgres9.6
+```
+
+For example, to change to the default PostgreSQL 10 parameter group:
+
+```
+aws rds modify-db-instance --db-instance-identifier $db \
+  --db-parameter-group-name default.postgres10
+```
+
+This will output a few screenfuls of JSON, which you can ignore. After making the change, repeat the `describe-db-instances` command to confirm that the change has worked.
+
+> It is important that the Apply Pipeline is paused, at this point, or it will revert the above change, and your upgrade will fail.
+
+##### Upgrade your RDS instance
+
+After your RDS instance has been removed from the existing database parameter group, you can raise a PR in the environments repository to upgrade your RDS instance.
+
+> Note:
+> For PostgreSQL databases, version semantics have changed from [version 10 onwards] (https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.PostgreSQL.html#:~:text=new%20DB%20instance.-,PostgreSQL%20version%20numbers,-The%20version%20numbering)
+> and now follows a pattern of *major.minor*
+
+
+e.g. To upgrade from PostgreSQL 10.21 to 11 (this is a [major version upgrade]), you would change your `resources/rds.tf` file like this:
+
+```
+-  db_engine_version          = "10.21"
++  db_engine_version          = "11"
+  # use "allow_major_version_upgrade" when upgrading the major version of an engine
++  allow_major_version_upgrade = "true"
+
+...
+-  rds_family = "postgres10"
++  rds_family = "postgres11"
+```
+Be sure to include the additional field `allow_major_version_upgrade = "true"` for major version upgrades.
+
+When this PR is merged, the [Apply Pipeline](/documentation/other-topics/apply-pipeline.html) will upgrade your RDS instance.
+
+### RDS read replica
+
+If teams using read replica for RDS, Amazon RDS creates a second DB instance using a snapshot of the source DB instance. If you have any read replicas, and upgrade the Primary(source) RDS instance using the [procedure] above, AWS uses the engine's native asynchronous replication to change or upgrade the read replica whenever there is a change or upgrade to the source DB instance.
+
+You will need to adjust the terraform code as below which defines your replicas, after the upgrade.
+
+```
+  db_engine_version = "11"
+  rds_family        = "postgres11"
+```
+
+> In testing, data in the database was preserved, and the total downtime of the RDS instance was approx. 7 minutes. You need to carry out your own tests in your non-production namespace(s) to confirm that this behaviour is similar and acceptable, for your service.
+
+For further options and details, see [here](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance)
+[major version upgrade]: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.PostgreSQL.html#USER_UpgradeDBInstance.PostgreSQL.MajorVersion
+[parameter group]: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithParamGroups.html
+[AWS CLI tool]: https://aws.amazon.com/cli/
+[cloud platform cli]: ../getting-started/cloud-platform-cli.html
+[long-running]: ./long-running-env-operations.html
+[procedure]: documentation/other-topics/upgrade-rds-db.html#procedure
