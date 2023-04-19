@@ -1,6 +1,6 @@
 ---
 title: Creating a Redis cluster
-last_reviewed_on: 2023-04-05
+last_reviewed_on: 2023-04-19
 review_in: 12 months
 ---
 
@@ -16,25 +16,13 @@ Instance types are named based on their family/purpose, generation, any addition
 
 For ElastiCache for Redis, instance types will always be prefixed with `cache`.
 
-### Example instance types
-
-`cache.t3.small` means:
-
-- `cache`: you can use this with ElastiCache
-- `t3`: `t` is the burstable general purpose family, `3` is the third generation of this family, and there are no additional capabilities
-- `small`: the instance size (vCPU and memory)
-
-`cache.m6g.large` means:
-
-- `cache`: you can use this with ElastiCache
-- `m6g`: `m` is the non-burstable general purpose family, `6` is the sixth generation of this family, and there is a `g` additional capability (`g` means [Graviton-based](https://aws.amazon.com/ec2/graviton/))
-- `large`: the instance size (vCPU and memory)
+You can read the [supported node types for ElastiCache for Redis](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/CacheNodes.SupportedTypes.html#CacheNodes.CurrentGen) for more information.
 
 ### Table of instance types
 
 You can use the table below to pick an appropriate instance type for your corresponding Redis version. This instance type should be suitable for most applications, environments, and how users of the Cloud Platform generally use ElastiCache for Redis.
 
-As a general rule of thumb, you should always use the latest generation you can. If you are using an older version of ElastiCache for Redis, it is worthwhile upgrading so you can use newer generations.
+As a rule of thumb, you should always use the latest generation you can. If you are using an older version of ElastiCache for Redis, you should [upgrade your Redis version](/documentation/deploying-an-app/redis/upgrade.html#upgrading-a-redis-version) so you can use newer generations.
 
 | Redis version | Environment type | Instance type |
 |-|-|-|
@@ -43,7 +31,7 @@ As a general rule of thumb, you should always use the latest generation you can.
 | **5.0.6 to 7.0.x**  | Non-production | `cache.t4g.micro` |
 |                     | Production     | `cache.t4g.small` |
 
-If you find your ElastiCache for Redis instance is running out of CPU or memory, try changing the instance type (`micro`, `small`) to a larger instance type such as `medium`.
+If you find your ElastiCache for Redis instance is running out of CPU or memory, try changing the instance size (`micro`, `small`) to a larger instance size such as `medium`.
 
 ## Statistics
 
@@ -51,7 +39,7 @@ At the time of writing, the following instance types were in use (along with how
 
 <!--
 
-Below was last updated 2023-04-05.
+Below was last updated 2023-04-19.
 
 You can generate this yourself to replace by doing the following:
 
@@ -62,11 +50,11 @@ aws elasticache describe-replication-groups --region=eu-west-2 | jq '.Replicatio
 ```
    2 "cache.m4.large"
    2 "cache.m4.xlarge"
-  31 "cache.t2.medium"
+  28 "cache.t2.medium"
    5 "cache.t2.micro"
- 100 "cache.t2.small"
+  97 "cache.t2.small"
    4 "cache.t3.small"
    6 "cache.t4g.medium"
-  31 "cache.t4g.micro"
-  34 "cache.t4g.small"
+  33 "cache.t4g.micro"
+  39 "cache.t4g.small"
 ```
