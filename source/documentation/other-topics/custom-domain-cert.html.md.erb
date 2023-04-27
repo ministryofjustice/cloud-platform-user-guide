@@ -41,8 +41,9 @@ of the resources for your production environment, if possible. You can still use
 subdomains of that zone for different environments.
 
 Once the zone is created, you will need to setup the necessary name server (NS)
-records in the parent DNS zone, before you can use it. For more
-information on how this delegation method works, you can read about authoritative
+records in the parent DNS zone, before you can use it. **This step must be completed
+before proceeding to [create a certificate](#obtaining-a-certificate)**. 
+For more information on how this delegation method works, you can read about authoritative
 name servers in this [page][wiki-nameservers].
 
 If your zone is for a subdomain of `service.justice.gov.uk` (eg.: `https://myapp.service.justice.gov.uk`),
