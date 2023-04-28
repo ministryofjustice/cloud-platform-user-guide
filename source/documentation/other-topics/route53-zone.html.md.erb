@@ -37,7 +37,7 @@ Note: If you already have that file defined in your environment, do not recreate
 
 ### variables.tf
 
-This file declares the variables fields utilisised in the route53.tf file below<br>   
+This file declares the variables fields utilised in the route53.tf file below<br>
 Fill in the variables below with your settings. Fill _namespace_ field below with your existing kubernetes namespace, all the _example_ fields below with desired values (all lowercase, and no spaces), and the _domain_ variable with your desired URL (pay special attention if your URL contains "justice" or not).
 
 ```
@@ -96,7 +96,7 @@ resource "aws_route53_zone" "example_team_route53_zone" {
     application            = var.application
     is-production          = var.is_production
     environment-name       = var.environment
-    owner                  = var.githib_owner
+    owner                  = var.github_owner
     infrastructure_support = var.infrastructure_support
     namespace              = var.namespace
   }
