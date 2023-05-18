@@ -1,6 +1,6 @@
 ---
 title: Accessing the AWS console (read-only)
-last_reviewed_on: 2023-04-05
+last_reviewed_on: 2023-05-18
 review_in: 3 months
 ---
 
@@ -95,8 +95,13 @@ You can view the source-code for the implementation in the [cloud-platform-terra
 - Not all Cloud Platform Terraform modules currently support setting the `GithubTeam` tag.
 
 - IAM policies for read-only access are currently a work in progress. We currently support:
+  - APIGateway
+  - CloudWatch Metrics
+  - CloudWatch Logs
   - Identity and Access Management (IAM)
+  - OpenSearchService
   - Relational Database Service (RDS)
+  - Secrets Manager
   - Simple Notification Service (SNS)
   - Simple Queue Service (SQS)
   - Simple Storage Service (S3)
