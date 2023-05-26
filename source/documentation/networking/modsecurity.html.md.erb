@@ -1,6 +1,6 @@
 ---
 title: ModSecurity - Web Application Firewall
-last_reviewed_on: 2023-02-21
+last_reviewed_on: 2023-05-26
 review_in: 3 months
 ---
 
@@ -155,7 +155,7 @@ For more information in anomaly scoring, click [here](https://www.modsecurity.or
 
 #### Sensitive logs
 
-Audit log is quite large as it logs everything about the request, like Request Header, Response Header, Request Body and Body Response, etc. So, Modsec ingress-controller is configured with [`SecAuditLogParts AEFHKZ`][modsec-config] to be logged in the error logs. Please make sure you don't send any [sensitive information][sensitive-info] in the [log parts][modsecurity-handbook].
+Audit log is quite large as it logs everything about the request. The current Modsec ingress-controller is configured with [`SecAuditLogParts AEFHKZ`][modsec-config] to be logged in the error logs. This will log the following parts of the request:
 
 ```
 A	Audit log header (mandatory)
@@ -164,6 +164,46 @@ F	Response headers
 H	Audit log trailer, which contains additional data
 K	Contains a list of all rules that matched for the transaction
 Z	Final boundary (mandatory)
+```
+
+#### False Positives
+
+OWASP Rules is a set of generic attack detection rules and cover a wide range of attacks. This means that some rules may block some legitimate requests giving false positives. 
+If you believe that a rule is blocking some legitimate requests, then you can set the rule to be ignored for your ingress by setting
+the `SecRuleRemoveById` to the modsecurity-snippet annotation. For example:
+
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: <ingress-name>
+  namespace: <namespace-name>
+  annotations:
+    external-dns.alpha.kubernetes.io/set-identifier: <ingress-name>-<namespace-name>-<colour>
+    external-dns.alpha.kubernetes.io/aws-weight: "100"
+    nginx.ingress.kubernetes.io/enable-modsecurity: "true"
+    nginx.ingress.kubernetes.io/modsecurity-snippet: |
+      SecRuleEngine On
+      SecDefaultAction "phase:2,pass,log,tag:github_team=<my-great-team-name>"
+      SecRuleRemoveById 00001
+spec:
+  tls:
+    ingressClassName: modsec
+  - hosts:
+    - <application_url>
+  rules:
+  - host: <application_url>
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+          backend:
+            service:
+              name: app-service
+              port:
+                name: 8080
+
 ```
 
 ## Accessing your modsec logs
@@ -175,7 +215,7 @@ Pre-requisites:
 
 To prevent PII from leaking we restrict the logs you can access. This access is based on the github team you tagged your ingress with and the github teams you are a member of. This information is mapped as you login from github to opensearch, you will only be able to view logs which are tagged with a github team which you are a member of.
 
-Login [here](https://logs.cloud-platform.service.justice.gov.uk/_dashboards)
+Login [to the Modsec Audit logs Opensearch](https://logs.cloud-platform.service.justice.gov.uk/_dashboards) to view your logs.
 
 [kibana-common]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/kibana#/discover?_g=()
 [kibana-search-example]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/goto/17b7ef970df556e2ff6959efbae7b6d3
