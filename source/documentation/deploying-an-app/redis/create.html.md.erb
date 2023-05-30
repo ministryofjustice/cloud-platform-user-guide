@@ -1,6 +1,6 @@
 ---
 title: Creating a Redis cluster
-last_reviewed_on: 2023-05-17
+last_reviewed_on: 2023-05-30
 review_in: 12 months
 ---
 
@@ -39,7 +39,7 @@ At the time of writing, the following instance types were in use (along with how
 
 <!--
 
-Below was last updated 2023-05-17.
+Below was last updated 2023-05-30.
 
 You can generate this yourself to replace by doing the following:
 
@@ -48,11 +48,11 @@ aws elasticache describe-replication-groups --region=eu-west-2 | jq '.Replicatio
 -->
 
 ```
-  22 "cache.t2.medium"
+  11 "cache.t2.medium"
    5 "cache.t2.micro"
-  73 "cache.t2.small"
+  69 "cache.t2.small"
    2 "cache.t3.small"
-   9 "cache.t4g.medium"
-  52 "cache.t4g.micro"
-  59 "cache.t4g.small"
+  12 "cache.t4g.medium"
+  63 "cache.t4g.micro"
+  64 "cache.t4g.small"
 ```
