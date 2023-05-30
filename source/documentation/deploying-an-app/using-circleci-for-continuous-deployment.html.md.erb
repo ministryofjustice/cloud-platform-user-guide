@@ -1,6 +1,6 @@
 ---
 title: Continuous Deployment of an application using CircleCI and Helm
-last_reviewed_on: 2023-05-23
+last_reviewed_on: 2023-05-30
 review_in: 3 months
 ---
 
@@ -136,8 +136,7 @@ jobs:
     - deploy:
         name: Push application Docker image
         command: |
-          login="$(AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION} AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID_DEMO} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY_DEMO} aws ecr get-login-password --region eu-west-2)"
-          ${login}
+          ecr_login="$(AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION} AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} ECR_ENDPOINT=${ECR_ENDPOINT} aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_ENDPOINT)"
           docker tag app "${ECR_ENDPOINT}:${CIRCLE_SHA1}"
           docker push "${ECR_ENDPOINT}:${CIRCLE_SHA1}"
           if [ "${CIRCLE_BRANCH}" == "main" ]; then
@@ -146,7 +145,13 @@ jobs:
           fi
 ```
 
-Note - Update the aws ecr login command above if you are using AWS version 2.0. Click [here][login-to-repo] for reference.
+Note - `ministryofjustice/cloud-platform-tools` image uses AWS version 2.0 to login to ECR. If you are using different image which has 
+AWS version 1.0, you will need to change the `ecr_login` command to:
+
+```bash
+ecr_login="$(AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION} AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} ECR_ENDPOINT=${ECR_ENDPOINT} aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)"
+```
+
 
 ### Deploy to Kubernetes
 
@@ -189,5 +194,4 @@ https://circleci.com/docs/2.0/test/
 [create-sa]: /documentation/deploying-an-app/using-circleci-for-continuous-deployment.html#creating-a-service-account-for-circleci
 [deploy-kubernetes]: /documentation/deploying-an-app/using-circleci-for-continuous-deployment.html#deploy-to-kubernetes
 [ca-decode]: https://github.com/ministryofjustice/cloud-platform-reference-app/blob/main/.circleci/config.yml#L62
-[login-to-repo]: /documentation/deploying-an-app/helloworld-app-deploy.html#login-to-the-repository
 [cloud-platform-cli tool]: /documentation/getting-started/cloud-platform-cli.html
