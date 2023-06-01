@@ -1,0 +1,42 @@
+---
+title: Requirements for deploying a container image
+last_reviewed_on: 2023-06-04
+review_in: 12 months
+---
+
+# <%= current_page.data.title %>
+
+To deploy a container image to the Cloud Platform, you must ensure your container image:
+
+- is Linux-based, because we don't support Windows-based images
+- runs a [stateless](https://12factor.net/processes) and [disposable](https://12factor.net/disposability) application, because we restart containers frequently
+- runs as a non-root user, because we don't allow containers to use root access for security reasons
+- runs on an [unprivileged port](https://www.w3.org/Daemon/User/Installation/PrivilegedPorts.html) (your image should expose a port over `1024`, e.g `8080`)
+
+You must also keep your container image up to date and [secure by default](https://security-guidance.service.justice.gov.uk/#cyber-and-technical-security-guidance).
+
+## Running a container image as a non-root user
+
+>Some Docker images may already have a non-root variant. For example, if you're running [`nginx`](https://hub.docker.com/_/nginx), you can use the official [`nginx-unprivileged`](https://hub.docker.com/r/nginxinc/nginx-unprivileged) image instead.
+
+Typically, you can adapt your `Dockerfile` to run as a non-root user by:
+
+1. creating a non-root user in your `Dockerfile`
+2. setting the `USER` instruction to use the non-root user when running your image
+
+As each team and application can use a different base image, this minimal example shows you how to run an `alpine`/`busybox` base image as a non-root user.
+
+```dockerfile
+FROM alpine:3.18
+
+# Build your service here, which can use root privileges (e.g. sudo)
+# At the end of your build, create and switch to a non-root user
+
+# This will create a non-root user with the UID of 1001
+RUN adduser -D nonroot -u 1001
+
+# You must use a UID, not a username, here
+USER 1001
+```
+
+If you need help to run your container as a non-root user, please speak to your team or consult the image vendor's documentation.
