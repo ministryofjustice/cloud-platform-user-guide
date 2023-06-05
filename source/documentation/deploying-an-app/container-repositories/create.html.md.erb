@@ -1,0 +1,207 @@
+---
+title: Creating a container repository
+last_reviewed_on: 2023-06-04
+review_in: 12 months
+---
+
+# <%= current_page.data.title %>
+
+To create a container repository, follow the [example guidance](https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials/tree/main/examples) in the module or [use the Cloud Platform CLI](/documentation/getting-started/cloud-platform-cli.html#adding-a-container-repository-to-your-namespace).
+
+## Authenticating to your container repository
+
+For access to container repositories, we utilise built-in [OpenID Connect](https://openid.net/connect/) authentication instead of using long-lived credentials. We do not provide long-lived credentials for access to container repositories.
+
+You will need to use [GitHub Actions](https://github.com/features/actions) or [CircleCI](https://circleci.com/) to push your Docker image to your container repository.
+
+### GitHub Actions
+
+#### Namespace configuration
+
+When you create your container repository, you should specify the following attributes:
+
+```hcl
+module "ecr" {
+  ...
+  # REQUIRED: OIDC providers to configure, either "github", "circleci", or both
+  oidc_providers = ["github"]
+
+  # REQUIRED: GitHub repositories that push to this container repository
+  github_repositories = ["example-repository"]
+
+  # OPTIONAL: GitHub environments, to create variables as actions variables in your environments
+  # github_environments = ["production"]
+
+  # OPTIONAL:
+  # set this if you use one GitHub repository to push to multiple container repositories
+  # this ensures the variable key used in the workflow is unique
+  # github_actions_prefix = "production"
+  ...
+}
+```
+
+By specifying `github_repositories`, the Cloud Platform will automatically configure the provided GitHub repositories with the GitHub Actions variables you need for authentication.
+
+These variables are `ECR_REGION`, `ECR_REPOSITORY`, and `ECR_ROLE_TO_ASSUME`. You can use them directly in your workflow. See the [example workflow](#github-actions-example-workflow) below.
+
+#### GitHub Actions example workflow
+
+As each team has a different GitHub Actions workflow, this example shows a full implementation of using short-lived credentials to push to your container repository. Inline comments tell you what each part of the workflow is for.
+
+```yaml
+on:
+  push:
+    branches: [main]
+
+jobs:
+  ecr:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # This is required for requesting the JWT
+      contents: read  # This is required for actions/checkout
+    steps:
+      # Checkout GitHub repository
+      - uses: actions/checkout@v3
+
+      # Assume role in Cloud Platform
+      - uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.ECR_REGION }}
+
+      # Login to container repository
+      - uses: aws-actions/amazon-ecr-login@v1
+        id: login-ecr
+
+      # Build and push a Docker image to the container repository
+      - run: |
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ github.sha }}
+```
+
+### CircleCI
+
+#### Namespace configuration
+
+When you create your container repository, you should specify the following attributes:
+
+```hcl
+module "ecr" {
+  ...
+  # REQUIRED: OIDC providers to configure, either "github", "circleci", or both
+  oidc_providers = ["circleci"]
+
+  # REQUIRED: GitHub repositories that push to this container repository
+  github_repositories = ["example-repository"]
+
+  # This is the namespace to create a ConfigMap
+  # of credentials you need in CircleCI
+  namespace = var.namespace
+  ...
+}
+```
+
+After your container repository is created, you will need to retrieve the OpenID Connect credentials from a Kubernetes ConfigMap in your namespace and configure CircleCI.
+
+To do this, complete the following three steps:
+
+1. Get the authentication variables from the Kubernetes ConfigMap in your namespace
+
+    The ConfigMap you need is suffixed with `-circleci`.
+
+    List the ConfigMaps in your namespace, substituting `$namespace` with your namespace:
+
+    ```sh
+    $ kubectl get configmaps -n $namespace
+
+    NAME                       DATA   AGE
+    ...
+    repository-name-circleci   3      12m # this is the one you want
+    ```
+
+    Get the value of this ConfigMap in your namespace, substituting `$repository` with the name of your ConfigMap, and `$namespace` with your namespace.
+
+    ```sh
+    $ kubectl describe configmap $repository -n $namespace
+
+    ...
+    Data
+    ====
+    ecr_region:
+    ----
+    eu-west-2
+
+    ecr_registry_id:
+    ----
+    000000000000
+
+    ecr_repository:
+    ----
+    repository-name
+
+    ecr_role_to_assume:
+    ----
+    arn:aws:iam::000000000000:role/cloud-platform-ecr-xyz-circleci
+    ...
+    ```
+
+2. Update your CircleCI environment variables with values from the Kubernetes ConfigMap
+
+    In your Project in CircleCI, go to Project Settings -> Environment Variables.
+
+    Set the following names and the corresponding value for the above variables. For example:
+
+    ```sh
+    name                   value
+    ECR_REGION             eu-west-2       # value of ecr_region
+    ECR_REPOSITORY         repository-name # value of ecr_repository
+    ECR_ROLE_TO_ASSUME     arn:aws:iam::00000000:role/cloud-platform-ecr-xyz-circleci # value of ecr_role_to_assume
+    AWS_ECR_REGISTRY_ID    000000000000    # value of ecr_registry_id
+    ```
+
+    You cannot change the _name_ of the `AWS_ECR_REGISTRY_ID` environment variable as the CircleCI orb will not work.
+
+3. Update your CircleCI job to use short-lived credentials
+
+As each team has a different CircleCI job, the example below shows a full implementation of using short-lived credentials to push to your container repository. Inline comments tell you what each part of the job is for.
+
+#### CircleCI example job
+
+```yaml
+version: 2.1
+
+orbs:
+  aws-cli: circleci/aws-cli@4.0.0 # use v4 of this orb
+  aws-ecr: circleci/aws-ecr@8.2.1 # this orb doesn't support OIDC v2, so we use aws-cli to authenticate
+
+jobs:
+  example:
+    executor: aws-ecr/default # use the aws-ecr/default executor to start the docker daemon
+    steps:
+      # Checkout your repository
+      - checkout
+      # Authenticate to AWS using OIDC v2 with the AWS CLI
+      - aws-cli/setup:
+          role_arn: $ECR_ROLE_TO_ASSUME # this will use the env var
+          region: $ECR_REGION # this will use the env var
+      # Authenticate to the ECR repository using the standard command
+      - run: |
+          aws ecr get-login-password --region $ECR_REGION | docker login --username AWS --password-stdin ${AWS_ECR_REGISTRY_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com
+      # Build and push your Docker image
+      - aws-ecr/build-image:
+          push-image: true
+          tag: ${CIRCLE_SHA1}
+          region: $ECR_REGION # this will use the env var
+          repo: $ECR_REPOSITORY # this will use the env var
+
+# You MUST configure a context for this workflow to work.
+workflows:
+  example:
+    jobs:
+      - example:
+          context: example-workflow
+```
