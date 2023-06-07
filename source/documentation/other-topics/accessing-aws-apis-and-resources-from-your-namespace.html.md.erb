@@ -1,0 +1,119 @@
+---
+title: Accessing AWS APIs and resources from your namespace
+last_reviewed_on: 2023-06-07
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+If you've created an AWS resource in your namespace and need to access it, you will need to use [IAM roles for service accounts](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html) (IRSA) and attach the service account to your pod which runs your container image.
+
+This provides your pod with access to the resources, either through the `aws` CLI or `aws-sdk` in your application.
+
+## Requirements
+
+To use IAM roles for service accounts, you must use a supported version of the AWS SDK in your application or the AWS CLI.
+
+The minimum supported AWS SDK and CLI versions are:
+
+| SDK | Minimum version |
+|-|-|
+| AWS CLI           | 1.16.232  |
+| Go                | 1.23.13   |
+| Java (version 1)  | 1.11.704  |
+| Java (version 2)  | 2.10.11   |
+| .NET<sup>*</sup>  | 3.3.659.1 |
+| Node (version 2)  | 2.525.0   |
+| Node (version 3)  | 3.27.0    |
+| PHP               | 3.110.7   |
+| Python (boto3)    | 1.9.220   |
+| Python (botocore) | 1.12.200  |
+| Ruby              | 3.58.0    |
+
+<sup>*</sup>For .NET, you must also include `AWSSDK.SecurityToken`.
+
+If your application is using a supported version, you can follow the guide below.
+
+## Using IRSA in your namespace
+
+To use IRSA in your namespace, you need to:
+
+- set up the IRSA module, which creates a service account for you
+- configure the policy ARNs you want to attach to the service account
+- attach the service account to your pods
+
+To do this, complete the following four steps:
+
+1. Raise and merge a PR that configures [`cloud-platform-terraform-irsa`](https://github.com/ministryofjustice/cloud-platform-terraform-irsa) in your namespace:
+
+    ```hcl
+    module "irsa" {
+      source = "github.com/ministryofjustice/cloud-platform-terraform-irsa?ref=2.0.0"
+
+      # EKS configuration
+      eks_cluster_name = var.eks_cluster_name
+
+      # IRSA configuration
+      service_account_name = "example-name"
+      namespace            = var.namespace # this is also used as a tag
+
+      # Attach the approprate policies using a key => value map
+      # If you're using Cloud Platform provided modules (e.g. SNS, S3), these
+      # provide an output called `irsa_policy_arn` that can be used.
+      role_policy_arns = {
+        ...
+        s3  = module.s3.irsa_policy_arn
+        dms = module.dms.irsa_policy_arn
+        sqs = module.sqs.irsa_policy_arn
+        ...
+      }
+
+      # Tags
+      business_unit          = var.business_unit
+      application            = var.application
+      is_production          = var.is_production
+      team_name              = var.team_name
+      environment_name       = var.environment
+      infrastructure_support = var.infrastructure_support
+    }
+    ```
+
+    As soon as this PR is merged, a service account will be created for you to use.
+
+2. Update your Kubernetes manifest to set the service account in your deployment:
+
+    ```yaml
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: example
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app: example
+      template:
+        metadata:
+          labels:
+            app: example
+        spec:
+          serviceAccountName: example-name # use the service_account_name you set in step 1 here
+          containers:
+          - name: example
+    ...
+    ```
+
+3. Redeploy your service
+
+    Once you redeploy your service, your pods should have the service account attached.
+
+    You can test this by describing a pod:
+
+    ```sh
+    $ kubectl describe pod $pod -n $namespace | grep "AWS_"
+
+    AWS_WEB_IDENTITY_TOKEN_FILE: /var/run/secrets/eks.amazonaws.com/serviceaccount/token
+    AWS_ROLE_ARN:                arn:aws:iam::000000000000:role/cloud-platform-irsa-000000000-live
+    ```
+
+    After you've confirmed these environment variables exist, you're ready to start using IRSA.
