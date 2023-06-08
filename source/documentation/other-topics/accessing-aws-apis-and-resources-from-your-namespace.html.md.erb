@@ -1,6 +1,6 @@
 ---
 title: Accessing AWS APIs and resources from your namespace
-last_reviewed_on: 2023-06-07
+last_reviewed_on: 2023-06-08
 review_in: 3 months
 ---
 
@@ -8,7 +8,7 @@ review_in: 3 months
 
 If you've created an AWS resource in your namespace and need to access it, you will need to use [IAM roles for service accounts](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html) (IRSA) and attach the service account to your pod which runs your container image.
 
-This provides your pod with access to the resources, either through the `aws` CLI or `aws-sdk` in your application.
+This provides your pod with access to the resources, either through the AWS CLI or AWS SDK in your application.
 
 ## Requirements
 
@@ -42,7 +42,7 @@ To use IRSA in your namespace, you need to:
 - configure the policy ARNs you want to attach to the service account
 - attach the service account to your pods
 
-To do this, complete the following four steps:
+To do this, complete the following three steps:
 
 1. Raise and merge a PR that configures [`cloud-platform-terraform-irsa`](https://github.com/ministryofjustice/cloud-platform-terraform-irsa) in your namespace:
 
@@ -116,4 +116,8 @@ To do this, complete the following four steps:
     AWS_ROLE_ARN:                arn:aws:iam::000000000000:role/cloud-platform-irsa-000000000-live
     ```
 
-    After you've confirmed these environment variables exist, you're ready to start using IRSA.
+    After you've confirmed these environment variables exist, you're ready to start using IRSA and accessing AWS APIs and resources from the application running in your pod.
+
+    If you're using an up-to-date version of the AWS SDK, you should not need any further configuration.
+
+    If you use a custom credential provider with the AWS SDK, you should refer to the AWS SDK guides to implement `AssumeRoleWithWebIdentity` as a credential provider.
