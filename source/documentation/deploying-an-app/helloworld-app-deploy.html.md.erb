@@ -1,6 +1,6 @@
 ---
 title: Deploying a 'Hello World' application to the Cloud Platform
-last_reviewed_on: 2023-05-15
+last_reviewed_on: 2023-06-14
 review_in: 3 months
 ---
 
@@ -239,10 +239,20 @@ Edit the `app.rb` file, and change "Hello, World!" to something else.
 ### Build the docker image
 
 Now that we have updated the source code, we can build a new docker image
-(locally).
+(locally). The Cloud Platform's Kubernetes cluster is running on x86 architecture,
+so we need to build an image with this architecture. The command you run to achieve
+this depends on your local machine's architecture:
+
+*If you are running Docker on a* **x86** *machine (i.e Intel or AMD64) run*
 
 ```bash
 docker build -t myimage .
+```
+
+*If you are running Docker on a* **ARM64** *machine (i.e Apple M1 or M2) run*
+
+```bash
+docker buildx build --platform=linux/amd64 -t myimage .
 ```
 
 > You can replace `myimage` with any name you like for your new docker image. Don't forget the `.` at the end of the command.
