@@ -1,6 +1,6 @@
 ---
 title: Removing an unneeded namespace
-last_reviewed_on: 2023-06-12
+last_reviewed_on: 2023-06-29
 review_in: 3 months
 ---
 
@@ -13,6 +13,20 @@ This helps to keep the cloud platform repositories well-organised, and speeds
 up deployments and changes to the cluster (because the build process doesn't
 have to spend time managing unnecessary resources). It also deletes the
 associated AWS resources, and helps to keep our hosting costs down.
+
+## Preparation
+
+If you have any ECR resources in your namespace which still contain images,  Concourse 
+will fail when trying to delete the registry. You can either delete the images manually, 
+or prepare the ECR for deletion by:
+
+- Set the [`deletion_protection = false`](https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials/blob/main/examples/ecr.tf#L73-L78)
+argument in your ECR module code.
+- Raise a PR to apply this configuration change to your ECR resource.
+- Merge the PR, and proceed with the namespace deletion process.
+
+> IMPORTANT: It is **your responsibility as namespace/PR owner** to ensure that no other
+environments depend upon access to your ECR resources.
 
 To delete a namespace and all its associated AWS resources, simply raise a
 [PR] which deletes the associated folder from the [cloud-platform-environments][envrepo].
