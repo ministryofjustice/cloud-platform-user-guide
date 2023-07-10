@@ -1,6 +1,6 @@
 ---
 title: Rotating tokens and keys
-last_reviewed_on: 2023-04-05
+last_reviewed_on: 2023-07-10
 review_in: 3 months
 ---
 
@@ -9,7 +9,7 @@ review_in: 3 months
 
 ## Overview
 
-Below is the guidance for rotating the tokens and keys that are set as environment variables for your application container or your automated deployment pipeline. 
+Below is the guidance for rotating the tokens and keys that are set as environment variables for your application container or your automated deployment pipeline.
 This guide covers only secrets provided by the Cloud Platform system (your application may have other secrets too)
 
 ### Serviceaccount tokens
@@ -24,13 +24,13 @@ This guide covers only secrets provided by the Cloud Platform system (your appli
   $ kubectl delete secret circleci-token-XXXXX -n <yournamespace>
   ```
 
-  After the secret is deleted the replacement secret is generated immediately. Check the age of the newly generated secret to confirm. 
-  
+  After the secret is deleted the replacement secret is generated immediately. Check the age of the newly generated secret to confirm.
+
   Decode the secret using `cloud-platform decode-secret -n <yournamespace> -s circleci-token-XXXXX` to use it in your deployment pipeline.
 
 ### AWS credentials
-  [Ask the Cloud Platform team](/documentation/reference/getting-help.html) to rotate the credentials related to AWS resources such as ECR, RDS etc., which have been [created by terraform](/documentation/deploying-an-app/add-aws-resources.html). 
-  The team will run the instructions from the runbook [Rotate User AWS Credentials](https://runbooks.cloud-platform.service.justice.gov.uk/rotate-user-aws-credentials.html#rotate-user-aws-credentials) to regenerate the AWS credentials. 
+  [Ask the Cloud Platform team](/documentation/reference/getting-help.html) to rotate the credentials related to AWS resources such as ECR, RDS etc., which have been [created by terraform](/documentation/deploying-an-app/add-aws-resources.html).
+  The team will run the instructions from the runbook [Rotate User AWS Credentials](https://runbooks.cloud-platform.service.justice.gov.uk/rotate-user-aws-credentials.html#rotate-user-aws-credentials) to regenerate the AWS credentials.
   This will recreate the kubernetes-secret in the same name and the values are updated automatically in the `mountPath` which the pod consumes.
 
 ### Certificate tls keys
@@ -107,23 +107,23 @@ This guide covers only secrets provided by the Cloud Platform system (your appli
   > Redis AUTH token modification is only supported by clusters running Redis engine version `5.0.5` and above.
   > Before proceeding with the steps below you will need to ensure your engine version meets this requirement, and if not
   > you will need to [upgrade](#upgrading-redis-engine) your Redis engine.
-     
-  Elasticache Redis server supports two AUTH tokens at a given time. Hence, rotating the current AUTH token involves multiple steps. 
-  
+
+  Elasticache Redis server supports two AUTH tokens at a given time. Hence, rotating the current AUTH token involves multiple steps.
+
   1. **Rotate Elasticache AUTH token using the [terraform module][terraform elasticache module]**
 
-    You will need to change your `resources/elasticache.tf` file and add a new variable 
+    You will need to change your `resources/elasticache.tf` file and add a new variable
     "auth_token_rotated_date" in the terraform code as below and update the "dd-mm-yyyy:hh:mm" value to the current date.
 
     ```
     auth_token_rotated_date = "yyyy-mm-dd"
     ```
 
-    > **Note:** Make sure you are using the latest version of the [Elasticache module][elasticache-module-version]. You may also wish to check 
+    > **Note:** Make sure you are using the latest version of the [Elasticache module][elasticache-module-version]. You may also wish to check
     whether your `kubernetes_secret` is already set to contain `access_key_id` and `secret_access_key` data, as shown in the example code [here](https://github.com/ministryofjustice/cloud-platform-terraform-elasticache-cluster/blob/main/example/elasticache.tf#L47-L48).
 
-    This follow the **ROTATE** strategy and when applying this adds an additional AUTH token to the server and remove the the oldest AUTH token from the server. 
-    Hence the previous token will be retained allowing a server to support up to two most recent AUTH tokens at a given time. This also updates the `auth_token` stored as a Kubernetes secret in your namespace.   
+    This follow the **ROTATE** strategy and when applying this adds an additional AUTH token to the server and remove the the oldest AUTH token from the server.
+    Hence the previous token will be retained allowing a server to support up to two most recent AUTH tokens at a given time. This also updates the `auth_token` stored as a Kubernetes secret in your namespace.
 
     You can fetch the latest auth token by decoding the contents of your kubernetes secret using the [cloud platform cli]:
 
@@ -156,19 +156,19 @@ This guide covers only secrets provided by the Cloud Platform system (your appli
     ```
 
   2. **Recycle the pods in your namespace**
-  
+
     Elasticache support two AUTH tokens, you can delete your pods one by one to allow new pods to pick up the new AUTH token from the kubernetes secret.
-    While testing, there was no downtime experience as the previous AUTH token will still be supported. 
+    While testing, there was no downtime experience as the previous AUTH token will still be supported.
 
   3. **Update the Redis server to support and use only the latest AUTH token**
 
-    In the event of Security Incident when an AUTH token is exposed, you will have to use SET Strategy after rotating the secrets using Step 1. 
+    In the event of Security Incident when an AUTH token is exposed, you will have to use SET Strategy after rotating the secrets using Step 1.
     This will update the server to support just a single AUTH token.
 
     Terraform does not support **SET** strategy yet, see [open issue]. Hence you will have to use AWS CLI to update the elasticache.
 
     To access to your Elasticache using AWS CLI, you will need the `access_key_id` and `secret_access_key` which are stored as a kubernetes secret explained in Step 1 and Set up an AWS profile using AWS CLI.
-    
+
     Decode `replication_group_id` and the latest `auth_token` from the kubernetes secret and run the below command
 
     ```
@@ -179,7 +179,7 @@ This guide covers only secrets provided by the Cloud Platform system (your appli
         --apply-immediately
     ```
 
-  To read more on how to modify the AUTH token see [AWS documentation][AWS Elasticache AUTH]  
+  To read more on how to modify the AUTH token see [AWS documentation][AWS Elasticache AUTH]
 ### Upgrading Redis Engine
 
   > **Important:**
@@ -194,14 +194,14 @@ This guide covers only secrets provided by the Cloud Platform system (your appli
     engine_version          = "6.x"
     parameter_group_name    = "default.redis6.x"
     ...
-  }  
-  ```  
+  }
+  ```
   If you are planning on rotating your Elasticache AUTH token at the point of the upgrade process, you can now continue with Step 1 above, since the upgrade and token rotation can be applied in a single PR.
-  
+
   >**Note:** During testing of a Redis engine upgrade, Cloud Platform team have found the process takes around 11 minutes to complete via Concourse pipeline. You will need to carry out your own tests
   in **non-production** namespaces to confirm similar and acceptable behaviour for your service.
 
-  
+
   [obtain-certicate]: /documentation/other-topics/custom-domain-cert.html#obtaining-a-certificate
   [secretName]: https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live.cloud-platform.service.justice.gov.uk/c100-application-production/certificate.yaml#L7
   [cloud platform cli]: ../getting-started/cloud-platform-cli.html
