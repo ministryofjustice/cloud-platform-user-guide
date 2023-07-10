@@ -1,6 +1,6 @@
 ---
 title: Migrating an Elasticsearch service
-last_reviewed_on: 2023-04-05
+last_reviewed_on: 2023-07-10
 review_in: 3 months
 ---
 
@@ -13,7 +13,7 @@ migrating an elasticsearch domain to enable encryption of data at rest.
 
 Adding a s3 snapshot repository to the elasticsearch is a 2 step process.
 
-- Create a s3 bucket 
+- Create a s3 bucket
 
   Use the below code block and update the values appropriately for your namespace. Raise a PR against the [environments](https://github.com/ministryofjustice/cloud-platform-environments) repository.
 
@@ -96,7 +96,7 @@ resource "kubernetes_secret" "es_snapshots_role" {
 
 ```
 
-### Step 2 - Spin up a new ES domain with “encrypt at rest” enabled. 
+### Step 2 - Spin up a new ES domain with “encrypt at rest” enabled.
 
   - Register the same snapshot repository on the source domain and the new domain
   - Add the `aws_iam_role_name` of source ES domain and new encrypted ES domain to the `ns_annotation` module.
@@ -137,7 +137,7 @@ module "ns_annotation" {
 
 ### Step 4: Register both Elasticsearch domains
 
-  - Port forward the source ES domain using the proxy `aws-es-proxy-service` 
+  - Port forward the source ES domain using the proxy `aws-es-proxy-service`
 
   ```
   kubectl \
@@ -162,7 +162,7 @@ module "ns_annotation" {
   }
   ```
 
-  - Port forward the encrypted ES domain using the proxy `aws-es-proxy-service-encrypted` 
+  - Port forward the encrypted ES domain using the proxy `aws-es-proxy-service-encrypted`
 
   ```
   kubectl \
@@ -186,13 +186,13 @@ module "ns_annotation" {
     }
   }
   ```
-  
-For more details on Elasticsearch REST APIs see [ES API](https://www.elastic.co/guide/en/elasticsearch/reference/current/rest-apis.html). 
+
+For more details on Elasticsearch REST APIs see [ES API](https://www.elastic.co/guide/en/elasticsearch/reference/current/rest-apis.html).
 
 
 ### Step 5: Backup and Restore snapshots
 
- - Port forward the source ES domain using the proxy `aws-es-proxy-service` 
+ - Port forward the source ES domain using the proxy `aws-es-proxy-service`
 
   ```
   kubectl \
@@ -201,7 +201,7 @@ For more details on Elasticsearch REST APIs see [ES API](https://www.elastic.co/
     svc/aws-es-proxy-service 9200:9200
   ```
 
-  - Create a snapshot 
+  - Create a snapshot
 
   ```
   PUT http://localhost:9200/_snapshot/<repo-name-for-snapshot>/<snapshot-to-restore>
@@ -230,7 +230,7 @@ For more details on Elasticsearch REST APIs see [ES API](https://www.elastic.co/
 
 ### Step 6: Connect apps to new ES
 
-Update the application to use the new encrypted es_proxy service. 
+Update the application to use the new encrypted es_proxy service.
 
 ### Step 7: Clean up
   Cleanup the portforward pods and the unwanted elasticsearch service

@@ -1,6 +1,6 @@
 ---
 title: Accessing your RDS database
-last_reviewed_on: 2023-04-05
+last_reviewed_on: 2023-07-10
 review_in: 3 months
 ---
 
@@ -36,7 +36,7 @@ So, the connection from your machine to the RDS instance works like this:
 
 ### 1. Run a port-forward pod
 
-There are several docker images designed to forward network traffic, but you need one which does not run as `root`. 
+There are several docker images designed to forward network traffic, but you need one which does not run as `root`.
 
 > The cluster pod security policy (PSP) will prevent any images from running a process as the `root` user, so docker images which expect to do this will not work.
 
@@ -57,7 +57,7 @@ Use port `1433` for MS-SQL.
 
 > This creates a pod in your namespace, but without a deployment to manage it.
 >
-> Manually-created pods (i.e. those which are not part of a [deployment]) will be deleted 
+> Manually-created pods (i.e. those which are not part of a [deployment]) will be deleted
 by regular cluster maintainance operation - [node-recycling] which runs every weekday between 8 am and 10 am.
 If you need a port-forward pod to persist longer than
 this, please make it part of a [deployment].
