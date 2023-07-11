@@ -24,7 +24,7 @@ By the end of the tutorial, you will have:
 It is assumed you have the following:
 
  - You have [created an environment for your application][env-create] (also known as a namespace).
- - You have an application repository with a [Helm chart](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/app-deploy-helm.html#browse-the-cluster).
+ - You have an application repository with a Helm chart.
  - You have created an [ECR repository][ecr-setup].
 
 ## Creating a service account for CircleCI
@@ -145,7 +145,7 @@ jobs:
           fi
 ```
 
-Note - `ministryofjustice/cloud-platform-tools` image uses AWS version 2.0 to login to ECR. If you are using different image which has 
+Note - `ministryofjustice/cloud-platform-tools` image uses AWS version 2.0 to login to ECR. If you are using different image which has
 AWS version 1.0, you will need to change the `ecr_login` command to:
 
 ```bash
