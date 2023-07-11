@@ -1,0 +1,69 @@
+---
+title: Using the Cloud Platform service pod
+last_reviewed_on: 2023-07-11
+review_in: 3 months
+---
+
+# <%= current_page.data.title %>
+
+The Cloud Platform team provide a "service pod" module to help users run maintenance tasks against namespace resources using the AWS CLI.
+
+You need to have complete step 1 (configuring IRSA) in [Accessing AWS APIs and resources from your namespace](/documentation/other-topics/accessing-aws-apis-and-resources-from-your-namespace.html#using-irsa-in-your-namespace) to use the service pod module.
+
+Once you've done that, you can create and use a the service pod by completing the following three steps:
+
+1. Raise and merge a PR that configures [`cloud-platform-terraform-service-pod`](https://github.com/ministryofjustice/cloud-platform-terraform-service-pod) in your namespace:
+
+    ```hcl
+    # irsa configuration is required to use the service pod
+    module "irsa" {
+      ...
+    }
+
+    # set up the service pod
+    module "service_pod" {
+      source = "github.com/ministryofjustice/cloud-platform-terraform-service-pod?ref=1.0.0" # use the latest release
+
+      # Configuration
+      namespace            = var.namespace
+      service_account_name = module.irsa.service_account.name # this uses the service account name from the irsa module
+    }
+    ```
+
+    As soon as this PR is merged, a service pod will be created for you to use.
+
+2. Get your namespace pods
+
+    You will need the name of your service pod to `exec` into it. You can get the name of the pod by running the following:
+
+    ```sh
+    $ kubectl get pods -n $namespace
+
+    NAME                                                           READY   STATUS    RESTARTS   AGE
+    cloud-platform-6c6eb7ed1fd678e4-service-pod-598dcf5c57-sm7mb   1/1     Running   0          10m
+    # ^ this one!
+    ```
+
+    The pod name you need is the one with "service-pod" in it.
+
+3. `exec` into the container and check AWS CLI works
+
+    Once you have the service pod's name, you can run the following command in your Terminal to `exec` into the container:
+
+    ```sh
+    $ kubectl exec -n $namespace --stdin --tty $pod_name -- /bin/sh
+    ```
+
+    Once you're into the container, run the following and check the output to check the AWS CLI works:
+
+    ```sh
+    $ aws sts get-caller-identity
+
+    {
+      "UserId": "AROAEXAMPLE:botocore-session-00000000",
+      "Account": "000000000000",
+      "Arn": "arn:aws:sts::000000000000:assumed-role/..."
+    }
+    ```
+
+    You can then run AWS CLI commands against AWS resources.
