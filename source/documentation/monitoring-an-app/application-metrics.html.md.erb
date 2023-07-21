@@ -1,6 +1,6 @@
 ---
 title: Getting application metrics into Prometheus
-last_reviewed_on: 2023-05-15
+last_reviewed_on: 2023-07-14
 review_in: 3 months
 ---
 
@@ -64,6 +64,20 @@ kubectl -n <namespace> get svc rails-app-service -o=jsonpath={.spec.ports[0].nam
 ```
 
 As you can see, the name of the port we're exposing is `http`.
+
+If the above syntax fails with the following:
+
+```
+#: no matches found: -o=jsonpath={.spec.ports[0].name}
+```
+
+You most likely have multiple ports set in your `Service` you'll need to run the following command:
+
+```
+kubectl -n <namespace> get svc rails-app-service -o jsonpath='{range .spec}{"Name: "}{.ports[*].name}{"\nPort: "}{@.ports[*].port}{"\n"}{end}'
+```
+
+
 
 Create and apply your service monitor `<application>-serviceMonitor.yaml`, as below:
 
