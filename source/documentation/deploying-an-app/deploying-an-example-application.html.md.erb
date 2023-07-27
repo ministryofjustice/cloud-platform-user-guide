@@ -1,0 +1,192 @@
+---
+title: Deploying an example application
+last_reviewed_on: 2023-07-26
+review_in: 6 months
+---
+
+# <%= current_page.data.title %>
+
+This tutorial will walk you through the process of deploying an example application to the Cloud Platform using a typical development workflow.
+
+Whilst this tutorial uses an example application, the same workflow can be used for any application that you're building and will be hosted on the Cloud Platform.
+
+By the end of this tutorial, you will have:
+
+- created a Cloud Platform namespace
+- created a container repository for a Docker image
+- created a service account to automate the deployment to the Cloud Platform from a GitHub repository
+- deployed a Docker image to the Cloud Platform via an automated pipeline
+
+To follow along with this tutorial, you'll need to:
+
+- install the [Cloud Platform CLI](/documentation/getting-started/cloud-platform-cli.html#cloud-platform-cli)
+- be part of the `ministryofjustice` GitHub organisation and be a member of at least one GitHub team
+
+## Understanding concepts used in this tutorial
+
+This tutorial introduces a few concepts that are relevant to all applications deployed on the Cloud Platform. These are a "namespace", a "container repository", and a "service account".
+
+- a namespace is an isolated group of resources for your application in the Cloud Platform
+- a container repository stores your Docker images, so they can be deployed to the Cloud Platform
+- a service account provides an "identity" to manage your deployment on the Cloud Platform
+
+In this example, the service account is used to deploy new Docker images, from your container repository, to your namespace.
+
+The [example application reference](#example-application-reference) explains what the application does and what the files in the repository represent.
+
+## Steps
+
+1. **Create a new GitHub repository**
+
+    In the `ministryofjustice` GitHub organisation, create a new repository with a unique name.
+
+    On your local machine, clone the [cloud-platform-example-application](https://github.com/ministryofjustice/cloud-platform-example-application) repository, change the remote to your new repository, and push the example application files to your new repository:
+
+    ```sh
+    $ git clone https://github.com/ministryofjustice/cloud-platform-example-application.git
+    $ git remote set-url origin https://github.com/ministryofjustice/$yourRepository.git
+    $ git push -u origin main
+    ```
+
+    Substitute `$yourRepository` with your repository name.
+
+2. **Create a Cloud Platform namespace, container repository, and service account**
+
+    To deploy an application to the Cloud Platform, you'll need a namespace, container repository, and a service account.
+
+    To create a namespace, clone the [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments) repository and use the Cloud Platform CLI to create a namespace:
+
+    ```sh
+    $ git clone https://github.com/ministryofjustice/cloud-platform-environments.git
+    $ cd cloud-platform-environments
+    $ cloud-platform environment create
+    ```
+
+    You'll be prompted to answer some questions about your namespace, such as the GitHub team you're part of, and what your namespace should be called.
+
+    Once you've created your namespace, you should change directory into your namespace and use the Cloud Platform CLI to create a container repository and service account in your namespace:
+
+    ```sh
+    $ cd namespaces/live.cloud-platform.service.justice.gov.uk/$yourNamespace
+    $ cloud-platform environment ecr create
+    $ cloud-platform environment serviceaccount create
+    ```
+
+    You'll then need to configure your container repository and service account to create secrets in your GitHub repository to allow you to automate the deployment of the example application.
+
+    Edit `resources/ecr.tf` and `resources/serviceaccount.tf` in your namespace and add your GitHub repository name from step one:
+
+    `resources/ecr.tf`
+
+    ```diff
+    - github_repositories = ["example-repository"]
+    + github_repositories = ["$yourRepository"]
+    ```
+
+    `resources/serviceaccount.tf`
+
+    ```diff
+    - # github_repositories = ["example-repository"]
+    + github_repositories = ["$yourRepository"]
+    ```
+
+    Substitute `$yourRepository` with your repository name.
+
+    Once you've configured these, create a new branch, commit and push your changes to `cloud-platform-environments`. Open a pull request, and post the link in [#ask-cloud-platform](https://mojdt.slack.com/archives/C57UPMZLY).
+
+    Once your pull request has been reviewed, merge it.
+
+    After a few minutes, your new namespace will be created and your specified GitHub repository will receive some secrets and variables to allow you to push your Docker image to your container repository and deploy your Docker image to your namespace.
+
+3. **Deploy your application**
+
+    In your repository, update `src/index.html` and push your changes to the `main` branch.
+
+    ```diff
+    - <h1>Hello, world!</h1>
+    + <h1>Hello, Cloud Platform!</h1>
+    ```
+
+    After a few minutes, your repository's GitHub Actions workflow will run.
+
+    The GitHub Actions workflow is explained in the [Example application reference](#example-application-reference).
+
+4. **View your application**
+
+    The example application is deployed to a generic Cloud Platform domain, which is prefixed with your namespace's name.
+
+    You can view your application by substituting `$yourNamespace` with your namespace name in the following URL:
+
+    ```sh
+    $yourNamespace.apps.live.cloud-platform.service.justice.gov.uk
+    ```
+
+    For example, if your application is called `cloud-platform-example-application`:
+
+    ```sh
+    cloud-platform-example-application.apps.live.cloud-platform.service.justice.gov.uk
+    ```
+
+    It should return a simple page that says "Hello, Cloud Platform!".
+
+## Next steps
+
+Now you've deployed an example application to the Cloud Platform, you might want to:
+
+- [understand what the files in the `cloud-platform-example-application` do](#example-application-reference)
+- [clean up your namespace](/documentation/deploying-an-app/cleaning-up.html)
+
+## Example application reference
+
+The [cloud-platform-example-application](https://github.com/ministryofjustice/cloud-platform-example-application) is a minimum viable repository of what you'll need to deploy to the Cloud Platform.
+
+The [cloud-platform-example-application](https://github.com/ministryofjustice/cloud-platform-example-application) repository contains a few directories and files:
+
+```sh
+.
+├── .github
+│   └── workflows
+│       └── deploy.yml
+├── deployments
+│   └── templates
+│       ├── deployment.yml
+│       ├── ingress.yml
+│       └── service.yml
+├── src
+│   └── index.html
+├── .gitignore
+├── Dockerfile
+└── README.md
+
+6 directories, 8 files
+```
+
+The important files in this example application are:
+
+- .github/workflows/deploy.yml
+- deployments/templates/deployment.yml
+- deployments/templates/ingress.yml
+- deployments/templates/service.yml
+
+### .github/workflows/deploy.yml
+
+This is a generic GitHub Actions workflow that does a few things:
+
+- [line 14-20](https://github.com/ministryofjustice/cloud-platform-example-application/blob/main/.github/workflows/deploy.yml#L14-L20) authenticate to a container repository
+- [line 21-27](https://github.com/ministryofjustice/cloud-platform-example-application/blob/main/.github/workflows/deploy.yml#L21-L27) build and push your Docker image to your container repository
+- [line 28-36](https://github.com/ministryofjustice/cloud-platform-example-application/blob/main/.github/workflows/deploy.yml#L28-L36) generate Kubernetes files from the `deployments/templates/*.yml` files
+- [line 37-46](https://github.com/ministryofjustice/cloud-platform-example-application/blob/main/.github/workflows/deploy.yml#L37-L46) authenticates with the Cloud Platform and deploys your container image to your namespace
+
+[Creating a container repository](/documentation/deploying-an-app/container-repositories/create.html#creating-a-container-repository) has more information on how to achieve the same with CircleCI.
+
+### deployments/templates/deployment.yml
+
+This is a generic file that creates a [Kubernetes deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) in your namespace. A deployment is a collection of [pods](https://kubernetes.io/docs/concepts/workloads/pods/) that runs one or more containers. In the example application, only one container is run in the pod.
+
+### deployments/templates/ingress.yml
+
+This is a generic file that creates a [Kubernetes ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/) in your namespace. An ingress provides access to your application via a service (below).
+
+### deployments/templates/service.yml
+
+This is a generic file that creates a [Kubernetes service](https://kubernetes.io/docs/concepts/services-networking/service/). A service exposes the network to pods from a Kubernetes deployment. In the case of the example application, an ingress provides external access to your application, which points to the service defined in this file, which points to pods in a deployment.
