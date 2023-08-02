@@ -111,6 +111,16 @@ You can view the source-code for the implementation in the [cloud-platform-terra
 
 - Not all AWS resources support attribute-based access control. You can find out which resources AWS supports by checking the "Authorization based on tags" column in [AWS services that work with IAM](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_aws-services-that-work-with-iam.html).
 
+### Known issues
+
+- Due to character limit constraints on session tags for attribute based SSO access to the console, some Cloud Platform users have encountered the following error on login:
+
+```
+Unable to validate tags (Service: AWSSecurityToken; Status Code: 400; Error Code: ValidationError; Request ID: ****; Proxy: null). Please try again.
+```
+
+This issue is covered in our Cloud Platform runbooks [here](https://runbooks.cloud-platform.service.justice.gov.uk/debugging-aws-console-access.html).
+
 ## Feedback
 
 Please reach out in [#ask-cloud-platform](https://mojdt.slack.com/archives/C57UPMZLY) if you have feedback.
