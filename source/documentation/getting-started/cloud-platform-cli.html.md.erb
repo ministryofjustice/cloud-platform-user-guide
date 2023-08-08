@@ -75,7 +75,7 @@ If you installed the Cloud Platform CLI using a different method, reinstall the 
 This describes the current capabilities of the CLI tool.
 
 * [Create an environment](#create-an-environment)
-* [Add an ECR to your namespace](#add-an-ecr-to-your-namespace)
+* [Adding a container repository to your namespace](#adding-a-container-repository-to-your-namespace)
 * [Add an RDS to your namespace](#add-an-rds-to-your-namespace)
 * [Add an S3 Bucket to your namespace](#add-an-s3-bucket-to-your-namespace)
 * [Add a service account to your namespace](#add-a-service-account-to-your-namespace)
@@ -90,10 +90,10 @@ This describes the current capabilities of the CLI tool.
     You will be prompted to answer some questions about the environment (i.e.
     namespace) that you are creating. Once the process is complete, you will
     have a new namespace folder in your working copy.
-    
+
 * `git add` and `git commit` the new files, and raise a PR
 
-    Send a message to the [#ask-cloud-platform](https://mojdt.slack.com/archives/C57UPMZLY) 
+    Send a message to the [#ask-cloud-platform](https://mojdt.slack.com/archives/C57UPMZLY)
     channel to ask for a review of the PR.
 
 After the cloud platform team have approved your PR, please merge it, and your
@@ -123,9 +123,9 @@ your namespace folder, and that this defines all the variables which appear in
 the template `ecr.tf` file. If this is not the case, you may need to amend the
 generated file.
 
-> It also assumes you already have a `resources/variables.tf`, `resources/main.tf` 
-and `resources/versions.tf` file below your namespace folder, and that this defines all the variables, 
-provider declarations and configurations needed for the `ecr.tf` file. If this is not the case, 
+> It also assumes you already have a `resources/variables.tf`, `resources/main.tf`
+and `resources/versions.tf` file below your namespace folder, and that this defines all the variables,
+provider declarations and configurations needed for the `ecr.tf` file. If this is not the case,
 you may need to amend those files by comparing with the [template files]
 
 ### Add an RDS to your namespace
@@ -204,9 +204,9 @@ service account resource will be created.
 
 You can query your new resource using the command `kubectl get serviceaccount -n <namespace>`.
 
-> The CLI tool assumes you already have a `resources/variables.tf`, `resources/main.tf` 
-and `resources/versions.tf` file below your namespace folder, and that this defines all the variables, 
-provider declarations and configurations needed for the `resources/serviceaccount.tf` file. If this is not the case, 
+> The CLI tool assumes you already have a `resources/variables.tf`, `resources/main.tf`
+and `resources/versions.tf` file below your namespace folder, and that this defines all the variables,
+provider declarations and configurations needed for the `resources/serviceaccount.tf` file. If this is not the case,
 you may need to amend those files by comparing with the [template files]
 
 #### GitHub Actions Secrets
