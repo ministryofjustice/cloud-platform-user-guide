@@ -23,15 +23,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: ministryofjustice/tech-docs-github-pages-publisher:v2
+      image: ministryofjustice/tech-docs-github-pages-publisher:v3
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Compile Markdown to HTML and create artifact
         run: |
-          /scripts/compile-and-create-artifact.sh
+          /scripts/deploy.sh
       - name: Upload artifact to be published
-        uses: actions/upload-artifact@main
+        uses: actions/upload-artifact@v3
         with:
           name: github-pages
           path: artifact.tar
@@ -48,4 +48,20 @@ jobs:
         uses: actions/configure-pages@v3
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@main
+        uses: actions/deploy-pages@v2
+
+  url-check:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download a Build Artifact from build
+        uses: actions/download-artifact@v3
+        with:
+          name: github-pages
+          path: github-pages
+      - name: Unpack files and check URL links
+        run: |
+          cd github-pages
+          tar -xvf artifact.tar
+          npm install linkinator
+          npx linkinator . --recurse --markdown
