@@ -15,7 +15,7 @@ You can run this website locally by running:
 make preview
 ```
 
-You can then browse to https://localhost:4567 to view the website.
+You can then browse to http://localhost:4567 to view the website.
 
 ## Updating documentation
 
