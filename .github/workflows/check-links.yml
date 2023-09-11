@@ -12,6 +12,6 @@ jobs:
     container:
       image: ministryofjustice/tech-docs-github-pages-publisher:v3
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: htmlproofer
         run: /scripts/check-url-links.sh
