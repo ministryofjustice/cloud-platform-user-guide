@@ -127,7 +127,7 @@ Decode the secret using `cloud-platform decode-secret -n <yournamespace> -s circ
     ```
 
     > **Note:** Make sure you are using the latest version of the [Elasticache module][elasticache-module-version]. You may also wish to check
-    whether your `kubernetes_secret` is already set to contain `access_key_id` and `secret_access_key` data, as shown in the example code [here](https://github.com/ministryofjustice/cloud-platform-terraform-elasticache-cluster/blob/main/example/elasticache.tf#L47-L48).
+    whether your `kubernetes_secret` is already set to contain `access_key_id` and `secret_access_key` data, as shown in the example code [here](https://github.com/ministryofjustice/cloud-platform-terraform-elasticache-cluster/blob/main/examples/elasticache.tf#L47-L48).
 
     This follow the **ROTATE** strategy and when applying this adds an additional AUTH token to the server and remove the the oldest AUTH token from the server.
     Hence the previous token will be retained allowing a server to support up to two most recent AUTH tokens at a given time. This also updates the `auth_token` stored as a Kubernetes secret in your namespace.
