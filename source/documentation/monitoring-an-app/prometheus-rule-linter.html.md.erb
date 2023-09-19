@@ -1,6 +1,6 @@
 ---
 title: Using PrometheusRule Linter in Github Action pipeline
-last_reviewed_on: 2023-06-12
+last_reviewed_on: 2023-09-19
 review_in: 3 months
 ---
 
@@ -25,7 +25,7 @@ Required for commenting results to Pull Request:
 
 - `steps.po-linter.outputs.po-linter`: This is needed if you want to print error.
 
-### Example 
+### Example
 ```
 name: Prometheus Operator Linter
 
@@ -54,11 +54,11 @@ jobs:
         env:
           GITHUB_OAUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO_DIRECTORY: <DIRECTORY>
-          
+
       - name: Result
         uses: actions/github-script@v6
         env:
-            summary: "Result:\n${{ steps.po-linter.outputs.po-linter }}" 
+            summary: "Result:\n${{ steps.po-linter.outputs.po-linter }}"
         with:
             github-token: ${{ secrets.GITHUB_TOKEN }}
             script: |

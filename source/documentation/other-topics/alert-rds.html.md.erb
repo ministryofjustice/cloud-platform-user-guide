@@ -1,6 +1,6 @@
 ---
 title: Creating alerts for RDS
-last_reviewed_on: 2023-05-15
+last_reviewed_on: 2023-09-19
 review_in: 3 months
 ---
 
@@ -38,7 +38,7 @@ aws_rds_write_iops_average
 aws_rds_write_latency_average
 ```
 
-### An example 
+### An example
 
 This is an example of a PrometheusRule that triggers an alert if the amount of free space of an RDS instance drops below 1Gb:
 
@@ -63,8 +63,8 @@ spec:
           message: "[{{ environment|upper }}] RDS free storage space is less than 1GB"
 ```
 
-- Run 
-          
+- Run
+
 After creating a YAML file containing your prometheus rule, you can apply it like this:
 
 ```
@@ -72,5 +72,5 @@ kubectl apply -f prometheus-custom-rules-<application_name>.yaml -n <namespace>
 ```
 
 > We recommend keeping your prometheus rule definitions in your namespace folder in the [environments repository]. This ensures that your rules will be recreated in the event that we ever need to reinstall prometheus.
-          
+
 [environments repository]: https://github.com/ministryofjustice/cloud-platform-environments

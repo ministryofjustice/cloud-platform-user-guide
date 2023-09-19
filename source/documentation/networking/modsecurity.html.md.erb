@@ -1,6 +1,6 @@
 ---
 title: ModSecurity - Web Application Firewall
-last_reviewed_on: 2023-05-26
+last_reviewed_on: 2023-09-19
 review_in: 3 months
 ---
 
@@ -168,7 +168,7 @@ Z	Final boundary (mandatory)
 
 #### False Positives
 
-OWASP Rules is a set of generic attack detection rules and cover a wide range of attacks. This means that some rules may block some legitimate requests giving false positives. 
+OWASP Rules is a set of generic attack detection rules and cover a wide range of attacks. This means that some rules may block some legitimate requests giving false positives.
 If you believe that a rule is blocking some legitimate requests, then you can set the rule to be ignored for your ingress by setting
 the `SecRuleRemoveById` to the modsecurity-snippet annotation. For example:
 
