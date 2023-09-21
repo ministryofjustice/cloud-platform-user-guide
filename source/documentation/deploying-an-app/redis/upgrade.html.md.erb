@@ -1,6 +1,6 @@
 ---
 title: Upgrading a Redis version or changing the instance type
-last_reviewed_on: 2023-07-23
+last_reviewed_on: 2023-09-21
 review_in: 12 months
 ---
 
@@ -37,7 +37,6 @@ To upgrade your Redis cluster version, complete these three steps:
 
     | Version to upgrade to | engine_version | parameter_group_name |
     |-|-|-|
-    | Redis 6.2 | `6.2` | `default.redis6.x` |
     | Redis 7.0 | `7.0` | `default.redis7` |
 
 3. Raise and merge a PR to remove the `APPLY_PIPELINE_SKIP_THIS_NAMESPACE` file added in step 1
