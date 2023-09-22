@@ -1,7 +1,7 @@
 ---
 title: Application Log Collection and Storage
-last_reviewed_on: 2023-07-07
-review_in: 3 months
+last_reviewed_on: 2023-09-22
+review_in:  6 months
 ---
 
 # <%= current_page.data.title %>
@@ -19,6 +19,14 @@ Fluentbit is a cluster-wide log collection service, with read permissions across
 ### Log Storage
 
 The logs are shipped to an AWS-Hosted ElasticSearch cluster. All application logs are retained for 30 days.
+
+---
+
+### ModSec logging
+
+If you have enabled ModSec WAF then the ModSec Audit logs are sent to a different OpenSearch cluster.
+
+For more details and instructions to enable ModSec [see here](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/networking/modsecurity.html)
 
 [Fluentbit]: https://fluentbit.io/
 [Kibana dashboard]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/kibana
