@@ -1,6 +1,6 @@
 ---
 title: Creating your own custom alerts
-last_reviewed_on: 2023-09-26
+last_reviewed_on: 2023-09-27
 review_in: 3 months
 ---
 
@@ -83,7 +83,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   creationTimestamp: null
-  namespace: monitoring
+  namespace: test-namespace
   labels:
     role: alert-rules
   name: prometheus-custom-rules-my-application
@@ -110,6 +110,37 @@ You can view the applied rules with the following command:
 
 ```sh
 kubectl -n <namespace> describe prometheusrules prometheus-custom-rules-<application_name>
+```
+
+#### Information type alerts
+
+If you want to use the same Slack Channel and webhook to send information type alerts, you can do so by adding a label `severity: info-<custom_severity_level>` to the prometheus rule.
+
+If the custom-severity provided is `cp-team`, an example of this would be:
+
+```yaml
+apiVersion: monitoring.coreos.com/v1
+    kind: PrometheusRule
+    metadata:
+      namespace: test-namespace
+    labels:
+      role:
+    name: prometheus-custom-rules-secretsmanager
+    spec:
+    groups:
+      - name: application-rules
+      rules:
+      - alert: SecretsManagerPutSecretValue
+        expr: secretsmanager_put_secret_value_sum{exported_job="secretsmanager", secret_id="arn:aws:secretsmanager:eu-west-2:754256621582:secret:<your-secret-arn>"} > 0
+        for: 1m
+        labels:
+          severity: info-cp-team
+        annotations:
+          message: |
+            {{ $labels.secret_id }} has had {{ $value }} PutSecretValue operations recently.
+            {{ $labels.user_arn }} has had {{ $value }} PutSecretValue operations recently.
+          runbook_url: <runbook_url>
+          dashboard_url: <dashboard_url>
 ```
 
 ### PrometheusRule examples
