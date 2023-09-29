@@ -1,12 +1,12 @@
 ---
-title: Updating CronJob API version for Cloud Platform - deprecated Kubernetes v1.21
+title: Updating CronJob API version for Cloud Platform - removed Kubernetes v1.25
 last_reviewed_on: 2023-07-28
 review_in: 3 months
 ---
 
 # <%= current_page.data.title %>
 
-The <b>batch/v1beta1</b> API version of CronJob is no longer served as of v1.25.
+The <b>batch/v1beta1</b> API version of CronJob is deprecated as of Kubernetes release v1.21, and will no longer served as of v1.25.
 
 Cloud Platform users must ensure any CronJob manifests are migrated to use the <b>batch/v1</b> API version, which is supported on our current cluster version (v1.24 as of writing).
 
@@ -62,5 +62,9 @@ spec:
             - date; echo "Hello, World!"
           restartPolicy: OnFailure
 ```
+
+Run the following command to check if the manifest is updated:
+
+`pluto detect-all-in-cluster --namespace <your namespace>`
 
 For additional information on creating CronJobs see [here](/documentation/other-topics/Cronjobs.html)
