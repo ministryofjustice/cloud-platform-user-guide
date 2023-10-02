@@ -1,6 +1,6 @@
 ---
 title: Updating CronJob API version for Cloud Platform - removed Kubernetes v1.25
-last_reviewed_on: 2023-07-28
+last_reviewed_on: 2023-10-02
 review_in: 3 months
 ---
 
@@ -24,7 +24,7 @@ To check if you are using deprecated apiVersion, run the following command:
 
 `pluto detect-all-in-cluster --namespace <your namespace>`
 
-If there is any deprecated apiVersion of HorizontalPodAutoscaler, the output will look like this:
+If there is any deprecated apiVersion of CronJob, the output will look like this:
 
 ```bash
 0928 17:32:43.721283   34578 request.go:697] Waited for 1.045015006s due to client-side throttling, not priority and fairness, request: GET:https://DF366E49809688A3B16EEC29707D8C09.gr7.eu-west-2.eks.amazonaws.com/apis/mutations.gatekeeper.sh/v1beta1?timeout=32s

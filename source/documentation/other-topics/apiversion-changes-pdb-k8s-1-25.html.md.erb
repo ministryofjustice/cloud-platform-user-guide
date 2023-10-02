@@ -1,6 +1,6 @@
 ---
 title: Updating PodDisruptionBudget API version for Cloud Platform - removed Kubernetes v1.25
-last_reviewed_on: 2023-09-29
+last_reviewed_on: 2023-10-02
 review_in: 3 months
 ---
 
@@ -24,14 +24,14 @@ To check if you are using deprecated apiVersion, run the following command:
 `pluto detect-all-in-cluster --namespace <your namespace>`
 
 
-If there is any deprecated apiVersion of HorizontalPodAutoscaler, the output will look like this:
+If there is any deprecated apiVersion of PodDisruptionBudget, the output will look like this:
 
 ```bash
 0928 17:32:43.721283   34578 request.go:697] Waited for 1.045015006s due to client-side throttling, not priority and fairness, request: GET:https://DF366E49809688A3B16EEC29707D8C09.gr7.eu-west-2.eks.amazonaws.com/apis/mutations.gatekeeper.sh/v1beta1?timeout=32s
 E0928 17:32:44.561983   34578 discovery_api.go:117] Failed to retrieve: /v1, Resource=bindings the server does not allow this method on the requested resource
 E0928 17:32:44.791255   34578 discovery_api.go:117] Failed to retrieve: authorization.k8s.io/v1, Resource=localsubjectaccessreviews the server does not allow this method on the requested resource
 NAME             KIND                      VERSION               REPLACEMENT      REMOVED   DEPRECATED   REPL AVAIL
-my-pdp           PodDisruptionBudget       policy/v1beta1        policy/v1        true      true         true
+helloworld-pdp   PodDisruptionBudget       policy/v1beta1        policy/v1        true      true         true
 
 ```
 
