@@ -1,6 +1,6 @@
 ---
 title: Deploying to the Cloud Platform
-last_reviewed_on: 2023-08-17
+last_reviewed_on: 2023-10-02
 review_in: 3 months
 ---
 
@@ -132,7 +132,7 @@ The HPA calculates the number of replicas by calculating the ratio between desir
 To create the horizontal pod autoscaler for your deployment, create a `hpa-myapp.yaml` similar to this:
 
 ```Yaml
-apiVersion: autoscaling/v1
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: my-app-name
