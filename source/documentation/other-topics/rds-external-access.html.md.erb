@@ -58,7 +58,7 @@ Use port `1433` for MS-SQL.
 > This creates a pod in your namespace, but without a deployment to manage it.
 >
 > Manually-created pods (i.e. those which are not part of a [deployment]) will always be _eventually_ deleted
-by regular cluster maintainance operation - [node-recycling], which runs every weekday between 8 am and 10 am.
+by regular cluster maintainance operation - [node-recycling], which runs every weekday between 8 am and 10 am. This recycles one node at a time, so it can take upwards of 60 days to delete.
 If you need a port-forward pod to be persistent, please make it part of a [deployment].
 
 ### 2. Forward local traffic to the port-forward-pod
