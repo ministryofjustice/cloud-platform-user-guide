@@ -1,7 +1,7 @@
 ---
 title: Using the Cloud Platform service pod
-last_reviewed_on: 2023-07-11
-review_in: 3 months
+last_reviewed_on: 2023-10-11
+review_in: 6 months
 ---
 
 # <%= current_page.data.title %>
@@ -67,3 +67,15 @@ Once you've done that, you can create and use a the service pod by completing th
     ```
 
     You can then run AWS CLI commands against AWS resources.
+
+## Using the filesystem in the service pod
+
+The filesystem of the service pod is locked down to follow security best practice.
+
+If you're using the service pod and need to interact with the filesystem, you should use the `/tmp` directory to store your files.
+
+For example, if you're using the AWS CLI to get an object from an S3 bucket, set the output directory to /tmp:
+
+```sh
+aws s3api get-object --bucket $bucketName --key $fileKey /tmp/$outputFile
+```
