@@ -57,10 +57,9 @@ Use port `1433` for MS-SQL.
 
 > This creates a pod in your namespace, but without a deployment to manage it.
 >
-> Manually-created pods (i.e. those which are not part of a [deployment]) will be deleted
-by regular cluster maintainance operation - [node-recycling] which runs every weekday between 8 am and 10 am.
-If you need a port-forward pod to persist longer than
-this, please make it part of a [deployment].
+> Manually-created pods (i.e. those which are not part of a [deployment]) will always be _eventually_ deleted
+by regular cluster maintainance operation - [node-recycling], which runs every weekday between 8 am and 10 am.
+If you need a port-forward pod to be persistent, please make it part of a [deployment].
 
 ### 2. Forward local traffic to the port-forward-pod
 
@@ -127,3 +126,4 @@ kubectl delete pod port-forward-pod -n [your namespace]
 [port-forward-image]: https://cloud.docker.com/u/ministryofjustice/repository/docker/ministryofjustice/port-forward
 [deployment]: https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/
 [draining a node]: https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/#use-kubectl-drain-to-remove-a-node-from-service
+[node-recycling]: https://concourse.cloud-platform.service.justice.gov.uk/teams/main/pipelines/maintenance/jobs/live-recycle-node
