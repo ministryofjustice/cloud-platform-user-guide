@@ -1,6 +1,6 @@
 ---
 title: ModSecurity - Web Application Firewall
-last_reviewed_on: 2023-09-22
+last_reviewed_on: 2023-10-13
 review_in: 6 months
 ---
 
@@ -24,8 +24,7 @@ review_in: 6 months
 >      SecRuleEngine On
 >      SecDefaultAction "phase:2,pass,log,tag:github_team=<my-great-team-name>"
 >spec:
->  tls:
->    ingressClassName: modsec
+>  ingressClassName: modsec
 >```
 
 ### Introduction
@@ -89,8 +88,8 @@ metadata:
       SecRuleEngine On
       SecDefaultAction "phase:2,pass,log,tag:github_team=<my-great-team-name>"
 spec:
+  ingressClassName: modsec
   tls:
-    ingressClassName: modsec
   - hosts:
     - <application_url>
   rules:

@@ -1,6 +1,6 @@
 ---
 title: Persistent Volume encryption at rest and daily snapshots
-last_reviewed_on: 2023-07-10
+last_reviewed_on: 2023-10-13
 review_in: 3 months
 ---
 
@@ -10,7 +10,8 @@ This guide will give you an overview of how to set up encryption at rest for "[P
 
 ### Encrypting Persistent Volumes
 
-To enable encryption at rest on a PV set the `storageClassName` attribute of your [PersistentVolumeClaim] to [`gp2-expand`][gp2-expand]. This [Storage Class] sets `encrypted: "true"` on the underlying EBS volume.
+To enable encryption at rest on a PV set the `storageClassName` attribute of your [PersistentVolumeClaim] to [`gp3`][gp3]. This [Storage Class] sets `encrypted: "true"` on the underlying EBS volume.
+This is also the default storage class for the PersistentVolumeClaim if you dont specify one.
 
 ```
 kind: PersistentVolumeClaim
@@ -23,7 +24,7 @@ spec:
   resources:
     requests:
       storage: 8Gi
-  storageClassName: gp2-expand
+  storageClassName: gp3
   selector:
     matchLabels:
       release: "stable"
@@ -32,7 +33,7 @@ spec:
 
 ```
 
-In the above PVC example, the cluster will [dynamically provision][dynamic-provisioning] a [Persistent Volume][persistent-volumes] for the PVC, using the `gp2-expand` [AWS EBS Storage Class][storage-class-aws-ebs], which will cause the PV to be encrypted using the [AWS Key Management Service (KMS)][amazon-kms].
+In the above PVC example, the cluster will [dynamically provision][dynamic-provisioning] a [Persistent Volume][persistent-volumes] for the PVC, using the `gp3` [The Amazon EBS CSI][storage-class-aws-ebs], which will cause the PV to be encrypted using the [AWS Key Management Service (KMS)][amazon-kms].
 
 ### Snapshots to back up Persistent Volumes
 
@@ -104,7 +105,7 @@ resource "kubernetes_secret" "persistentvolume_backup_sec" {
 
 If you want to [restore a PV from a snapshot][restore-snapshot], speak to the cloud-platform team in the #ask-cloud-platform channel.
 
-[gp2-expand]: https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/38c22c1b193300fed5944dc21be54dc8eb4b3a02/terraform/cloud-platform-components/k8s-resources.tf#L30
+[gp3]: https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/main/terraform/aws-accounts/cloud-platform-aws/vpc/eks/components/storage.tf#L52-L68
 [env-repo]: https://github.com/ministryofjustice/cloud-platform-environments/
 [storage class]: https://kubernetes.io/docs/concepts/storage/storage-classes/
 [dynamic-provisioning]: https://kubernetes.io/docs/concepts/storage/dynamic-provisioning/
