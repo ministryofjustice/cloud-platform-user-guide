@@ -94,6 +94,10 @@ db_allocated_storage = "<the actual value you got from the above cli command>"
 
 It is important to retain other original settings associated with the DB instance when restoring from the snapshot. So don't make any other changes to this file except the above mentioned.
 
+> **Warning:** If there is an RDS read replica for the DB instance that is being restored then you must set `count = 0` or comment out the read replica code (and any Kubernetes secrets relating to the read replica). This will remove the read replica, this is required as Terraform will throw the following error as Terraform is unable to change the read replica target: `Error: cannot elect new source database for replication`
+
+> When the read replica is re-created it will be created with a new database identifier.
+
 #### 4. Contact the Cloud Platform team about the restore, providing the `db-instance-identifier` and the PR raised.
 
 #### 5. Before the PR can be merged, the Cloud Platform team have to:
@@ -110,10 +114,19 @@ This allows the pipeline to create the new DB Instance from the snapshot, using 
 >
 > Once the the terraform apply is successful, and the new DB instance has been created, revert the changes made for `db_engine_version`.
 
-#### 6. Merge the PR to master and check that the Apply Pipeline creates the new DB instance with the same identifier and endpoints. The Cloud Platform team can also apply your changes manually if this is time critical.
+#### 6. Merge the PR to Main and check that the Apply Pipeline creates the new DB instance with the same identifier and endpoints. The Cloud Platform team can also apply your changes manually if this is time critical.
 
 Once the new DB instance is restored and available, your application should be able to access the database with the same database credentials and endpoint as before.
 
 After you have verified that your DB instance and the database is working as expected, let the Cloud Platform team know so they can delete the old, renamed DB instance.
+
+#### 7. Only required for Read Replicas - Recreate the DB read replica if it was removed as a part of step 3:
+In Terraform re-enable the DB read replica code by setting `count = 1` or uncommenting the code and any Kubernetes secrets that may also be created as a part of it.
+
+Create a PR that includes the changes for the Cloud Platform team and post the link into the [#ask-cloud-platform](https://mojdt.slack.com/archives/C57UPMZLY) channel.
+
+Once the PR has been approved, Merge to Main and check that the Apply Pipeline creates the new DB read replica instance.
+
+>**Note:** The read replica will have a new database identifier once it is created. 
 
 [Cloud Platform CLI]: ../getting-started/cloud-platform-cli.html
