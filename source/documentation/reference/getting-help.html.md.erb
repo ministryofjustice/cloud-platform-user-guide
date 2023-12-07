@@ -1,7 +1,7 @@
 ---
 title: Getting Help
 weight: 50
-last_reviewed_on: 2023-11-20
+last_reviewed_on: 2023-08-17
 review_in: 3 months
 ---
 
@@ -11,6 +11,19 @@ review_in: 3 months
 
 The quickest way to get help is to post a question in the
 [#ask-cloud-platform] Slack channel.
+
+## Hammer-bot
+
+The hammer-bot is a Slack bot that reports pull request check state to raised pull requests in the ask-ckoud-platform channel. 
+It will report the state with a reaction in slack on the comment
+
+- ✨ passed
+- ❌ failed
+- 🔁 pending
+- ⏳️ running for more 10 minutes
+
+if you check has been running for more than 10 minutes please go to your pull request to check why, if its concourse this is likely 
+due to concourse not picking up the pull request, you can trigger the check by pushing a blank commit to the pull request.
 
 ## Raise a support ticket
 
