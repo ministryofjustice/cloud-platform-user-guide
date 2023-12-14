@@ -27,11 +27,23 @@ Copy the Terraform resource code below and save it into the respective 3 files i
 ```
 terraform {
   backend "s3" {}
+  required_version = ">= 1.2.5"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.64.0"
+    }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.23.0"
+    }
+  }
 }
 
 provider "aws" {
   region = "eu-west-2"
 }
+
 ```
 Note: If you already have that file defined in your environment, do not recreate it.
 
@@ -43,38 +55,47 @@ Fill in the variables below with your settings. Fill _namespace_ field below wit
 ```
 variable "namespace" {
   default = "YOUR KUBERNETES NAMESPACE GOES HERE"
+  type    = string
 }
 
-variable "business-unit" {
+variable "business_unit" {
   default = "example-bu"
+  type    = string
 }
 
 variable "team_name" {
   default = "example-team-name"
+  type    = string
 }
 
 variable "application" {
   default = "example-app"
+  type    = string
 }
 
-variable "environment-name" {
+variable "environment_name" {
   default = "dev"
+  type    = string
 }
 
-variable "is-production" {
-  default = "false"
+variable "is_production" {
+  default = false
+  type    = bool
 }
 
-variable "infrastructure-support" {
-  default     = "example@example.com"
-  }
+variable "infrastructure_support" {
+  default = "example@example.com"
+  type    = string
+}
 
 variable "owner" {
-  default     = "example-owner"
-  }
+  default = "example-owner"
+  type    = string
+}
 
 variable "domain" {
   default = "YOURDOMAIN.service.(justice).gov.uk"
+  type    = string
 }
 ```
 
@@ -95,8 +116,8 @@ resource "aws_route53_zone" "example_team_route53_zone" {
     business-unit          = var.business_unit
     application            = var.application
     is-production          = var.is_production
-    environment-name       = var.environment
-    owner                  = var.github_owner
+    environment-name       = var.environment_name
+    owner                  = var.owner
     infrastructure_support = var.infrastructure_support
     namespace              = var.namespace
   }
@@ -109,7 +130,7 @@ resource "kubernetes_secret" "example_route53_zone_sec" {
   }
 
   data = {
-    zone_id   = aws_route53_zone.example_team_route53_zone.zone_id
+    zone_id = aws_route53_zone.example_team_route53_zone.zone_id
   }
 }
 
