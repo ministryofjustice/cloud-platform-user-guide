@@ -10,7 +10,13 @@ review_in: 6 months
 
 If your application is public then you'll need to configure an ingress making sure you've considered the security implications associated with this.
 
-If not then you don't need an ingress, this is also true if your application is being called by another application within the cluster, you can use the internal service address.
+If not then you don't need an ingress, this is also true if your application is being called by another application within the cluster, you can use the internal service address. Your service address is in the format:
+
+```
+<service-name>.<namespace>.svc.cluster.local
+```
+
+You can query your service using `kubectl -n $namespace describe service $yourservice`.
 
 ### Applications in development
 
