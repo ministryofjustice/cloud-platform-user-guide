@@ -53,7 +53,15 @@ To enable ModSecurity for your application, add the following annotation to your
 ```yaml
 nginx.ingress.kubernetes.io/enable-modsecurity: "true"
 ```
-The above annotation enables ModSecurity for the ingress on the nginx ingress-controller in detection only mode. There is no disruptive action if a critical rule triggers, but it is logged in the nginx-ingress.log file. The `SecRuleEngine` defaults to `Detection Only Mode`.
+
+If you intend to run in "DetectionOnly" mode to monitor requests you must add the following lines to track down your requests in [opensearch]
+
+>    nginx.ingress.kubernetes.io/modsecurity-snippet: |
+>      SecRuleEngine DetectionOnly
+>      SecDefaultAction "phase:2,pass,log,tag:github_team=<my-great-team-name> <your_random_tag_name>:<your_random_identifier>"
+
+
+The above annotation enables ModSecurity for the ingress on the nginx ingress-controller in detection only mode. There is no disruptive action if a critical rule triggers, but it is logged in [opensearch]. The `SecRuleEngine` defaults to `DetectionOnly` Mode and the tags help you to find the logs in opensearch.
 
 Adding the annotation below, `SecRuleEngine On` configures ModSecurity to actively block traffic classed as malicious using Anomaly Scoring:
 
@@ -217,6 +225,7 @@ To prevent PII from leaking we restrict the logs you can access. This access is 
 Login [to the Modsec Audit logs Opensearch](https://logs.cloud-platform.service.justice.gov.uk/_dashboards) to view your logs.
 
 [kibana-common]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/kibana#/discover?_g=()
+[opensearch]: https://logs.cloud-platform.service.justice.gov.uk/_dashboards
 [kibana-search-example]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-60m,to:now))&_a=(columns:!(_source),filters:!(),index:'8a728bc0-00eb-11ec-9062-27aa363b66a2',interval:auto,query:(language:kuery,query:'%22ModSecurity%22%20and%20%22host:%20%22'),sort:!(!('@timestamp',desc)))
 [opensearch-unique-id-example]: https://logs.cloud-platform.service.justice.gov.uk/_dashboards/app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-15m,to:now))&_a=(columns:!(_source),filters:!(),index:b95d8900-dd15-11ed-87c8-170407f57c9c,interval:auto,query:(language:kuery,query:'transaction.unique_id:%20*'),sort:!())
 [modsec-config]: https://github.com/ministryofjustice/cloud-platform-terraform-ingress-controller/blob/main/templates/modsecurity.conf#L231
