@@ -1,6 +1,6 @@
 ---
 title: Upgrading a database version or changing the instance type
-last_reviewed_on: 2023-11-20
+last_reviewed_on: 2024-01-11
 review_in: 12 months
 ---
 
@@ -16,7 +16,52 @@ AWS publishes an end-of-life schedule for major and minor versions of [PostgreSQ
 
 >There is no rule of thumb to work out how long it will take, but tests show an empty database using a `db.t4g.micro` will take around 10 minutes.
 
-## Upgrading to a new minor database version
+## Automatic minor engine version upgrades
+
+AWS provide the ability to automatically upgrade your minor database version. This is enabled by default in the Cloud Platform, managed by the `allow_minor_version_upgrade` field within the [cloud-platform-terraform-rds module](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance?tab=readme-ov-file#input_allow_minor_version_upgrade).
+
+It is important to understand the details of how AWS manage this. If you choose to allow AWS to manage automatic minor version upgrades, consider the following points:
+
+- AWS elect a 'preferred' (or target) minor version for each database engine. This is the version that AWS will upgrade to when you enable automatic minor version upgrades, assuming that your current version sits below this preferred version.
+This is also subject to change by AWS, and is not necessarily the latest minor version available for your database engine.
+
+- The automatic minor version upgrade schedule is determined by your RDS instance's maintenance window. You can read more about maintenance windows in the [AWS RDS documentation](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.Maintenance.html). This schedule can also be managed
+within the [RDS module](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance?tab=readme-ov-file#input_maintenance_window).
+
+>It is the user's responsibility to understand and track automatic minor version management for RDS instances. A byproduct of using this feature is that your RDS terraform will not necessarily reflect the actual version of your database.
+
+### Determining your RDS instance's target minor version
+
+You can use the AWS CLI to discover the current AWS target minor version for automatic upgrades with the following command:  
+
+```bash
+aws rds describe-db-engine-versions --output table --engine postgres --engine-version [your-current-version]
+```
+
+and referring to the `AutoUpgrade` column. For example, if you are currently on Postgres 14.3, you will see similar to the following output: 
+
+```
+|||                      ValidUpgradeTarget                                 
+||+-------------+-----------------------+-----------+----------------+
+||| AutoUpgrade |      Description      |  Engine   | EngineVersion  |
+||+-------------+-----------------------+-----------+----------------+
+|||  False      |  PostgreSQL 14.4-R1   |  postgres |  14.4          |
+|||  False      |  PostgreSQL 14.5-R1   |  postgres |  14.5          |
+|||  False      |  PostgreSQL 14.6-R1   |  postgres |  14.6          |
+|||  True       |  PostgreSQL 14.7-R1   |  postgres |  14.7          |
+```
+
+### Determining your RDS instance's maintenance window
+
+You can use the AWS CLI to discover the current maintenance window for your RDS instance with the following command:
+
+```bash
+aws rds describe-db-instances --output table --db-instance-identifier [your-db-instance-name] --query 'DBInstances[*].PreferredMaintenanceWindow'
+```
+
+Alternatively, you can view this information in the AWS console by navigating to your RDS instance and selecting the `Maintenance & backups` tab.
+
+## Manually upgrading to a new minor database version
 
 >Note: This will cause downtime. See [Things to note before upgrading your database](#things-to-note-before-upgrading-a-database-version-or-changing-the-instance-type).
 
