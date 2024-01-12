@@ -1,6 +1,6 @@
 ---
 title: Rotating tokens and keys
-last_reviewed_on: 2023-10-09
+last_reviewed_on: 2024-01-12
 review_in: 6 months
 ---
 
@@ -12,37 +12,23 @@ review_in: 6 months
 Below is the guidance for rotating the tokens and keys that are set as environment variables for your application container or your automated deployment pipeline.
 This guide covers only secrets provided by the Cloud Platform system (your application may have other secrets too)
 
-### Serviceaccount tokens
+### ServiceAccount tokens
 
-In kubernetes versions < 1.24 deleting your service account secret using a kubectl command would signal to kubernetes to recreate the secret automatically. This feature has been removed in kubernetes version 1.24 and above [see here for more details](https://kubernetes.io/docs/concepts/security/service-accounts/#get-a-token)
+In Kubernetes versions < 1.24 deleting your Service Account secret using a `kubectl` command would signal to kubernetes to recreate the secret automatically. This feature has been removed in kubernetes version 1.24 and above [see here for more details](https://kubernetes.io/docs/concepts/security/service-accounts/#get-a-token).
 
-#### Using Cloud Platform service account terraform module
+#### Using Cloud Platform Service Account Terraform module
 
-Delete the static serviceaccount credentials that live in places like automated deployment pipelines e.g circleCI.
+Ensure you are on the latest version of the [cloud-platform-terraform-serviceaccount](https://github.com/ministryofjustice/cloud-platform-terraform-serviceaccount/releases) module.
 
-Create a pr which updates your terraform service account module to the [latest version](https://github.com/ministryofjustice/cloud-platform-terraform-serviceaccount/releases) and also updates the `serviceaccount_token_rotated_date` variable.
+Update your Terraform code to include the `serviceaccount_token_rotated_date` variable and set it to the current date in the format `dd-mm-yyyy`, and raise a PR for this update. See the mode [example code](https://github.com/ministryofjustice/cloud-platform-terraform-serviceaccount/blob/main/examples/serviceaccount.tf#L8) for more details.
 
-On apply terraform will destroy and recreate your serviceaccount token. if you are pushing this token to github no further action is required, if you are using this token statically in external services like circle ci then you will need to copy and paste the new value into your service using the command below.
+Once applied Terraform will destroy and recreate your Service Account token. if you are pushing this token to GitHub no further action is required; if you are using this token statically in external services like CircleCI then you will need to update the relevant fields manually. See [here](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/kubernetes-service-accounts.html#obtain-the-new-service-account-credentials) for more details.
 
-
-#### Using `yaml` files
-
-In order to rotate your secrets you will need to delete your old secret using:
-
-`kubectl delete secret <serviceaccount-token-name>`
-
-You will then need to create a secret in yaml [for example](https://kubernetes.io/docs/concepts/configuration/secret/#service-account-token-secrets) and also [this](https://github.com/ministryofjustice/cloud-platform-environments/blob/5517ef55b0fc8bc2db7acd48508f61eba250bba5/namespaces/live.cloud-platform.service.justice.gov.uk/hmpps-activities-management-preprod/05-serviceaccount-circleci.yaml#L9)
-
-Raise a PR and let terraform apply your yaml.
-
-#### Finally
-
-Decode the secret using `cloud-platform decode-secret -n <yournamespace> -s circleci-token-XXXXX` to use it in your deployment pipeline.
 
 ### AWS credentials
-  [Ask the Cloud Platform team](/documentation/reference/getting-help.html) to rotate the credentials related to AWS resources such as ECR, RDS etc., which have been [created by terraform](/documentation/deploying-an-app/add-aws-resources.html).
-  The team will run the instructions from the runbook [Rotate User AWS Credentials](https://runbooks.cloud-platform.service.justice.gov.uk/rotate-user-aws-credentials.html#rotate-user-aws-credentials) to regenerate the AWS credentials.
-  This will recreate the kubernetes-secret in the same name and the values are updated automatically in the `mountPath` which the pod consumes.
+
+In cases where you have a need for creating and storing AWS Access keys as Kubernetes Secrets, and wish for these to be rotated, please [get in touch with the Cloud Platform team](/documentation/reference/getting-help.html).
+ 
 
 ### Certificate tls keys
 
