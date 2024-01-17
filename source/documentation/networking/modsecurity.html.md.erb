@@ -54,11 +54,12 @@ To enable ModSecurity for your application, add the following annotation to your
 nginx.ingress.kubernetes.io/enable-modsecurity: "true"
 ```
 
-If you intend to run in "DetectionOnly" mode to monitor requests you must add the following lines to track down your requests in [opensearch]
+If you intend to run in "DetectionOnly" mode to monitor requests you must add the following lines to track down your requests in [opensearch]. We set `SecAuditEngine On` as by default we have it set to `RelevantOnly` which only logs warnings and errors [see here for more details](https://github.com/SpiderLabs/ModSecurity/wiki/Reference-Manual-%28v3.x%29#user-content-SecAuditEngine).
 
 >    nginx.ingress.kubernetes.io/modsecurity-snippet: |
+>      SecAuditEngine On
 >      SecRuleEngine DetectionOnly
->      SecDefaultAction "phase:2,pass,log,tag:github_team=<my-great-team-name> <your_random_tag_name>:<your_random_identifier>"
+>      SecDefaultAction "phase:2,pass,log,tag:github_team=<my-great-team-name>,tag:<your_random_tag_name>=<your_random_identifier>"
 
 
 The above annotation enables ModSecurity for the ingress on the nginx ingress-controller in detection only mode. There is no disruptive action if a critical rule triggers, but it is logged in [opensearch]. The `SecRuleEngine` defaults to `DetectionOnly` Mode and the tags help you to find the logs in opensearch.
