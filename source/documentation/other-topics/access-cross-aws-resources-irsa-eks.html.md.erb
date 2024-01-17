@@ -1,6 +1,6 @@
 ---
 title: Use IAM Roles for service accounts to access resources in a different AWS account
-last_reviewed_on: 2024-04-10
+last_reviewed_on: 2024-01-17
 review_in: 6 months
 ---
 
@@ -25,8 +25,10 @@ This article explains how to utilise IAM roles for Kubernetes Service Accounts (
     <details><summary>Click here to see a template code block</summary>
     <pre><code>
         module "irsa" {
-          source = "github.com/ministryofjustice/cloud-platform-terraform-irsa?ref=1.0.2"
-          namespace        = "&lt;namespace&gt;"
+          source = "github.com/ministryofjustice/cloud-platform-terraform-irsa?ref=2.0.0"
+          eks_cluster_name      = "var.eks_cluster_name"
+          namespace             = "&lt;namespace&gt;"
+          service_account_name  = "&lt;service_account_name&gt;"
           role_policy_arns = ["&lt;aws_iam_policy.&lt;namespace&gt;_&lt;policy_name&gt;.arn&gt;"]
         }
         data "aws_iam_policy_document" "&lt;namespace&gt;_&lt;policy_name&gt;" {
@@ -71,9 +73,11 @@ This article explains how to utilise IAM roles for Kubernetes Service Accounts (
     <details><summary> Here is an example using the template above, with typical values provided</summary>
     <pre><code>
         module "irsa" {
-          source = "github.com/ministryofjustice/cloud-platform-terraform-irsa?ref=1.0.2"
-          namespace        = "my-namespace"
-          role_policy_arns = [aws_iam_policy.my_namespace_my_policy.arn]
+          source = "github.com/ministryofjustice/cloud-platform-terraform-irsa?ref=2.0.0"
+          eks_cluster_name      = "var.eks_cluster_name"
+          namespace             = "my-namespace"
+          service_account_name  = "${var.team_name}-${var.environment}"
+          role_policy_arns      = [aws_iam_policy.my_namespace_my_policy.arn]
         }
         data "aws_iam_policy_document" "my_namespace_my_policy" {
           # Provide list of permissions and target AWS account resources to allow access to
