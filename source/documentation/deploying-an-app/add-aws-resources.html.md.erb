@@ -1,6 +1,6 @@
 ---
 title: Adding AWS resources to your environment
-last_reviewed_on: 2023-10-16
+last_reviewed_on: 2024-01-23
 review_in: 3 months
 ---
 
@@ -101,6 +101,33 @@ To view the current set of metrics available:
 * type 'aws_'
 
 You can view all metrics AWS make available [here](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/aws-services-cloudwatch-metrics.html)
+
+### Adding your own terraform to create AWS resources
+
+If you need to create AWS resources that are not covered by the modules provided by the Cloud Platform team, 
+you can contact us on the [#ask-cloud-platform](https://mojdt.slack.com/messages/C57UPMZLY/) Slack channel 
+or [raise a support](http://goo.gl/msfGiS) ticket to discuss your requirements.
+
+There are some resources that we will not allow you to create, such as
+
+- `Lambda functions` which is discussed in the [ADR](https://github.com/ministryofjustice/cloud-platform/blob/main/architecture-decision-record/037-serverless.md)
+- your own terraform module
+
+If the decision is to allow you to create your own terraform, conside the following:
+
+- all terraform code must be stored in the [cloud-platform-environments][env-repo] repository
+- iam policy permissions must be locked down to only allow access to those specific AWS resources
+- the team who created those terraform code owns it and hence that team is responsible for maintaining it
+- Cloud Platform team can provide console access if those resources support [ABAC](https://docs.aws.amazon.com/IAM/latest/UserGuide/tutorial_attribute-based-access-control.html) 
+
+Deploying the terraform code is the same as deploying the terraform modules provided by the Cloud Platform team.
+Create a PR to the [cloud-platform-environments][env-repo] repository, make sure the checks are passed.
+Once the PR is merged, the [concourse pipeline](https://concourse.cloud-platform.service.justice.gov.uk/) 
+will run and deploy the terraform code. 
+
+>Note: The pipeline may need permissions to create those resources. If that is the case, please contact us on 
+the [#ask-cloud-platform](https://mojdt.slack.com/messages/C57UPMZLY/) Slack channel 
+
 
 [env-repo]: https://github.com/ministryofjustice/cloud-platform-environments/
 [tf-modules-list]: https://github.com/ministryofjustice/cloud-platform#terraform-modules
