@@ -65,6 +65,10 @@ To generate a `kubeconfig` file for the Cloud Platform's Kubernetes cluster:
     ![GitHub Authorize MoJ](/images/github-authorize-moj-new.png)
 5. Accept `live:kubernetes` requesting access to your justice-cloud-platform account
 6. Select "Download config file"
+
+> **Note:** 
+There can be a delay of a few seconds before the config file is populated with your credentials and ready to download. You can verify that it is ready by taking a look at the code block in the "Authenticate Manually" section on the Kuberos webpage. If the code block is populated with your credentials, and not listing `undefined` for each field, then the config file is ready to download.
+
 7. Move the config file to the location expected by kubectl: `~/.kube/config`:
 
     ```sh
