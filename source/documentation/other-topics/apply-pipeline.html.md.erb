@@ -1,7 +1,7 @@
 ---
 title: Apply Pipeline
-last_reviewed_on: 2023-10-16
-review_in: 3 months
+last_reviewed_on: 2024-07-26
+review_in: 6 months
 ---
 
 # <%= current_page.data.title %>
@@ -25,13 +25,20 @@ terraform plan
 terraform apply
 ```
 
-It takes a minute to start the job and then 1 to 2 minutes to run.
+It takes a minute to start the job and then usually around 1 to 2 minutes to run.
 
 ## Viewing the Apply Pipeline
 
 You can see the running of the Apply Pipeline in [Concourse's "Apply-namespace-changes-live" pipeline](https://concourse.cloud-platform.service.justice.gov.uk/teams/main/pipelines/environments-live/jobs/apply-namespace-changes-live)
 
 Usage:
+
+* When the apply pipeline starts your PR will receive a comment containing a link to the apply job. If you follow this link you will be able to follow the apply job as it logs out each step. This is a good habit as it allows you to verify that the resources applied correctly.
+
+cloud-platform-concourse-bot comment:
+> eg. Your PR is applying in the build: https://concourse.cloud-platform.service.justice.gov.uk/teams/main/pipelines/environments-live/jobs/apply-namespace-changes-live/builds/1579
+
+Alternatively you can:
 
 * Sign in using your GitHub identity. (The first time, it takes you to a github.com page where you need to agree to Cloud Platform's Concourse instance being allowed to view your GitHub identity.)
 * Select the build corresponding to your PR merge (other people's changes to environments also show up here). The latest build is at the top, but you can also identify your one by the merge commit hash.
