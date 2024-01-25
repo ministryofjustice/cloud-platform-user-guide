@@ -1,6 +1,6 @@
 ---
 title: "Kubernetes: namespace definition files"
-last_reviewed_on: 2023-10-16
+last_reviewed_on: 2024-01-24
 review_in: 3 months
 ---
 
@@ -92,11 +92,11 @@ to any resources within the namespace `myapp-dev`.
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: myapp-dev-admins  ### Your namespace with `-admin` e.g. `<servicename-env>-admin`
+  name: myapp-dev-admins ### Your namespace with `-admin` e.g. `<servicename-env>-admin`
   namespace: myapp-dev ### Your namespace `<servicename-env>`
 subjects:
   - kind: Group
-    name: "github:<yourTeam>" ### Make this the name of the GitHub team you want to give access to
+    name: "github:<yourTeam>" ### Make this the name of the GitHub team (lowercase) you want to give access to
     apiGroup: rbac.authorization.k8s.io
 roleRef:
   kind: ClusterRole

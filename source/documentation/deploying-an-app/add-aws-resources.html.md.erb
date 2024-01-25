@@ -1,7 +1,7 @@
 ---
 title: Adding AWS resources to your environment
-last_reviewed_on: 2024-01-23
-review_in: 3 months
+last_reviewed_on: 2024-01-25
+review_in: 6 months
 ---
 
 # <%= current_page.data.title %>
@@ -76,7 +76,7 @@ See [this article](/documentation/deploying-an-app/add-secrets-to-deployment.htm
 
 ### Versioning
 
-Only the latest version of a Cloud Platform terraform module may be used.
+Only the latest version of a Cloud Platform terraform module may be used. A github action runs on each pr and will fail if the latest version isn't used, you can check the failed action for the latest version.
 
 The Cloud Platform team will upgrade all existing instances of a module, whenever a new version is released, as per this [architecture decision record]
 
