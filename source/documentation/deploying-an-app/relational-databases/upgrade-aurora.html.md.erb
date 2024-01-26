@@ -11,11 +11,17 @@ If you have a Aurora DB Cluster in the Cloud Platform, you must keep it up to da
 AWS publishes an end-of-life schedule for major and minor versions of 
 [Postgresql](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.VersionPolicy.html#Aurora.VersionPolicy.MajorVersions)
  and [MySQL](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Updates.html) 
- to understand your upgrade paths. 
+ to help you keep your database up to date and plan for upgrades.
+
+## Things to note before upgrading a database version
+
+>A minor database version upgrade, a major database version upgrade, or changing your DB cluster instance type **will always** cause downtime.
+
+>There is no rule of thumb to work out how long it will take, but tests show an empty database using a `db.t4g.micro` will take around 10 minutes.
 
 ## Upgrading to a new major database version
 
->Note: This will cause downtime. See [Things to note before upgrading your database](#things-to-note-before-upgrading-a-database-version-or-changing-the-instance-type).
+>Note: This will cause downtime. See [Things to note before upgrading your database](#things-to-note-before-upgrading-a-database-version).
 
 To upgrade your major Aurora DB Cluster version, complete these eight steps:
 
@@ -55,10 +61,10 @@ If your new major database version does not support your current instance type, 
     
     ```
     If you have a custom parameter group, update the family to the new major version. 
-    For example, if your new major engine version is `15` then update the familyr to "aurora-postgresql15"
+    For example, if your new major engine version is `15` then update the family to "aurora-postgresql15"
     
     As soon as this PR is merged, the major version upgrade will begin.
 
 8. Raise and merge a PR to remove the `APPLY_PIPELINE_SKIP_THIS_NAMESPACE` file added in step 2
-   If you have a custom parameter group, set the `db_parameter_group_name` to the custom parameter group name.
+   If you have a custom parameter group, add back the `db_parameter_group_name` to the custom parameter group name.
 
