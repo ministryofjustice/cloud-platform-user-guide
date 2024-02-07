@@ -54,6 +54,7 @@ kubectl \
 ```
 
 Use port `1433` for MS-SQL.
+
 Use port `3306` for My-SQL.
 
 > This creates a pod in your namespace, but without a deployment to manage it.
@@ -76,6 +77,7 @@ kubectl \
 ```
 
 Use port `1433` for MS-SQL.
+
 Use port `3306` for My-SQL.
 
 You need to leave this running as long as you are accessing the database.
@@ -97,7 +99,7 @@ For MS-SQL, use [sqlcmd for MacOS](https://cloudblogs.microsoft.com/sqlserver/20
 sqlcmd -S tcp:127.0.0.1,1433 -U $user -P $pass -Q 'select @@version'
 ```
 
-For My-SQL, use [mysql for MacOS](https://stackoverflow.com/questions/30990488/how-do-i-install-command-line-mysql-client-on-mac) and test with a command like
+For My-SQL, use [mysql for MacOS](https://stackoverflow.com/questions/30990488/how-do-i-install-command-line-mysql-client-on-mac) and test with a command like below - note there is no space between parameter and value
 
 ```
 mysql -h127.0.0.1 -P3306 -u$user -p$pass
