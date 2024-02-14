@@ -1,5 +1,5 @@
 ---
-title: Using the Cloud Platform service pod
+title: Cloud Platform service pod for AWS CLI access
 last_reviewed_on: 2024-01-16
 review_in: 6 months
 ---
@@ -10,6 +10,8 @@ The Cloud Platform team provide a "service pod" module to help users run mainten
 
 You need to have complete step 1 (configuring IRSA) in [Accessing AWS APIs and resources from your namespace](/documentation/other-topics/accessing-aws-apis-and-resources-from-your-namespace.html#using-irsa-in-your-namespace) to use the service pod module.
 
+
+
 Once you've done that, you can create and use the service pod by completing the following three steps:
 
 1. Raise and merge a PR that configures [`cloud-platform-terraform-service-pod`](https://github.com/ministryofjustice/cloud-platform-terraform-service-pod) in your namespace:
@@ -18,6 +20,13 @@ Once you've done that, you can create and use the service pod by completing the 
     # irsa configuration is required to use the service pod
     module "irsa" {
       ...
+      role_policy_arns = {
+      ...
+      # Here you must provide the policy arn(s) for the AWS resources you want to access via the service pod
+      s3  = module.s3.irsa_policy_arn
+      rds = module.rds.irsa_policy_arn
+    ...
+  }
     }
 
     # set up the service pod
