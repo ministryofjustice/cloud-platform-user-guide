@@ -1,6 +1,6 @@
 ---
 title: RDS Snapshots
-last_reviewed_on: 2024-04-10
+last_reviewed_on: 2024-02-14
 review_in: 6 months
 ---
 
@@ -37,7 +37,6 @@ The `db-instance-identifier` is the `cloud-platform-xxxxxxxxxxxxxxxx` part.
 #### 2. List the available snapshots using the AWS CLI:
 
 ```
-eval $(cloud-platform decode-secret -n <your namespace> -s <the secret storing your RDS details> --export-aws-credentials)
 aws rds describe-db-snapshots --db-instance-identifier <db-instance-identifier>
 ```
 
