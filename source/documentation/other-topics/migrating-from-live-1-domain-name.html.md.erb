@@ -1,6 +1,6 @@
 ---
 title: Migrating your application URL from live-1 to non-cluster specific domain
-last_reviewed_on: 2023-11-20
+last_reviewed_on: 2024-02-23
 review_in: 3 months
 ---
 
@@ -8,7 +8,7 @@ review_in: 3 months
 
 ### Background
 
-Following the decomissioning of Cloud Platform live-1 Kubernetes cluster, we are now
+Following the decommissioning of Cloud Platform live-1 Kubernetes cluster, we are now
 looking to ensure that all services currently running have their domain URL migrate
 to non-cluster specific domain `*.apps.cloud-platform.service.justice.gov.uk`. Please read our ADR on [Domain names](https://github.com/ministryofjustice/cloud-platform/blob/main/architecture-decision-record/025-Domain-names.md)
 
@@ -223,7 +223,7 @@ And running:
 
 `kubectl apply --filename ingress.yaml --namespace <namespace>`
 
-Once you are satisified that the new hostname is working, remove the `host:` block
+Once you are satisfied that the new hostname is working, remove the `host:` block
 for live-1, and run the above apply command again.
 
 ```yaml

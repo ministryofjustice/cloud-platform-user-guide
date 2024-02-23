@@ -1,7 +1,7 @@
 ---
 title: StatefulSets (Pods with Persistent Volumes)
-last_reviewed_on: 2023-11-20
-review_in: 3 months
+last_reviewed_on: 2024-02-23
+review_in: 6 months
 ---
 
 # <%= current_page.data.title %>
@@ -10,7 +10,8 @@ review_in: 3 months
 ### Introduction
 
 Like a Deployment, a [StatefulSet](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/) manages Pods that are based on an identical container spec. Unlike a Deployment, a StatefulSet maintains a sticky identity for each of their Pods. These pods are created from the same spec, but are not interchangeable: each has a persistent identifier (UID) that it maintains across any rescheduling. It also provides guarantees on the ordering and uniqueness of the Pods.
-  StatefulSets also require a [headless service] to manage network identities for pods. Each Pod gets a sticky network subdomain and [SRV record] that does not change if a Pod is deleted and recreated.
+
+StatefulSets also require a [headless service] to manage network identities for pods. Each Pod gets a sticky network subdomain and [SRV record] that does not change if a Pod is deleted and recreated.
 
 You can see an example below where a Pod is deleted, but then recreated with the same `name` using the StatefulSet spec.
 

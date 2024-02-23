@@ -1,7 +1,7 @@
 ---
 title: Creating a Route 53 Hosted Zone
-last_reviewed_on: 2023-11-20
-review_in: 3 months
+last_reviewed_on: 2024-02-23
+review_in: 6 months
 ---
 
 # <%= current_page.data.title %>
@@ -45,11 +45,12 @@ provider "aws" {
 }
 
 ```
-Note: If you already have that file defined in your environment, do not recreate it.
+> Note: If you already have that file defined in your environment, do not recreate it.
 
 ### variables.tf
 
-This file declares the variables fields utilised in the route53.tf file below<br>
+This file declares the variables fields utilised in the route53.tf file below
+
 Fill in the variables below with your settings. Fill _namespace_ field below with your existing kubernetes namespace, all the _example_ fields below with desired values (all lowercase, and no spaces), and the _domain_ variable with your desired URL (pay special attention if your URL contains "justice" or not).
 
 ```
@@ -99,13 +100,13 @@ variable "domain" {
 }
 ```
 
-Note: If you already have that file defined in your environment, do not recreate it, but make sure that all the variables mentioned above are included, for example, the _domain_
+> Note: If you already have that file defined in your environment, do not recreate it, but make sure that all the variables mentioned above are included, for example, the _domain_
 
 ### route53.tf
 
 Make sure to replace the placeholders and example values below with relevant ones. If you are referring from variables in variables.tf, use `var.VARIABLE NAME`, so for example, the "domain" variable defined in `variable.tf` can be referenced as `var.domain`.
 
-Note: Please follow the convention on when to use `_` vs `-`.
+> Note: Please follow the convention on when to use `_` vs `-`.
 
 ```hcl
 resource "aws_route53_zone" "example_team_route53_zone" {

@@ -1,7 +1,7 @@
 ---
 title: Accessing AWS APIs and resources from your namespace
-last_reviewed_on: 2023-11-20
-review_in: 3 months
+last_reviewed_on: 2024-02-23
+review_in: 6 months
 ---
 
 # <%= current_page.data.title %>
@@ -57,7 +57,7 @@ To do this, complete the following three steps:
       service_account_name = "example-name"
       namespace            = var.namespace # this is also used as a tag
 
-      # Attach the approprate policies using a key => value map
+      # Attach the appropriate policies using a key => value map
       # If you're using Cloud Platform provided modules (e.g. SNS, S3), these
       # provide an output called `irsa_policy_arn` that can be used.
       role_policy_arns = {

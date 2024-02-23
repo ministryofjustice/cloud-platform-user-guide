@@ -1,7 +1,7 @@
 ---
 title: Create a Postgres container
-last_reviewed_on: 2023-11-20
-review_in: 3 months
+last_reviewed_on: 2024-02-23
+review_in: 6 months
 ---
 
 # <%= current_page.data.title %>
@@ -47,7 +47,7 @@ helm install mydb bitnami/postgresql -f values.yaml --namespace <your namespace>
 
 Change `mydb` to whatever name you want your pod to have.
 
-Check that the PostgreSQL Helm Chart is deployed sucessfully:
+Check that the PostgreSQL Helm Chart is deployed successful:
 
     kubectl get pods --namespace <your namespace>
 
@@ -76,7 +76,7 @@ PostgreSQL can be accessed via port 5432 on the following DNS name from within t
 mydb-postgresql.<your namespace>.svc.cluster.local - Read/Write connection
 ```
 
-The `postgresqlPassword` you have set will be stored as a secret in your namespace, to get the password for the `postgres` datase user, run:
+The `postgresqlPassword` you have set will be stored as a secret in your namespace, to get the password for the `postgres` database user, run:
 
 ```
 export POSTGRES_PASSWORD=$(kubectl get secret --namespace <your namespace> mydb-postgresql -o jsonpath="{.data.postgresql-password}" | base64 --decode)
@@ -98,8 +98,7 @@ When you have finished with your postgres instance, you can get rid of it like t
 helm uninstall mydb --namespace <your namespace>
 ```
 
-> If you used something other than `mydb` as the name of your installation, you
-> will need to use that name instead.
+> If you used something other than `mydb` as the name of your installation, you will need to use that name instead.
 
 [env-create]: /documentation/getting-started/env-create.html#creating-a-cloud-platform-environment
 [auth-to-cluster]: /documentation/getting-started/kubectl-config.html#authenticating-with-the-cloud-platform-39-s-kubernetes-cluster

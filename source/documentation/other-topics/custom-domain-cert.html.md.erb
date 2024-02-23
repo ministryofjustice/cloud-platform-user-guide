@@ -1,15 +1,14 @@
 ---
 title: Using a custom domain
-last_reviewed_on: 2023-11-20
-review_in: 3 months
+last_reviewed_on: 2024-02-23
+review_in: 6 months
 ---
 
 # <%= current_page.data.title %>
 
 ### Background
 
-Every application running on the Cloud Platform is able to use a hostname for its
-HTTP endpoints, using a pre-defined domain:
+Every application running on the Cloud Platform is able to use a hostname for its HTTP endpoints, using a pre-defined domain:
 
 ```
 *.apps.live.cloud-platform.service.justice.gov.uk
@@ -17,60 +16,35 @@ HTTP endpoints, using a pre-defined domain:
 
 This works automatically, using a wildcard [TLS] certificate.
 
-Most applications will need their own, application-specific `gov.uk` hostname.
-These hostnames (or usually, entire domains) are managed individually and a
-number of actions are required to set them up.
+Most applications will need their own, application-specific `gov.uk` hostname. These hostnames (or usually, entire domains) are managed individually and a number of actions are required to set them up.
 
 > Note: Using pre-defined domain is only recommended for development/staging/uat environments, as this is cluster bound and we will not always be on the live cluster. For any production environments, we strongly recommend using the custom domain, as it will always be the same regardless of what cluster the domain lives on.
 
 ### Setup
 
-Domains are managed inside [DNS zones]. You can read more about the structure
-of the Domain Name System in this [page][wiki-domain-structure]. It is
-recommended that applications use their own DNS zones, to provide better
-isolation, and make management simpler.
+Domains are managed inside [DNS zones]. You can read more about the structure of the Domain Name System in this [page][wiki-domain-structure]. It is recommended that applications use their own DNS zones, to provide better isolation, and make management simpler.
 
 #### Defining the DNS zone
 
-To create the zone, you define it as a resource in your environment. Make sure
-to read [the guidance on naming domains][naming-domains] first, and follow the
-instructions to [create the Route53 zone][creating-zone].
+To create the zone, you define it as a resource in your environment. Make sure to read [the guidance on naming domains][naming-domains] first, and follow the instructions to [create the Route53 zone][creating-zone].
 
-To simplify management, we recommend that you only define a single zone, as part
-of the resources for your production environment, if possible. You can still use
-subdomains of that zone for different environments.
+To simplify management, we recommend that you only define a single zone, as part of the resources for your production environment, if possible. You can still use subdomains of that zone for different environments.
 
-Once the zone is created, you will need to setup the necessary name server (NS)
-records in the parent DNS zone, before you can use it. **This step must be completed
-before proceeding to [create a certificate](#obtaining-a-certificate)**.
-For more information on how this delegation method works, you can read about authoritative
-name servers in this [page][wiki-nameservers].
+Once the zone is created, you will need to setup the necessary name server (NS) records in the parent DNS zone, before you can use it. **This step must be completed before proceeding to [create a certificate](#obtaining-a-certificate)**. For more information on how this delegation method works, you can read about authoritative name servers in this [page][wiki-nameservers].
 
-If your zone is for a subdomain of `service.justice.gov.uk` (eg.: `https://myapp.service.justice.gov.uk`),
-the Cloud Platform team can help you set it up; please [create a support ticket][support-ticket].
+If your zone is for a subdomain of `service.justice.gov.uk` (eg.: `https://myapp.service.justice.gov.uk`), the Cloud Platform team can help you set it up; please [create a support ticket][support-ticket].
 
-For any other domains (including any subdomain of `gov.uk`, eg.:
-`https://myservice.gov.uk`), you will need to contact the parent zone's
-administrators (usually GDS) to set this up. If in doubt, don't hesitate to get
-in touch with us in `#ask-cloud-platform`.
+For any other domains (including any subdomain of `gov.uk`, eg.: `https://myservice.gov.uk`), you will need to contact the parent zone's administrators (usually GDS) to set this up. If in doubt, don't hesitate to get in touch with us in `#ask-cloud-platform`.
 
-Please note, once you setup the NS records, you'll be delegating control of the
-zone to the Cloud Platform. Hostnames used by your services (using `Ingresses`)
-will be automatically managed by the cluster.
+Please note, once you setup the NS records, you'll be delegating control of the zone to the Cloud Platform. Hostnames used by your services (using `Ingresses`) will be automatically managed by the cluster.
 
-If you wish to create custom records in your zone you can do so by defining them
-in the [environments repository][env-repo] using the terraform
-[`aws_route53_record`][tf-route53-record] resource.
+If you wish to create custom records in your zone you can do so by defining them in the [environments repository][env-repo] using the terraform [`aws_route53_record`][tf-route53-record] resource.
 
 #### Obtaining a certificate
 
-1. Create the [Certificate][cert-guidance] resource, filling in any placeholders with your
-details. The `secretName` attribute defines the name of a [kubernetes secret] in your
-namespace where the certificate and key material will be stored.
+1. Create the [Certificate][cert-guidance] resource, filling in any placeholders with your details. The `secretName` attribute defines the name of a [kubernetes secret] in your namespace where the certificate and key material will be stored.
 
-> Please add the certificate by defining it in your namespace folder in the
-> environments repository. Doing so means it will automatically be restored in
-> the event of any problems with our certificate/DNS systems.
+> Please add the certificate by defining it in your namespace folder in the environments repository. Doing so means it will automatically be restored in the event of any problems with our certificate/DNS systems.
 
    ```
    ---
@@ -124,10 +98,7 @@ The Common Name field in certificates is limited to 64 characters. As a conseque
      Normal  CertIssued     1m    cert-manager  Certificate issued successfully
    ```
 
-   It generally takes just a few minutes for the certificate to be prepared and
-   the events displayed should indicate if there is a problem, or it simply needs
-   more time. If you cannot obtain a certificate, please get in touch with us in
-   `#ask-cloud-platform`.
+   It generally takes just a few minutes for the certificate to be prepared and the events displayed should indicate if there is a problem, or it simply needs more time. If you cannot obtain a certificate, please get in touch with us in `#ask-cloud-platform`.
 
 3. You will need to update your `Ingress` spec to include the new hostname.
 
@@ -173,15 +144,9 @@ The Common Name field in certificates is limited to 64 characters. As a conseque
 
 `ingress-name`, `namespace-name`, `hostname`, `my-cert-secret`, `my-svc` must all be replaced with actual values.
 
-(Note: The `colour` must be `green` for ingress in EKS `live` cluster)
+> Note: The `colour` must be `green` for ingress in EKS `live` cluster
 
-Once you've made the changes to your `Ingress`, the cluster (and more
-specifically, `external-dns`) will update the necessary records defined in it.
-This usually takes less than a minute until you are able to access your
-endpoint. However, depending on the DNS name servers your workstation uses, you
-might need to wait longer or try to "flush" your local DNS cache in order to
-speed up the process. You should search online for the proper method to do so,
-based on your operating system and/or browser.
+Once you've made the changes to your `Ingress`, the cluster (and more specifically, `external-dns`) will update the necessary records defined in it. This usually takes less than a minute until you are able to access your endpoint. However, depending on the DNS name servers your workstation uses, you might need to wait longer or try to "flush" your local DNS cache in order to speed up the process. You should search online for the proper method to do so, based on your operating system and/or browser.
 
 
 [env-repo]: https://github.com/ministryofjustice/cloud-platform-environments/
