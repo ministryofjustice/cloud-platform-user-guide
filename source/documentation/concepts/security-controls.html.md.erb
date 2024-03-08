@@ -1,6 +1,6 @@
 ---
 title: Security Controls on the Cloud Platform
-last_reviewed_on: 2023-12-05
+last_reviewed_on: 2023-04-07
 review_in: 3 months
 ---
 
@@ -15,14 +15,14 @@ systems.
 The Cloud Platform (CP) is hosted in [Amazon AWS], and consists of two [kubernetes] clusters:
 
 * manager - an [EKS] cluster which runs shared services such as monitoring and CI/CD pipelines
-* live - a [EKS] "application" cluster, managed by EKS, which runs all hosted services.
+* live - an [EKS] "application" cluster, managed by EKS, which runs all hosted services.
 
 ...plus additional AWS managed services such as database instances, S3 buckets,
 etc.
 
 The clusters and all the AWS resources that services use are hosted in a single
 [VPC], which is only accessible to the outside world via either https
-connections, or via the kubernetes API and SSH through a bastion host (only the
+connections or via the kubernetes API and SSH through a bastion host (only the
 CP team have access to these).
 
 ### Isolation of services
@@ -48,7 +48,7 @@ cluster. Services do not know, and should not care, which worker nodes are
 hosting them at any given moment. So, network connections to, for example, an
 RDS instance could come from **any** of the worker nodes in the cluster.
 
-Security groups work at the EC2 instance level. i.e. requests to an RDS
+Security groups work at the EC2 instance level i.e. requests to an RDS
 instance from a specific set of EC2 instances would be allowed, and others
 would be blocked. Since we can't block requests from any of the worker nodes,
 security groups cannot be used.
