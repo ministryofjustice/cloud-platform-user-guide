@@ -1,0 +1,40 @@
+---
+title: Cloud Platform Metrics and Dashboards
+last_reviewed_on: 2024-03-12
+review_in: 6 months
+---
+
+# <%= current_page.data.title %>
+
+This guide provide details of metrics and dashboards that are available to view the health and understand the behaviours of the platform.
+
+## Dashboards
+
+Cloud Platform uses several Grafana dashboards to monitor the health of the platform. These [dashboards](https://grafana.live.cloud-platform.service.justice.gov.uk/dashboards?query=kubernetes) are available to all Cloud Platform users.
+
+Some of the key dashboards are:
+
+To monitor the resource usage of the cluster: https://grafana.live.cloud-platform.service.justice.gov.uk/d/k8s_views_global/kubernetes-views-global?orgId=1&refresh=30s
+
+Cluster health: https://grafana.live.cloud-platform.service.justice.gov.uk/d/ba255dda-9cf8-4366-a096-8b6a2883ca49/kubernetes-cluster-status?orgId=1
+
+Namespace level usage: https://grafana.live.cloud-platform.service.justice.gov.uk/d/k8s_views_ns/kubernetes-views-namespaces?orgId=1&refresh=30s
+
+## Metrics and Alerts
+
+Cloud Platform uses Prometheus metrics to collect the data from the cluster and Alertmanager to send alerts to Slack Channel. These are the alerts that are set up to monitor the health of the cluster: https://github.com/ministryofjustice/cloud-platform-terraform-monitoring/tree/main/resources/prometheusrule-alerts
+
+The platform also uses Pingdom as a black box monitoring tool to monitor the cluster from outside and use Pagerduty to send alerts to Slack channel and person on-call.
+
+All alerts triggered from Alertmanager and Pagerduty come to [#high-priority-alarms](https://moj.enterprise.slack.com/archives/C8PF51AT0) and [#lower-priority-alarms](https://moj.enterprise.slack.com/archives/C8QR5FQRX) channel based on the severity of the alert. 
+
+## Cloud Platform hosted Services and their costs
+
+The Cloud Platform team has created a dashboard to report on the number of services hosted on the platform and their costs. 
+
+Cloud Platform hosted services: https://grafana.live.cloud-platform.service.justice.gov.uk/d/cloud_platforms_namespace_metrics/cloud-platforms-namespace-metrics?orgId=1
+
+Cloud Platform costs per namespace: https://grafana.live.cloud-platform.service.justice.gov.uk/d/cloud_platforms_aws_costs_metrics/cloud-platforms-aws-costs-metrics?orgId=1
+
+Cloud Platform deployments: https://grafana.live.cloud-platform.service.justice.gov.uk/d/cloud_platforms_performance_metrics/cloud-platforms-performance-metrics?orgId=1
+
