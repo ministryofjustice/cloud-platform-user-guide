@@ -1,6 +1,6 @@
 ---
 title: Security Controls on the Cloud Platform
-last_reviewed_on: 2023-04-07
+last_reviewed_on: 2023-03-15
 review_in: 3 months
 ---
 
@@ -46,7 +46,7 @@ The kubernetes cluster has a pool of [worker nodes] \(EC2 instances\) which are
 entirely interchangeable from the point of view of the services hosted in the
 cluster. Services do not know, and should not care, which worker nodes are
 hosting them at any given moment. So, network connections to, for example, an
-RDS instance could come from **any** of the worker nodes in the cluster.
+RDS instance, could come from **any** of the worker nodes in the cluster.
 
 Security groups work at the EC2 instance level i.e. requests to an RDS
 instance from a specific set of EC2 instances would be allowed, and others
