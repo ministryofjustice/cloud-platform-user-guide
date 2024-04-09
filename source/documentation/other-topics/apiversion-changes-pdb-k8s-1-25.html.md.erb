@@ -1,6 +1,6 @@
 ---
 title: Updating PodDisruptionBudget API version for Cloud Platform - removed Kubernetes v1.25
-last_reviewed_on: 2024-01-09
+last_reviewed_on: 2024-04-09
 review_in: 3 months
 ---
 
@@ -8,7 +8,7 @@ review_in: 3 months
 
 The <b>policy/v1beta1</b> API version of PodDisruptionBudget (PDB) is deprecated as of Kubernetes release v1.21, and will no longer be served as of v1.25.
 
-Cloud Platform users must ensure any PodDisruptionBudget manifests are migrated to use the <b>policy/v1</b> API version, which is supported on our current cluster version (v1.24 as of writing).
+Cloud Platform users must ensure any PodDisruptionBudget manifests are migrated to use the <b>policy/v1</b> API version, which is supported on our current cluster version (v1.27 as of writing).
 
 Further details can be found within the [Kubernetes deprecation guide](https://kubernetes.io/docs/reference/using-api/deprecation-guide/#poddisruptionbudget-v125)
 
