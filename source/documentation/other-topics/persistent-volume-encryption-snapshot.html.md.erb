@@ -1,6 +1,6 @@
 ---
 title: Persistent Volume encryption at rest and daily snapshots
-last_reviewed_on: 2024-01-16
+last_reviewed_on: 2024-04-16
 review_in: 3 months
 ---
 
@@ -105,7 +105,7 @@ resource "kubernetes_secret" "persistentvolume_backup_sec" {
 
 If you want to [restore a PV from a snapshot][restore-snapshot], speak to the cloud-platform team in the #ask-cloud-platform channel.
 
-[gp3]: https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/main/terraform/aws-accounts/cloud-platform-aws/vpc/eks/components/storage.tf#L52-L68
+[gp3]: https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/main/terraform/aws-accounts/cloud-platform-aws/vpc/eks/core/components/storage.tf#L52-L68
 [env-repo]: https://github.com/ministryofjustice/cloud-platform-environments/
 [storage class]: https://kubernetes.io/docs/concepts/storage/storage-classes/
 [dynamic-provisioning]: https://kubernetes.io/docs/concepts/storage/dynamic-provisioning/
