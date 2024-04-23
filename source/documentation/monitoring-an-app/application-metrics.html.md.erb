@@ -18,6 +18,8 @@ The application latency [metric](https://prometheus.io/docs/concepts/metric_type
 ### Assumptions
 To keep this document short we will assume you already have an application up and running in a namespace on the Cloud Platform, if not, please see [Deploying a multi-container application to the Cloud Platform](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/deploying-an-example-application.html#deploying-a-multi-container-application-to-the-cloud-platform).
 
+>Note: make sure your container has the correct timezone [see see here](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/container-repositories/requirements.html#setting-utc-timezone-inside-your-container)
+
 ### Changing the application code
 We need to add the Prometheus Ruby client library via a gem to give us our `/metrics` endpoint.
 

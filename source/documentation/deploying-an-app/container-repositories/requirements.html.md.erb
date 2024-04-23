@@ -1,6 +1,6 @@
 ---
 title: Requirements for deploying a container image
-last_reviewed_on: 2024-01-16
+last_reviewed_on: 2024-04-22
 review_in: 12 months
 layout: google-analytics
 ---
@@ -13,6 +13,7 @@ To deploy a container image to the Cloud Platform, you must ensure your containe
 - runs a [stateless](https://12factor.net/processes) and [disposable](https://12factor.net/disposability) application, because we restart containers frequently
 - runs as a non-root user, because we don't allow containers to use root access for security reasons
 - runs on an [unprivileged port](https://www.w3.org/Daemon/User/Installation/PrivilegedPorts.html) (your image should expose a port over `1024`, e.g `8080`)
+- the timezone of the container is set to UTC
 
 You must also keep your container image up to date and [secure by default](https://security-guidance.service.justice.gov.uk/#cyber-and-technical-security-guidance).
 
@@ -41,3 +42,15 @@ USER 1001
 ```
 
 If you need help to run your container as a non-root user, please speak to your team or consult the image vendor's documentation.
+
+## Setting UTC timezone inside your container
+
+Our cluster from the node level down to the metrics collection is based on the Coordinated Universal Time (UTC). We consciously avoid local timezones to avoid any [issues and bugs around daylight savings](http://yellerapp.com/posts/2015-01-12-the-worst-server-setup-you-can-make.html). Most containers are UTC by default but some are not. For debian based containers the following steps will set the TZ to UTC:
+
+```Dockerfile
+RUN apt install tzdata
+RUN ln -fs /usr/share/zoneinfo/UTC /etc/localtime
+```
+
+If you have your TZ incorrectly set this may cause issues around metrics.
+
