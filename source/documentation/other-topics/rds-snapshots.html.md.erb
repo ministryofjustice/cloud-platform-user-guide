@@ -37,6 +37,8 @@ The `db-instance-identifier` is the `cloud-platform-xxxxxxxxxxxxxxxx` part.
 
 #### 2. List the available snapshots using the AWS CLI:
 
+First of all, ensure you have a [Service Pod](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/cloud-platform-service-pod.html#cloud-platform-service-pod-for-aws-cli-access) running and configured for your target RDS instance, in order to run the AWS CLI commands.
+
 ```
 aws rds describe-db-snapshots --db-instance-identifier <db-instance-identifier>
 ```
