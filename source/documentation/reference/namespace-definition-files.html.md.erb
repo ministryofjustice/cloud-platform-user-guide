@@ -1,6 +1,6 @@
 ---
 title: "Kubernetes: namespace definition files"
-last_reviewed_on: 2024-01-24
+last_reviewed_on: 2024-04-26
 review_in: 3 months
 layout: google-analytics
 ---
@@ -9,7 +9,7 @@ layout: google-analytics
 
 ## Environment definition files
 
-To set up an environment we create 5 Kubernetes YAML files in the directory for
+To set up an environment, we create 5 Kubernetes YAML files in the directory for
 your namespace:
 
 * [`00-namespace.yaml`](#00-namespace-yaml)
@@ -107,7 +107,7 @@ roleRef:
 
 ### `02-limitrange.yaml`
 
-As we are working on a shared Kubernetes cluster it is useful to put in place
+As we are working on a shared Kubernetes cluster, it is useful to put in place
 limits on the resources that each namespace, pod and container can use. This
 helps to stop us accidentally entering a situation where one service impacts
 the performance of another through using more resources than are available.
@@ -161,7 +161,7 @@ spec:
 ### `04-networkpolicy.yaml`
 
 The [NetworkPolicy] object defines how groups of pods are allowed to
-communicate with each other and other network endpoints. By default pods are
+communicate with each other and other network endpoints. By default, pods are
 non-isolated, they accept traffic from any source. We apply a network policy to
 restrict where traffic can come from, allowing traffic only from the [ingress
 controller] and other pods in your namespace.
