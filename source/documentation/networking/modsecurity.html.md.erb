@@ -24,6 +24,7 @@ layout: google-analytics
 >    nginx.ingress.kubernetes.io/modsecurity-snippet: |
 >      SecRuleEngine On
 >      SecDefaultAction "phase:2,pass,log,tag:github_team=<my-great-team-name>"
+>      SecDefaultAction "phase:4,pass,log,tag:github_team=<my-great-team-name>"
 >spec:
 >  ingressClassName: modsec
 >```
