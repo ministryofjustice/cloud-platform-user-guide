@@ -1,7 +1,7 @@
 ---
 title: Migrating your application URL from live-1 to non-cluster specific domain
-last_reviewed_on: 2024-02-23
-review_in: 3 months
+last_reviewed_on: 2024-05-24
+review_in: 6 months
 layout: google-analytics
 ---
 
@@ -9,26 +9,19 @@ layout: google-analytics
 
 ### Background
 
-Following the decommissioning of Cloud Platform live-1 Kubernetes cluster, we are now
-looking to ensure that all services currently running have their domain URL migrate
-to non-cluster specific domain `*.apps.cloud-platform.service.justice.gov.uk`. Please read our ADR on [Domain names](https://github.com/ministryofjustice/cloud-platform/blob/main/architecture-decision-record/025-Domain-names.md)
+Following the decommissioning of Cloud Platform live-1 Kubernetes cluster, we are now looking to ensure that all services currently running have their domain URL migrate to non-cluster specific domain `*.apps.cloud-platform.service.justice.gov.uk`. Please read our ADR on [Domain names](https://github.com/ministryofjustice/cloud-platform/blob/main/architecture-decision-record/025-Domain-names.md)
 
-We are asking all users of the platform to check/update their Kubernetes deployments 
-and or Helm Charts to reflect this change, prior to the removal of the 
-`*.apps.live-1.cloud-platform.services.justice.gov.uk` Route53 hosted zone in the near future.
+We are asking all users of the platform to check/update their Kubernetes deployments and or Helm Charts to reflect this change, prior to the removal of the `*.apps.live-1.cloud-platform.services.justice.gov.uk` Route53 hosted zone in the near future.
 
-### Do I need to update my application domain? 
+### Do I need to update my application domain?
 
-To check whether you have a Cloud Platform hosted application still configured to use the 
-`live-1` domain, please consult [this page](https://reports.cloud-platform.service.justice.gov.uk/live_1_domains).
+To check whether you have a Cloud Platform hosted application still configured to use the `live-1` domain, please consult [this page](https://reports.cloud-platform.service.justice.gov.uk/live_1_domains).
 
 ### Steps to follow
 
-> **IMPORTANT**: Switching your domain over will incur a short delay due to DNS propogation. We strongly
-advise you to test in non-production environments before making the change on any production environments. 
+> **IMPORTANT**: Switching your domain over will incur a short delay due to DNS propagation. We strongly advise you to test in non-production environments before making the change on any production environments.
 
-> If you wish to test your new non-cluster specific hostname is resolvable before deleting your `live-1` hostname, you can follow 
-[these steps](#staged-migration) described further down in this guide.
+> If you wish to test your new non-cluster specific hostname is resolvable before deleting your `live-1` hostname, you can follow [these steps](#staged-migration) described further down in this guide.
 
 To view your current domain URL for your given deployment, run the following kubectl command:
 
@@ -43,8 +36,7 @@ my-application.apps.live-1.cloud-platform.service.justice.gov.uk
 
 ### Resources deployed using kubectl
 
-If you are using standard Kubernetes deployment manifests, your ingress manifest should look 
-similar to the following:
+If you are using standard Kubernetes deployment manifests, your ingress manifest should look similar to the following:
 
 ```
 apiVersion: networking.k8s.io/v1
@@ -144,7 +136,7 @@ spec:
             backend:
               service:
                 name: {{ $fullName }}
-                port: 
+                port:
                   name: http
   {{- end }}
 {{- end }}
@@ -175,13 +167,11 @@ To apply your changes via Helm:
 
 ### Check everything is working
 
-Once you applied your updates you should be able to check that your ingress has been updated
-by visiting your URL on your web browser.
+Once you applied your updates you should be able to check that your ingress has been updated by visiting your URL on your web browser.
 
 ### Staged migration
 
-You can edit your ingress to temporarily contain both `live-1` and non-cluster specific hostnames, removing 
-the old hostname once you are able to resolve via the new hostname.
+You can edit your ingress to temporarily contain both `live-1` and non-cluster specific hostnames, removing the old hostname once you are able to resolve via the new hostname.
 
 For standard Kubernetes manifests, this can be achieved as follows:
 
@@ -224,8 +214,7 @@ And running:
 
 `kubectl apply --filename ingress.yaml --namespace <namespace>`
 
-Once you are satisfied that the new hostname is working, remove the `host:` block
-for live-1, and run the above apply command again.
+Once you are satisfied that the new hostname is working, remove the `host:` block for live-1, and run the above apply command again.
 
 ```yaml
   - host: my-application.apps.live-1.cloud-platform.service.justice.gov.uk

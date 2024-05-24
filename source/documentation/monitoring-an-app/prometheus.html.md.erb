@@ -1,6 +1,6 @@
 ---
 title: Using the Cloud Platform Monitoring and Alerting stack
-last_reviewed_on: 2023-11-16
+last_reviewed_on: 2024-05-24
 review_in: 6 months
 layout: google-analytics
 ---
@@ -70,9 +70,9 @@ The JSON can be generated using the Grafana web UI. Alternatively you can copy a
 
 #### Configure a dashboard using the Grafana UI
 
-Although Grafana's web UI allows you to create and edit dashboard panels, please note that changes made are not persisted - they are only temporary. 
-Instead, Grafana displays dashboards that are defined in ConfigMaps, which are kubernetes resources in team namespaces. 
-Teams can create and edit these by using `kubectl`, as described below. Or even better, store the ConfigMap's YAML in a file in your repo, 
+Although Grafana's web UI allows you to create and edit dashboard panels, please note that changes made are not persisted - they are only temporary.
+Instead, Grafana displays dashboards that are defined in ConfigMaps, which are kubernetes resources in team namespaces.
+Teams can create and edit these by using `kubectl`, as described below. Or even better, store the ConfigMap's YAML in a file in your repo,
 and setup CI/CD to deploy it to your namespace, in a similar way to you deploy your app.
 
 1. Sign in to Grafana - see the [links below](#how-to-access-monitoring-tools) - with your GitHub account.
@@ -146,7 +146,7 @@ Once you have got a dashboard JSON string, paste it into a `ConfigMap` in your n
 2. Substitute your own values for the `name`, `namespace`, JSON filename and the contents of the JSON document.
 
     Ensure:
-    
+
     1. the "uid" and "title" (at the top level) are unique amongst Cloud Platform dashboards. (If you create a ConfigMap with values that duplicate any other in Cloud Platform, then until this is resolved, Grafana will NOT apply changes to ANY dashboards! Issue is described here: [Grafana #39467](https://github.com/grafana/grafana/issues/39467))
     2. the filename must be unique amongst Cloud Platform dashboards (otherwise you'll see "Dashboard not found" errors)
     3. the filename must end in `-dashboard.json`
@@ -158,22 +158,21 @@ Once you have got a dashboard JSON string, paste it into a `ConfigMap` in your n
 
 #### Tips
 
-These dashboards are infrastructure, so as with other infrastructure as code it's a good idea to store the YAML as a file in your app's git repo, 
-and set-up CI/CD to deploy changes to the ConfigMap. 
+These dashboards are infrastructure, so as with other infrastructure as code it's a good idea to store the YAML as a file in your app's git repo, and set-up CI/CD to deploy changes to the ConfigMap.
 This allows changes to be PR-reviewed by team mates, and changes to be tracked, reverted, and deployment is easier.
 
-Cloudwatch metrics can be shown in a dashboard - see: 
+Cloudwatch metrics can be shown in a dashboard - see:
 [Using the CloudWatch data source in Grafana](/documentation/monitoring-an-app/how-to-use-cloudwatch-datasource.html)
 
 Metrics over a longer term than 24h can be shown. To build dashboards for long-term metrics, select "Thanos" as the "Data source".
-       
+
 ### Pushgateway
 
-[Pushgateway] allows ephemeral and batch jobs to expose their metrics to Prometheus. 
+[Pushgateway] allows ephemeral and batch jobs to expose their metrics to Prometheus.
 Since these kinds of jobs may not exist long enough to be scraped, they can instead push their metrics to a Pushgateway.
 The Pushgateway then exposes these metrics to Prometheus.
 
-You can install pushgateway into your namespace by adding the 
+You can install pushgateway into your namespace by adding the
 [module](https://github.com/ministryofjustice/cloud-platform-terraform-pushgateway) to your resources folder of
 [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments) repo.
 
@@ -182,7 +181,7 @@ You can install pushgateway into your namespace by adding the
 All links provided below require you to authenticate with your Github account.
 
 Prometheus: [https://prometheus.cloud-platform.service.justice.gov.uk](https://prometheus.cloud-platform.service.justice.gov.uk)
-       
+
 Thanos: [https://thanos.live.cloud-platform.service.justice.gov.uk](https://thanos.live.cloud-platform.service.justice.gov.uk)
 
 AlertManager: [https://alertmanager.cloud-platform.service.justice.gov.uk](https://alertmanager.cloud-platform.service.justice.gov.uk/)
@@ -192,8 +191,8 @@ Grafana: [https://grafana.cloud-platform.service.justice.gov.uk](https://grafana
 
 ### Other monitoring tools
 
-[Sentry](https://sentry.io/welcome/) isn't supported by the Cloud Platform team, but it is a useful tool for monitoring errors in your application. 
-If you'd like to read more, head over to the 
+[Sentry](https://sentry.io/welcome/) isn't supported by the Cloud Platform team, but it is a useful tool for monitoring errors in your application.
+If you'd like to read more, head over to the
 [operations-engineering](https://operations-engineering.service.justice.gov.uk/documentation/services/sentry.html#sentry-io) page.
 
 ### Validate Prometheus Rule
