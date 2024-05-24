@@ -1,6 +1,6 @@
 ---
 title: Connecting to the Cloud Platform's Kubernetes cluster
-last_reviewed_on: 2024-04-09
+last_reviewed_on: 2024-05-24
 review_in: 6 months
 layout: google-analytics
 ---
@@ -44,12 +44,19 @@ You can request access to the `ministryofjustice` GitHub organisation by:
 
 ### Joining the correct GitHub teams
 
-You can find the correct GitHub team to join by:
+You can find the correct GitHub team(s) to join by:
 
-- finding your services namespace in [`cloud-platform-environments`](https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live.cloud-platform.service.justice.gov.uk)
-- in your namespace directory, view the `00-namespace.yaml` file
-- there will be a `cloud-platform.justice.gov.uk/team-name` key with a value of the GitHub team name to join
-- ask your team to add you to the listed GitHub team
+- finding your service's namespace in [`cloud-platform-environments`](https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live.cloud-platform.service.justice.gov.uk)
+- in your namespace directory, view the `01-rbac.yaml` file
+- there will be at the least one `subject` of `kind: Group`, whose `name` is the GitHub team you need to join, ie:
+
+```
+subjects:
+  - kind: Group
+    name: "github:my-awesome-team"
+    apiGroup: rbac.authorization.k8s.io
+```
+- ask your team to add you to the listed GitHub team(s)
 
 ### Generating a kubeconfig file
 
