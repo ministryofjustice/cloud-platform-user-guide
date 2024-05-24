@@ -1,6 +1,6 @@
 ---
 title: Getting your data onto the Analytical Platform
-last_reviewed_on: 2023-11-20
+last_reviewed_on: 2024-05-24
 review_in: 6 months
 layout: google-analytics
 ---
@@ -15,24 +15,24 @@ Read more at [https://user-guidance.analytical-platform.service.justice.gov.uk/]
 
 ### How does data from my service get onto the Analytical Platform?
 
-The Analytical Platform requires a periodic (no more frequently than daily) dump of your service’s database. 
+The Analytical Platform requires a periodic (no more frequently than daily) dump of your service’s database.
 
 1. A cronjob will extract the data from your database, saving it to a specific location in an S3 bucket
 2. An ETL pipeline will load the data from the S3 bucket and load it into the data platform
 
 The data dump can be carried out  using the MoJ [Data Extraction Tool](https://github.com/ministryofjustice/data-engineering-data-extractor). When configured, this takes your database and exports it in JSON lines format to a pre-configured S3 bucket.
 
-The ETL pipeline is part of the [Register My Data Service](https://github.com/ministryofjustice/register-my-data). When configured, this will pull the data from the S3 bucket and load it into the Analytical Platform. 
+The ETL pipeline is part of the [Register My Data Service](https://github.com/ministryofjustice/register-my-data). When configured, this will pull the data from the S3 bucket and load it into the Analytical Platform.
 
 The data dump and the pipeline share an AWS role which enables sharing of the database extracts.
 
-### How do I setup my service to send data to the Analytical Platform? 
+### How do I setup my service to send data to the Analytical Platform?
 
 #### 1. Create the required AWS resources to allow the Data Extractor to extract the data to an S3 bucket
 
-You’ll need to create a user (and associated access policy) to write to the S3 bucket at the specific location from within your applications cloud platform environment. 
+You’ll need to create a user (and associated access policy) to write to the S3 bucket at the specific location from within your applications cloud platform environment.
 
-Conventially, add an analytical-platform.tf in your environment's resources folder. Here's an [example file](https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live.cloud-platform.service.justice.gov.uk/hmpps-strengths-based-needs-assessments-dev/resources/analytical-platform-access.tf)
+Conventionally, add an analytical-platform.tf in your environment's resources folder. Here's an [example file](https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live.cloud-platform.service.justice.gov.uk/hmpps-strengths-based-needs-assessments-dev/resources/analytical-platform-access.tf)
 
 You'll need to change the details to match your service, notably the values for the s3 bucket, which should be in the form "moj-reg-<ENVIRONMENT>/landing/<YOUR SERVICE NAME>-<ENVIRONMENT>" (eg for the my-test-service's preprod environment this should be "moj-reg-preprod/landing/my-test-service-preprod/*"). moj-reg-preprod stands for MoJ Register My Data PreProd.
 
@@ -52,7 +52,7 @@ The data extractor is deployed as a docker image. You configure it using environ
 
 Images to be deployed into an environment are configured using helm. You’ll need to create a new helm template for the data extractor and provide configuration it to use the secrets for the database access and s3 bucket access
 
-By convention this file is called data-extractor-job.yaml and is saved in the templates directory of your helm_deploy. Here is an [example data-extractor-job.yaml](https://github.com/ministryofjustice/hmpps-strengths-based-needs-assessments-api/blob/a0ea259952f3fa8e623980e132d879ca4c3c4b4b/helm_deploy/hmpps-strengths-based-needs-assessments-api/templates/data-extractor-job.yaml). 
+By convention this file is called data-extractor-job.yaml and is saved in the templates directory of your helm_deploy. Here is an [example data-extractor-job.yaml](https://github.com/ministryofjustice/hmpps-strengths-based-needs-assessments-api/blob/a0ea259952f3fa8e623980e132d879ca4c3c4b4b/helm_deploy/hmpps-strengths-based-needs-assessments-api/templates/data-extractor-job.yaml).
 
 Don't forget to change the values to suit your service's needs - notably the app label and the names of the k8s secrets that are used to configure the data extractor.
 
@@ -64,7 +64,7 @@ For each environment (eg dev, preprod, prod) that you want the data extractor to
 
 #### 3. Create the ETL pipeline
 
-The [Register My Data service](https://github.com/ministryofjustice/register-my-data) pulls your exported data from the S3 bucket and pushes it into the Analytical Platform. You create a pipeline for your service by editing the config.yaml file in the relevant moj-reg stack (ie moj-reg-dev, moj-reg-preprod, moj-reg-prod). 
+The [Register My Data service](https://github.com/ministryofjustice/register-my-data) pulls your exported data from the S3 bucket and pushes it into the Analytical Platform. You create a pipeline for your service by editing the config.yaml file in the relevant moj-reg stack (ie moj-reg-dev, moj-reg-preprod, moj-reg-prod).
 
 eg to configure for dev you'd add your service to [stacks/moj-reg-dev/config.yaml](https://github.com/ministryofjustice/register-my-data/blob/main/stacks/moj-reg-dev/config.yaml). You will need the ARN of the user created by terraform in step 1.
 
