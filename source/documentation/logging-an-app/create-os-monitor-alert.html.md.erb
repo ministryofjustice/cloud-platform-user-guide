@@ -1,0 +1,177 @@
+---
+title: Creating Monitor Alert in OpenSearch
+last_reviewed_on: 2024-06-05
+review_in: 6 months
+layout: google-analytics
+---
+
+# <%= current_page.data.title %>
+
+### Overview
+
+This guide will walk you through the steps on how to create an OpenSearch monitor alert in Cloud Platform OpenSearch Cluster with our terraform [cloud-platform-terraform-opensearch-alert module]. 
+
+OpenSearch monitor alerts allow you to detect specific conditions within your OpenSearch data and send notifications to a Slack channel. 
+
+### Prerequisites
+
+Before creating OpenSearch monitor alert, you need to use [cloud-platform-terraform-secrets-manager module] to create secret in AWS Secrets Manager to store the Slack webhook URL. 
+
+After merging PR, login to the [AWS console](/documentation/getting-started/accessing-the-cloud-console.html), search for `Secrets Manager` and navigate to the secret created in the previous step.
+
+Click on the secret and then click on `Retrieve secret value`. If this is your first time accessing the new secret, you will see an error `Failed to get the secret value`:
+
+![Failed to get secret value](/images/secrets-manager-1.png)
+
+This is expected, since we haven't added a value just yet!
+
+Next, click on `Set secret value`.
+
+Set the secret key to your desired key (e.g url) and the secret value to the actual Slack webhook URL. 
+
+![Set Secret Value](/images/secrets-manager-3.png)
+
+Cliek on "Save".
+
+Once the Slack webhook URL is stored, you can reference the variable `secret_name` and the `secret_key` in the OpenSearch alert module.
+
+![Use Secret Value](/images/secrets-manager-4.png)
+
+You may refer to our user guide [secret section](/documentation/deploying-an-app/add-secrets-to-deployment.html) for more information.
+
+### Creating an OpenSearch Monitor Alert in Application Log OpenSearch Cluster
+
+Once you have stored your Slack URL using the cloud-platform-terraform-secrets-manager, you can proceed to create an OpenSearch monitor alert with [cloud-platform-terraform-opensearch-alert module].
+
+By default, this module will create an alert in [Cloud Platform Application Log OpenSearch].
+
+Setup Terraform Module for OpenSearch Alerts:
+
+Add the following configuration to your Terraform files to create an OpenSearch monitor alert. This Terraform module will detect specific conditions and send notifications to a Slack channel.
+
+```
+module "opensearch_alert" {
+    source = "github.com/ministryofjustice/cloud-platform-terraform-opensearch-alerts?ref=1.0.0" #use the latest version
+  
+    secret_name                    = "secret-name-created-by-secret-manager-module"
+    secret_key                     = "url"
+    environment_name               = var.environment
+    slack_channel_name             = "your-slack-channel-name"
+    slack_channel_name_description = "slack-channel-description"
+    opensearch_alert_name          = "example-opensearch-alert-name"
+    opensearch_alert_enabled       = true
+    monitor_period_interval        = "1"
+    monitor_period_unit            = "MINUTES"
+    alert_query                    = jsonencode(
+      {
+        Your_alert_query : query
+      }
+    )
+    trigger_name                   = "example-trigger-name"
+    serverity                      = "1"
+    query_source                   = "ctx.results[0].hits.total.value > 1"
+    action_name                    = "trigger-action-name"
+    slack_message_subject          = "slack-message-subject"
+    slack_message_template         = "Monitor {{ctx.monitor.name}} just entered alert status. Please investigate the issue.\n- Trigger: {{ctx.trigger.name}}\n- Severity: {{ctx.trigger.severity}}" 
+    alert_throttle_enabled         = true
+    throttle_value                 = 60
+    throttle_unit                  = "MINUTES"
+  }
+```
+Once the PR is merged and applied, the following resources will be created:
+
+- OpenSearch configuration Slack Channel for Notification
+
+- OpenSearch Monitor
+
+If you would like to create additional monitor alerts, you can recall the module with different configurations. 
+
+#### Alert Monitor Query
+
+If you are creating new alert monitor have no idea how to fill the alert query, you may go to [OpenSearch dashboard](https://app-logs.cloud-platform.service.justice.gov.uk/_dashboards/app/data-explorer/discover) and make your query search with OpenSearch query [DSL]((https://opensearch.org/docs/2.13/dashboards/dql)).
+
+After that, you may click `Inspect` - `Request` to have the query in JSON format.
+
+![See OpenSearch Alert query](/images/opensearch-alert-1.png)
+
+To verify a query, you can go to `Alerting` - `Monitors` and Click `Create Monitor`.
+
+Under `Monitor defining method`, choose `Extraction query editor`, fill in `live_kubernetes_cluster*` for data source index. 
+
+Add your query (using OpenSearch query DSL), and test it using the Run button. You can use `Extraction query response` to test and verify your query.
+
+![Verify OpenSearch Alert query](/images/opensearch-alert-2.png)
+
+After that, you can just copy and paste the Query to the [cloud-platform-terraform-opensearch-alert module] variable `alert_query`.
+
+### Migrating from ElasticSearch to OpenSearch
+
+If you are migrating the existing monitor alert from ElasticSearch to OpenSearch, you can go to our [Kibana dashboard] and copy the alert monitor query.
+
+Go to `Alerting` - `Monitors`, and select your alert.
+
+Click `Edit`.
+
+You can then copy the alert query and then paste the Query to the [cloud-platform-terraform-opensearch-alert module] variable `alert_query`.
+
+![Verify OpenSearch Alert query](/images/opensearch-alert-3.png)
+
+### Creating alert in Cloud Platform Modsec Audit logs OpenSearch Cluster
+
+If you want to create an alert in [Cloud PlatformModsec Audit logs Opensearch],  you can add below variable when calling the module
+
+```
+var.aws_opensearch_domain = "cp-live-modsec-audit"
+var.aws_iam_role          = "opensearch-access-role"
+var.index                 = ["live_k8s_modsec*", "live_k8s_modsec_ingress*"]
+```
+
+The module will look like below
+
+```
+module "opensearch_alert_modsec" {
+    source = "github.com/ministryofjustice/cloud-platform-terraform-opensearch-alerts?ref=1.0.0" #use the latest version
+  
+    var.aws_opensearch_domain      = "cp-live-modsec-audit"
+    var.aws_iam_role               = "opensearch-access-role"
+    var.index                      = ["live_k8s_modsec*", "live_k8s_modsec_ingress*"]
+
+    secret_name                    = "secret-name-created-by-secret-manager-module"
+    secret_key                     = "url"
+    environment_name               = var.environment
+    slack_channel_name             = "your-slack-channel-name"
+    slack_channel_name_description = "slack-channel-description"
+    opensearch_alert_name          = "example-opensearch-alert-name"
+    opensearch_alert_enabled       = true
+    monitor_period_interval        = "1"
+    monitor_period_unit            = "MINUTES"
+    alert_query                    = jsonencode(
+      {
+        Your_alert_query : query
+      }
+    )
+    trigger_name                   = "example-trigger-name"
+    serverity                      = "1"
+    query_source                   = "ctx.results[0].hits.total.value > 1"
+    action_name                    = "trigger-action-name"
+    slack_message_subject          = "slack-message-subject"
+    slack_message_template         = "Monitor {{ctx.monitor.name}} just entered alert status. Please investigate the issue.\n- Trigger: {{ctx.trigger.name}}\n- Severity: {{ctx.trigger.severity}}" 
+    alert_throttle_enabled         = true
+    throttle_value                 = 60
+    throttle_unit                  = "MINUTES"
+  }
+```
+
+
+More in-depth guides on using OpenSearch can be found below:
+
+ - [Introduction to OpenSearch Alerting] (https://opensearch.org/blog/alerting-intro/)
+ - [OpenSearch Per query and per bucket monitors](https://opensearch.org/docs/latest/observing-your-data/alerting/per-query-bucket-monitors/)
+ - [OpenSearch Dashboards Query Language (DQL)](https://opensearch.org/docs/2.13/dashboards/dql)
+
+
+[cloud-platform-terraform-secrets-manager module]: https://github.com/ministryofjustice/cloud-platform-terraform-secrets-manager
+[cloud-platform-terraform-opensearch-alert module]: https://github.com/ministryofjustice/cloud-platform-terraform-opensearch-alert
+[Cloud Platform Application Log OpenSearch]: https://app-logs.cloud-platform.service.justice.gov.uk/_dashboards/
+[Kibana dashboard]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/kibana
+[Cloud PlatformModsec Audit logs Opensearch]: https://logs.cloud-platform.service.justice.gov.uk/_dashboards/app/home#/
