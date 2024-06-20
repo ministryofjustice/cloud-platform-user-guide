@@ -1,6 +1,6 @@
 ---
 title: Does my app need an ingress?
-last_reviewed_on: 2023-12-18
+last_reviewed_on: 2024-06-20
 review_in: 6 months
 layout: google-analytics
 ---
@@ -9,9 +9,9 @@ layout: google-analytics
 
 ### Is your application public or private?
 
-If your application is public then you'll need to configure an ingress making sure you've considered the security implications associated with this.
+If your application is public, then you'll need to configure an ingress making sure you've considered the security implications associated with this.
 
-If not then you don't need an ingress, this is also true if your application is being called by another application within the cluster, you can use the internal service address. Your service address is in the format:
+If not, then you don't need an ingress, this is also true if your application is being called by another application within the cluster, you can use the internal service address. Your service address is in the format:
 
 ```
 <service-name>.<namespace>.svc.cluster.local
@@ -21,16 +21,16 @@ You can query your service using `kubectl -n $namespace describe service $yourse
 
 ### Applications in development
 
-If your application is in development and contains sensitive information or requires authentication but does not have it set up then adding an ingress may not be a good idea.
+If your application is in development and contains sensitive information or requires authentication but does not have it set up, then adding an ingress may not be a good idea.
 
 ### Port Forwarding
 
-Instead of opening up your development application to the world you can instead use Kubernetes built in port forwarding. This feature forwards the port defined in your service to your local machine:
+Instead of opening up your development application to the world, you can instead use Kubernetes built in port forwarding. This feature forwards the port defined in your service to your local machine:
 
 ```
 kubectl -n $namespace port-forward 8080:8080
 ```
 
-This will forward your applications port `8080` to your local machines port `8080`. If you visit `localhost:8080` in your browser you should see your development application.
+This will forward your applications port `8080` to your local machines port `8080`. If you visit `localhost:8080` in your browser, you should see your development application.
 
 A tutorial on using `port-forward` can be found [here](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/).
