@@ -1,0 +1,143 @@
+---
+title: General Guidelines for Pod Requests and Limits
+last_reviewed_on: 2024-06-27
+review_in: 6 months
+layout: google-analytics
+---
+
+# <%= current_page.data.title %>
+
+To ensure the stability, scalability, and efficient use of resources within our Kubernetes cluster, it is important to follow specific guidelines when configuring resource requests and limits for pods. 
+This section provides an a guideline to set up resource requests and limits for pods and to maintain an optimal cluster state.
+
+## Understand Resource Requests and Limits
+
+- Requests: The amount of CPU and memory guaranteed to a container. These are the minimum resources your application needs to run efficiently.
+
+- Limits: The maximum amount of CPU and memory a container is allowed to use. These prevent a single container from consuming excessive resources and impacting other applications.
+
+Example Configuration
+Here is an example of setting resource requests and limits in a pod definition:
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: example-pod
+spec:
+  containers:
+  - name: example-container
+    image: example-image
+    resources:
+      requests:
+        memory: "512Mi"
+        cpu: "500m"
+      limits:
+        memory: "1Gi"
+        cpu: "1000m"
+```
+
+## Set Realistic Requests and Limits
+
+- Avoid Overprovisioning: Setting requests and limits too high can lead to resource wastage.
+
+- Avoid Underprovisioning: Setting requests and limits too low can lead to resource starvation and instability.
+
+## Monitor Resource Usage
+
+- Continuous Monitoring: Use Prometheus and Grafana to collect and visualize resource metrics. Monitor CPU and memory usage at the pod levels.
+
+- Defining Alerts: Configure alerts for high resource usage and pods running out of memory or CPU. Set up alerts for resource quota breaches.
+
+- Regular Reviews: Conduct regular audits of resource requests and limits to identify and rectify misconfigurations. Generate reports to review resource usage trends and adjust policies accordingly.
+
+- You can go to [Cloud Platform Grafana](https://grafana.live.cloud-platform.service.justice.gov.uk/d/a164a7f0339f99e89cea5cb47e9be617/kubernetes-compute-resources-workload?orgId=1&refresh=10s) and select your namespace to view the your pod resource usage. 
+
+- You may refer to [Cloud Platform Metrics and Dashboards](/documentation/reference/cloud-platform-metrics-dashboards.html) for more information.
+
+- You can also use kubectl top to get a snapshot of resource usage for pods inside your namespace.
+
+`kubectl top -n <namespace>`
+
+## Best Practices for Setting Resource Limits
+
+Currently our live EKS cluster uses `r6i.2xlarge` nodes for computing, which have the following specifications:
+
+```
+vCPUs: 8
+Memory: 64 GiB
+```
+
+###Suggested Pod Resource Limits
+
+To ensure efficient utilization of the resources provided by these nodes, we suggest the following pod resource limits. However, we understand that different applications 
+have different requirements and use cases, leading to varying resource usage patterns. 
+Therefore, these are just reference points to guide your configurations:
+
+Small to Medium Workloads:
+
+```
+requests:
+  cpu: "10m"
+  memory: "100Mi"
+limits:
+  cpu: "1000m"
+  memory: "1000Mi"
+```
+
+Medium to Large Workloads:
+
+```
+requests:
+  cpu: "10m"
+  memory: "100Mi"
+limits:
+  cpu: "2000m"
+  memory: "8000Mi"
+```
+
+###Avoid Resource-Intensive and Non-Scalable Monolithic Workloads
+- Design your applications as microservices rather than monolithic applications. This allows better scalability and resource utilization.
+
+- Decompose Monolithic Applications: Break down large, monolithic applications into smaller, manageable services that can be scaled independently.
+
+- Resource Efficiency: Ensure that each microservice requests only the resources it needs and scales independently based on its load.
+
+- Kubernetes Native: Utilize Kubernetes features like [Horizontal Pod Autoscaler](/documentation/concepts/deploying.html#horizontal-pod-autoscaling-hpa) to scale your microservices based on CPU/memory usage automatically.
+
+###Understand Your Workload
+
+- Analyze Consumption Patterns: Understand the resource consumption patterns of your application.
+
+- Performance Testing: Determine the CPU and memory requirements under typical and peak loads.
+
+###Start with Resource Requests
+- Set Minimal Resources: Set requests based on the minimum resources your application needs to run efficiently.
+
+###Set Resource Limits
+
+- Define Maximum Resources: Set limits to define the maximum resources your application can use to prevent excessive resource consumption.
+
+###Avoid Overcommitting Resources
+
+- Resource Efficiency: Avoid setting resource limits too high compared to the actual needs of your application to ensure efficient utilization and prevent resource starvation for other pods.
+
+###Use Autoscaling
+
+- Horizontal Pod Autoscaler (HPA): Automatically adjust the number of pods based on CPU or memory usage.
+
+###Monitor and Adjust
+
+- Continuous Adjustment: Monitor resource usage continuously using tools like Prometheus and Grafana. Adjust requests and limits based on observed usage and application performance.
+
+###Set Reasonable Default Values
+
+- Default Requests and Limits: Use LimitRange objects to set default requests and limits for a namespace to prevent resource overconsumption.
+
+###Use CPU and Memory Limits Judiciously
+- CPU Limits: Set limits slightly higher than the average CPU usage to handle spikes without throttling.
+
+- Memory Limits: Set limits based on the worst-case memory usage to prevent Out-Of-Memory (OOM) kills.
+
+###Profile Different Environments
+- Environment-Specific Settings: Set different resource requests and limits for development, testing, and production environments. Ensure production settings are more stringent and aligned with real-world usage patterns.
