@@ -1,23 +1,34 @@
 ---
 title: Does my app need an ingress?
-last_reviewed_on: 2024-06-20
+last_reviewed_on: 2024-07-11
 review_in: 6 months
 layout: google-analytics
 ---
 
 # <%= current_page.data.title %>
 
-### Is your application public or private?
+### Internet facing services
 
-If your application is public, then you'll need to configure an ingress making sure you've considered the security implications associated with this.
+If your application is accessed over the internet, then you'll need to configure an [ingress resource](https://kubernetes.io/docs/concepts/services-networking/ingress/), making sure you've considered the security implications associated with this.
 
-If not, then you don't need an ingress, this is also true if your application is being called by another application within the cluster, you can use the internal service address. Your service address is in the format:
+Cloud Platform offers [two classes](https://kubernetes.io/docs/concepts/services-networking/ingress/#deprecated-annotation) of ingress: `default` or `modsec`.  `default` utilises the standard NGINX Ingress controller setup and it's [supported configurations](https://docs.nginx.com/nginx-ingress-controller/configuration/ingress-resources/), whereas `modsec` extends the capabilities of your ingress resource to enable ModSecurity Web Application Firewall (WAF) rules.
+
+We have a detailed guide on ModSecurity and how to configure it [here](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/networking/modsecurity.html#modsecurity-web-application-firewall).
+
+
+> It is the responsibility of the application team to consider and select the appropriate ingress class for their service. However, Cloud Platform **strongly recommmend** that all production services are setup with the `modsec` ingress class for additional security.
+
+### Internal cluster-bound services
+
+Often, Cloud Platform applications exist to provide a service to other workload(s) running in the cluster. If this is the case, you can use the internal service address. Your service address is in the format:
 
 ```
 <service-name>.<namespace>.svc.cluster.local
 ```
 
 You can query your service using `kubectl -n $namespace describe service $yourservice`.
+
+For guidelines on configuring networking rules for cross-namespace traffic, refer to our [NetWork Policies guide](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/networking/network-policy.html).
 
 ### Applications in development
 
