@@ -1,6 +1,6 @@
 ---
 title: Persistent Volume encryption at rest and daily snapshots
-last_reviewed_on: 2024-04-16
+last_reviewed_on: 2024-07-17
 review_in: 3 months
 layout: google-analytics
 ---
@@ -42,7 +42,7 @@ You can take snapshots to back up Persistent Volumes using the [snapshot lifecyc
 
 The example snapshot lifecycle policy below will create a snapshot of all tagged volumes every 24 hours starting at 05:00 UTC. As per the `retain_rule`, a maximum of 30 snapshots of the target volume will be retained.
 
-Using the example below create a "Data Lifecycle Management (DLM)" file called `dlm.tf` in your namespaces `resources` folder in the [environments repo][env-repo]. Amend the `tags_to_add` and replace `<pvc-name>` with the name of your PersistentVolumeClaim.
+Using the example below, create a "Data Lifecycle Management (DLM)" file called `dlm.tf` in your namespaces `resources` folder in the [environments repo][env-repo]. Amend the `tags_to_add` and replace `<pvc-name>` with the name of your PersistentVolumeClaim.
 
 > [Amazon Data Lifecycle Manager][aws_dlm_lifecycle_policy] uses `target_tags` to identify the EBS volumes to back up, so please make sure you update the `target_tags` with the right PVC name.
 

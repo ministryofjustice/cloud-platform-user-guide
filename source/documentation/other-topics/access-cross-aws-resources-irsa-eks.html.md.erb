@@ -1,6 +1,6 @@
 ---
 title: Use IAM Roles for service accounts to access resources in a different AWS account
-last_reviewed_on: 2024-01-17
+last_reviewed_on: 2024-07-17
 review_in: 6 months
 layout: google-analytics
 ---
@@ -12,9 +12,9 @@ This article explains how to utilise IAM roles for Kubernetes Service Accounts (
   * from applications (running in the AWS Cloud platform account)
   * to AWS resources within a different AWS account.
 
- For more information on AWS "IAM roles for Service Accounts" (IRSA) please see [IAM roles for Kubernetes Service Accounts](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html):
+ For more information on AWS "IAM roles for Service Accounts" (IRSA), please see [IAM roles for Kubernetes Service Accounts](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html):
 
- The Cloud Platform utilises an [cloud-platform-terraform-irsa module](https://github.com/ministryofjustice/cloud-platform-terraform-irsa). Please make sure you are using the [latest release](https://github.com/ministryofjustice/cloud-platform-terraform-irsa/releases) in the following config:
+ The Cloud Platform utilises the [cloud-platform-terraform-irsa module](https://github.com/ministryofjustice/cloud-platform-terraform-irsa). Please make sure you are using the [latest release](https://github.com/ministryofjustice/cloud-platform-terraform-irsa/releases) in the following config:
 
  Required Configuration:
 
@@ -156,7 +156,7 @@ This article explains how to utilise IAM roles for Kubernetes Service Accounts (
 
   You also need to update the AWS resource policy of the target AWS account to allow the service account IAM role to perform actions.
 
-  Here is an example s3 bucket policy to allow an service account IAM role to perform specific actions:
+  Here is an example s3 bucket policy to allow a service account IAM role to perform specific actions:
 
 
     {

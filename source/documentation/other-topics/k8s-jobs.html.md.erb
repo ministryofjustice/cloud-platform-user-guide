@@ -1,6 +1,6 @@
 ---
 title: Kubernetes jobs
-last_reviewed_on: 2024-04-16
+last_reviewed_on: 2024-07-17
 review_in: 3 months
 layout: google-analytics
 ---
@@ -40,7 +40,7 @@ spec:
 
 ### Deploying a job to your Namespace
 
-You need a yaml file to define your job. You can either create your own, or copy and tweak the above example, then deploy it as usual:
+You need a yaml file to define your job. You can either create your own or copy and tweak the above example, then deploy it as usual:
 
       ```
       kubectl apply -f [file-name].yaml --namespace [your namespace]
@@ -54,7 +54,7 @@ Verify the job is created:
 
 ### Clean up finished jobs
 
-When a Job completes Pods created by the Job are not deleted. Finished Jobs are usually no longer needed in the system. Use the [Time-to-live (TTL mechanism)][TTL-mechanism] for Jobs by settting `ttlSecondsAfterFinished`, so that a Job can be cleaned up automatically some time after it finishes.
+When a Job completes, Pods created by the Job are not deleted. Finished Jobs are usually no longer needed in the system. Use the [Time-to-live (TTL mechanism)][TTL-mechanism] for Jobs by settting `ttlSecondsAfterFinished`, so that a Job can be cleaned up automatically some time after it finishes.
 
 > Note: Kubernetes uses UTC exclusively. Make sure you take that into account when you’re creating your schedule or setting up `ttlSecondsAfterFinished`.
 

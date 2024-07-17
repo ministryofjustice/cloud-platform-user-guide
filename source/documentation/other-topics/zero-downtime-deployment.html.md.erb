@@ -1,6 +1,6 @@
 ---
 title: Zero Downtime Deployments
-last_reviewed_on: 2024-04-16
+last_reviewed_on: 2024-07-17
 review_in: 3 months
 layout: google-analytics
 ---
@@ -15,9 +15,9 @@ Zero Downtime Deployments are a significant feature that the Cloud Platform prov
 
 Rolling updates enable you to update an application without any downtime.
 
-A rolling update works by ensuring there is always one extra Pod than the maximum number stated in the deployment, for the duration of the update. i.e. when updating the application, new pods are created before the old pods are destroyed.
+A rolling update works by ensuring there is always one extra Pod than the maximum number stated in the deployment. For the duration of the update, i.e. when updating the application, new pods are created before the old pods are destroyed.
 
-The new deployment is applied incrementally, usually one to two Pods at a time until all Pods are running the latest version. How the deployment is rolled out, can be configured by the user. More information about configuring a rolling update can be found on [Kubernetes.io: ReplicationController](https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller/).
+The new deployment is applied incrementally, usually one to two Pods at a time until all Pods are running the latest version. How the deployment is rolled out can be configured by the user. More information about configuring a rolling update can be found on [Kubernetes.io: ReplicationController](https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller/).
 
 If an application is exposed publicly, traffic will only be routed to **available** Pods. This requires that your pods have correctly-configured `readinessProbes`. More information can be found [here](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/).
 
