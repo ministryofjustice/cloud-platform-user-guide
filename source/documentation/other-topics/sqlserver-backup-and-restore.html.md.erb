@@ -1,6 +1,6 @@
 ---
 title: SQL Server Backup and Restore
-last_reviewed_on: 2024-01-16
+last_reviewed_on: 2024-07-17
 review_in: 6 months
 layout: google-analytics
 ---
@@ -11,7 +11,7 @@ layout: google-analytics
 
 RDS supports _native_ backup and restore for SQL Server backup files (commonly saved with a .bak extension). Given the serverless nature of RDS, backup files have to be accessed from a correctly configured S3 bucket.
 
-If you have a .bak file you wish to restore, or want to backup an existing RDS running SQL server this guide is for you.
+If you have a .bak file you wish to restore or want to backup an existing RDS running SQL server, this guide is for you.
 
 ## What you'll need
 
@@ -21,7 +21,7 @@ If you have a .bak file you wish to restore, or want to backup an existing RDS r
 
 [DBeaver](https://dbeaver.io/), or a similar database tool that can talk to SQL Server
 
-Additionally, this guide assumes that you already have an S3 bucket and RDS SQL Server already setup in a cloud platform environment. If this is not the case you can find information about how to do this at [Adding AWS resources to your environment](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/add-aws-resources.html)
+Additionally, this guide assumes that you already have an S3 bucket and RDS SQL Server already setup in a cloud platform environment. If this is not the case, you can find information about how to do this at [Adding AWS resources to your environment](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/add-aws-resources.html)
 
 ## Setup
 

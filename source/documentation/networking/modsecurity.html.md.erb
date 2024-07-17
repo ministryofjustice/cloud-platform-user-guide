@@ -1,6 +1,6 @@
 ---
 title: ModSecurity - Web Application Firewall
-last_reviewed_on: 2024-01-16
+last_reviewed_on: 2024-07-17
 review_in: 6 months
 layout: google-analytics
 ---
@@ -37,7 +37,7 @@ A Web Application Firewall or WAF helps protect web applications by filtering an
 
 #### ModSecurity
 
-[ModSecurity](https://github.com/SpiderLabs/ModSecurity) is an open source, cross platform web application firewall (WAF) developed by Trustwave's SpiderLabs. It has a robust event-based programming language which provides protection from a range of attacks against web applications and allows for HTTP traffic monitoring and logging.
+[ModSecurity](https://github.com/SpiderLabs/ModSecurity) is an open source, cross-platform web application firewall (WAF) developed by Trustwave's SpiderLabs. It has a robust event-based programming language which provides protection from a range of attacks against web applications and allows for HTTP traffic monitoring and logging.
 
 For the Cloud Platform, ModSecurity has been configured as an opt-in feature. New and current applications will require a specific set of annotations to be added to their ingress manifest file.
 
@@ -56,7 +56,7 @@ To enable ModSecurity for your application, add the following annotation to your
 nginx.ingress.kubernetes.io/enable-modsecurity: "true"
 ```
 
-If you intend to run in "DetectionOnly" mode to monitor requests you must add the following lines to track down your requests in [opensearch]. We set `SecAuditEngine On` as by default we have it set to `RelevantOnly` which only logs warnings and errors [see here for more details](https://github.com/SpiderLabs/ModSecurity/wiki/Reference-Manual-%28v3.x%29#user-content-SecAuditEngine).
+If you intend to run in "DetectionOnly" mode to monitor requests, you must add the following lines to track down your requests in [opensearch]. We set `SecAuditEngine On` as by default we have it set to `RelevantOnly` which only logs warnings and errors [see here for more details](https://github.com/SpiderLabs/ModSecurity/wiki/Reference-Manual-%28v3.x%29#user-content-SecAuditEngine).
 
 ```yaml
 nginx.ingress.kubernetes.io/modsecurity-snippet: |
@@ -160,7 +160,7 @@ The Paranoia Level (PL) setting allows you to choose the desired level of rule c
 
 #### Anomaly Scoring Mode
 
-Traditional Detection or Passive Mode is the most basic operating mode where all of the rules are run as individual entities. In this mode no intelligence is shared between rules and each rule has no information about any previous rule matches. That is to say, in this mode, if a rule triggers, it will execute any disruptive/logging actions specified on the current rule.
+Traditional Detection or Passive Mode is the most basic operating mode where all of the rules are run as individual entities. In this mode, no intelligence is shared between rules and each rule has no information about any previous rule matches. That is to say, in this mode, if a rule triggers, it will execute any disruptive/logging actions specified on the current rule.
 
 Anomaly scoring mode implements the concept of Collaborative Detection and Delayed Blocking. Rule logic has been set to decouple the inspection/detection from the blocking functionality. The individual rules can be run so that the detection remains, however instead of applying any disruptive action at that point, the rules will contribute to a transactional anomaly score collection. In addition, each rule will also store meta-data about each rule match (such as the Rule ID, Attack Category, Matched Location and Matched Data) for later logging.
 For more information in anomaly scoring, click [here](https://www.modsecurity.org/CRS/Documentation/anomaly.html#anomaly-scoring-mode)
@@ -225,7 +225,7 @@ Pre-requisites:
 1. You have tagged your ingress with your github team name [see here](#ingress-annotations)
 1. You are a member of the same github team that you are trying to access
 
-To prevent PII from leaking we restrict the logs you can access. This access is based on the github team you tagged your ingress with and the github teams you are a member of. This information is mapped as you login from github to opensearch, you will only be able to view logs which are tagged with a github team which you are a member of.
+To prevent PII from leaking, we restrict the logs you can access. This access is based on the github team you tagged your ingress with and the github teams you are a member of. This information is mapped as you login from github to opensearch; you will only be able to view logs which are tagged with a github team which you are a member of.
 
 Login [to the Modsec Audit logs Opensearch](https://logs.cloud-platform.service.justice.gov.uk/_dashboards) to view your logs.
 
