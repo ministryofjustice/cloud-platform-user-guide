@@ -1,6 +1,6 @@
 ---
 title: Namespace/Container Resource Limits
-last_reviewed_on: 2024-04-26
+last_reviewed_on: 2024-07-26
 review_in: 3 months
 layout: google-analytics
 ---
@@ -9,7 +9,7 @@ layout: google-analytics
 
 The cloud platform is a single kubernetes cluster, hosting multiple different MoJ services. So, the cluster capacity (in terms of memory and CPU) needs to be [shared efficiently][kube-scheduler] between the different services.
 
-The smallest unit of work we ask the cluster to manage is a container, and the largest is a [namespace]. The cluster has several [worker nodes], which supply the memory and CPU capacity on which workloads can run. So, kubernetes has to solve a classic [packing problem] - run a bunch of different workloads on the cluster, putting them on different worker nodes in the most efficient way possible. But, the cluster can't be sure in advance how much resource (memory and CPU) any given container is going to need.
+The smallest unit of work we ask the cluster to manage is a container, and the largest is a [namespace]. The cluster has several [worker nodes], which supply the memory and CPU capacity on which workloads can run. So, kubernetes has to solve a classic [packing problem] - run a bunch of different workloads on the cluster, putting them on different worker nodes in the most efficient way possible. But the cluster can't be sure in advance how much resource (memory and CPU) any given container is going to need.
 
 To help with this, we specify **request limits**.
 
@@ -21,7 +21,7 @@ The other kind of limits in kubernetes are known as **hard limits**. These are i
 
 The name "hard limits" suggests these are limits that kubernetes will enforce, so that the workload will be terminated if it exceeds them. The reality is a little more nuanced.
 
-If the cluster has capacity available on the node where the workload is running, it may allow it to consume more resources than the hard limit specifies. But, it will flag the workload such that, if the node runs out of resources and kubernetes needs to evict pods, the pods from the offending workload will be first in line to be evicted.
+If the cluster has capacity available on the node where the workload is running, it may allow it to consume more resources than the hard limit specifies. But it will flag the workload such that, if the node runs out of resources and kubernetes needs to evict pods, the pods from the offending workload will be first in line to be evicted.
 
 For simplicity's sake, you can just think of a hard limit as meaning what it sounds like - the maximum amount your workload will be allowed to consume before bad things start to happen.
 
@@ -39,7 +39,7 @@ This distinction doesn't really matter, for the purposes of this article, so we'
 
 A namespace is the largest "unit of work" that the cluster needs to worry about.
 
-When you create a namespace the [ResourceQuota] specifies limits on the amount of resources that it will allow the namespace to request. This [file][resource-quotas] defines the defaults we assign to new namespaces. The `requests.cpu` specifies the CPU resources, usually in [millicores] aka millicpus. `requests.memory` specifies the required memory, usually in [mebibytes].
+When you create a namespace, the [ResourceQuota] specifies limits on the amount of resources that it will allow the namespace to request. This [file][resource-quotas] defines the defaults we assign to new namespaces. The `requests.cpu` specifies the CPU resources, usually in [millicores] aka millicpus. `requests.memory` specifies the required memory, usually in [mebibytes].
 
 These values represent the amount of CPU and memory that the cluster will **set aside as soon as this namespace is created**, regardless of whether or not those resources are being used to do any useful work.
 
@@ -65,7 +65,7 @@ The diagram above shows a namespace with a deployment consisting of four contain
 
 ## Resources Requested versus Resources Used
 
-So far, we've only been talking about what resources we are **requesting**, and it's clear that we can quickly run out of capacity in the cluster if we request too many resources. But, how closely does what we request match what we use?
+So far, we've only been talking about what resources we are **requesting**, and it's clear that we can quickly run out of capacity in the cluster if we request too many resources. But how closely does what we request match what we use?
 
 We have created [this report][namespace-reporter] that you can run to see how your namespace is doing (click on a namespace name to get more details. If yours is not visible, you can click on any namespace and replace the namespace name in the browser address bar to see yours).
 

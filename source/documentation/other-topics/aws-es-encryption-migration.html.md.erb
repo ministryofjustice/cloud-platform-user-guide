@@ -1,6 +1,6 @@
 ---
 title: Migrating an Elasticsearch service
-last_reviewed_on: 2024-01-25
+last_reviewed_on: 2024-07-26
 review_in: 6 months
 layout: google-analytics
 ---
@@ -12,9 +12,9 @@ migrating an elasticsearch domain to enable encryption of data at rest.
 
 ### Step 1 - Configure s3 snapshot repository for backup and restore
 
-Adding a s3 snapshot repository to the elasticsearch is a 2 step process.
+Adding an s3 snapshot repository to the elasticsearch is a 2-step process.
 
-- Create a s3 bucket
+- Create an s3 bucket
 
   Use the below code block and update the values appropriately for your namespace. Raise a PR against the [environments](https://github.com/ministryofjustice/cloud-platform-environments) repository.
 
@@ -53,7 +53,7 @@ resource "kubernetes_secret" "es_snapshots" {
 ```
 
 
-- Add s3 bucket arn to the source elasticsearch module as below
+- Add s3 bucket arn to the source elasticsearch module as below:
 
 ```hcl
 module "source_es" {
@@ -81,7 +81,7 @@ module "ns_annotation" {
 }
 
 ```
-This output `es_snapshot_role` will have permissions to enable creation of manual snapshot repo in s3 bucket
+This output `es_snapshot_role` will have permissions to enable the creation of a manual snapshot repo in s3 bucket
 
 ```hcl
 resource "kubernetes_secret" "es_snapshots_role" {
@@ -101,7 +101,7 @@ resource "kubernetes_secret" "es_snapshots_role" {
 
   - Register the same snapshot repository on the source domain and the new domain
   - Add the `aws_iam_role_name` of source ES domain and new encrypted ES domain to the `ns_annotation` module.
-  - Provide a different name to `aws-es-proxy-service` so it doesnot overwrite with existing source proxy.
+  - Provide a different name to `aws-es-proxy-service` so it does not overwrite the existing source proxy.
 
 ```hcl
 module "encrypted_es" {
