@@ -1,6 +1,6 @@
 ---
 title: Troubleshooting guide
-last_reviewed_on: 2024-01-25
+last_reviewed_on: 2024-07-26
 review_in: 6 months
 layout: google-analytics
 ---
@@ -18,7 +18,7 @@ Generally, the first step will be:
 
 `kubectl -n [your namespace] get pods`
 
-> We've used the namespace `dstest` as an example, in this guide. Wherever that appears in a command, please use the name of your namespace instead.
+> We've used the namespace `dstest` as an example in this guide. Wherever that appears in a command, please use the name of your namespace instead.
 
 ```
 $ kubectl -n dstest get pods
@@ -52,7 +52,7 @@ Events:
   Warning  Failed     20s (x7 over 87s)  kubelet, ip-172-20-60-236.eu-west-2.compute.internal  Error: container has runAsNonRoot and image will run as root
 ```
 
-We've omitted a lot of the detail, for clarity. The useful information, in this case, is at the bottom, in the `Events` section. On the last line:
+We've omitted a lot of the detail for clarity. The useful information, in this case, is at the bottom, in the `Events` section. On the last line:
 
 ```
 Error: container has runAsNonRoot and image will run as root
@@ -66,7 +66,7 @@ kubectl -n dstest get events
 
 Be aware that the ordering of events in the output of this command is a bit random.
 
-Events are only stored in the cluster for around 30 minutes, but all events are also stored in Elasticsearch, and available via [Kibana]. To find events in your namespace, click on "Discover" in the upper-left, and then enter a query like this:
+Events are only stored in the cluster for around 30 minutes, but all events are also stored in Elasticsearch and available via [Kibana]. To find events in your namespace, click on "Discover" in the upper-left, and then enter a query like this:
 
 ```
 kubernetes.namespace_name:"logging" AND kubernetes.labels.app:"eventrouter" AND log:"dstest"
@@ -86,7 +86,7 @@ $ kubectl -n dstest log helloworld-rubyapp-8795b9c56-58fbc
 Error from server (BadRequest): a container name must be specified for pod helloworld-rubyapp-8795b9c56-58fbc, choose one of: [nginx rubyapp]
 ```
 
-As you can see, that pod has two containers, and you need to specify which container's logs you want to see. If your pod only has a single container, you won't be prompted for its name.
+As you can see, that pod has two containers, and you need to specify which container's logs you want to see. If your pod only has a container, you won't be prompted for its name.
 
 ```
 $ kubectl -n dstest log helloworld-rubyapp-8795b9c56-58fbc -c rubyapp
@@ -111,7 +111,7 @@ $ kubectl -n dstest exec -it helloworld-rubyapp-8795b9c56-58fbc -c rubyapp sh
 
 ## Launching a new container
 
-You might want to make network calls from within your namespace, to test different components of your service. If your deployed containers don't have the tools you need (e.g. `wget`, `curl`), you can launch a new pod into your namespace like this:
+You might want to make network calls from within your namespace to test different components of your service. If your deployed containers don't have the tools you need (e.g. `wget`, `curl`), you can launch a new pod into your namespace like this:
 
 ```
 kubectl -n dstest run shell --rm -i --tty --image ministryofjustice/cloud-platform-shell -- sh

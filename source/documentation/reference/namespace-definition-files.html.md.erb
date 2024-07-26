@@ -1,6 +1,6 @@
 ---
 title: "Kubernetes: namespace definition files"
-last_reviewed_on: 2024-04-26
+last_reviewed_on: 2024-07-26
 review_in: 3 months
 layout: google-analytics
 ---
@@ -61,7 +61,7 @@ metadata:
 ```
 
 The namespace is your (team's) 'private' part of the cluster. The name of your
-namespace must be unique across the whole of the cluster. If you try to create a
+namespace must be unique across the whole cluster. If you try to create a
 new namespace using the name of one which already exists, you will get an error
 when you try to apply the generated kubernetes config files (or when the [Apply
 Pipeline](/documentation/other-topics/apply-pipeline.html) applies them on your
@@ -81,7 +81,7 @@ This will provide us with [access policies] on the namespace we have created in
 the cluster.
 
 A role binding resource grants the permissions defined in a role to a user or
-set of users. A role can be another resource we can create but in this instance
+set of users. A role can be another resource we can create, but in this instance
 we will reference a Kubernetes default role `ClusterRole - admin`.
 
 This `RoleBinding` resource references the `ClusterRole - admin` to provide
