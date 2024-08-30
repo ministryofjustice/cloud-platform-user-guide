@@ -89,3 +89,17 @@ For example, if you're using the AWS CLI to get an object from an S3 bucket, set
 ```sh
 aws s3api get-object --bucket $bucketName --key $fileKey /tmp/$outputFile
 ```
+## Terminating or scaling down the service pod(s)
+
+Some teams may want to terminate the service pod when it is not in use. To terminate the service pod you can either:
+
+1. Remove the service pod resource from code then raisng a PR. You will need to raise another PR in the future to reinstate the service pod
+
+or
+
+2. Scale down the service pod deployment to `0` by running the following command:
+  ```sh
+  kubectl scale -n <namespace> --replicas=0 deployment/cloud-platform-xxxxxxxx-service-pod
+  ```
+By scaling the `service-pod` deployment, you now have the option to scale it back up at anytime by running the above command with `--replicas=1`.
+
