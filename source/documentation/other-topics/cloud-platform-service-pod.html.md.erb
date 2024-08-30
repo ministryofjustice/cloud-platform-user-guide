@@ -1,6 +1,6 @@
 ---
 title: Cloud Platform service pod for AWS CLI access
-last_reviewed_on: 2024-02-14
+last_reviewed_on: 2024-08-30
 review_in: 6 months
 layout: google-analytics
 ---
@@ -95,7 +95,7 @@ Some teams may want to terminate the service pod when it is not in use. To termi
 
 1. Remove the service pod resource from code then raisng a PR. You will need to raise another PR in the future to reinstate the service pod
 
-or
+    or
 
 2. Scale down the service pod deployment to `0` by running the following command:
   ```sh
