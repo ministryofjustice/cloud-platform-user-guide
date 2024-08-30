@@ -1,6 +1,6 @@
 ---
 title: Upgrading a database version or changing the instance type
-last_reviewed_on: 2024-01-11
+last_reviewed_on: 2024-08-30
 review_in: 12 months
 layout: google-analytics
 ---
@@ -64,7 +64,7 @@ Alternatively, you can view this information in the AWS console by navigating to
 
 ## Manually upgrading to a new minor database version
 
->Note: This will cause downtime. See [Things to note before upgrading your database](#things-to-note-before-upgrading-a-database-version-or-changing-the-instance-type).
+>**Note:** This will cause downtime. See [Things to note before upgrading your database](#things-to-note-before-upgrading-a-database-version-or-changing-the-instance-type).
 
 To upgrade your minor database version, complete these three steps:
 
@@ -83,6 +83,8 @@ To upgrade your minor database version, complete these three steps:
     As soon as this PR is merged, the upgrade will begin.
 
 3. Raise and merge a PR to remove the `APPLY_PIPELINE_SKIP_THIS_NAMESPACE` added in step 1
+
+>**Note on read replicas**: If you have a read replica RDS instance associated with your primary instance, you will need to upgrade the minor version of the replica using the sames steps as above in an initial PR, **before** proceeding with your primary instance upgrade.
 
 ### Upgrade paths
 
@@ -151,8 +153,8 @@ To upgrade your major database version, complete these eight steps:
     ```hcl
     module "read_replica" {
       ...
-      db_engine_version = "14" # you shouldn't include the minor version here
-      rds_family        = "postgres14"
+      db_engine_version = "16.1"
+      rds_family        = "postgres16"
       ...
     }
     ```
