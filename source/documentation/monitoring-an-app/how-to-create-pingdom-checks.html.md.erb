@@ -1,6 +1,6 @@
 ---
 title: Creating Pingdom checks
-last_reviewed_on: 2024-02-23
+last_reviewed_on: 2024-09-02
 review_in: 6 months
 layout: google-analytics
 ---
@@ -47,7 +47,7 @@ Add the below 2 files in in the resources directory of your namespace in your [c
       }
     }
     ```
-2. Add a `pingdom.tf` file 
+2. Add a `pingdom.tf` file
 
     ```hcl
     provider "pingdom" {
@@ -71,14 +71,14 @@ Add the below 2 files in in the resources directory of your namespace in your [c
     ```
 
   **Note**: You'll need to include the `provider "pingdom"` and `terraform` blocks either in this file or in a `main.tf` file.
- 
+
 
   You can define the conditions of your check using the resources outlined in the [Terraform community provider](https://github.com/DrFaust92/terraform-provider-pingdom).
 
   Here's a working example of a [basic check](https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live.cloud-platform.service.justice.gov.uk/claim-criminal-injuries-compensation-uat/resources/pingdom.tf).
 
-  This basic check simply checks that the host/url (in this case; uat.claim-criminal-injuries-compensation.service.justice.gov.uk) returns a 200 every minute (resolution = 1 minute). 
-  When six (sendnotificationwhendown = 6) consecutive checks fail it triggers an alarm. 
+  This basic check simply checks that the host/url (in this case; uat.claim-criminal-injuries-compensation.service.justice.gov.uk) returns a 200 every minute (resolution = 1 minute).
+  When six (sendnotificationwhendown = 6) consecutive checks fail it triggers an alarm.
 
   [This](https://github.com/DrFaust92/terraform-provider-pingdom#pingdom-check) page explains all the attributes used in the check.
 
