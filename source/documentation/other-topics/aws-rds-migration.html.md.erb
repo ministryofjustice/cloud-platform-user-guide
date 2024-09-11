@@ -1,6 +1,6 @@
 ---
 title: Migrating an RDS instance
-last_reviewed_on: 2024-03-11
+last_reviewed_on: 2024-09-11
 review_in: 6 months
 layout: google-analytics
 ---
@@ -36,7 +36,7 @@ The steps will always be the same; on one side we export from source, on the tar
 #### Pre-Data, Data, Post-Data
 
 `pg_dump` can be used to export one big archive that can then be restored with `pg_restore`.
-One issue with that approach is the difficulty of troubleshooting migration issues.
+One issue with that approach is the difficulty of troubleshooting migration issues. 
 
 Since we are trying to make this process as clear as possible, the following guide decomposes `pg_dump` into its three components:
 
@@ -179,4 +179,4 @@ After a successful migration, we can clean up by:
 
  - Deleting the pod from STEP 1
  - Disabling the network access from the live cluster to the _source_ RDS
- - Revoking the temporary credentials created for the migration
+ - Revoking the temporary credentials created for the migration 
