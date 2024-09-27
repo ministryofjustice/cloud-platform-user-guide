@@ -1,15 +1,15 @@
 ---
 title: Updating PodDisruptionBudget API version for Cloud Platform - removed Kubernetes v1.25
-last_reviewed_on: 2024-06-25
-review_in: 3 months
+last_reviewed_on: 2024-09-27
+review_in: 6 months
 layout: google-analytics
 ---
 
 # <%= current_page.data.title %>
 
-The <b>policy/v1beta1</b> API version of PodDisruptionBudget (PDB) is deprecated as of Kubernetes release v1.21, and will no longer be served as of v1.25.
+The `policy/v1beta1` API version of PodDisruptionBudget (PDB) is deprecated as of Kubernetes release v1.21, and will no longer be served as of v1.25.
 
-Cloud Platform users must ensure any PodDisruptionBudget manifests are migrated to use the <b>policy/v1</b> API version, which is supported on our current cluster version (v1.28 as of writing).
+Cloud Platform users must ensure any PodDisruptionBudget manifests are migrated to use the `policy/v1` API version, which is supported on our current cluster version (v1.28 as of writing).
 
 Further details can be found within the [Kubernetes deprecation guide](https://kubernetes.io/docs/reference/using-api/deprecation-guide/#poddisruptionbudget-v125)
 
@@ -19,11 +19,9 @@ Prerequisite: Install [pluto](https://github.com/FairwindsOps/pluto) to find out
 
 ```brew install FairwindsOps/tap/pluto```
 
-
 To check if you are using deprecated apiVersion, run the following command:
 
 `pluto detect-all-in-cluster --namespace <your namespace>`
-
 
 If there is any deprecated apiVersion of PodDisruptionBudget, the output will look like this:
 
@@ -36,7 +34,7 @@ helloworld-pdp   PodDisruptionBudget       policy/v1beta1        policy/v1      
 
 ```
 
-For resources deployed using helm chart, the above list shows that the helm manifest deployed has the deprecated API version irrespective of the resource exists in the cluster. 
+For resources deployed using helm chart, the above list shows that the helm manifest deployed has the deprecated API version irrespective of the resource exists in the cluster.
 
 Update `apiVersion` as the following example and apply the manifest:
 
@@ -54,7 +52,7 @@ spec:
 
 Note: A behavioural change in switching from `policy/v1beta1` to `policy/v1` is noted in the documentation as follows:
 
->an empty spec.selector ({}) written to a policy/v1 PodDisruptionBudget selects all pods in the namespace (in policy/v1beta1 an empty spec.selector selected no pods). An unset spec.selector selects no pods in either API version.
+> an empty spec.selector ({}) written to a policy/v1 PodDisruptionBudget selects all pods in the namespace (in policy/v1beta1 an empty spec.selector selected no pods). An unset spec.selector selects no pods in either API version.
 
 Thus a PDB defined like follows:
 

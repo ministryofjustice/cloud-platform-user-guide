@@ -1,19 +1,19 @@
 ---
 title: Updating HorizontalPodAutoscaler API version for Cloud Platform - removed Kubernetes v1.25
-last_reviewed_on: 2024-06-25
-review_in: 3 months
+last_reviewed_on: 2024-09-27
+review_in: 6 months
 layout: google-analytics
 ---
 
 # <%= current_page.data.title %>
 
-The <b>autoscaling/v2beta1</b> API version of HorizontalPodAutoscaler is no longer served as of v1.25.
+The `autoscaling/v2beta1` API version of HorizontalPodAutoscaler is no longer served as of v1.25.
 
-The <b>autoscaling/v2beta2</b> API version of HorizontalPodAutoscaler is no longer served as of v1.26.
+The `autoscaling/v2beta2` API version of HorizontalPodAutoscaler is no longer served as of v1.26.
 
-Cloud Platform users must ensure any HorizontalPodAutoscaler manifests are migrated to use the <b>autoscaling/v2</b> API version, which is supported on our current cluster version (v1.28 as of writing).
+Cloud Platform users must ensure any HorizontalPodAutoscaler manifests are migrated to use the `autoscaling/v2` API version, which is supported on our current cluster version (v1.28 as of writing).
 
-Further details can be found within the [Kubernetes deprecation guide - 1.25](https://kubernetes.io/docs/reference/using-api/deprecation-guide/#horizontalpodautoscaler-v125) and 
+Further details can be found within the [Kubernetes deprecation guide - 1.25](https://kubernetes.io/docs/reference/using-api/deprecation-guide/#horizontalpodautoscaler-v125) and
 [Kubernetes deprecation guide - 1.26](https://kubernetes.io/docs/reference/using-api/deprecation-guide/#horizontalpodautoscaler-v126)
 
 ### How to check and replace the deprecated apiVersion
@@ -21,7 +21,6 @@ Further details can be found within the [Kubernetes deprecation guide - 1.25](ht
 Prerequisite: Install [pluto](https://github.com/FairwindsOps/pluto) to find out whether any of the manifest has any of the deprecated APIs.
 
 ```brew install FairwindsOps/tap/pluto```
-
 
 To check if you are using deprecated apiVersion, run the following command:
 
