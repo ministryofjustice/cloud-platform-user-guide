@@ -17,6 +17,8 @@ AWS publishes an end-of-life schedule for major and minor versions of [PostgreSQ
 
 >There is no rule of thumb to work out how long it will take, but tests show an empty database using a `db.t4g.micro` will take around 10 minutes.
 
+> It is not possible to go from a minor version e.g. `14.10` to major version `14`, this causes a version mismatch when trying to apply.
+
 ## Automatic minor engine version upgrades
 
 AWS provide the ability to automatically upgrade your minor database version. This is enabled by default in the Cloud Platform, managed by the `allow_minor_version_upgrade` field within the [cloud-platform-terraform-rds module](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance?tab=readme-ov-file#input_allow_minor_version_upgrade).
@@ -33,16 +35,16 @@ within the [RDS module](https://github.com/ministryofjustice/cloud-platform-terr
 
 ### Determining your RDS instance's target minor version
 
-You can use the AWS CLI to discover the current AWS target minor version for automatic upgrades with the following command:  
+You can use the AWS CLI to discover the current AWS target minor version for automatic upgrades with the following command:
 
 ```bash
 aws rds describe-db-engine-versions --output table --engine postgres --engine-version [your-current-version]
 ```
 
-and referring to the `AutoUpgrade` column. For example, if you are currently on Postgres 14.3, you will see similar to the following output: 
+and referring to the `AutoUpgrade` column. For example, if you are currently on Postgres 14.3, you will see similar to the following output:
 
 ```
-|||                      ValidUpgradeTarget                                 
+|||                      ValidUpgradeTarget
 ||+-------------+-----------------------+-----------+----------------+
 ||| AutoUpgrade |      Description      |  Engine   | EngineVersion  |
 ||+-------------+-----------------------+-----------+----------------+
