@@ -1,6 +1,6 @@
 ---
 title: Can I block egress traffic to the internet from my namespace?
-last_reviewed_on: 2024-03-28
+last_reviewed_on: 2024-10-02
 review_in: 6 months
 layout: google-analytics
 ---
@@ -10,7 +10,7 @@ layout: google-analytics
 When creating a Cloud Platform environment namespace, by default the namespace allows egress traffic to the public internet. 
 This is by design to allows users to quickly get started to launch their application to reach the internet.
 
-If you have a requirement to block egress traffic from your namespace, you can append the following code to the `networkpolicty.yaml` file (replace `your-namespace` with the name of your namespace) This file is located in the root of your namespace directory.
+If you have a requirement to block egress traffic from your namespace, you can append the following code to the `networkpolicy.yaml` file (replace `your-namespace` with the name of your namespace) This file is located in the root of your namespace directory.
 
 ```
 ---
