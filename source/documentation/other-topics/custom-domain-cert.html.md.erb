@@ -1,6 +1,6 @@
 ---
 title: Using a custom domain
-last_reviewed_on: 2024-04-08
+last_reviewed_on: 2024-10-08
 review_in: 6 months
 layout: google-analytics
 ---
@@ -17,21 +17,21 @@ Every application running on the Cloud Platform is able to use a hostname for it
 
 This works automatically, using a wildcard [TLS] certificate.
 
-Most applications will need their own, application-specific `gov.uk` hostname. These hostnames (or usually, entire domains) are managed individually and a number of actions are required to set them up.
+Most applications will need their own application-specific `gov.uk` hostnames. These hostnames (or usually, entire domains) are managed individually and a number of actions are required to set them up.
 
-> Note: Using pre-defined domain is only recommended for development/staging/uat environments, as this is cluster bound and we will not always be on the live cluster. For any production environments, we strongly recommend using the custom domain, as it will always be the same regardless of what cluster the domain lives on.
+> Note: Using pre-defined domain is only recommended for development/staging/uat environments, as this is cluster-bound and will not always be on the live cluster. For any production environments, we strongly recommend using the custom domain as it will always be the same regardless of what cluster the domain lives on.
 
 ### Setup
 
-Domains are managed inside [DNS zones]. You can read more about the structure of the Domain Name System in this [page][wiki-domain-structure]. It is recommended that applications use their own DNS zones, to provide better isolation, and make management simpler.
+Domains are managed inside [DNS zones]. You can read more about the structure of the Domain Name System in this [page][wiki-domain-structure]. It is recommended that applications use their own DNS zones to provide better isolation and make management simpler.
 
 #### Defining the DNS zone
 
 To create the zone, you define it as a resource in your environment. Make sure to read [the guidance on naming domains][naming-domains] first, and follow the instructions to [create the Route53 zone][creating-zone].
 
-To simplify management, we recommend that you only define a single zone, as part of the resources for your production environment, if possible. You can still use subdomains of that zone for different environments.
+To simplify management, we recommend that you only define a single zone as part of the resources for your production environment, if possible. You can still use subdomains of that zone for different environments.
 
-Once the zone is created, you will need to setup the necessary name server (NS) records in the parent DNS zone, before you can use it. **This step must be completed before proceeding to [create a certificate](#obtaining-a-certificate)**. For more information on how this delegation method works, you can read about authoritative name servers in this [page][wiki-nameservers].
+Once the zone is created, you will need to setup the necessary name server (NS) records in the parent DNS zone before you can use it. **This step must be completed before proceeding to [create a certificate](#obtaining-a-certificate)**. For more information on how this delegation method works, you can read about authoritative name servers in this [page][wiki-nameservers].
 
 If your zone is for a subdomain of `service.justice.gov.uk` (eg.: `https://myapp.service.justice.gov.uk`), you can delegate the zone by providing the nameservers to the Operations Engineering team either by contacting `#ask-operations-engineering` or by emailing [domains@digital.justice.gov.uk](mailto:domains@digital.justice.gov.uk)
 
@@ -39,13 +39,13 @@ For any other domains (including any subdomain of `gov.uk`, eg.: `https://myserv
 
 Please note, once you setup the NS records, you'll be delegating control of the zone to the Cloud Platform. Hostnames used by your services (using `Ingresses`) will be automatically managed by the cluster.
 
-If you wish to create custom records in your zone you can do so by defining them in the [environments repository][env-repo] using the terraform [`aws_route53_record`][tf-route53-record] resource.
+If you wish to create custom records in your zone, you can do so by defining them in the [environments repository][env-repo] using the terraform [`aws_route53_record`][tf-route53-record] resource.
 
 #### Obtaining a certificate
 
 1. Create the [Certificate][cert-guidance] resource, filling in any placeholders with your details. The `secretName` attribute defines the name of a [kubernetes secret] in your namespace where the certificate and key material will be stored.
 
-> Please add the certificate by defining it in your namespace folder in the environments repository. Doing so means it will automatically be restored in the event of any problems with our certificate/DNS systems.
+> Please add the certificate by defining it in your namespace folder in the environments repository. Doing so means it will be automatically restored in the event of any problems with our certificate/DNS systems.
 
    ```
    ---
