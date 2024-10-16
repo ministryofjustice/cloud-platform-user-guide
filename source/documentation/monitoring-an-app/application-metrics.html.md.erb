@@ -1,6 +1,6 @@
 ---
 title: Getting application metrics into Prometheus
-last_reviewed_on: 2024-04-16
+last_reviewed_on: 2024-10-16
 review_in: 6 months
 layout: google-analytics
 ---
@@ -9,14 +9,14 @@ layout: google-analytics
 
 
 ### Overview
-This guide will walk you through the steps to export metrics from your application into the [Cloud Platform Prometheus](https://prometheus.cloud-platform.service.justice.gov.uk/). By exporting these metrics into Prometheus you can create useful observability tools like Grafana dashboards and triggered alerts on things like crashing pods and failed deployments. To do that, Prometheus needs to be able to scrape data from a `/metrics` endpoint, which is created by a [Prometheus client library](https://prometheus.io/docs/instrumenting/clientlibs/). Once you have a `/metrics` endpoint you can create a `ServiceMonitor` to connect the Cloud Platform Prometheus to your endpoint and store data for querying.
+This guide will walk you through the steps to export metrics from your application into the [Cloud Platform Prometheus](https://prometheus.cloud-platform.service.justice.gov.uk/). By exporting these metrics into Prometheus, you can create useful observability tools like Grafana dashboards and triggered alerts on things like crashing pods and failed deployments. To do that, Prometheus needs to be able to scrape data from a `/metrics` endpoint, which is created by a [Prometheus client library](https://prometheus.io/docs/instrumenting/clientlibs/). Once you have a `/metrics` endpoint, you can create a `ServiceMonitor` to connect the Cloud Platform Prometheus to your endpoint and store data for querying.
 
-The example application in this document will be the [Ruby reference app](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/), utilising the Ruby [prometheus-client](https://github.com/prometheus/client_ruby) gem. If you're following along in another language, Prometheus offers a several [client libraries](https://prometheus.io/docs/instrumenting/clientlibs/) to get you started. At the end you should have a working `/metrics` endpoint that displays your site's response time, which we can use to query the application latency in the Cloud Platform Prometheus.
+The example application in this document will be the [Ruby reference app](https://github.com/ministryofjustice/cloud-platform-multi-container-demo-app/), utilising the Ruby [prometheus-client](https://github.com/prometheus/client_ruby) gem. If you're following along in another language, Prometheus offers several [client libraries](https://prometheus.io/docs/instrumenting/clientlibs/) to get you started. At the end, you should have a working `/metrics` endpoint that displays your site's response time, which we can use to query the application latency in the Cloud Platform Prometheus.
 
-The application latency [metric](https://prometheus.io/docs/concepts/metric_types/) is quite basic but our intention is to get you started.
+The application latency [metric](https://prometheus.io/docs/concepts/metric_types/) is quite basic, but our intention is to get you started.
 
 ### Assumptions
-To keep this document short we will assume you already have an application up and running in a namespace on the Cloud Platform, if not, please see [Deploying a multi-container application to the Cloud Platform](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/deploying-an-example-application.html#deploying-a-multi-container-application-to-the-cloud-platform).
+To keep this document short, we will assume you already have an application up and running in a namespace on the Cloud Platform, if not, please see [Deploying a multi-container application to the Cloud Platform](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/deploying-an-example-application.html#deploying-a-multi-container-application-to-the-cloud-platform).
 
 >Note: make sure your container has the correct timezone [see see here](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/container-repositories/requirements.html#setting-utc-timezone-inside-your-container)
 
@@ -58,9 +58,9 @@ curl https://myapp.cloud-platform/metrics
 
 We need to expose the metrics endpoint with a `Service` and tell the Cloud Platform Prometheus to scrape the endpoint with a `ServiceMonitor` object in Kubernetes. A `ServiceMonitor` is a custom resource definition ([CRD](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#customresourcedefinitions/)) that allows you to automatically generate Prometheus scrape configuration based on a specified resource.
 
-In this example, we're using the same port to expose both our application and metrics endpoint so we'll need to query our existing `Service` for the current port name. However, if you're exposing a different port you'll need to either amend your current `Service` or create a new one.
+In this example, we're using the same port to expose both our application and metrics endpoint, so we'll need to query our existing `Service` for the current port name. However, if you're exposing a different port, you'll need to either amend your current `Service` or create a new one.
 
-Let's find out our current port name and number by running:
+Let's find what our current port name and number are by running:
 
 ```
 kubectl -n <namespace> get svc rails-app-service -o=jsonpath={.spec.ports[0].name}
