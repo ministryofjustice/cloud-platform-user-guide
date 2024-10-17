@@ -1,6 +1,6 @@
 ---
 title: Cloud Platform IP Addresses
-last_reviewed_on: 2024-07-17
+last_reviewed_on: 2024-10-17
 review_in: 3 months
 layout: google-analytics
 ---
@@ -13,7 +13,7 @@ layout: google-analytics
 
 ### Inbound IP Filtering
 
-Allowed client IP source ranges can be specified using the nginx.ingress.kubernetes.io/whitelist-source-range annotation. The value is a comma separated list of CIDRs, e.g. 1.1.1.1/24,10.0.0.0/24.
+Allowed client IP source ranges can be specified using the nginx.ingress.kubernetes.io/whitelist-source-range annotation. The value is a comma-separated list of CIDRs, e.g. 1.1.1.1/24,10.0.0.0/24.
 
 [Kubernetes official documentation on allowing source ranges][kubernetes-annotations-whitelist-source-range].
 
@@ -93,7 +93,7 @@ Currently, these are the IPs from which traffic will appear to come:
 
 There is **no guarantee** that the origin IPs of traffic from the cloud platform will remain the same.
 
-If we **plan** to change them (e.g. if we migrate to another kubernetes cluster), we will provide as much notice as possible, via posts in the `#cloud-platform-update` slack channel.
+If we **plan** to change them (e.g. if we migrate to another kubernetes cluster), we will provide as much notice as possible via posts in the `#cloud-platform-update` slack channel.
 
 However, in the event of a catastrophic failure where we have to rebuild the platform from scratch (easier than it sounds, since everything is defined in source code), we will not be able to give any warning.
 
