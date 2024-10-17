@@ -1,6 +1,6 @@
 ---
 title: Persistent Volume encryption at rest and daily snapshots
-last_reviewed_on: 2024-07-17
+last_reviewed_on: 2024-10-17
 review_in: 3 months
 layout: google-analytics
 ---
@@ -11,8 +11,8 @@ This guide will give you an overview of how to set up encryption at rest for "[P
 
 ### Encrypting Persistent Volumes
 
-To enable encryption at rest on a PV set the `storageClassName` attribute of your [PersistentVolumeClaim] to [`gp3`][gp3]. This [Storage Class] sets `encrypted: "true"` on the underlying EBS volume.
-This is also the default storage class for the PersistentVolumeClaim if you dont specify one.
+To enable encryption at rest on a PV, set the `storageClassName` attribute of your [PersistentVolumeClaim] to [`gp3`][gp3]. This [Storage Class] sets `encrypted: "true"` on the underlying EBS volume.
+This is also the default storage class for the PersistentVolumeClaim if you don't specify one.
 
 ```
 kind: PersistentVolumeClaim

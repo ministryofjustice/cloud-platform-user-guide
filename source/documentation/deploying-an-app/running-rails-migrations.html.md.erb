@@ -1,6 +1,6 @@
 ---
 title: How do I run Rails database migrations?
-last_reviewed_on: 2024-07-17
+last_reviewed_on: 2024-10-17
 review_in: 3 months
 layout: google-analytics
 ---
@@ -61,7 +61,7 @@ command like this:
 
 In general, you should avoid overloading container startup in this way. If your
 container takes a long time to start up (e.g. if the migration task takes a
-long time to complete, in this example) then the cluster might assume your pod
+long time to complete, in this example), then the cluster might assume your pod
 has failed, and it will kill it and start a new one. In the worst cases, this
 can cause your application to go into a crash loop such that it never starts at
 all.
