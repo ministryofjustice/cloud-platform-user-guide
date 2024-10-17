@@ -1,6 +1,6 @@
 ---
 title: Application Log Collection and Storage
-last_reviewed_on: 2024-05-24
+last_reviewed_on: 2024-10-18
 review_in:  6 months
 layout: google-analytics
 ---
@@ -9,13 +9,11 @@ layout: google-analytics
 
 ### Overview
 
-The Cloud Platform automatically collects and stores your application logs, and lets you access them via an AWS-Hosted [Kibana dashboard].
-
-Logs are collected via [Fluentbit], and stored in an AWS-Hosted [ElasticSearch Cluster].
+The Cloud Platform automatically collects and stores your application logs, and lets you access them via an AWS-Hosted [OpenSearch].
 
 ### Log Collection
 
-Fluentbit is a cluster-wide log collection service, with read permissions across the whole cluster. As long as your application logs to `stdout`, your logs will be collected.
+Logs are collected via [Fluentbit], which is a cluster-wide log collection service, with read permissions across the whole cluster. As long as your application logs to `stdout`, your logs will be collected.
 
 ### Log Storage
 
@@ -30,5 +28,5 @@ If you have enabled ModSec WAF then the ModSec Audit logs are sent to a differen
 For more details and instructions to enable ModSec [see here](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/networking/modsecurity.html)
 
 [Fluentbit]: https://fluentbit.io/
-[Kibana dashboard]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/kibana
-[ElasticSearch Cluster]: https://aws.amazon.com/elasticsearch-service/
+[OpenSearch]: https://app-logs.cloud-platform.service.justice.gov.uk/_dashboards/app/home#/
+[ElasticSearch Cluster]: https://aws.amazon.com/opensearch-service/
