@@ -1,6 +1,6 @@
 ---
 title: Troubleshooting guide
-last_reviewed_on: 2024-07-26
+last_reviewed_on: 2024-10-18
 review_in: 6 months
 layout: google-analytics
 ---
@@ -66,7 +66,7 @@ kubectl -n dstest get events
 
 Be aware that the ordering of events in the output of this command is a bit random.
 
-Events are only stored in the cluster for around 30 minutes, but all events are also stored in Elasticsearch and available via [Kibana]. To find events in your namespace, click on "Discover" in the upper-left, and then enter a query like this:
+Events are only stored in the cluster for around 30 minutes, but all events are also stored in [OpenSearch](https://app-logs.cloud-platform.service.justice.gov.uk/_dashboards/app/home#/). To find events in your namespace, click on "Discover" in the upper-left, and then enter a query like this:
 
 ```
 kubernetes.namespace_name:"logging" AND kubernetes.labels.app:"eventrouter" AND log:"dstest"
@@ -75,7 +75,7 @@ kubernetes.namespace_name:"logging" AND kubernetes.labels.app:"eventrouter" AND 
 (replace `dstest` with the name of your namespace)
 
 
-You can adjust the timeframe and other parameters via the Kibana web interface.
+You can adjust the timeframe and other parameters via the OpenSearch web interface.
 
 ## Logs
 
@@ -98,7 +98,7 @@ $ kubectl -n dstest log helloworld-rubyapp-8795b9c56-58fbc -c rubyapp
 
 You can tail the logs by appending `--follow` to that command.
 
-Logs are also available via Kibana, as described [here][application logging].
+Logs are also available via OpenSearch, as described [here][application logging].
 
 ## Launching a shell
 
@@ -278,7 +278,6 @@ Possible causes include:
 
     Sometimes browser caching seems to cause problems with the authentication process, and using an incognito browser window usually resolves the problem.
 
-[Kibana]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/kibana#/home?_g=()
 [application logging]: /documentation/logging-an-app/access-logs.html#accessing-application-log-data
 [visual guide]: https://learnk8s.io/troubleshooting-deployments
 [re-authenticate]: /documentation/getting-started/kubectl-config.html#authenticating-with-the-cloud-platform-39-s-kubernetes-cluster
