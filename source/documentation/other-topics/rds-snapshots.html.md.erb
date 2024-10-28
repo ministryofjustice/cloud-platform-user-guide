@@ -1,13 +1,13 @@
 ---
 title: RDS Snapshots
-last_reviewed_on: 2024-04-24
+last_reviewed_on: 2024-10-28
 review_in: 6 months
 layout: google-analytics
 ---
 
 # <%= current_page.data.title %>
 
-RDS snapshots have multiple purposes: migrations, backups, etc. When RDS DB instances are created using the [Cloud Platform RDS terraform module](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance) an IAM user account is created for management purposes. This user can create, delete, copy, and restore RDS snapshots.
+RDS snapshots have multiple purposes: migrations, backups, etc. When RDS DB instances are created using the [Cloud Platform RDS terraform module](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance), an IAM user account is created for management purposes. This user can create, delete, copy, and restore RDS snapshots.
 
 Examples of managing RDS DB snapshots using the AWS CLI can be found in the [README](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance#4-managing-rds-snapshots---backups-and-restores) within the [RDS terraform module](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance)
 
@@ -82,13 +82,13 @@ Check the terraform plan for any change to the current values except `known afte
 Your RDS `db_allocated_storage` will be autoscaled to maximum of `10000` by default unless you have
 set to specific number. Hence, the actual `db_allocated_storage` may be higher than what is set as default(10).
 
-Check the actual "AllocatedStorage" value described in your RDS instance using the command
+Check the actual "AllocatedStorage" value described in your RDS instance using the command:
 
 ```
 aws rds describe-db-instances --db-instance-identifier <your-rds-db-identifier>
 ```
 
-If that is different to what is set for your RDS, update your RDS manifest to include the actual `db_allocated_storage` by adding
+If that is different to what is set for your RDS, update your RDS manifest to include the actual `db_allocated_storage` by adding:
 
 ```
 db_allocated_storage = "<the actual value you got from the above cli command>"
@@ -96,9 +96,9 @@ db_allocated_storage = "<the actual value you got from the above cli command>"
 
 It is important to retain other original settings associated with the DB instance when restoring from the snapshot. So don't make any other changes to this file except the above mentioned.
 
-> **Warning:** If there is an RDS read replica for the DB instance that is being restored then you must set `count = 0` or comment out the read replica code (and any Kubernetes secrets relating to the read replica). This will remove the read replica, this is required as Terraform will throw the following error as Terraform is unable to change the read replica target: `Error: cannot elect new source database for replication`
+> **Warning:** If there is an RDS read replica for the DB instance that is being restored, then you must set `count = 0` or comment out the read replica code (and any Kubernetes secrets relating to the read replica). This will remove the read replica. This is required as Terraform will throw the following error as Terraform is unable to change the read replica target: `Error: cannot elect new source database for replication`
 
-> When the read replica is re-created it will be created with a new database identifier.
+> When the read replica is re-created, it will be created with a new database identifier.
 
 #### 4. Contact the Cloud Platform team about the restore, providing the `db-instance-identifier` and the PR raised.
 
@@ -112,7 +112,7 @@ This allows the pipeline to create the new DB Instance from the snapshot, using 
 >
 > This will happen if AWS upgraded the minor version automatically and terraform stored the exact db_engine_version in its state.
 >
-> To fix this, change the `db_engine_version` in your `rds.tf` from `10.4` to the one AWS upgraded to, in this case `10.4.13` and repeat the previous steps again.
+> To fix this, change the `db_engine_version` in your `rds.tf` from `10.4` to the one AWS upgraded to, in this case `10.4.13`, and repeat the previous steps again.
 >
 > Once the the terraform apply is successful, and the new DB instance has been created, revert the changes made for `db_engine_version`.
 
@@ -123,7 +123,7 @@ Once the new DB instance is restored and available, your application should be a
 After you have verified that your DB instance and the database is working as expected, let the Cloud Platform team know so they can delete the old, renamed DB instance.
 
 #### 7. Only required for Read Replicas - Recreate the DB read replica if it was removed as a part of step 3:
-In Terraform re-enable the DB read replica code by setting `count = 1` or uncommenting the code and any Kubernetes secrets that may also be created as a part of it.
+In Terraform, re-enable the DB read replica code by setting `count = 1` or uncommenting the code and any Kubernetes secrets that may also be created as a part of it.
 
 Create a PR that includes the changes for the Cloud Platform team and post the link into the [#ask-cloud-platform](https://mojdt.slack.com/archives/C57UPMZLY) channel.
 

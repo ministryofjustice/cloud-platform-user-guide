@@ -1,6 +1,6 @@
 ---
 title: "Kubernetes: namespace definition files"
-last_reviewed_on: 2024-07-26
+last_reviewed_on: 2024-10-28
 review_in: 3 months
 layout: google-analytics
 ---
@@ -81,7 +81,7 @@ This will provide us with [access policies] on the namespace we have created in
 the cluster.
 
 A role binding resource grants the permissions defined in a role to a user or
-set of users. A role can be another resource we can create, but in this instance
+set of users. A role can be another resource we can create, but in this instance,
 we will reference a Kubernetes default role `ClusterRole - admin`.
 
 This `RoleBinding` resource references the `ClusterRole - admin` to provide
