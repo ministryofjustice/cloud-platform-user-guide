@@ -1,6 +1,6 @@
 ---
 title: ModSecurity - Web Application Firewall
-last_reviewed_on: 2024-07-17
+last_reviewed_on: 2024-10-31
 review_in: 6 months
 layout: google-analytics
 ---
@@ -122,9 +122,9 @@ spec:
 ### Logging
 
 All disruptive actions are logged in the ModSecurity audit log file and the error log for for nginx ingress-controller.
-Fluent-bit is used to ship error logs are sent to kibana and audit logs containing more details are sent to the modsec opensearch dashboard.
+Fluent-bit is used to ship error logs are sent to OpenSearch and audit logs containing more details are sent to the modsec opensearch dashboard.
 
-To view your modsec ingress logs, log into [kibana][kibana-common], select index `live_kubernetes_ingress*` and search for `ModSecurity`. and narrow down the search with `host: <your hostname>`. An example of this [kibana search][kibana-search-example]
+To view your modsec ingress logs, log into [OpenSearch][opensearch-app-logs], select index `live_kubernetes_ingress*` and search for `ModSecurity`. You can then narrow down the search with `host: <your hostname>`.
 
 Error Log Example:
 
@@ -137,7 +137,7 @@ Error Log Example:
 client: 12.123.1.12, server: test-ingress.url, request: "GET /?exec=/bin/bash HTTP/2.0", host: "test-ingress.url"
 ```
 
-To get the detailed modsec audit log for a malicious event transaction, do a search using the `unique_id` value from the above search result in the modsec opensearch dashboard. An example of this [modsec unique_id search][opensearch-unique-id-example]
+To get the detailed modsec audit log for a malicious event transaction, do a search using the `unique_id` value from the above search result in the [modsec OpenSearch dashboard][opensearch]. An example of this [modsec unique_id search][opensearch-unique-id-example]
 
 ### OWASP Rules
 
@@ -233,7 +233,7 @@ To prevent PII from leaking, we restrict the logs you can access. This access is
 
 Login [to the Modsec Audit logs Opensearch](https://logs.cloud-platform.service.justice.gov.uk/_dashboards) to view your logs.
 
-[kibana-common]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/kibana#/discover?_g=()
+[opensearch-app-logs]: https://app-logs.cloud-platform.service.justice.gov.uk/_dashboards/app/data-explorer/discover
 [opensearch]: https://logs.cloud-platform.service.justice.gov.uk/_dashboards
 [kibana-search-example]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-60m,to:now))&_a=(columns:!(_source),filters:!(),index:'8a728bc0-00eb-11ec-9062-27aa363b66a2',interval:auto,query:(language:kuery,query:'%22ModSecurity%22%20and%20%22host:%20%22'),sort:!(!('@timestamp',desc)))
 [opensearch-unique-id-example]: https://logs.cloud-platform.service.justice.gov.uk/_dashboards/app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-15m,to:now))&_a=(columns:!(_source),filters:!(),index:b95d8900-dd15-11ed-87c8-170407f57c9c,interval:auto,query:(language:kuery,query:'transaction.unique_id:%20*'),sort:!())
