@@ -154,7 +154,7 @@ spec:
         averageUtilization: 95
 ```
 
-The above manifest will ensure a minimum of 1 replica is available for the deployment called my-app-name, but will increase replicas up to 5 when the CPU utilization is above 95%.
+The above manifest will ensure a minimum of 1 replica is available for the deployment called my-app-name, but will increase replicas, up to a maximum of 5, when the CPU utilization is above 95%.
 
 To configure what value to set for `targetCPUUtilizationPercentage` depends on resource limits set up in your namespace and how much the actual pods consume.
 This [limitrange file] defines the defaults we assign to new namespaces.
