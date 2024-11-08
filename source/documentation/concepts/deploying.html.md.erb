@@ -1,6 +1,6 @@
 ---
 title: Deploying to the Cloud Platform
-last_reviewed_on: 2024-10-17
+last_reviewed_on: 2024-11-08
 review_in: 3 months
 layout: google-analytics
 ---
@@ -145,7 +145,13 @@ spec:
     name: my-app-name
   minReplicas: 1
   maxReplicas: 5
-  targetCPUUtilizationPercentage: 95
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 95
 ```
 
 The above manifest will ensure a minimum of 1 replica is available for the deployment called my-app-name, but will increase replicas up to 5 when the CPU utilization is above 95%.
