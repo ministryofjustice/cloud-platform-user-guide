@@ -1,6 +1,6 @@
 ---
 title: Adding AWS resources to your environment
-last_reviewed_on: 2024-05-09
+last_reviewed_on: 2024-11-25
 review_in: 6 months
 layout: google-analytics
 ---
@@ -122,8 +122,8 @@ You can view all metrics AWS make available [here](https://docs.aws.amazon.com/A
 
 ### Adding your own terraform to create AWS resources
 
-If you need to create AWS resources that are not covered by the modules provided by the Cloud Platform team, 
-you can contact us on the [#ask-cloud-platform](https://mojdt.slack.com/messages/C57UPMZLY/) Slack channel 
+If you need to create AWS resources that are not covered by the modules provided by the Cloud Platform team,
+you can contact us on the [#ask-cloud-platform](https://mojdt.slack.com/messages/C57UPMZLY/) Slack channel
 or [raise a support](https://github.com/ministryofjustice/cloud-platform/issues/new?template=cloud-platform-support-request.md&labels=support%20team) ticket to discuss your requirements.
 
 There are some resources that we will not allow you to create, such as
@@ -136,15 +136,15 @@ If the decision is to allow you to create your own terraform, consider the follo
 - all terraform code must be stored in the [cloud-platform-environments][env-repo] repository
 - iam policy permissions must be locked down to only allow access to those specific AWS resources
 - the team who created those terraform code owns it and hence that team is responsible for maintaining it
-- Cloud Platform team can provide console access if those resources support [ABAC](https://docs.aws.amazon.com/IAM/latest/UserGuide/tutorial_attribute-based-access-control.html) 
+- Cloud Platform team can provide console access if those resources support [ABAC](https://docs.aws.amazon.com/IAM/latest/UserGuide/tutorial_attribute-based-access-control.html)
 
 Deploying the terraform code is the same as deploying the terraform modules provided by the Cloud Platform team.
 Create a PR to the [cloud-platform-environments][env-repo] repository, make sure the checks are passed.
-Once the PR is merged, the [concourse pipeline](https://concourse.cloud-platform.service.justice.gov.uk/) 
-will run and deploy the terraform code. 
+Once the PR is merged, the [concourse pipeline](https://concourse.cloud-platform.service.justice.gov.uk/)
+will run and deploy the terraform code.
 
->Note: The pipeline may need permissions to create those resources. If that is the case, please contact us on 
-the [#ask-cloud-platform](https://mojdt.slack.com/messages/C57UPMZLY/) Slack channel 
+>Note: The pipeline may need permissions to create those resources. If that is the case, please contact us on
+the [#ask-cloud-platform](https://mojdt.slack.com/messages/C57UPMZLY/) Slack channel
 
 
 [env-repo]: https://github.com/ministryofjustice/cloud-platform-environments/
