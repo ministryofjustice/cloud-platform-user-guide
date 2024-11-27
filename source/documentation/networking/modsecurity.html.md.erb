@@ -233,6 +233,24 @@ To prevent PII from leaking, we restrict the logs you can access. This access is
 
 Login [to the Modsec Audit logs Opensearch](https://logs.cloud-platform.service.justice.gov.uk/_dashboards) to view your logs.
 
+#### Debugging modesec rules
+
+The modsec debug log is a useful troubleshooting tool, however there is no separation between users' logs and there can be a lot of debug logs, so only enable debug logging for a short time and it's extremely important to turn off debugging when you're finished to reduce noise for other users who may be debugging. Another reason to ensure debugging is turned off is that debug logs are very verbose and will incur a performance cost. You can expect in excess of 50 debug log messages (each message is an I/O operation) and at least 7 KB of data for an average transaction. Cloud Platform reserves the right to turn off debugging entirely if these guidelines are not being respected.
+
+With that said you can enable debugging on your service with the following snippet in your ingress:
+
+```
+nginx.ingress.kubernetes.io/modsecurity-snippet: |
+  SecRuleEngine On
+  SecDebugLogLevel 4
+```
+
+You have 9 log levels to choose from and they can be found [in the modsec handbook](https://github.com/owasp-modsecurity/ModSecurity/wiki/Reference-Manual-%28v3.x%29#secdebugloglevel). Once you've triggered some debug logs you can find them under the [`live_k8s_modsec_ingress_debug*` index in OpenSearch](https://logs.cloud-platform.service.justice.gov.uk/_dashboards/app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-15m,to:now))&_a=(columns:!(_source),filters:!(),index:'360b2e80-a8ee-11ef-a584-3f38510067b9',interval:auto,query:(language:kuery,query:''),sort:!())). Use the `debug_uid` field to group all of your logs from a request together.
+
+Debug logs will be deleted after 14 days.
+
+Further modsec debug logging reading can be found in this [handbook](https://www.feistyduck.com/library/modsecurity-handbook-2ed-free/online/ch04-logging.html)
+
 [opensearch-app-logs]: https://app-logs.cloud-platform.service.justice.gov.uk/_dashboards/app/data-explorer/discover
 [opensearch]: https://logs.cloud-platform.service.justice.gov.uk/_dashboards
 [kibana-search-example]: https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-60m,to:now))&_a=(columns:!(_source),filters:!(),index:'8a728bc0-00eb-11ec-9062-27aa363b66a2',interval:auto,query:(language:kuery,query:'%22ModSecurity%22%20and%20%22host:%20%22'),sort:!(!('@timestamp',desc)))
