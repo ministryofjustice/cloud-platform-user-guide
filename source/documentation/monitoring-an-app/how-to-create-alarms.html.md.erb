@@ -1,6 +1,6 @@
 ---
 title: Creating your own custom alerts
-last_reviewed_on: 2024-09-02
+last_reviewed_on: 2024-12-03
 review_in: 6 months
 layout: google-analytics
 ---
@@ -147,6 +147,17 @@ apiVersion: monitoring.coreos.com/v1
 ### PrometheusRule examples
 
 If you're struggling for ideas on how and which alerts to setup, please see some examples [here](https://github.com/ministryofjustice/cloud-platform-terraform-monitoring/blob/main/resources/prometheusrule-alerts/application-alerts.yaml)
+
+### Alerting on 403 errors
+When you want to alert on 403 errors, this cant be done on the namespace level, as the 403 errors are not exposed to the namespace.
+These errors are exposed at the ingress level, you can query these errors by using the host, and the status code. An example of the promql query would be:
+
+```yaml
+sum(rate(nginx_ingress_controller_requests{host=~"[your ingress host name]", status="403"}[1m]))
+```
+
+this will alert on the rate of 403 errors on the ingress host name connect to the namespace you would like to monitor.
+
 
 ### Advisory Note 1: If Prometheus gets re-installed
 
