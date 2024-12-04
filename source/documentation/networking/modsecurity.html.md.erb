@@ -1,6 +1,6 @@
 ---
 title: ModSecurity - Web Application Firewall
-last_reviewed_on: 2024-10-31
+last_reviewed_on: 2024-12-04
 review_in: 6 months
 layout: google-analytics
 ---
@@ -24,7 +24,6 @@ layout: google-analytics
 >    nginx.ingress.kubernetes.io/modsecurity-snippet: |
 >      SecRuleEngine On
 >      SecDefaultAction "phase:2,pass,log,tag:github_team=<my-great-team-name>"
->      SecDefaultAction "phase:4,pass,log,tag:github_team=<my-great-team-name>"
 >spec:
 >  ingressClassName: modsec
 >```
@@ -33,7 +32,15 @@ layout: google-analytics
 
 #### What is a Web Application Firewall (WAF)?
 
-A Web Application Firewall or WAF helps protect web applications by filtering and monitoring HTTP traffic between a web application and the Internet. A WAF is a [layer 7](https://en.wikipedia.org/wiki/OSI_model) defense and is one of the most common means of protecting against malicious web application security flaws at the application layer. However, it must be noted that a WAF is not designed and does not protect against all types of attacks.
+A Web Application Firewall or WAF helps protect web applications by filtering and monitoring HTTP traffic between a web application and the Internet. A WAF is a [layer 7](https://en.wikipedia.org/wiki/OSI_model) defense and is one of the most common means of protecting against malicious web application security flaws at the application layer. However, it must be noted that a WAF is not designed and does not protect against all types of attacks. There are 5 phases of modsecurity:
+
+1. Request headers (REQUEST_HEADERS)
+1. Request body (REQUEST_BODY)
+1. Response headers (RESPONSE_HEADERS)
+1. Response body (RESPONSE_BODY)
+1. Logging (LOGGING)
+
+You can view logs for each phase by tagging as shown above. Due to a limitation in the nginx modsecurity connector when currently can't accurately provide protection and analysis on response bodies https://github.com/owasp-modsecurity/ModSecurity-nginx/issues/254
 
 #### ModSecurity
 
