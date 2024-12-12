@@ -156,7 +156,7 @@ spec:
 
 The above manifest will ensure a minimum of 1 replica is available for the deployment called my-app-name, but will increase replicas, up to a maximum of 5, when the CPU utilization is above 95%.
 
-To configure what value to set for `targetCPUUtilizationPercentage` depends on resource limits set up in your namespace and how much the actual pods consume.
+To configure what value to set for `averageUtilization` depends on resource limits set up in your namespace and how much the actual pods consume.
 This [limitrange file] defines the defaults we assign to new namespaces.
 
 - Check how much defaults is set for your namespace
@@ -166,7 +166,7 @@ This [limitrange file] defines the defaults we assign to new namespaces.
 kubectl top pods -n <namespace>
 ```
 If your namespace `defaultRequest.cpu : 10m` and you pods consumes `8m` wihtout any traffic, then the usual CPUUtilizationPercentage is 80%.
-The pods doesnot need scaling until it reaches 95% of the `defaultRequest.cpu` which is already reserved for each of the containers. Hence the `targetCPUUtilizationPercentage` can be set as 95%.
+The pods doesnot need scaling until it reaches 95% of the `defaultRequest.cpu` which is already reserved for each of the containers. Hence the `averageUtilization` can be set as 95%.
 
 Run the following command to apply:
 
