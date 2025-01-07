@@ -31,7 +31,7 @@ jobs:
         run: |
           /scripts/deploy.sh
       - name: Upload artifact to be published
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
         with:
           name: github-pages
           path: artifact.tar
@@ -55,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download a Build Artifact from build
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.18
         with:
           name: github-pages
           path: github-pages
