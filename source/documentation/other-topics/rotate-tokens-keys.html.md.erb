@@ -1,12 +1,11 @@
 ---
 title: Rotating tokens and keys
-last_reviewed_on: 2024-07-12
+last_reviewed_on: 2025-01-15
 review_in: 6 months
 layout: google-analytics
 ---
 
 # <%= current_page.data.title %>
-
 
 ## Overview
 
@@ -25,11 +24,9 @@ Update your Terraform code to include the `serviceaccount_token_rotated_date` va
 
 Once applied Terraform will destroy and recreate your Service Account token. if you are pushing this token to GitHub no further action is required; if you are using this token statically in external services like CircleCI then you will need to update the relevant fields manually. See [here](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/kubernetes-service-accounts.html#obtain-the-new-service-account-credentials) for more details.
 
-
 ### AWS credentials
 
 In cases where you have a need for creating and storing AWS Access keys as Kubernetes Secrets, and wish for these to be rotated, please [get in touch with the Cloud Platform team](/documentation/reference/getting-help.html).
- 
 
 ### Certificate tls keys
 
@@ -64,7 +61,6 @@ In cases where you have a need for creating and storing AWS Access keys as Kuber
   > Note: Make sure you are using the latest version of the [RDS module][rds-module-version].
 
   Applying this will recreate the password for an RDS instance, and the database_password stored as Kubernetes secrets in your namespace will be updated with the new one.
-
 
   You can verify the database password change by decoding its rds secret contents using the [cloud platform cli]:
 
