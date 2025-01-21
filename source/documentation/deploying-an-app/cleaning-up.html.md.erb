@@ -1,6 +1,6 @@
 ---
 title: Removing an unneeded namespace
-last_reviewed_on: 2024-10-17
+last_reviewed_on: 2024-01-21
 review_in: 3 months
 layout: google-analytics
 ---
@@ -19,7 +19,7 @@ associated AWS resources, and helps to keep our hosting costs down.
 
 If you have any ECR resources in your namespace which still contain images,  Concourse 
 will fail when trying to delete the registry. You can either delete the images manually, 
-or prepare the ECR for deletion by:
+or prepare the ECR for deletion by doing the following:
 
 - Set the [`deletion_protection = false`](https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials/blob/main/examples/ecr.tf#L73-L78)
 argument in your ECR module code.
@@ -41,7 +41,7 @@ deleting the folder:
 
 Merging this [PR] will trigger the [destroy-deleted-namespaces Pipeline](/documentation/other-topics/apply-pipeline.html),
 which will delete all of your non production (with namespace annotation "cloud-platform.justice.gov.uk/is-production = false") namespace's AWS resources, followed by the
-namespace itself, for production namespaces cloud-platform team will get an alert to manually delete the namespace.
+namespace itself. For production namespaces, the cloud-platform team will get an alert to manually delete the namespace.
 
 > NB: If you have set up a CI/CD pipeline, which deploys into your namespace,
 then this should be deleted first, so that anything you delete later is not
