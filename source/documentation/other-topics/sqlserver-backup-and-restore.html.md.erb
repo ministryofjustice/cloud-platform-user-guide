@@ -1,6 +1,6 @@
 ---
 title: SQL Server Backup and Restore
-last_reviewed_on: 2024-07-17
+last_reviewed_on: 2025-01-21
 review_in: 6 months
 layout: google-analytics
 ---
@@ -172,7 +172,7 @@ This follows similar steps to the above. Obviously you won't be copying a .bak f
 exec msdb.dbo.rds_backup_database @source_db_name='<database name>', @s3_arn_to_backup_to='arn:aws:s3:::<bucket name>/<backup filename>', @type='FULL', @number_of_files=1;
 ````
 
-As previously you can use the following SQL to check on the status of the backup task
+As previously, you can use the following SQL to check on the status of the backup task
 
 ````sql
 exec msdb.dbo.rds_task_status
@@ -181,7 +181,7 @@ exec msdb.dbo.rds_task_status
 ## Other information
 
 - Daily RDS snapshots are automatically provided by cloud platform. Backups created using this process are of most use for copying data between RDS and another SQL Server type (eg running on an on-prem or VPS server somewhere)
-- It might be prudent to use S3's lifecycle capability to automatically expire (ie delete) backup objects in your bucket. For reasons of cost, security etc it's not 
+- It might be prudent to use S3's lifecycle capability to automatically expire (i.e delete) backup objects in your bucket. For reasons of cost, security etc. it's not 
 - Further information on RDS's native backup and restore for SQL Server can be found at https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/SQLServer.Procedural.Importing.html
 
 [Cloud Platform CLI]: ../getting-started/cloud-platform-cli.html
