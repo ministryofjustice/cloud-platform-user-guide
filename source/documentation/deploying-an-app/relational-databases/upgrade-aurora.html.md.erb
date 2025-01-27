@@ -1,18 +1,18 @@
 ---
 title: Upgrading a database version of Aurora DB cluster
-last_reviewed_on: 2024-01-25
+last_reviewed_on: 2025-01-27
 review_in: 12 months
 layout: google-analytics
 ---
 
 # <%= current_page.data.title %>
 
-If you have a Aurora DB Cluster in the Cloud Platform, you must keep it up to date and use the most cost effective instance type for your needs.
+If you have an Aurora DB Cluster in the Cloud Platform, you must keep it up-to-date and use the most cost effective instance type for your needs.
 
 AWS publishes an end-of-life schedule for major and minor versions of 
 [Postgresql](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.VersionPolicy.html#Aurora.VersionPolicy.MajorVersions)
  and [MySQL](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Updates.html) 
- to help you keep your database up to date and plan for upgrades.
+ to help you keep your database up-to-date and plan for upgrades.
 
 ## Things to note before upgrading a database version
 
@@ -66,6 +66,6 @@ If your new major database version does not support your current instance type, 
     
     As soon as this PR is merged, the major version upgrade will begin.
 
-8. Raise and merge a PR to remove the `APPLY_PIPELINE_SKIP_THIS_NAMESPACE` file added in step 2
+8. Raise and merge a PR to remove the `APPLY_PIPELINE_SKIP_THIS_NAMESPACE` file added in step 2.
    If you have a custom parameter group, add back the `db_parameter_group_name` to the custom parameter group name.
 
