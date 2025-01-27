@@ -1,6 +1,6 @@
 ---
 title: Cloud Platform technical overview
-last_reviewed_on: 2024-07-26
+last_reviewed_on: 2025-01-27
 review_in: 6 months
 layout: google-analytics
 ---
@@ -52,7 +52,7 @@ As soon as you do this, the cluster will recognise that the container which is c
    2. tags and pushes docker images to your docker repository (e.g. ECR or Docker Hub)
    3. updates your kubernetes yaml files (usually also in github) with new image tag values (this may be a manual step)
    4. deploys to the cluster by using `kubectl apply`, sending the updated yaml files to the cluster
-4. Kubernetes recognises that the state of the cluster (specifically your namespace) doesn't match the desired state defined in your yaml files, and makes whatever changes are required. Typically, it launches pods running your new docker image, and as they become responsive, it terminates pods running the old image version.
+4. Kubernetes recognises that the state of the cluster (specifically your namespace) doesn't match the desired state defined in your yaml files, and makes whatever changes required. Typically, it launches pods running your new docker image, and as they become responsive, it terminates pods running the old image version.
 
 [Kubernetes]: https://kubernetes.io
 [Amazon AWS]: https://aws.amazon.com/
