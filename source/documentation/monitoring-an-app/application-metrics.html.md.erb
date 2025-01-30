@@ -132,7 +132,7 @@ We can now query our `/metrics` endpoint using the Cloud Platform Prometheus.
 Head to the Cloud Platform's instance of [Prometheus](https://prometheus.cloud-platform.service.justice.gov.uk/graph) and use the following promql query to view the application latency (remembering to change the namespace value):
 
 ```
-http_server_request_duration_seconds_sum{namespace="my-namespace"}
+http_request_duration_seconds_sum{namespace="my-namespace"}
 ```
 
 The output will be something like:
