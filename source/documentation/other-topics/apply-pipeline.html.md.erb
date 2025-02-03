@@ -1,5 +1,5 @@
 ---
-title: Apply Pipeline
+title: Cloud Platform Concourse Pipelines
 last_reviewed_on: 2025-01-27
 review_in: 6 months
 layout: google-analytics
@@ -9,13 +9,29 @@ layout: google-analytics
 
 ## Introduction
 
-The **Apply Pipeline** is the part of Cloud Platform that continuously deploys the [environments repo](https://github.com/ministryofjustice/cloud-platform-environments) into Cloud Platform's Kubernetes cluster and AWS account. Service teams typically define their Kubernetes namespaces and AWS resources in the environments repo, and the Apply Pipeline is what gets it applied.
+The Cloud Platform utilises a [Concourse](https://concourse-ci.org/) cluster to manage the pipelines that control deployment of user environments. This page provides an overview of the pipelines that are most relevant to service teams.
 
-(Don't confuse it with the **application pipelines**, which are created and managed by service teams. These deploy the Kubernetes resources which make up the application. The application in turn relies on the resources created by the Apply Pipeline - the namespace the application runs in and AWS services that it uses.)
+## Environments-live pipeline
+
+The **environments-live pipeline** is the part of Cloud Platform that continuously deploys the [environments repo](https://github.com/ministryofjustice/cloud-platform-environments) into Cloud Platform's Kubernetes cluster and AWS account. Service teams typically define their Kubernetes namespaces and AWS resources in the environments repo, and the Apply Pipeline is what gets it applied.
+
+> Note: Don't confuse it with the **application pipelines**, which are created and managed by service teams. These deploy the Kubernetes resources which make up the application itself (ie Deployment and Ingress resources. The application in turn relies on the resources created by the Apply namespace changes pipeline - the namespace the application runs in and AWS services that it uses.)
 
 ## How it operates
 
-The Apply Pipeline is triggered when a Pull Request on the [environments repo](https://github.com/ministryofjustice/cloud-platform-environments) is merged to `main`. The Apply Pipeline deploys the changes to whichever environments were changed in the PR.
+There are two main pipelines to be aware of when raising and merging PRs for the environments repo:
+
+### plan-live
+
+The plan pipeline is triggered when a PR is raised. This plan executes as a required GitHub PR Check, and **should always** be reviewed prior to submitting your PR for review in the `#ask-cloud-platform` Slack channel. 
+
+By following the "Details" link next to the completed check, you can view both the `kubectl` dry-run output for any kubernetes resources changes, and also the output of `terraform plan`:
+
+![Concourse plan-live pipeline output](/images/concourse-check-pr.png)
+
+### Apply-namespace-changes pipeline
+
+The Apply namespace changes pipeline is triggered when a PR on the [environments repo](https://github.com/ministryofjustice/cloud-platform-environments) is merged to `main`. The pipeline deploys any Kubernetes manifest or Terraform resource/module changes to whichever environments were changed in the PR.
 
 Essentially it does:
 
@@ -26,18 +42,16 @@ terraform plan
 terraform apply
 ```
 
-It takes a minute to start the job and then usually around 1 to 2 minutes to run.
+### Viewing the Apply namespace changes pipeline
 
-## Viewing the Apply Pipeline
-
-You can see the Apply Pipeline running in [Concourse's "Apply-namespace-changes-live" pipeline](https://concourse.cloud-platform.service.justice.gov.uk/teams/main/pipelines/environments-live/jobs/apply-namespace-changes-live)
+You can see the pipeline running in [Concourse's "apply-namespace-changes-live" pipeline](https://concourse.cloud-platform.service.justice.gov.uk/teams/main/pipelines/environments-live/jobs/apply-namespace-changes-live)
 
 Usage:
 
-* When the apply pipeline starts, your PR will receive a comment containing a link to the apply job. If you follow this link, you will be able to follow the apply job as it logs out each step. This is a good habit as it allows you to verify that the resources applied correctly.
+* When the pipeline starts, your PR will receive a comment containing a link to the apply job. If you follow this link, you will be able to follow the apply job as it logs out each step. This is a good habit as it allows you to verify that the resources applied correctly.
 
-cloud-platform-concourse-bot comment:
-> eg. Your PR is applying in the build: https://concourse.cloud-platform.service.justice.gov.uk/teams/main/pipelines/environments-live/jobs/apply-namespace-changes-live/builds/1579
+`cloud-platform-concourse-bot` comment:
+> Your PR is applying in the build: https://concourse.cloud-platform.service.justice.gov.uk/teams/main/pipelines/environments-live/jobs/apply-namespace-changes-live/builds/1579
 
 Alternatively you can:
 
@@ -48,6 +62,14 @@ Alternatively you can:
 ### Successes and failures
 
 The colour of the header is green if the job was successful, or red for failure. A failing apply can disrupt other Service Teams who wish to apply their environment changes. So in this case, the Cloud Platform team will work quickly, hopefully with the PR author involved, to resolve or reverse changes, to resolve the failure.
+
+### apply-live pipelines and `APPLY_PIPELINE_SKIP_THIS_NAMESPACE`
+
+In addition to the PR triggered plan and apply namespace pipelines described above, Cloud Platform also has a set of pipelines that run continuouly against _all namespaces_ in the environments repo. These are the `apply-live` [pipelines](https://concourse.cloud-platform.service.justice.gov.uk/teams/main/pipelines/environments-live/jobs/apply-live-a), and their purpose is to ensure that failures or configuration drift in any namespaces are detected early.
+
+In the case that an environments PR passes a plan, but then fails on apply after merging in, the Cloud Platform `concourse-bot` will notify you of the failure, and request an APPLY_PIPELINE_SKIP_THIS_NAMESPACE file to be added to your namespace. This ensures that the failing namespace will be skipped in these continuous pipelines and give you notice that some fix PR will be necessary. 
+
+The presence of this file **does not** prevent the apply namespace pipeline from running, and once the failing apply has been mitigated, the file should be removed in a subsequent PR.
 
 ## Questions
 
