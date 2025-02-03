@@ -103,7 +103,7 @@ It is important to retain other original settings associated with the DB instanc
 #### 4. Contact the Cloud Platform team about the restore, providing the `db-instance-identifier` and the PR raised.
 
 #### 5. Before the PR can be merged, the Cloud Platform team have to:
-* pause the [Apply Pipeline](/documentation/other-topics/apply-pipeline.html), and
+* pause the [Apply Pipeline](/documentation/other-topics/concourse-pipelines.html), and
 * rename the DB Instance via the AWS console
 
 This allows the pipeline to create the new DB Instance from the snapshot, using the same name and settings as the original, and preserves the database endpoint and credentials.

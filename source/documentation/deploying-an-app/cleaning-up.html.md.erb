@@ -39,7 +39,7 @@ deleting the folder:
 
 ...and all its contents, from the [cloud-platform-environments][envrepo] repository.
 
-Merging this [PR] will trigger the [destroy-deleted-namespaces Pipeline](/documentation/other-topics/apply-pipeline.html),
+Merging this [PR] will trigger the [destroy-deleted-namespaces Pipeline](/documentation/other-topics/concourse-pipelines.html),
 which will delete all of your non production (with namespace annotation "cloud-platform.justice.gov.uk/is-production = false") namespace's AWS resources, followed by the
 namespace itself. For production namespaces, the cloud-platform team will get an alert to manually delete the namespace.
 
