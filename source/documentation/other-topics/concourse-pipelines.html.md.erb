@@ -15,7 +15,7 @@ The Cloud Platform utilises a [Concourse](https://concourse-ci.org/) cluster to 
 
 The [environments-live pipeline](https://concourse.cloud-platform.service.justice.gov.uk/teams/main/pipelines/environments-live) is the part of Cloud Platform that continuously deploys the [environments repo](https://github.com/ministryofjustice/cloud-platform-environments) into Cloud Platform's Kubernetes cluster and AWS account. Service teams typically define their Kubernetes namespaces and AWS resources in the environments repo, and the environments-live pipeline is what gets it applied.
 
-> **Note:** This pipeline shouldn't be confused with _application pipelines_, which should execute deployment specific builds and are defined and managed by service teams within GitHub Actions or CircleCI.
+> **Note:** This pipeline shouldn't be confused with _application pipelines_, which should execute deployment specific builds and are defined and managed by service teams within their respective CI / CD pipelines
 
 ## How it operates
 
