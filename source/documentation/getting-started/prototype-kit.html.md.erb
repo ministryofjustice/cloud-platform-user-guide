@@ -1,6 +1,6 @@
 ---
 title: Publish prototypes on the web
-last_reviewed_on: 2024-09-02
+last_reviewed_on: 2025-02-05
 review_in: 6 months
 layout: google-analytics
 ---
@@ -46,19 +46,30 @@ In the Cloud Platform CLI run:
 $ cloud-platform environment prototype create
 ```
 
-You'll be asked to name your prototype/namespace, which should be the name of your prototype github repository.
+You'll now be asked to provide some information for your prototype environment. The first prompt you'll see is:
 
-This name will be used as:
+```
+Please choose a hostname for your prototype.
+This must consist only of lower-case letters, digits and
+dashes.
+```
+
+>**Note:** It is crucial that the hostname you provide matches the **_name of your prototype github repository_**, and that it **_does not clash with another namespace in the [cloud-platform-environments] repository_**. 
+
+This hostname value will be used as:
 
 * the [namespace] which will be created on the Cloud Platform
-* the github repository name, to push the secrets required to access Cloud Platform from your github repository
+* your prototype github repository name, to push the secrets required to access Cloud Platform from your github repository
 * the domain name your prototype kit will be published to
 
-> You must ensure that the namespace name should be the same as your prototype github repository and there is not already a namespace.
-
-For example, if you choose `my-prototype` as the name, you will create:
+For example, if you choose `my-prototype` as the name, the CLI will create:
 
 * a namespace on the Cloud Platform called `my-prototype`
+* configure your prototype github repository to create a hostname:
+
+```
+ https://my-prototype-main.apps.live.cloud-platform.service.justice.gov.uk/
+```
 
 ## 3. Raise a PR
 
