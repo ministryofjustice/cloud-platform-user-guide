@@ -1,7 +1,7 @@
 ---
 title: "Kubernetes: namespace definition files"
-last_reviewed_on: 2024-10-28
-review_in: 3 months
+last_reviewed_on: 2025-02-05
+review_in: 6 months
 layout: google-analytics
 ---
 
@@ -12,11 +12,14 @@ layout: google-analytics
 To set up an environment, we create 5 Kubernetes YAML files in the directory for
 your namespace:
 
-* [`00-namespace.yaml`](#00-namespace-yaml)
-* [`01-rbac.yaml`](#01-rbac-yaml)
-* [`02-limitrange.yaml`](#02-limitrange-yaml)
-* [`03-resourcequota.yaml`](#03-resourcequota-yaml)
-* [`04-networkpolicy.yaml`](#04-networkpolicy-yaml)
+- [\<%= current\_page.data.title %\>](#-current_pagedatatitle-)
+  - [Environment definition files](#environment-definition-files)
+  - [Namespace YAML files](#namespace-yaml-files)
+    - [`00-namespace.yaml`](#00-namespaceyaml)
+    - [`01-rbac.yaml`](#01-rbacyaml)
+    - [`02-limitrange.yaml`](#02-limitrangeyaml)
+    - [`03-resourcequota.yaml`](#03-resourcequotayaml)
+    - [`04-networkpolicy.yaml`](#04-networkpolicyyaml)
 
 These files define key elements of the namespace and restrictions we want to
 place on it so that we have security and resource allocation properties. We describe each
