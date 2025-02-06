@@ -1,0 +1,227 @@
+---
+title: Sharing AWS resources across namespaces using SSM and IRSA
+last_reviewed_on: 2025-02-05
+review_in: 6 months
+layout: google-analytics
+---
+
+# <%= current_page.data.title %>
+
+This article explains how to access a resource in one Kubernetes namespace from another using IAM, IRSA and SSM:
+
+For example, `namespace-one` needs to read from an S3 bucket in `namespace-two`
+
+This can be done by hard-coding the resource. This guide explains how to avoid hard-coding the resource by using SSM to share the resource name and ARN.
+  
+For more information on AWS "IAM roles for Service Accounts" (IRSA), please see [IAM roles for Kubernetes Service Accounts](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html):
+
+The Cloud Platform utilises the [cloud-platform-terraform-irsa module](https://github.com/ministryofjustice/cloud-platform-terraform-irsa). Please make sure you are using the [latest release](https://github.com/ministryofjustice/cloud-platform-terraform-irsa/releases) in the following config:
+
+## Required Configuration:
+
+
+1.**Add the resource name and ARN to AWS SSM in namespace-two**
+
+  Here is an example of how to add an S3 bucket ARN and name as SSM parameters:
+
+  <pre><code>
+  resource "aws_ssm_parameter" "s3-bucket-name" {
+    type        = "String"
+    # this will be namespace-two
+    name        = "/${var.namespace}/s3-bucket-name"
+    # specify the module of an existing resource here
+    value       = module.s3-bucket.bucket_name
+    description = "Name of Bucket to be accessed from namespace-one"
+    tags = {
+        business-unit          = var.business_unit
+        application            = var.application
+        is-production          = var.is_production
+        owner                  = var.team_name
+        environment-name       = var.environment-name
+        infrastructure-support = var.infrastructure_support
+        namespace              = var.namespace
+    }
+  }
+  
+  resource "aws_ssm_parameter" "s3-bucket-arn" {
+    type        = "String"
+    # this will be namespace-two
+    name        = "/${var.namespace}/s3-bucket-arn"
+    # specify the module of an existing resource here
+    value       = module.s3-bucket.bucket_arn
+    description = "ARN of Bucket to be accessed from namespace-one"
+    tags = {
+      business-unit          = var.business_unit
+      application            = var.application
+      is-production          = var.is_production
+      owner                  = var.team_name
+      environment-name       = var.environment-name
+      infrastructure-support = var.infrastructure_support
+      namespace              = var.namespace
+    }
+  }
+</code>
+</pre>
+
+2.**Create the IAM role for service accounts config**
+
+Create a file (cross-namespace-role-sa.tf) inside the `namespace-one` folder in the [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments) repo,
+update the template below with the correct values and raise a PR.
+
+<details><summary>Click here to see a template code block</summary>
+<pre><code>
+    module "irsa" {
+        source = "github.com/ministryofjustice/cloud-platform-terraform-irsa?ref=2.0.0"
+        eks_cluster_name      = "var.eks_cluster_name"
+        namespace             = "&lt;namespace&gt;"
+        service_account_name  = "&lt;service_account_name&gt;"
+        role_policy_arns = ["&lt;aws_iam_policy.&lt;namespace&gt;_&lt;policy_name&gt;.arn&gt;"]
+    }
+    data "aws_iam_policy_document" "&lt;namespace&gt;_&lt;policy_name&gt;" {
+        # Provide list of permissions and target AWS account resources to allow access to
+        statement {
+        actions = [
+            "s3:PutObject",
+            "s3:PutObjectAcl",
+        ]
+        resources = [
+            "&lt;ARN of resource in target AWS account&gt;/*",
+        ]
+        }
+    }
+    resource "aws_iam_policy" "&lt;namespace&gt;_&lt;policy_name&gt;" {
+        name   = "&lt;namespace&gt;-&lt;policy-name&gt;"
+        policy = data.aws_iam_policy_document.&lt;namespace&gt;_&lt;policy_name&gt;.json
+
+        tags = {
+        business-unit          = "&lt;Which part of the MoJ is responsible for this service? (e.g HMPPS, Legal Aid Agency)&gt;"
+        application            = "&lt;Application name&gt;"
+        is-production          = "&lt;true/false&gt;"
+        environment-name       = "&lt;dev/test/staging/prod&gt;"
+        owner                  = "&lt;team responsible for this application&gt;"
+        infrastructure-support = "&lt;Email address for contact/support&gt;"
+        }
+    }
+    resource "kubernetes_secret" "irsa" {
+        metadata {
+        name      = "irsa-output"
+        namespace = "&lt;namespace&gt;"
+        }
+        data = {
+        role = module.irsa.aws_iam_role_name
+        serviceaccount = module.irsa.service_account_name.name
+        }
+    }
+
+
+</code>
+</pre>
+</details>
+
+<details><summary> Here is an example using the template above, with typical values provided. It also includes the data references to the SSM parameters in namespace-two</summary>
+<pre><code>
+    module "irsa" {
+        source = "github.com/ministryofjustice/cloud-platform-terraform-irsa?ref=2.0.0"
+        eks_cluster_name      = "var.eks_cluster_name"
+        namespace             = "&lt;namespace&gt;"
+        service_account_name  = "&lt;service_account_name&gt;"
+        role_policy_arns = ["&lt;aws_iam_policy.&lt;namespace&gt;_&lt;policy_name&gt;.arn&gt;"]
+    }
+    data "aws_iam_policy_document" "&lt;namespace&gt;_&lt;policy_name&gt;" {
+        # Provide list of permissions and target AWS account resources to allow access to
+        statement {
+        actions = [
+            "s3:GetObject",
+            
+        ]
+        resources = [
+            # refer to the ssm parameter containing the arn of the resource you want to access
+            "${data.aws_ssm_parameter.namespace-two-s3-bucket-arn.value}/*",
+        ]
+        }
+    }
+    resource "aws_iam_policy" "&lt;namespace&gt;_&lt;policy_name&gt;" {
+        name   = "&lt;namespace&gt;-&lt;policy-name&gt;"
+        policy = data.aws_iam_policy_document.&lt;namespace&gt;_&lt;policy_name&gt;.json
+
+        tags = {
+        business-unit          = "&lt;Which part of the MoJ is responsible for this service? (e.g HMPPS, Legal Aid Agency)&gt;"
+        application            = "&lt;Application name&gt;"
+        is-production          = "&lt;true/false&gt;"
+        environment-name       = "&lt;dev/test/staging/prod&gt;"
+        owner                  = "&lt;team responsible for this application&gt;"
+        infrastructure-support = "&lt;Email address for contact/support&gt;"
+        }
+    }
+    resource "kubernetes_secret" "irsa" {
+        metadata {
+        name      = "irsa-output"
+        namespace = "&lt;namespace&gt;"
+        }
+        data = {
+        role = module.irsa.aws_iam_role_name
+        serviceaccount = module.irsa.service_account_name.name
+        }
+    }
+
+    # this is the ssm parameter used to supply the application with the S3 bucket name in a k8s secret
+    data "aws_ssm_parameter" "s3-bucket-name" {
+        name = "/namespace-two/s3-bucket-name"
+    }
+
+    # this is the ssm parameter which the aws_iam_policy_document refers to
+    data "aws_ssm_parameter" "s3-bucket-arn" {
+        name = "/namespace-two/s3-bucket-arn"
+    }
+
+    # this is for the application to read from the S3 bucket
+    resource "kubernetes_secret" "s3-bucket-secret" {
+        
+        metadata {
+            name = "s3-bucket-secret"
+            namespace = var.namespace
+        }
+
+        data = {
+            # reads the S3 bucket name from an SSM parameter
+            bucket_name = data.aws_ssm_parameter.s3-bucket-name.value
+        }
+    }
+
+}
+</code>
+</pre>
+</details>
+
+  * The service account and the service account IAM role will be created with a random string in the format `cloud-platform-jhsdflisuhdfih` and can be changed by passing the `
+  service_account` variable. Make sure there is no existing service_account in the same name.
+  Please see the module [README](https://github.com/ministryofjustice/cloud-platform-terraform-irsa#inputs) for optional inputs.
+
+  * Once the PR is merged, the IAM role and serviceaccount will be stored as a kubernetes_secret called `irsa-output` in your namespace.
+
+3.**Use the Serviceaccount to deploy your app**
+
+  [Decode the secret](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/add-secrets-to-deployment.html#decoding-a-secret) `irsa-output` to get the serviceaccount name and add it to your depolyment manifest as shown in example below:
+
+  ```
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: helloworld-rubyapp
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: helloworld-rubyapp
+    template:
+      metadata:
+        labels:
+          app: helloworld-rubyapp
+      spec:
+        serviceAccountName: <serviceaccount>
+        containers:
+        - name: rubyapp
+          image: ministryofjustice/cloud-platform-helloworld-ruby:1.1
+          ports:
+          - containerPort: 4567
+```
