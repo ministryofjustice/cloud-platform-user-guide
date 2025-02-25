@@ -8,7 +8,7 @@ layout: google-analytics
 # <%= current_page.data.title %>
 This guide explains how to deploy applications with duplicate hostnames across different namespaces.
 
-By default, duplicate hostnames across namespaces are not permitted on our platform. However, with specific annotations on your Ingress resources, you can intentionally allow duplicate hostnames for blue–green deployments.
+By default, duplicate hostnames across namespaces are not permitted on our platform. However, by using specific annotations on your Ingress resources, you can intentionally allow duplicate hostnames if the required annotations are present and identical on both the new and existing Ingress objects.
 
 >
 Note:
@@ -22,8 +22,8 @@ To allow an Ingress to use a hostname that is already in use in another namespac
 allow-duplicate-host: "true"
 
 # A comma-separated list of namespaces where duplicate hostnames are permitted.
-# IMPORTANT: The value must be identical and in the smae order on both Ingress objects.
-allowed-duplicate-ns: "blue,green"
+# IMPORTANT: The value must be identical and in the same order on both Ingress objects.
+allowed-duplicate-ns: "prod-old,prod-new"
 
 # Specifies the AWS weight value used for traffic balancing.
 # This value must be non-empty.
@@ -33,49 +33,68 @@ external-dns.alpha.kubernetes.io/aws-weight: "100"
 external-dns.alpha.kubernetes.io/set-identifier: "<ingress-name>-<ns>-${clusterColor}"
 ```
 
+## What is Canary deployment vs Blue Green deployment?
+- Canary Deployment:
+  - In a canary deployment, a small percentage of traffic is routed to a new version while most traffic continues to go to the stable version. This allows you to monitor performance and errors before a full rollout.
+
+- Blue/Green Deployment:
+  - Blue/Green deployments run two parallel production environments. At a chosen time, traffic is switched entirely from the old version `prod-old` to the new version `prod-new`.
+
+If you would like to fully cut over to the new version and implement a blue green deployment, a full traffic switch on `nginx.ingress.kubernetes.io/canary-weight` (i.e. `100/0` or `0/100`) can be achieved by setting the weight to `100` and the other to `0`.
+
 ## Canary Deployment Example
 
-Because the NGINX Ingress Controller normally does not allow two Ingress objects to define the same host and path combination, you must enable canary ingresses to merge configurations. To do so, add the following canary annotations:
+Because the NGINX Ingress Controller by default does not allow two Ingress objects to define the same host and path combination, you can enable canary deployments. To do so, add the following canary annotations:
 
 ```
-# Marks the Ingress as part of a canary (blue-green) deployment.
+# Marks the Ingress as part of a canary deployment.
 nginx.ingress.kubernetes.io/canary: "true"
 
-# Defines the traffic weight for the canary.
+# Defines the traffic weight for the canary (NGINX level).
 nginx.ingress.kubernetes.io/canary-weight: "50"
 ```
 
-- Baseline Weight Note:
+### Weighting Considerations:
 
-Although both `external-dns.alpha.kubernetes.io/aws-weight` and `nginx.ingress.kubernetes.io/canary-weight` are available, it is often simpler to use a single weight annotation as your baseline for traffic splitting. Consolidating to one value reduces configuration complexity and potential confusion. 
+There are two weight annotations available:
 
-Depending on your environment and the controller’s behavior, you might choose to adjust `nginx.ingress.kubernetes.io/canary-weight` for Canary weighting deployment.
+-	NGINX Ingress Level:
+    - `nginx.ingress.kubernetes.io/canary-weight` controls the percentage of traffic routed to the canary Ingress at the Ingress level.
+    - You may find more [info here](https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/annotations.md#canary).
 
 
-## How It Works
-When you create or update an Ingress, Gatekeeper policies check for duplicate hostnames across namespaces. If the hostname is already in use in another namespace, then both the new Ingress and the existing Ingress must include all required annotations. In particular, the value of `allowed-duplicate-`ns must be identical and in same order on both Ingresses. If the values differ, the request will be rejected.
+- Route 53 Level:
+  - `external-dns.alpha.kubernetes.io/aws-weight` controls traffic balancing in Route 53 level.
+  - You may find more [into here](https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.md#routing-policies).
 
-Because the NGINX Ingress Controller normally prevents duplicate host/path combinations, using the canary annotations instructs it to merge the configuration of your Ingress objects. This enables you to use the same host and same path in a blue–green deployment.
+Although both annotations are available, it is often simpler to use a single weighting mechanism as your baseline for traffic splitting. Consolidating to one value reduces configuration complexity and potential confusion. You may choose to adjust one of the weight base on your requirement.
+
+For example, you might initially set both `nginx.ingress.kubernetes.io/canary-weight` to 50 for a 50/50 split, and then later adjust one weight to 100 and the other to 0 to achieve a full switch.
+
+### How It Works
+When you create or update an Ingress, Gatekeeper policies check for duplicate hostnames across namespaces. If the hostname is already in use in another namespace, then both the new Ingress and the existing Ingress must include all required annotations. In particular, the value of `allowed-duplicate-ns` must be identical and in same order on both Ingresses. If the values are different, the request will be rejected.
+
+Using the canary annotations instructs the NGINX Ingress Controller allow you to use the same host and the same path across namespaces.
 
 ### Example: Using Canary Deployment with Duplicate Hostname Across Namespaces
 Below are sample YAML files for a Canary deployment scenario where duplicate hostnames across namespaces are allowed because the required annotations are present and identical.
 
-#### Inventory Ingress (Existing Deployment)
-This Ingress represents your blue deployment in the `blue` namespace. It is configured as the master Ingress (mergeable) and includes the required blue–green annotations.
+#### Stable Ingress (Existing Deployment in the “prod-old” Namespace)
+This Ingress represents your existing deployment in the `prod-old` namespace. It is configured with the required override and canary annotations.
 
 ```
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: helloworld-blue
-  namespace: blue
+  name: helloworld-prod-old
+  namespace: prod-old
   annotations:
     nginx.ingress.kubernetes.io/canary: "true"
     nginx.ingress.kubernetes.io/canary-weight: "50"
     allow-duplicate-host: "true"
-    allowed-duplicate-ns: "blue,green"   # Must match exactly on both Ingresses.                
+    allowed-duplicate-ns: "prod-old,prod-new"   # Must be identical on both ingresses.
     external-dns.alpha.kubernetes.io/aws-weight: "100"
-    external-dns.alpha.kubernetes.io/set-identifier: helloworld-blue
+    external-dns.alpha.kubernetes.io/set-identifier: helloworld-prod-old
 spec:
   rules:
   - host: helloworld.apps.live.cloud-platform.service.justice.gov.uk
@@ -85,27 +104,27 @@ spec:
         path: "/"
         backend:
           service:
-            name: helloworld-blue
+            name: helloworld-prod-old
             port:
               number: 80
 ```
 
-#### New Ingress (New Deployment)
-This Ingress represents your green deployment in the `green` namespace. Here, both the stable (blue) and the canary (green) Ingresses use the same hostname and the same path. Both include the required blue–green override and canary annotations.
+#### Canary Ingress (New Deployment in the `prod-new` Namespace)
+This Ingress represents your new `prod-new` deployment. It uses the same hostname and same path as the stable Ingress, and its annotations must match exactly.
 
 ```
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: helloworld-green
-  namespace: green
+  name: helloworld-prod-new
+  namespace: prod-new
   annotations:
     nginx.ingress.kubernetes.io/canary: "true"
     nginx.ingress.kubernetes.io/canary-weight: "50"
     allow-duplicate-host: "true"
-    allowed-duplicate-ns: "blue,green"   # Must match exactly on both Ingresses.   
+    allowed-duplicate-ns: "prod-old,prod-new"   # Must be identical on both ingresses.
     external-dns.alpha.kubernetes.io/aws-weight: "100"
-    external-dns.alpha.kubernetes.io/set-identifier: helloworld-green
+    external-dns.alpha.kubernetes.io/set-identifier: helloworld-prod-new
 spec:
   rules:
   - host: helloworld.apps.live.cloud-platform.service.justice.gov.uk
@@ -115,21 +134,19 @@ spec:
         path: "/" 
         backend:
           service:
-            name: helloworld-green
+            name: helloworld-prod-new
             port:
               number: 80
 ```
 
 #### Deployment Steps
-1.	Deploy the Blue (Existing) Ingress: 
-    - Apply the `blue Ingress YAML` in the `blue` namespace.
-    - This Ingress acts as the master and is configured with the required blue–green annotations.
-2.	Deploy the Green (New) Ingress:
-    - When you create your `green` Ingress in `green` namespace, include the required annotations. Both Ingresses must have:
-      - `allow-duplicate-host: "true"`
-      - `allowed-duplicate-ns: "default-1,default-2" (or your chosen namespaces)`
-      - `external-dns.alpha.kubernetes.io/aws-weight: "50" (or your desired weight)`
-3.	Traffic Management:
-Use the `nginx.ingress.kubernetes.io/canary-weight` annotation to adjust traffic distribution between your blue and green deployments as needed. For example, you might start with a `50/50` split and later shift `100%` of traffic to the green deployment once validated.
+1. Deploy the Stable Ingress:
+  - Apply the YAML for the stable Ingress in the `prod-old` namespace. This resource acts as your existing deployment.
+
+2. Deploy the Canary Ingress:
+  - Apply the YAML for the new Ingress in the `prod-new` namespace. The deployment is allowed only if both Ingresses include all required annotations and the allowed-duplicate-ns values match exactly.
+
+3. Traffic Management:
+  - Use the `nginx.ingress.kubernetes.io/canary-weight` annotation to adjust traffic distribution in nginx level between your prod-old and prod-new deployments. For example, you might start with a `50/50` split and later adjust one weight to 100 and the other to 0 to fully shift traffic.
 
 For further assistance or questions, please contact us in #ask-cloud-platform.
