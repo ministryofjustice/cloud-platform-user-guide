@@ -1,0 +1,135 @@
+---
+title: Allow Ingress with duplicate hostname across namespaces
+last_reviewed_on: 2025-02-25
+review_in: 6 months
+layout: google-analytics
+---
+
+# <%= current_page.data.title %>
+This guide explains how to deploy applications with duplicate hostnames across different namespaces.
+
+By default, duplicate hostnames across namespaces are not permitted on our platform. However, with specific annotations on your Ingress resources, you can intentionally allow duplicate hostnames for blue–green deployments.
+
+>
+Note:
+Duplicate hostnames are already possible within a single namespace. This guide explains how to extend that capability across different namespaces.
+
+## Required Annotations
+To allow an Ingress to use a hostname that is already in use in another namespace, you **must** add the following three annotations to each Ingress resource (**both** the new and the existing ones):
+
+```
+# Indicates that you intentionally want to allow duplicate hostnames.
+allow-duplicate-host: "true"
+
+# A comma-separated list of namespaces where duplicate hostnames are permitted.
+# IMPORTANT: The value must be identical and in the smae order on both Ingress objects.
+allowed-duplicate-ns: "blue,green"
+
+# Specifies the AWS weight value used for traffic balancing.
+# This value must be non-empty.
+external-dns.alpha.kubernetes.io/aws-weight: "100"
+
+# A unique identifier for the Ingress.
+external-dns.alpha.kubernetes.io/set-identifier: "<ingress-name>-<ns>-${clusterColor}"
+```
+
+## Canary Deployment Example
+
+Because the NGINX Ingress Controller normally does not allow two Ingress objects to define the same host and path combination, you must enable canary ingresses to merge configurations. To do so, add the following canary annotations:
+
+```
+# Marks the Ingress as part of a canary (blue-green) deployment.
+nginx.ingress.kubernetes.io/canary: "true"
+
+# Defines the traffic weight for the canary.
+nginx.ingress.kubernetes.io/canary-weight: "50"
+```
+
+- Baseline Weight Note:
+
+Although both `external-dns.alpha.kubernetes.io/aws-weight` and `nginx.ingress.kubernetes.io/canary-weight` are available, it is often simpler to use a single weight annotation as your baseline for traffic splitting. Consolidating to one value reduces configuration complexity and potential confusion. 
+
+Depending on your environment and the controller’s behavior, you might choose to adjust `nginx.ingress.kubernetes.io/canary-weight` for Canary weighting deployment.
+
+
+## How It Works
+When you create or update an Ingress, Gatekeeper policies check for duplicate hostnames across namespaces. If the hostname is already in use in another namespace, then both the new Ingress and the existing Ingress must include all required annotations. In particular, the value of `allowed-duplicate-`ns must be identical and in same order on both Ingresses. If the values differ, the request will be rejected.
+
+Because the NGINX Ingress Controller normally prevents duplicate host/path combinations, using the canary annotations instructs it to merge the configuration of your Ingress objects. This enables you to use the same host and same path in a blue–green deployment.
+
+### Example: Using Canary Deployment with Duplicate Hostname Across Namespaces
+Below are sample YAML files for a Canary deployment scenario where duplicate hostnames across namespaces are allowed because the required annotations are present and identical.
+
+#### Inventory Ingress (Existing Deployment)
+This Ingress represents your blue deployment in the `blue` namespace. It is configured as the master Ingress (mergeable) and includes the required blue–green annotations.
+
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: helloworld-blue
+  namespace: blue
+  annotations:
+    nginx.ingress.kubernetes.io/canary: "true"
+    nginx.ingress.kubernetes.io/canary-weight: "50"
+    allow-duplicate-host: "true"
+    allowed-duplicate-ns: "blue,green"   # Must match exactly on both Ingresses.                
+    external-dns.alpha.kubernetes.io/aws-weight: "100"
+    external-dns.alpha.kubernetes.io/set-identifier: helloworld-blue
+spec:
+  rules:
+  - host: helloworld.apps.live.cloud-platform.service.justice.gov.uk
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: helloworld-blue
+            port:
+              number: 80
+```
+
+#### New Ingress (New Deployment)
+This Ingress represents your green deployment in the `green` namespace. Here, both the stable (blue) and the canary (green) Ingresses use the same hostname and the same path. Both include the required blue–green override and canary annotations.
+
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: helloworld-green
+  namespace: green
+  annotations:
+    nginx.ingress.kubernetes.io/canary: "true"
+    nginx.ingress.kubernetes.io/canary-weight: "50"
+    allow-duplicate-host: "true"
+    allowed-duplicate-ns: "blue,green"   # Must match exactly on both Ingresses.   
+    external-dns.alpha.kubernetes.io/aws-weight: "100"
+    external-dns.alpha.kubernetes.io/set-identifier: helloworld-green
+spec:
+  rules:
+  - host: helloworld.apps.live.cloud-platform.service.justice.gov.uk
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/" 
+        backend:
+          service:
+            name: helloworld-green
+            port:
+              number: 80
+```
+
+#### Deployment Steps
+1.	Deploy the Blue (Existing) Ingress: 
+    - Apply the `blue Ingress YAML` in the `blue` namespace.
+    - This Ingress acts as the master and is configured with the required blue–green annotations.
+2.	Deploy the Green (New) Ingress:
+    - When you create your `green` Ingress in `green` namespace, include the required annotations. Both Ingresses must have:
+      - `allow-duplicate-host: "true"`
+      - `allowed-duplicate-ns: "default-1,default-2" (or your chosen namespaces)`
+      - `external-dns.alpha.kubernetes.io/aws-weight: "50" (or your desired weight)`
+3.	Traffic Management:
+Use the `nginx.ingress.kubernetes.io/canary-weight` annotation to adjust traffic distribution between your blue and green deployments as needed. For example, you might start with a `50/50` split and later shift `100%` of traffic to the green deployment once validated.
+
+For further assistance or questions, please contact us in #ask-cloud-platform.
