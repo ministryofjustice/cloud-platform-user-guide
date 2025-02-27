@@ -1,7 +1,7 @@
 ---
 title: SSL connections with RDS
 last_reviewed_on: 2025-01-27
-review_in: 3 months
+review_in: 6 months
 layout: google-analytics
 ---
 
@@ -91,7 +91,7 @@ psql: FATAL:  no pg_hba.conf entry for host "172.20.32.241", user "fDsQgBlavX", 
 The parameter `force_ssl` can be overriden by changing the `db_parameter` when calling the module.
 
 [aws-sec-wp]: https://d1.awsstatic.com/whitepapers/aws-security-whitepaper.pdf
-[aws-rds-ssl]: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html#PostgreSQL.Concepts.General.SSL
+[aws-rds-ssl]: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/PostgreSQL.Concepts.General.SSL.html
 [libpq-ssl]: https://www.postgresql.org/docs/current/libpq-ssl.html
 [mitm]: https://en.wikipedia.org/wiki/Man-in-the-middle_attack
 [rds-module]: https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance/#inputs

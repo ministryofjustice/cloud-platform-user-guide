@@ -170,7 +170,7 @@ The Paranoia Level (PL) setting allows you to choose the desired level of rule c
 Traditional Detection or Passive Mode is the most basic operating mode where all of the rules are run as individual entities. In this mode, no intelligence is shared between rules and each rule has no information about any previous rule matches. That is to say, in this mode, if a rule triggers, it will execute any disruptive/logging actions specified on the current rule.
 
 Anomaly scoring mode implements the concept of Collaborative Detection and Delayed Blocking. Rule logic has been set to decouple the inspection/detection from the blocking functionality. The individual rules can be run so that the detection remains, however instead of applying any disruptive action at that point, the rules will contribute to a transactional anomaly score collection. In addition, each rule will also store meta-data about each rule match (such as the Rule ID, Attack Category, Matched Location and Matched Data) for later logging.
-For more information in anomaly scoring, click [here](https://www.modsecurity.org/CRS/Documentation/anomaly.html#anomaly-scoring-mode)
+For more information in anomaly scoring, click [here](https://coreruleset.org/docs/2-how-crs-works/2-1-anomaly_scoring/)
 
 #### Sensitive logs
 

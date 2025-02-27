@@ -1,7 +1,7 @@
 ---
 title: Removing an unneeded namespace
 last_reviewed_on: 2025-01-27
-review_in: 3 months
+review_in: 6 months
 layout: google-analytics
 ---
 
@@ -21,7 +21,7 @@ If you have any ECR resources in your namespace which still contain images,  Con
 will fail when trying to delete the registry. You can either delete the images manually, 
 or prepare the ECR for deletion by doing the following:
 
-- Set the [`deletion_protection = false`](https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials/blob/main/examples/ecr.tf#L73-L78)
+- Set the [`deletion_protection = false`](https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials/blob/main/examples/ecr.tf)
 argument in your ECR module code.
 - Raise a PR to apply this configuration change to your ECR resource.
 - Merge the PR, and proceed with the namespace deletion process.

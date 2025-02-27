@@ -24,7 +24,7 @@ This guide assumes the following:
 
    * Follow the steps in "Set up incoming webhooks" (starting with "Create an app"  "From scratch")
 
-2. Create a [kubernetes secret](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/add-secrets-to-deployment.html#adding-a-secret-to-an-application) to store the slack webhook.
+2. Create a [kubernetes secret](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/add-secrets-to-deployment.html#configuring-secrets-manually-using-kubenetes-secret) to store the slack webhook.
 
 3. Create a [ticket to request a new alert route in Alertmanager](https://github.com/ministryofjustice/cloud-platform/issues/new?assignees=&labels=&template=cloud-platform-support-request.md). The Cloud Platform team will need the following information:
 
@@ -163,7 +163,7 @@ this will alert on the rate of 403 errors on the ingress host name connect to th
 
 In the event of a serious failure, or for a required upgrade, it may be necessary to re-install Prometheus.
 
-`PrometheusRule` is a [CRD](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/##customresourcedefinitions) that declaratively defines a desired Prometheus rule.
+`PrometheusRule` is a [CRD](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#customresourcedefinitions) that declaratively defines a desired Prometheus rule.
 
 If for any reason Prometheus has to be re-installed, **all PrometheusRules are removed with the CRD.**
 
@@ -181,7 +181,6 @@ If you think this may be causing an issue with your application, we recommend ra
 
 ### Further reading
 
-- [Prometheus Operator - Getting Started](https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/getting-started.md)
-- [Alerting](https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/alerting.md)
+- [Prometheus](https://github.com/prometheus-operator/prometheus-operator/)
 
 [env-create]: /documentation/getting-started/env-create.html#creating-a-cloud-platform-environment
