@@ -16,7 +16,7 @@ The example application in this document will be the [Ruby reference app](https:
 The application latency [metric](https://prometheus.io/docs/concepts/metric_types/) is quite basic, but our intention is to get you started.
 
 ### Assumptions
-To keep this document short, we will assume you already have an application up and running in a namespace on the Cloud Platform, if not, please see [Deploying a multi-container application to the Cloud Platform](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/deploying-an-example-application.html#deploying-a-multi-container-application-to-the-cloud-platform).
+To keep this document short, we will assume you already have an application up and running in a namespace on the Cloud Platform, if not, please see [Deploying an example application to the Cloud Platform](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/deploying-an-example-application.html).
 
 >Note: make sure your container has the correct timezone [see see here](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/container-repositories/requirements.html#setting-utc-timezone-inside-your-container)
 
@@ -56,7 +56,7 @@ curl https://myapp.cloud-platform/metrics
 
 ### Add Service endpoint and ServiceMonitor
 
-We need to expose the metrics endpoint with a `Service` and tell the Cloud Platform Prometheus to scrape the endpoint with a `ServiceMonitor` object in Kubernetes. A `ServiceMonitor` is a custom resource definition ([CRD](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#customresourcedefinitions/)) that allows you to automatically generate Prometheus scrape configuration based on a specified resource.
+We need to expose the metrics endpoint with a `Service` and tell the Cloud Platform Prometheus to scrape the endpoint with a `ServiceMonitor` object in Kubernetes. A `ServiceMonitor` is a custom resource definition ([CRD](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#customresourcedefinitions)) that allows you to automatically generate Prometheus scrape configuration based on a specified resource.
 
 In this example, we're using the same port to expose both our application and metrics endpoint, so we'll need to query our existing `Service` for the current port name. However, if you're exposing a different port, you'll need to either amend your current `Service` or create a new one.
 
