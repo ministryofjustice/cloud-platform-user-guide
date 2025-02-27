@@ -1,6 +1,6 @@
 ---
 title: RDS Snapshots
-last_reviewed_on: 2024-10-28
+last_reviewed_on: 2025-02-27
 review_in: 6 months
 layout: google-analytics
 ---
@@ -94,7 +94,7 @@ If that is different to what is set for your RDS, update your RDS manifest to in
 db_allocated_storage = "<the actual value you got from the above cli command>"
 ```
 
-It is important to retain other original settings associated with the DB instance when restoring from the snapshot. So don't make any other changes to this file except the above mentioned.
+> **Important:** **It is crucial to retain other original settings associated with the DB instance when restoring from the snapshot. Details such as `db-engine-version`, `db-engine`, `rds-family` must be the same as the original instance when the snapshot was taken. So don't make any other changes to this file except the above mentioned.**
 
 > **Warning:** If there is an RDS read replica for the DB instance that is being restored, then you must set `count = 0` or comment out the read replica code (and any Kubernetes secrets relating to the read replica). This will remove the read replica. This is required as Terraform will throw the following error as Terraform is unable to change the read replica target: `Error: cannot elect new source database for replication`
 
@@ -103,7 +103,7 @@ It is important to retain other original settings associated with the DB instanc
 #### 4. Contact the Cloud Platform team about the restore, providing the `db-instance-identifier` and the PR raised.
 
 #### 5. Before the PR can be merged, the Cloud Platform team have to:
-* pause the [Apply Pipeline](/documentation/other-topics/concourse-pipelines.html), and
+* add an APPLY_PIPELINE_SKIP_THIS_NAMESPACE file at the root of your namespace, and
 * rename the DB Instance via the AWS console
 
 This allows the pipeline to create the new DB Instance from the snapshot, using the same name and settings as the original, and preserves the database endpoint and credentials.
@@ -120,7 +120,7 @@ This allows the pipeline to create the new DB Instance from the snapshot, using 
 
 Once the new DB instance is restored and available, your application should be able to access the database with the same database credentials and endpoint as before.
 
-After you have verified that your DB instance and the database is working as expected, let the Cloud Platform team know so they can delete the old, renamed DB instance.
+> **Note:** This method of recovery cannot be used to downgrade an RDS instance to a lower version on the same database instance because AWS doesn't currently support it. If you need to downgrade to a lower version, you will need to create a new database instance with the same configuration in the RDS manifest as that of the instance the snapshot was taken from. Then follow steps 3 to 7 above.
 
 #### 7. Only required for Read Replicas - Recreate the DB read replica if it was removed as a part of step 3:
 In Terraform, re-enable the DB read replica code by setting `count = 1` or uncommenting the code and any Kubernetes secrets that may also be created as a part of it.
