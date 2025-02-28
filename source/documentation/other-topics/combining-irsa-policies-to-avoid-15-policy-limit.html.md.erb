@@ -24,12 +24,9 @@ Please note that this change will result in your application losing permissions 
   <pre><code>
   module "irsa" {
     source = "github.com/ministryofjustice/cloud-platform-terraform-irsa?ref=2.0.0"
-  
     eks_cluster_name = var.eks_cluster_name
-  
     service_account_name = var.application
     namespace            = var.namespace # this is also used as a tag
-  
     role_policy_arns = merge(
       local.sns_policies,
       local.sqs_policies,
@@ -44,8 +41,6 @@ Please note that this change will result in your application losing permissions 
       { sqs_three_dlq = module.sqs-three_dead_letter_queue.irsa_policy_arn },
       { elasticache = module.pac_elasticache_redis.irsa_policy_arn }
     )
-  
-    # Tags
     business_unit          = var.business_unit
     application            = var.application
     is_production          = var.is_production
