@@ -103,7 +103,9 @@ db_allocated_storage = "<the actual value you got from the above cli command>"
 
 > When the read replica is re-created, it will be created with a new database identifier.
 
-#### 6. After making the necessary changes to the manifest, raise a PR and contact the Cloud Platform team via the [#ask-cloud-platform](https://mojdt.slack.com/archives/C57UPMZLY) channel with the PR link.
+#### 6. Raise a PR
+After making the necessary changes to the manifest, raise a PR and contact the Cloud Platform team via the [#ask-cloud-platform](https://mojdt.slack.com/archives/C57UPMZLY) channel with the PR link.
+Once the new DB instance is restored and available, your application should be able to access the database with the same database credentials and endpoint as before.
 
 #### 7. Only required for Read Replicas - Recreate the DB read replica if it was removed as a part of step 3:
 In Terraform, re-enable the DB read replica code by setting `count = 1` or uncommenting the code and any Kubernetes secrets that may also be created as a part of it.
