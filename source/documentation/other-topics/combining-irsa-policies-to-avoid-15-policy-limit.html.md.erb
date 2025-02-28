@@ -1,0 +1,118 @@
+---
+title: Combining IRA policies to get around the 15 policy limit
+last_reviewed_on: 2025-02-28
+review_in: 6 months
+layout: google-analytics
+---
+
+# <%= current_page.data.title %>
+
+This article explains how you can work around the 15 policy limit on AWS "IAM roles for Service Accounts" (IRSA),
+
+For more information on AWS "IAM roles for Service Accounts" (IRSA), please see [IAM roles for Kubernetes Service Accounts](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html):
+
+If you need to grant your IRSA access to more than 15 different resources, you can achieve this by combining policies.
+
+As an alternative, you can also consider creating another IRSA to add the new permissions to. This is suitable if you have a number of different applications in your namespace which do not all need the same permissions.
+
+Please note that this change will result in your application losing permissions for a short period. It appears that the policies are first removed and then applied.
+
+## Before:
+
+  Here is an example of an IRSA with some policies which can be combined. We will combine the SQS policies. They are suitable for combination as they are all based on the default policy in the SQS template.
+
+  <pre><code>
+  module "irsa" {
+    source = "github.com/ministryofjustice/cloud-platform-terraform-irsa?ref=2.0.0"
+  
+    eks_cluster_name = var.eks_cluster_name
+  
+    service_account_name = var.application
+    namespace            = var.namespace # this is also used as a tag
+  
+    role_policy_arns = merge(
+      local.sns_policies,
+      local.sqs_policies,
+      { rds_one = module.rds_one.irsa_policy_arn },
+      { rds_two = module.rds_two.irsa_policy_arn },
+      { s3 = module.s3-bucket-one.irsa_policy_arn },
+      { sqs_one = module.sqs-one.irsa_policy_arn },
+      { sqs_one_dlq = module.sqs-one-dead-letter-queue.irsa_policy_arn },
+      { sqs_two = module.sqs-two.irsa_policy_arn },
+      { sqs_two_dlq = module.sqs-two-dlq.irsa_policy_arn },
+      { sqs_three = module.sqs-three.pic_new_offender_events_queue.irsa_policy_arn },
+      { sqs_three_dlq = module.sqs-three_dead_letter_queue.irsa_policy_arn },
+      { elasticache = module.pac_elasticache_redis.irsa_policy_arn }
+    )
+  
+    # Tags
+    business_unit          = var.business_unit
+    application            = var.application
+    is_production          = var.is_production
+    team_name              = var.team_name
+    environment_name       = var.environment-name
+    infrastructure_support = var.infrastructure_support
+  }
+</code>
+</pre>
+
+## After:
+1.**Create a combined policy and policy document**
+
+<pre><code>
+data "aws_iam_policy_document" "combined_sqs" {
+  statement {
+    sid       = "prepareACaseSQSPolicy"
+    effect  = "Allow"
+    actions = ["sqs:*"]
+    resources = [
+      sqs_one = module.sqs-one.irsa_policy_arn,
+      sqs_one_dlq = module.sqs-one-dead-letter-queue.irsa_policy_arn,
+      sqs_two = module.sqs-two.irsa_policy_arn,
+      sqs_two_dlq = module.sqs-two-dlq.irsa_policy_arn,
+      sqs_three = module.sqs-three.pic_new_offender_events_queue.irsa_policy_arn,
+      sqs_three_dlq = module.sqs-three_dead_letter_queue.irsa_policy_arn,
+    ]
+  }
+}
+
+resource "aws_iam_policy" "combined_sqs" {
+  policy = data.aws_iam_policy_document.combined_sqs.json
+  tags   = local.default_tags
+}
+
+
+</code>
+</pre>
+
+2.**Replace the existing policies in your IRSA with the new combined policy**
+
+<pre><code>
+  module "irsa" {
+    source = "github.com/ministryofjustice/cloud-platform-terraform-irsa?ref=2.0.0"
+  
+    eks_cluster_name = var.eks_cluster_name
+  
+    service_account_name = var.application
+    namespace            = var.namespace # this is also used as a tag
+  
+    role_policy_arns = merge(
+      local.sns_policies,
+      local.sqs_policies,
+      { rds_one = module.rds_one.irsa_policy_arn },
+      { rds_two = module.rds_two.irsa_policy_arn },
+      { s3 = module.s3-bucket-one.irsa_policy_arn },
+      { sqs_all = aws_iam_policy.combined_sqs.arn },
+      { elasticache = module.pac_elasticache_redis.irsa_policy_arn }
+    )
+  
+    # Tags
+    business_unit          = var.business_unit
+    application            = var.application
+    is_production          = var.is_production
+    team_name              = var.team_name
+    environment_name       = var.environment-name
+    infrastructure_support = var.infrastructure_support
+  }
+</code>
+</pre>
