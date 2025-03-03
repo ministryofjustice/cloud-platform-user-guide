@@ -1,5 +1,5 @@
 ---
-title: Combining IRA policies to get around the 15 policy limit
+title: Combining IRSA policies to get around the 15 policy limit
 last_reviewed_on: 2025-02-28
 review_in: 6 months
 layout: google-analytics
@@ -19,7 +19,8 @@ Please note that this change will result in your application losing permissions 
 
 ## Before:
 
-  Here is an example of an IRSA with some policies which can be combined. We will combine the SQS policies. They are suitable for combination as they are all based on the default policy in the SQS template.
+  Here is an example of an IRSA with some policies which can be combined. We will combine the SQS policies. They are suitable for combination as they are all based on the default policy in the SQS template, and so they have the same permissions.
+
 
   <pre><code>
   module "irsa" {
@@ -54,6 +55,10 @@ Please note that this change will result in your application losing permissions 
 ## After:
 1.**Create a combined policy and policy document**
 
+Cloud Platform provided modules provide an output called `irsa_policy_arn`. You can find the template for the module at the top of your module definition. In this case, it will look like this: 
+`source = "github.com/ministryofjustice/cloud-platform-terraform-sqs?ref=5.0.0"`
+
+[The template](https://github.com/ministryofjustice/cloud-platform-terraform-sqs/blob/main/main.tf#L160) contains an IAM policy document in `main.tf` which shows the `actions` which need to be granted. You need to duplicate these `actions` in the policy document below
 <pre><code>
 data "aws_iam_policy_document" "combined_sqs" {
   statement {
@@ -75,8 +80,6 @@ resource "aws_iam_policy" "combined_sqs" {
   policy = data.aws_iam_policy_document.combined_sqs.json
   tags   = local.default_tags
 }
-
-
 </code>
 </pre>
 
