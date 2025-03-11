@@ -1,6 +1,6 @@
 ---
 title: Applying a Maintenance Page
-last_reviewed_on: 2024-09-11
+last_reviewed_on: 2025-03-11
 review_in: 6 months
 layout: google-analytics
 ---
@@ -34,6 +34,6 @@ The deployment will create a pod called maintenance-page-* and a service named m
 To redirect traffic to your maintenance page, change the `serviceName` field in your **current** ingress
 to point to `maintenance-page-svc` and redeploy the ingress. Also, check the `servicePort` matches the one mentioned in the service you want to deploy.
 
-By changing the current ingress you can ensure that you do not incur any downtime.
+By changing the current ingress, you can ensure that you do not incur any downtime.
 
 For more details on customizing the HTML and cleaning up, please refer to the [cloud-platform-maintenance-page](https://github.com/ministryofjustice/cloud-platform-maintenance-page) repository.
