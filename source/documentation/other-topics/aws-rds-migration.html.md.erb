@@ -1,6 +1,6 @@
 ---
 title: Migrating an RDS instance
-last_reviewed_on: 2024-09-11
+last_reviewed_on: 2025-03-13
 review_in: 6 months
 layout: google-analytics
 ---
@@ -38,7 +38,7 @@ The steps will always be the same; on one side we export from source, on the tar
 `pg_dump` can be used to export one big archive that can then be restored with `pg_restore`.
 One issue with that approach is the difficulty of troubleshooting migration issues. 
 
-Since we are trying to make this process as clear as possible, the following guide decomposes `pg_dump` into its three components:
+Since we are trying to make this process as clear as possible, the following guide deconstructs `pg_dump` into its three components:
 
  - Pre-data: The table structures, functions.
  - Data: data
@@ -87,7 +87,7 @@ If using a local file is problematic, those two commands can be piped together (
 
 ### Step 2 - Sequences
 
-Sequences are essential for your database to know what the latest increment of the primary keys is. Sequences are held in special tables that will not be migrated during step 1.
+Sequences are essential for your database to know what the latest increment of the primary key is. Sequences are held in special tables that will not be migrated during step 1.
 
 First, to export,  we run :
 
@@ -139,8 +139,8 @@ If using a local file is problematic, those two commands can be piped together (
 
 ### Step 4 - Post-Data
 
-Any constraints, indexes and foreign keys are also a special kind of metadata that would not be migrated during any of the steps above.
-All of data is contained within the `post-data` section.
+Any constraints, indexes and foreign keys are also a special kind of metadata that will not be migrated during any of the steps above.
+All the data is contained within the `post-data` section.
 
 The process is almost identical to Step 1:
 
