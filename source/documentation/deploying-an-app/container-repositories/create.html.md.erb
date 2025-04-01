@@ -79,7 +79,7 @@ jobs:
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
         env:
-          REGISTRY: ${{ secretts.ECR_REGISTRY_URL }}
+          REGISTRY: ${{ secrets.ECR_REGISTRY_URL }}
           REPOSITORY: ${{ vars.ECR_REPOSITORY }}
           IMAGE_TAG: ${{ github.sha }}
 ```
