@@ -1,6 +1,6 @@
 ---
 title: Creating a container repository
-last_reviewed_on: 2025-01-27
+last_reviewed_on: 2025-04-01
 review_in: 12 months
 layout: google-analytics
 ---
@@ -79,7 +79,7 @@ jobs:
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
         env:
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REGISTRY: ${{ secretts.ECR_REGISTRY_URL }}
           REPOSITORY: ${{ vars.ECR_REPOSITORY }}
           IMAGE_TAG: ${{ github.sha }}
 ```
