@@ -139,9 +139,11 @@ To upgrade your major database version, complete these eight steps:
     }
     ```
 
->Note: It is essential that you set `prepare_for_major_upgrade` to `true`. This will temporarily set your database's parameter group to the RDS default, and prevent a failed apply during upgrade caused by clashing parameter group resources.
-    
+    > **Note:** It is essential that you set `prepare_for_major_upgrade` to `true`. This will temporarily set your database's parameter group to the RDS default, and prevent a failed apply during upgrade caused by clashing parameter group resources.
+
+    ```shell
     As soon as this PR is merged, the major version upgrade will begin.
+    ```
 
 6. Once the major version upgrade has finished, raise and merge a PR that turns off the `prepare_for_major_upgrade` attribute that was turned on in step 5:
 
