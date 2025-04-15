@@ -1,17 +1,16 @@
 ---
 title: ModSecurity - Web Application Firewall
-last_reviewed_on: 2024-12-04
+last_reviewed_on: 2024-04-15
 review_in: 6 months
 layout: google-analytics
 ---
 
 # <%= current_page.data.title %>
 
-
 > #### Quick Start
-> We have a dedicated ingress-controller with ModSecurity enabled.
+> We have a dedicated ingress-controller with ModSecurity enabled (use `modsec` for production workloads and `modsec-non-prod` for non-production workloads).
 >
-> To enable and point your application to this ingress-controller, use the following annotations and ingressClassName on your ingress manifest file:
+> To enable a WAF, point your application to this ingress-controller, use the following annotations and ingressClassName on your ingress manifest file:
 >
 >```
 >apiVersion: networking.k8s.io/v1
@@ -25,7 +24,7 @@ layout: google-analytics
 >      SecRuleEngine On
 >      SecDefaultAction "phase:2,pass,log,tag:github_team=<my-great-team-name>"
 >spec:
->  ingressClassName: modsec
+>  ingressClassName: modsec-non-prod
 >```
 
 ### Introduction
@@ -48,13 +47,22 @@ You can view logs for each phase by tagging as shown above. Due to a limitation 
 
 For the Cloud Platform, ModSecurity has been configured as an opt-in feature. New and current applications will require a specific set of annotations to be added to their ingress manifest file.
 
+##### Upgrade strategy
+
+We have 2 modsec classes, please use the appropriate class for your workload (`modsec` for production and `modsec-non-prod` for non prod workloads). We separate classes for performance, stability and to facilitate rolling out upgrades. The rules which modsec checks requests against is constantly evolving, it's not uncommon for a new rule to block traffic which previously was allowed, for this reason we upgrade modsecurity in steps:
+
+1. Notify the [#modsecurity-community](https://moj.enterprise.slack.com/archives/C07RG27NZAP) of the upgrade
+1. Upgrade the `modsec-non-prod` class
+1. Wait 2 weeks for users to identify any issues and raise them or fix them
+1. Roll out the upgrade to production workloads on the `modsec` class
+
 ### Ingress Annotations
 
 We have a dedicated ingress-controller with ModSecurity enabled separate from the default ingress-controller.
 To point your application to the ModSec ingress-controller, add the following to your ingress `spec` field:
 
 ```yaml
-ingressClassName: modsec
+ingressClassName: modsec-non-prod
 ```
 
 To enable ModSecurity for your application, add the following annotation to your ingress manifest file:
@@ -108,7 +116,7 @@ metadata:
       SecRuleEngine On
       SecDefaultAction "phase:2,pass,log,tag:github_team=<my-great-team-name>"
 spec:
-  ingressClassName: modsec
+  ingressClassName: modsec-non-prod
   tls:
   - hosts:
     - <application_url>
@@ -147,6 +155,8 @@ client: 12.123.1.12, server: test-ingress.url, request: "GET /?exec=/bin/bash HT
 To get the detailed modsec audit log for a malicious event transaction, do a search using the `unique_id` value from the above search result in the [modsec OpenSearch dashboard][opensearch]. An example of this [modsec unique_id search][opensearch-unique-id-example]
 
 ### OWASP Rules
+
+**These rules are constantly changing and evolving to keep up with changing threats**
 
 The [OWASP ModSecurity Core Rule Set (CRS)](https://coreruleset.org/faq/) is a set of generic attack detection rules for use with ModSecurity. These rules are enabled on the ingress-controller level on the dedicated ModSec ingress-controller. The CRS aims to protect web applications from a wide range of attacks, including the OWASP Top Ten, with a minimum of false alerts. The CRS provides protection against many common attack categories, including:
 
@@ -208,7 +218,7 @@ metadata:
       SecRuleRemoveById 00001
 spec:
   tls:
-    ingressClassName: modsec
+    ingressClassName: modsec-non-prod
   - hosts:
     - <application_url>
   rules:
