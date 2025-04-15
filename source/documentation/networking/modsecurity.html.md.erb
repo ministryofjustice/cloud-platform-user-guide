@@ -49,7 +49,7 @@ For the Cloud Platform, ModSecurity has been configured as an opt-in feature. Ne
 
 ##### Upgrade strategy
 
-We have 2 classes, please use the appropriate class for your workload (`modsec` for production and `modsec-non-prod` for non prod workloads). We separate classes for performance, stability and to facilitate rolloing out upgrades. The rules which modsec checks requests against is constantly evolving, it's not uncommon for a new rule to block traffic which previously was allowed, for this reason we upgrade modsecurity in 2 steps. 
+We have 2 modsec classes, please use the appropriate class for your workload (`modsec` for production and `modsec-non-prod` for non prod workloads). We separate classes for performance, stability and to facilitate rolling out upgrades. The rules which modsec checks requests against is constantly evolving, it's not uncommon for a new rule to block traffic which previously was allowed, for this reason we upgrade modsecurity in steps:
 
 1. Notify the [#modsecurity-community](https://moj.enterprise.slack.com/archives/C07RG27NZAP) of the upgrade
 1. Upgrade the `modsec-non-prod` class
