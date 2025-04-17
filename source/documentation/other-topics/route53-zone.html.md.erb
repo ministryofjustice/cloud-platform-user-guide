@@ -1,6 +1,6 @@
 ---
 title: Creating a Route 53 Hosted Zone
-last_reviewed_on: 2024-10-09
+last_reviewed_on: 2025-04-17
 review_in: 6 months
 layout: google-analytics
 ---
@@ -149,7 +149,7 @@ Shortly after, to confirm the zone has been created, you should be able to acces
 
 If you are migrating an existing domain to the Cloud Platform, you can first move the nameservers management to Cloud Platform before migrating the app to CP.
 
-In that case, copy all the current DNS records and set the same in Cloud Platform account. This can be done prior to the migration using terraform. 
+In that case, copy all the current DNS records and set the same in Cloud Platform account. This can be done prior to the migration using terraform.
 
 Collect all existing dns records that are pointing to your custom domain and add them to the route53 zone you created using the [aws_route53_record][aws_route53_record] terraform resource.
 
@@ -174,7 +174,7 @@ For any custom subdomain of `service.justice.gov.uk` or `justice.gov.uk`, the de
 Please contact #ask-operations-engineering slack channel or [domains@digital.justice.gov.uk](mailto:domains@digital.justice.gov.uk) and provide the `nameservers`
 you fetched from the secrets in your namespace for that custom domain above.
 
-For any other domain, you will need to contact the parent zone's administrators (usually GDS) and provide the `nameservers` details to setup delegation. 
+For any other domain, you will need to contact the parent zone's administrators (usually GDS) and provide the `nameservers` details to setup delegation.
 If in doubt, check with #ask-operations-engineering slack channel or [domains@digital.justice.gov.uk](mailto:domains@digital.justice.gov.uk)
 
 [env-repo]: https://github.com/ministryofjustice/cloud-platform-environments
