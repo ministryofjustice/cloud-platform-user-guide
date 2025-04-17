@@ -1,0 +1,57 @@
+---
+title: AWS Resource Naming Information
+last_reviewed_on: 2025-04-17
+review_in: 6 months
+layout: google-analytics
+---
+
+# <%= current_page.data.title %>
+
+>This document provides information relating to recent behavioural changes applied to the naming of Cloud Platform ECR, SQS and SNS resources. 
+
+### What was the issue?
+
+The AWS resources created by the Cloud Platform [ECR][ecr-module], [SQS][sqs-module] and [SNS][sns-module] topic modules have all historically contained a bug, whereby the `name` property of these resources was partially made up of a namespace's `team_name` Terraform variable.
+
+For example, you might have an SQS queue created by the SQS module that looks like this:
+
+```
+myteam-development-csv_dl_queue    # made up of "$var.team_name-$var.environment-$var.sqs_name"
+```
+
+Since the name of each of these resources cannot be changed in place, this meant that if a team changed their name, Terraform would attempt to destroy and recreate the resources. This would be especially bad if the Terraform PR plan reported changes were to be missed, as downtime would almost certainly follow.
+
+
+
+### What we've changed
+
+To workaround this issue, the team have added a `lifecycle` block with `ignore_changes` for the `name` property in the affected modules ([example here][lifecycle-example]). 
+
+This means that Terraform will no longer attempt to destroy and recreate the resources if the team name changes.
+
+### Are there any problems with this change?
+
+Yes, or at least.... maybe.
+
+What it means for now at least, is that if your team name changes, you can go ahead and update that variable; your tags for any and all AWS tags will be updated to reflect this. But any existing ECR, SQS and SNS resources will **keep the old team name element**.
+
+If this is a problem for you, then you'll need to explicitly destroy and recreate the resources, raising the necessary deletion and subsequent creation PRs.
+
+### Is there a better way?
+
+We'd like to free ourselves of the team name element in these resources altogether in an upcoming module release (it'd need to be backwards compatible for legacy resources).
+
+Some thoughts we've had have been along the lines of: 
+
+- using the `namespace` variable instead of the `team_name` variable, as that can't change without a total rebuild of the environment, and therefore is more stable.
+
+- using hash suffixes to ensure uniqueness of resources, but this might be annoying for teams to deal with.
+
+Any thoughts/suggestions are welcome via `#ask-cloud-platform`.
+
+
+<!-- links -->
+[ecr-module]:https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials
+[sqs-module]:https://github.com/ministryofjustice/cloud-platform-terraform-sqs
+[sns-module]:https://github.com/ministryofjustice/cloud-platform-terraform-sns-topic
+[lifecycle-example]:https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials/blob/main/main.tf#L51
