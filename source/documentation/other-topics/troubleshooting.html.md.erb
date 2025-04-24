@@ -1,6 +1,6 @@
 ---
 title: Troubleshooting guide
-last_reviewed_on: 2024-10-18
+last_reviewed_on: 2025-04-24
 review_in: 6 months
 layout: google-analytics
 ---
@@ -139,11 +139,36 @@ rubyapp-service   ClusterIP   100.65.254.2   <none>        4567/TCP   28d
 
 The remainder of this document covers particular errors you might encounter, and give advice on how to deal with them.
 
-  - [My pod shows 'CreateContainerConfigError' after deployment](#my-pod-shows-39-createcontainerconfigerror-39-after-deployment)
-  - [My pod shows 'CrashLoopBackOff' after deployment](#my-pod-shows-crashloopbackoff-after-deployment)
-  - [My pod shows 'ImagePullBackOff' after deployment](#my-pod-shows-imagepullbackoff-after-deployment)
-  - [I get the error 'container is unhealthy, it will be killed and re-created'](#i-get-the-error-39-container-is-unhealthy-it-will-be-killed-and-re-created-39)
-  - [I get the error 'Error from server (Forbidden)' when trying to run kubectl commands](#i-get-the-error-39-error-from-server-forbidden-39-when-trying-to-run-kubectl-commands)
+- [\<%= current\_page.data.title %\>](#-current_pagedatatitle-)
+  - [Pods / Events](#pods--events)
+  - [Logs](#logs)
+  - [Launching a shell](#launching-a-shell)
+  - [Launching a new container](#launching-a-new-container)
+  - [Specific Errors](#specific-errors)
+    - [My pod shows 'CreateContainerConfigError' after deployment](#my-pod-shows-createcontainerconfigerror-after-deployment)
+      - [Scenario](#scenario)
+      - [Cause](#cause)
+      - [Troubleshooting](#troubleshooting)
+      - [Solution](#solution)
+    - [My pod shows `CrashLoopBackOff` after deployment](#my-pod-shows-crashloopbackoff-after-deployment)
+      - [Scenario](#scenario-1)
+      - [Cause](#cause-1)
+      - [Troubleshooting](#troubleshooting-1)
+      - [Solution](#solution-1)
+    - [My pod shows `ImagePullBackOff` after deployment](#my-pod-shows-imagepullbackoff-after-deployment)
+      - [Scenario](#scenario-2)
+      - [Cause](#cause-2)
+      - [Troubleshooting](#troubleshooting-2)
+      - [Solution](#solution-2)
+    - [I get the error 'container is unhealthy, it will be killed and re-created'](#i-get-the-error-container-is-unhealthy-it-will-be-killed-and-re-created)
+      - [Situation](#situation)
+      - [Cause](#cause-3)
+      - [Troubleshooting](#troubleshooting-3)
+      - [Solution](#solution-3)
+    - [I get the error 'Error from server (Forbidden)' when trying to run kubectl commands](#i-get-the-error-error-from-server-forbidden-when-trying-to-run-kubectl-commands)
+      - [Situation](#situation-1)
+      - [Cause](#cause-4)
+      - [Solutions](#solutions)
 
 ### My pod shows 'CreateContainerConfigError' after deployment
 
