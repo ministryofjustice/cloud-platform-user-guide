@@ -23,7 +23,7 @@ There are two main pipelines to be aware of when raising and merging PRs for the
 
 ### plan-live
 
-The [plan-live pipeline](https://concourse.cloud-platform.service.justice.gov.uk/teams/main/pipelines/environments-live/jobs/plan-live) is triggered when a PR is raised. This plan executes as a required GitHub PR Check, and **should always** be reviewed prior to submitting your PR for review in the `#ask-cloud-platform` Slack channel. 
+The [plan-live pipeline](https://concourse.cloud-platform.service.justice.gov.uk/teams/main/pipelines/environments-live/jobs/plan-live) is triggered when a PR is raised. This plan executes as a required GitHub PR Check, the PR is then checked using our [OPA Auto Approve](documentation/other-topics/opa-auto-approve.html) application if it passes then you can merge your PR if not then please submit your PR for review in the `#ask-cloud-platform` Slack channel.
 
 Details of a given PR plan are visible in the GitHub PR Web UI:
 
@@ -57,7 +57,7 @@ Alternatively you can:
 * Select the build corresponding to your PR merge (other people's changes to environments also show up here). The latest build is at the top, but you can also identify yours by the merge commit hash.
 * Select `task: apply-namespace-changes` to see the logs where terraform is applied.
 
-### apply-live pipelines 
+### apply-live pipelines
 
 Cloud Platform also has a set of pipelines that run continuously against _all namespaces_ in the environments repo. These are the `apply-live` [pipelines](https://concourse.cloud-platform.service.justice.gov.uk/teams/main/pipelines/environments-live/jobs/apply-live-a), and their purpose is to ensure that failures or configuration drift in any namespaces are detected early.
 
