@@ -1,0 +1,22 @@
+---
+title: OPA Auto Approve
+last_reviewed_on: 2025-01-27
+review_in: 6 months
+layout: google-analytics
+---
+
+# <%= current_page.data.title %>
+
+### Overview
+
+> This is a work in progress application. We are continuously improving it. If you spot anything wrong please contact us in #ask-cloud-platform
+
+We are implementing a service to auto approve pull requests that come into [Cloud Platform Environments](https://github.com/ministryofjustice/cloud-platform-environments) using [Open Policy Agent](https://www.openpolicyagent.org/). You may have already seen a comment appear on you PR with a table of terraform modules and resources that are automatically checked when the PR is raised and updated. We hope that this will reduce the time spent on reviews.
+
+### Under the hood
+
+When a PR is raised in the Cloud Platform Environments repo the plan is checked via OPA using our policy rules which can be found [here](https://github.com/ministryofjustice/cloud-platform-opa-auto-approve). A comment is then left on the PR with the results of the policy checks. We are continuously adding more terraform modules and resources to our policy checks in order to improve our coverage.
+
+If your PR does not pass the automated checks then you can raise the PR as normal in #ask-cloud-platform.
+
+If you have any questions or notice something wrong please contact #ask-cloud-platform.
