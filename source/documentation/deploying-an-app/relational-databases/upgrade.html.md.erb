@@ -138,7 +138,16 @@ To upgrade your major database version, complete these eight steps:
       ...
     }
     ```
+If you have a read replica of your database, you will also need to update the `db_engine_version` and `rds_family` attributes to your **new** major version at the same time:
 
+    ```hcl
+    module "read_replica" {
+      ...
+      db_engine_version = "16.1"
+      rds_family        = "postgres16"
+      ...
+    }
+    ```
     > **Note:** It is essential that you set `prepare_for_major_upgrade` to `true`. This will temporarily set your database's parameter group to the RDS default, and prevent a failed apply during upgrade caused by clashing parameter group resources.
 
     ```shell
@@ -155,16 +164,6 @@ To upgrade your major database version, complete these eight steps:
     }
     ```
 
-    If you have a read replica of your database, you will also need to update the `db_engine_version` and `rds_family` attributes to your **new** major version after the upgrade of your primary database has finished:
-
-    ```hcl
-    module "read_replica" {
-      ...
-      db_engine_version = "16.1"
-      rds_family        = "postgres16"
-      ...
-    }
-    ```
 
 7. Optionally, as the major upgrade already has downtime, it might be worthwhile changing your database instance type to the latest generation supported by your **new** major version
 
