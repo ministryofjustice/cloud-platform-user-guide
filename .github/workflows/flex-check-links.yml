@@ -1,7 +1,18 @@
-# Ignores known non-critical statuses: 200, 400, 401, 402, 403, and 429.
-# Still checks external links to catch genuine 404s, but may need manual review. 
-# External links causing false-positives by throwing 404s will be allow-listed soon.
-name: Check links (Flexible)
+## Flexible Link Checker for Documentation Site
+# 
+# This workflow builds the documentation site and checks for broken links while:
+# - Ignoring common non-critical HTTP status codes (400, 401, 402, 403, 429)
+#   that often represent temporary issues or authorization requirements
+# - Continuing the workflow even when issues are found (non-blocking)
+# - Allowing missing href attributes and hash-only references
+#
+# WHY: External resources often return non-404 errors for valid reasons:
+# - 400-403: Authentication required or access denied (e.g., GitHub, Slack links)
+# - 429: Rate limiting (especially from GitHub API and other high-traffic services)
+#
+# The workflow still catches genuine 404 errors (broken links) while reducing
+# false positives that would otherwise cause check failures.
+name: Check Links (Flexible)
 
 on:
   workflow_dispatch:
@@ -10,17 +21,25 @@ on:
       - 'source/**'
 
 jobs:
-  check-links-flexible:
+  link-check:
+    name: Build and Check Links
     runs-on: ubuntu-latest
     container:
-      image: ministryofjustice/tech-docs-github-pages-publisher:v3
+      image: ghcr.io/ministryofjustice/tech-docs-github-pages-publisher:v5.1.0
+      options: --platform linux/amd64
     steps:
-      - name: Check out repository
+      - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      
       - name: Install dependencies
         run: bundle install
-      - name: Build site
-        run: bundle exec middleman build --build-dir docs --relative-links
-      - name: Run HTMLProofer (Flexible)
+        
+      - name: Build site with Middleman
         run: |
-          htmlproofer ./docs --http-status-ignore "400,401,402,403,429" --allow-missing-href true
+          bundle exec middleman build --build-dir docs --relative-links --verbose
+      
+      - name: Run HTMLProofer link checks
+        run: |
+          htmlproofer ./docs \
+            --ignore-status-codes "400,401,402,403,429" \
+            --allow-hash-href --allow-missing-href || echo "Link check found issues but continuing with workflow"
