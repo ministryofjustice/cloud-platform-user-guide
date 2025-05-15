@@ -35,8 +35,8 @@ jobs:
         
       - name: Build site with Middleman
         run: |
-          # Use the container's pre-installed middleman directly
-          middleman build --build-dir docs --relative-links --verbose
+          # Use bundle exec but without reinstalling gems
+          bundle exec middleman build --build-dir docs --relative-links --verbose
       
       - name: Run HTMLProofer link checks
         run: |
