@@ -42,3 +42,5 @@ github_branch: main
 
 owner_slack_workspace: "mojdt"
 default_owner_slack: "#cloud-platform"
+
+full_service_name: Cloud Platform User Guide

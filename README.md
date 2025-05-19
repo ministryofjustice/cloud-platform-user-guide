@@ -24,7 +24,7 @@ the [source](source) directory.
 
 The syntax used in `*.html.md.erb` is Markdown, though it also supports some
 GOV.UK Design System specifics, as listed on [Tech Docs Template - Write your
-content](https://tdt-documentation.london.cloudapps.digital/write_docs/content/).
+content](https://github.com/ministryofjustice/template-documentation-site/tree/main).
 
 ## Publishing changes
 
@@ -37,11 +37,11 @@ This website is hosted on [GitHub Pages](https://pages.github.com/).
 
 ### Global configuration
 
-The [GOV.UK Tech Docs Template global configuration options](https://tdt-documentation.london.cloudapps.digital/configure_project/global_configuration/)
+The [GOV.UK Tech Docs Template global configuration options](https://github.com/ministryofjustice/template-documentation-site/blob/main/README.md)
 can be used in this repository to configure the Cloud Platform user guide.
 
 ### Structuring documentation and page configuration
 
-The [GOV.UK Tech Docs Template "Configure your documentation project"](https://tdt-documentation.london.cloudapps.digital/configure_project/)
+The [GOV.UK Tech Docs Template "Configure your documentation project"](https://github.com/ministryofjustice/template-documentation-site/blob/main/config/tech-docs.yml)
 offers a range of guidance regarding configuration options to help structure
 documentation and configure pages separately.
