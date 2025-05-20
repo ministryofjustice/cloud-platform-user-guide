@@ -1,6 +1,6 @@
 ---
 title: Using a custom domain
-last_reviewed_on: 2024-12-06
+last_reviewed_on: 2025-05-20
 review_in: 6 months
 layout: google-analytics
 ---
@@ -33,9 +33,9 @@ To simplify management, we recommend that you only define a single zone as part 
 
 Once the zone is created, you will need to setup the necessary name server (NS) records in the parent DNS zone before you can use it. **This step must be completed before proceeding to [create a certificate](#obtaining-a-certificate)**. For more information on how this delegation method works, you can read about authoritative name servers in this [page][wiki-nameservers].
 
-If your zone is for a subdomain of `service.justice.gov.uk` (eg.: `https://myapp.service.justice.gov.uk`), you can delegate the zone by providing the nameservers to the Operations Engineering team either by contacting `#ask-operations-engineering` or by emailing [domains@digital.justice.gov.uk](mailto:domains@digital.justice.gov.uk)
+If your zone is for a subdomain of `service.justice.gov.uk` (eg.: `https://myapp.example.service.justice.gov.uk`), you can delegate the zone by providing the nameservers to the Operations Engineering team either by contacting `#ask-operations-engineering` or by emailing [domains@digital.justice.gov.uk](mailto:domains@digital.justice.gov.uk)
 
-For any other domains (including any subdomain of `gov.uk`, eg.: `https://myservice.gov.uk`), you will need to contact the parent zone's administrators (usually GDS) to set this up. If in doubt, contact `#ask-operations-engineering` who is the Domain Registrar for Ministry of Justice.
+For any other domains (including any subdomain of `gov.uk`, eg.: `https://myservice.example.gov.uk`), you will need to contact the parent zone's administrators (usually GDS) to set this up. If in doubt, contact `#ask-operations-engineering` who is the Domain Registrar for Ministry of Justice.
 
 Please note, once you setup the NS records, you'll be delegating control of the zone to the Cloud Platform. Hostnames used by your services (using `Ingresses`) will be automatically managed by the cluster.
 
