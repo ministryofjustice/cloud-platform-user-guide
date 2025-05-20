@@ -9,12 +9,10 @@ http://localhost:9200/_snapshot/
 https://prometheus.cloud-platform.service.justice.gov.uk/graph
 file:///home/runner/work/cloud-platform-user-guide/cloud-platform-user-guide/source/documentation/other-topics/postgres:/user:pass@host:port/db
 https://stackoverflow.com/questions/30990488/how-do-i-install-command-line-mysql-client-on-mac
-https://df366e49809688a3b16eec29707d8c09.gr7.eu-west-2.eks.amazonaws.com/apis/mutations.gatekeeper.sh/v1beta1?timeout=32s
 https://docs.google.com/drawings/d/1vTA1GDcJaTea6Mk2EB3LAwv0EOmqXUV7uxtHQURaNps/edit
 https://cloud.docker.com/u/ministryofjustice/repository/docker/ministryofjustice/port-forward
 (https://login.docker.com/u/login/identifier?state=hKFo2SBWUUFzZUlTTFk5U2lpcDJ0N1g3WEdlcm8xY1BaREV6LaFur3VuaXZlcnNhbC1sb2dpbqN0aWTZIGdENEhsVkc4ci1BRFNVeGwzXzdJcTg0SGRNczJfR3pBo2NpZNkgbHZlOUdHbDhKdFNVcm5lUTFFVnVDMGxiakhkaTluYjk)
 https://k8s.integration.dsd.io/groups
-
 
 # Internal GitHub repositories
 https://github.com/ministryofjustice/data-engineering-data-extractor
@@ -25,3 +23,7 @@ https://github.com/ministryofjustice/register-my-data/blob/main/stacks/moj-reg-d
 .*\.example\..*
 https://myapp.service.justice.gov.uk/
 https://myservice.gov.uk/
+https://myapp.cloud-platform/metrics
+
+# Kubernetes API Endpoints
+.*\.eks\.amazonaws\.com/apis/.*
