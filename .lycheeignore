@@ -23,3 +23,5 @@ https://github.com/ministryofjustice/register-my-data/blob/main/stacks/moj-reg-d
 
 # Example Apps/Services
 .*\.example\..*
+https://myapp.service.justice.gov.uk/
+https://myservice.gov.uk/
