@@ -25,5 +25,5 @@ https://myapp.service.justice.gov.uk/
 https://myservice.gov.uk/
 https://myapp.cloud-platform/metrics
 
-# Kubernetes API Endpoints
+# AWS API Endpoints
 .*\.eks\.amazonaws\.com/apis/.*
