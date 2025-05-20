@@ -13,10 +13,11 @@ https://cloud.docker.com/u/ministryofjustice/repository/docker/ministryofjustice
 (https://login.docker.com/u/login/identifier?state=hKFo2SBWUUFzZUlTTFk5U2lpcDJ0N1g3WEdlcm8xY1BaREV6LaFur3VuaXZlcnNhbC1sb2dpbqN0aWTZIGdENEhsVkc4ci1BRFNVeGwzXzdJcTg0SGRNczJfR3pBo2NpZNkgbHZlOUdHbDhKdFNVcm5lUTFFVnVDMGxiakhkaTluYjk)
 https://k8s.integration.dsd.io/groups
 
-# Internal GitHub repositories
+# Internal/Private GitHub repositories
 https://github.com/ministryofjustice/data-engineering-data-extractor
 https://github.com/ministryofjustice/register-my-data
 https://github.com/ministryofjustice/register-my-data/blob/main/stacks/moj-reg-dev/config.yaml
+https://github.com/ministryofjustice/cloud-platform-security-issues
 
 # Example Apps/Services
 .*\.example\..*
@@ -24,6 +25,7 @@ https://myapp.service.justice.gov.uk/
 https://myservice.gov.uk/
 https://myapp.cloud-platform/metrics
 https://my-prototype-main.apps.live.cloud-platform.service.justice.gov.uk/
+https://github.com/ministryofjustice/example-repository.git
 
 # AWS API Endpoints
 .*\.eks\.amazonaws\.com/apis/.*
