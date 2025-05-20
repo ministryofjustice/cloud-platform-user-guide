@@ -24,6 +24,8 @@ https://github.com/ministryofjustice/register-my-data/blob/main/stacks/moj-reg-d
 https://myapp.service.justice.gov.uk/
 https://myservice.gov.uk/
 https://myapp.cloud-platform/metrics
+https://my-prototype-main.apps.live.cloud-platform.service.justice.gov.uk/
+https://github.com/ministryofjustice/$yourRepository.git
 
 # AWS API Endpoints
 .*\.eks\.amazonaws\.com/apis/.*
