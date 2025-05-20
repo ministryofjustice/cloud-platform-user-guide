@@ -2,7 +2,6 @@ http://localhost:4567/
 https://stackoverflow.com/questions/50218376/managing-db-migrations-on-kubernetes-cluster
 https://stackoverflow.com/questions/37058812/how-best-to-run-one-off-migration-tasks-in-a-kubernetes-cluster
 https://stackoverflow.com/questions/48877182/kubernetes-rolling-deployments-and-database-migrations
-https://github.com/ministryofjustice/$yourRepository.git
 http://my-dashboard/
 http://my-support-docs/
 http://localhost:9200/_snapshot/
@@ -25,7 +24,6 @@ https://myapp.service.justice.gov.uk/
 https://myservice.gov.uk/
 https://myapp.cloud-platform/metrics
 https://my-prototype-main.apps.live.cloud-platform.service.justice.gov.uk/
-https://github.com/ministryofjustice/$yourRepository.git
 
 # AWS API Endpoints
 .*\.eks\.amazonaws\.com/apis/.*
