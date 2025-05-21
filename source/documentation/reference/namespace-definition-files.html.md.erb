@@ -18,10 +18,8 @@ your namespace:
 * [`03-resourcequota.yaml`](#03-resourcequota-yaml)
 * [`04-networkpolicy.yaml`](#04-networkpolicy-yaml)
 
-These files define key elements of the namespace and restrictions we want to
-place on it so that we have security and resource allocation properties. We describe each
-of these files [in more detail below](#00-namespace-yaml) in case you want to
-make future changes.
+[!IMPORTANT] **The extension of these files is `.yaml` and not `.yml`. This is important as
+the pipeline will fail if you use the wrong extension.
 
 In addition to the Kubernetes configuration files, we create three terraform files:
 
