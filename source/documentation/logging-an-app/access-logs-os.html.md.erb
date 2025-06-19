@@ -1,6 +1,6 @@
 ---
 title: Accessing Application Log Data in OpenSearch
-last_reviewed_on: 2025-04-24
+last_reviewed_on: 2025-06-19
 review_in: 6 months
 layout: google-analytics
 ---
@@ -17,6 +17,43 @@ The Cloud Platform collects, indexes, and presents your application and system l
 To access OpenSearch Dashboards, follow the link below and authenticate with your GitHub credentials:
 
 [https://app-logs.cloud-platform.service.justice.gov.uk/_dashboards/app/home#/](https://app-logs.cloud-platform.service.justice.gov.uk/_dashboards/app/home#/)
+
+
+### Important Notes on Log Availability in OpenSearch
+Our OpenSearch Index State Management (ISM) policy is configured as follows:
+
+```
+Hot to Warm: after 1 day
+Warm to Cold: after 30 days
+Cold to Delete: after 366 days
+```
+
+#### What this means for users
+
+Logs stored in hot and warm indices are fully visible in the OpenSearch console. As a result, logs from the past 30 days are available by default.
+
+However, cold indices are not searchable in the console - this is expected behavior. Logs are stored in cold storage for long-term retention and cost efficiency.
+
+To access logs older than 30 days, we need to manually migrate the relevant cold indices back to the warm tier, which makes them searchable again.
+
+You may currently see logs going back to January 2025 and this is due to a known indexing issue. We are working to resolve this index issue.
+
+If you would like to retrieve logs for a specific date, please contact us on the `#ask-cloud-platform` Slack channel.
+
+>Notes on Cold → Warm Migration
+
+>This process:
+
+>- Adds load to the OpenSearch cluster
+>- Increases hot instance resource usage
+>- May impact live OpenSearch cluster performance for other users
+
+>To reduce these risks, we recommend requesting migration of specific dates only, rather than large time ranges.
+
+>Currently logs are available as far back as **November 2024**.
+
+>Migrating a cold index affects **all namespaces** within that index — not just one.
+
 
 ### Security Feature: Document-Level Security
 We have implemented [Document-Level Security](https://opensearch.org/docs/latest/security/access-control/document-level-security/) in OpenSearch. This is a security improvement which will mean that teams are constrained to viewing only logs which they have permission to view.
