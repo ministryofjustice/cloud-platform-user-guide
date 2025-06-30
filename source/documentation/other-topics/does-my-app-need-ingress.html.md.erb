@@ -13,7 +13,7 @@ If your application is accessed over the internet, then you'll need to configure
 
 Cloud Platform offers [four classes](https://kubernetes.io/docs/concepts/services-networking/ingress/#deprecated-annotation) of ingress: `default`, `default-non-prod`, `modsec` and `modsec-non-prod`. 
 
-- `default` utilises the standard NGINX Ingress controller setup and it's [supported configurations](https://docs.nginx.com/nginx-ingress-controller/configuration/ingress-resources/) (production workloads only)
+- `default` utilises the standard NGINX Ingress controller setup and it's [supported configurations](https://docs.nginx.com/nginx-ingress-controller/configuration/ingress-resources/basic-configuration/) (production workloads only)
 - `default-non-prod` same as above for non-production workloads only
 - `modsec` extends the capabilities of your ingress resource to enable ModSecurity Web Application Firewall (WAF) rules (production workloads only)
 - `modsec-non-prod` same as modsec, but for non-production workloads only
