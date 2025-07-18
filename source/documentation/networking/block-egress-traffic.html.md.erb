@@ -45,6 +45,7 @@ After creating a PR and merging this change to the file, egress traffic from all
 The best way to allow egress traffic is by appending another Calico network policy in the `04-networkpolicy.yaml` file. This policy should be set at a higher order than the deny policy which ensures that the allow rules are dealt with first.
 
 This is an example of an allow policy that allows egress traffic to a target range (replace `{your-namespace}` with the name of your namespace).
+
 ```
 ---
 kind: NetworkPolicy
@@ -66,6 +67,7 @@ spec:
 
 ### Viewing Calico Network Policies in my namespace
 To enable permissions to interact with your Calico network policies in the cluster, you will need to append the following `RoleBinding` to the `01-rbac.yaml` in your namespace (replace `{your-namespace}` with the name of your namespace, and replace `{github-team}` with a GitHub team you're a member of).
+
 ```
 ---
 kind: RoleBinding
