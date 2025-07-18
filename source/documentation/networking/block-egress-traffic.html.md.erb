@@ -1,0 +1,93 @@
+---
+title: Blocking egress traffic from my namespace
+last_reviewed_on: 2025-01-27
+review_in: 6 months
+layout: google-analytics
+---
+
+# <%= current_page.data.title %>
+
+When creating a Cloud Platform environment namespace, by default the namespace allows egress traffic to the public internet.
+This is by design to allow users to quickly get started to launch their application to reach the internet.
+
+### Blocking all egress traffic
+
+If you have a requirement to block egress traffic from your namespace, you can append the following code to the `04-networkpolicy.yaml` file (replace `{your-namespace}` with the name of your namespace). This file is located in the root of your namespace directory.
+
+
+```
+---
+apiVersion: projectcalico.org/v3
+kind: NetworkPolicy
+metadata:
+  name: deny-egress-order
+  namespace: {your-namespace}
+spec:
+  order: 50.0
+  selector: all()
+  egress:
+  - action: Deny
+  types:
+  - Egress
+```
+
+After creating a PR and merging this change to the file, egress traffic from all pods within the namespace will be blocked.
+
+> **Note:** Blocking all egress can cause pods to enter a state of `CrashLoopBackOff`. This is because the pod is unable to reach the readiness probe. If this is causing an issue then you will see a message similar to this when you `kubectl describe` the crash looping pod:
+>
+> ```
+> Readiness probe failed: Get "...": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+> ```
+> 
+> To resolve this you will need to create an allow egress network policy to allow the pod to send traffic to the target range.
+
+### Allowing egress traffic to only allowed ranges
+The best way to allow egress traffic is by appending another Calico network policy in the `04-networkpolicy.yaml` file. This policy should be set at a higher order than the deny policy which ensures that the allow rules are dealt with first.
+
+This is an example of an allow policy that allows egress traffic to a target range (replace `{your-namespace}` with the name of your namespace).
+```
+---
+kind: NetworkPolicy
+apiVersion: projectcalico.org/v3
+metadata:
+  name: allow-egress-ip
+  namespace: {your-namespace}
+spec:
+  order: 49.0
+  selector: all()
+  egress:
+  - action: Allow
+    destination:
+      nets:
+        - 172.20.0.0/16
+  types:
+  - Egress
+```
+
+### Viewing Calico Network Policies in my namespace
+To enable permissions to interact with your Calico network policies in the cluster, you will need to append the following `RoleBinding` to the `01-rbac.yaml` in your namespace (replace `{your-namespace}` with the name of your namespace, and replace `{github-team}` with a GitHub team you're a member of).
+```
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {your-namespace}-calico-np-access
+  namespace: {your-namespace}
+subjects:
+  - kind: Group
+    name: "github:{github-team}"
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: calico-network-policy-access
+  apiGroup: rbac.authorization.k8s.io
+```
+
+> **Note:** To display Calico network policies in your namespace you will need to use the following command:
+>
+> `kubectl get networkpolicy.crd.projectcalico.org -n {your-namespace}`
+>
+> This is because Calico network polices are not displayed with normal kube network policies. 
+
+
+For more information on Calico network policies, [follow this link to the Calico documentation](https://docs.tigera.io/calico/latest/network-policy/get-started/calico-policy/calico-network-policy)
