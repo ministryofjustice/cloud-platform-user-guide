@@ -1,6 +1,6 @@
 ---
 title: Getting your data onto the Analytical Platform
-last_reviewed_on: 2024-11-25
+last_reviewed_on: 2025-07-18
 review_in: 6 months
 layout: google-analytics
 ---
@@ -9,7 +9,7 @@ layout: google-analytics
 
 ### What is the Analytical Platform?
 
-The Analytical Platform is a data analysis environment, providing modern tools and key datasets for MoJ analysts
+The Analytical Platform is a data analysis environment, providing modern tools and key datasets for MoJ analysts.
 
 Read more at [https://user-guidance.analytical-platform.service.justice.gov.uk/](https://user-guidance.analytical-platform.service.justice.gov.uk/), but basically it gives MoJ’s data science teams access to data created by your service.
 
@@ -30,7 +30,7 @@ The data dump and the pipeline share an AWS role which enables sharing of the da
 
 #### 1. Create the required AWS resources to allow the Data Extractor to extract the data to an S3 bucket
 
-You’ll need to create a user (and associated access policy) to write to the S3 bucket at the specific location from within your applications cloud platform environment.
+You’ll need to create a user (and associated access policy) to write to the S3 bucket at the specific location from within your application's cloud platform environment.
 
 Conventionally, add an analytical-platform.tf in your environment's resources folder. Here's an [example file](https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live.cloud-platform.service.justice.gov.uk/hmpps-strengths-based-needs-assessments-dev/resources/analytical-platform-access.tf)
 
