@@ -29,7 +29,7 @@ If you want to restore your production RDS DB instance from a previous snapshot,
 >
 > Attempting to restore the RDS instance while deletion protection is enabled will result in an error from AWS and Terraform.
 
-#### 1. Get the `db-instance-identifier` of the DB instance you want to restore, using the [Cloud Platform CLI];
+#### 1. Get the `db-instance-identifier` and `username, password` of the DB instance you want to restore, using the [Cloud Platform CLI];
 
 ```bash
 cloud-platform decode-secret -n <your namespace> -s <the secret storing your RDS details>
@@ -42,6 +42,7 @@ Look for a line like this in the output;
 ```
 
 The `db-instance-identifier` is the `cloud-platform-xxxxxxxxxxxxxxxx` part.
+Note the database_username and database_password as this needs to be the checked after the restore to ensure it is the same.
 
 #### 2. List the available snapshots using the AWS CLI:
 
@@ -52,6 +53,14 @@ aws rds describe-db-snapshots --db-instance-identifier <db-instance-identifier>
 ```
 
 The output will have a list of snapshots available for that RDS DB instance. Pick the `DBSnapshotIdentifier` from which you want the RDS to be restored.
+
+Next take copies of 'all' the System snapshots (there should be 7 in total) as these are deleted when the RDS instance is restored and this will ensure that these snapshots are retained for any future use
+
+Use the below AWS CLI command and ensure the target snapshot name contains the same date-stamp as the source snapshot to easily identify the snapshots
+aws rds copy-db-snapshot --source-db-snapshot-identifier <source-rds-snapshot-yyyy-mm-dd-hh-mm> --target-db-snapshot-identifier <target-rds-snapshot-yyyy-mm-dd-hh-mm>
+
+example command is:
+aws rds copy-db-snapshot --source-db-snapshot-identifier rds:cloud-platform-16a74aa5ce79e853-2025-08-14-03-24 --target-db-snapshot-identifier rds-cloud-platform-16a74aa5ce79e853-copy-2025-08-14-03-24
 
 #### 3. Contact the Cloud Platform team about the restore.
 
@@ -115,6 +124,13 @@ db_allocated_storage = "<the actual value you got from the above cli command>"
 After making the necessary changes to the manifest, raise a PR and contact the Cloud Platform team via the [#ask-cloud-platform](https://mojdt.slack.com/archives/C57UPMZLY) channel with the PR link.
 Once the new DB instance is restored and available, your application should be able to access the database with the same database credentials and endpoint as before.
 
+If after merging the PR the Build fails with the below error (Note: the db-instance-identifier will be the renamed one - Step 3)
+
+Error: deleting RDS DB Instance (cloud-platform-16a74aa5ce79e853-bkp-copy): InvalidDBInstanceState: Cannot create a snapshot because the database instance cloud-platform-16a74aa5ce79e853-bkp-copy is not currently in the available state.
+	status code: 400, request id: 109f4242-a7e1-47ed-93ab-349443302a31
+
+The solution is to ensure the RDS Status is 'Available' and then re-run the build in the environments-live pipeline (re-run with the same inputs)
+
 #### 7. Tidy up the environment
 After the database has been successfully restored and verified, raise a PR to:
 
@@ -130,7 +146,7 @@ Create a PR that includes the changes for the Cloud Platform team and post the l
 
 Once the PR has been approved, Merge to Main and check that the Apply Pipeline creates the new DB read replica instance.
 
->**Note:** The read replica will have a new database identifier once it is created. 
+>**Note:** The read replica will have a new database identifier once it is created.
 
 #### 9. Important: Version Downgrades Cannot Be Done In-Place
 
