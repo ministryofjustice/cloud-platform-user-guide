@@ -56,7 +56,7 @@ The output will have a list of snapshots available for that RDS DB instance. Pic
 
 Next take copies of 'all' the System snapshots (there should be 7 in total) as these are deleted when the RDS instance is restored and this will ensure that these snapshots are retained for any future use
 
-Use the below AWS CLI command and ensure the target snapshot name contains the same date-stamp as the source snapshot to easily identify the snapshots
+Use the below AWS CLI command (via a Cloud Platform Service Pod) and ensure the target snapshot name contains the same date-stamp as the source snapshot to easily identify the snapshots
 aws rds copy-db-snapshot --source-db-snapshot-identifier <source-rds-snapshot-yyyy-mm-dd-hh-mm> --target-db-snapshot-identifier <target-rds-snapshot-yyyy-mm-dd-hh-mm>
 
 example command is:
@@ -129,7 +129,7 @@ If after merging the PR the Build fails with the below error (Note: the db-insta
 Error: deleting RDS DB Instance (cloud-platform-16a74aa5ce79e853-bkp-copy): InvalidDBInstanceState: Cannot create a snapshot because the database instance cloud-platform-16a74aa5ce79e853-bkp-copy is not currently in the available state.
 	status code: 400, request id: 109f4242-a7e1-47ed-93ab-349443302a31
 
-The solution is to ensure the RDS Status is 'Available' and then re-run the build in the environments-live pipeline (re-run with the same inputs)
+The solution is to ensure the RDS Status is 'Available' and then re-run the build in the environments-live pipeline (re-run with the same inputs). A Cloud Platform team member will be required to carry out this operation.
 
 #### 7. Tidy up the environment
 After the database has been successfully restored and verified, raise a PR to:
