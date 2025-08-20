@@ -56,13 +56,15 @@ The output will have a list of snapshots available for that RDS DB instance. Pic
 
 Next take copies of 'all' the System snapshots (there should be 7 in total) as these are deleted when the RDS instance is restored and this will ensure that these snapshots are retained for any future use
 
-Use the below AWS CLI command (via a Cloud Platform Service Pod) and ensure the target snapshot name contains the same date-stamp as the source snapshot to easily identify the snapshots
-aws rds copy-db-snapshot --source-db-snapshot-identifier <source-rds-snapshot-yyyy-mm-dd-hh-mm> --target-db-snapshot-identifier <target-rds-snapshot-yyyy-mm-dd-hh-mm>
+Use the below AWS CLI command (via a Cloud Platform Service Pod) and ensure the target snapshot name contains the same date-stamp as the source snapshot to easily identify the snapshots:
 
-example command is:
+`aws rds copy-db-snapshot --source-db-snapshot-identifier <source-rds-snapshot-yyyy-mm-dd-hh-mm> --target-db-snapshot-identifier <target-rds-snapshot-yyyy-mm-dd-hh-mm>`
 
-aws rds copy-db-snapshot --source-db-snapshot-identifier rds:cloud-platform-16a74aa5ce79e853-2025-08-14-03-24 --target-db-snapshot-identifier rds-cloud-platform-16a74aa5ce79e853-copy-2025-08-14-03-24
-(Please note: the target db snapshot cannot contain the colon: character)
+Example command is:
+
+`aws rds copy-db-snapshot --source-db-snapshot-identifier rds:cloud-platform-16a74aa5ce79e853-2025-08-14-03-24 --target-db-snapshot-identifier rds-cloud-platform-16a74aa5ce79e853-copy-2025-08-14-03-24`
+
+> Please note: the target db snapshot cannot contain the colon ":" character.
 
 #### 3. Contact the Cloud Platform team about the restore.
 
@@ -126,16 +128,16 @@ db_allocated_storage = "<the actual value you got from the above cli command>"
 If the RDS instance has been restored previously then there will be a Manual snapshot named <DB instance ID>-finalsnapshot e.g. cloud-platform-16a74aa5ce79e853-finalsnapshot and this will need to be deleted (otherwise the restore will fail)
 
 Search for this using the command:
-aws rds describe-db-snapshots --db-instance-identifier <DB instance ID>-backup --snapshot-type manual
+`aws rds describe-db-snapshots --db-instance-identifier <DB instance ID>-backup --snapshot-type manual`
 
 example command:
-aws rds describe-db-snapshots --db-instance-identifier cloud-platform-16a74aa5ce79e853-backup --snapshot-type manual
+`aws rds describe-db-snapshots --db-instance-identifier cloud-platform-16a74aa5ce79e853-backup --snapshot-type manual`
 
 delete the manual snapshot using the command:
-aws rds delete-db-snapshot --db-snapshot-identifier
+`aws rds delete-db-snapshot --db-snapshot-identifier`
 
 example command:
-aws rds delete-db-snapshot --db-snapshot-identifier cloud-platform-16a74aa5ce79e853-finalsnapshot
+`aws rds delete-db-snapshot --db-snapshot-identifier cloud-platform-16a74aa5ce79e853-finalsnapshot`
 
 #### 7. Raise a PR
 After making the necessary changes to the manifest, raise a PR and contact the Cloud Platform team via the [#ask-cloud-platform](https://mojdt.slack.com/archives/C57UPMZLY) channel with the PR link.
