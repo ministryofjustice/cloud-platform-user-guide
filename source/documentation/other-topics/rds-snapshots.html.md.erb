@@ -29,7 +29,7 @@ If you want to restore your production RDS DB instance from a previous snapshot,
 >
 > Attempting to restore the RDS instance while deletion protection is enabled will result in an error from AWS and Terraform.
 
-#### 1. Get the `db-instance-identifier` and `username, password` of the DB instance you want to restore, using the [Cloud Platform CLI];
+#### 1. Get the `db-instance-identifier` and `username,password` of the DB instance you want to restore, using the [Cloud Platform CLI];
 
 ```bash
 cloud-platform decode-secret -n <your namespace> -s <the secret storing your RDS details>
@@ -54,12 +54,13 @@ aws rds describe-db-snapshots --db-instance-identifier <db-instance-identifier>
 
 The output will have a list of snapshots available for that RDS DB instance. Pick the `DBSnapshotIdentifier` from which you want the RDS to be restored.
 
-Next take copies of 'all' the System snapshots (there should be 7 in total) as these are deleted when the RDS instance is restored and this will ensure that these snapshots are retained for any future use
+Next ask the CP Team to take copies of 'all' the System snapshots as these are deleted when the RDS instance is restored
 
-Use the below AWS CLI command (via a Cloud Platform Service Pod) and ensure the target snapshot name contains the same date-stamp as the source snapshot to easily identify the snapshots
+Guidance for the CP Team:
+Use the below AWS CLI command and ensure the target snapshot name contains the same date-stamp as the source snapshot to easily identify the snapshots:
 aws rds copy-db-snapshot --source-db-snapshot-identifier <source-rds-snapshot-yyyy-mm-dd-hh-mm> --target-db-snapshot-identifier <target-rds-snapshot-yyyy-mm-dd-hh-mm>
 
-example command is:
+example command:
 aws rds copy-db-snapshot --source-db-snapshot-identifier rds:cloud-platform-16a74aa5ce79e853-2025-08-14-03-24 --target-db-snapshot-identifier rds-cloud-platform-16a74aa5ce79e853-copy-2025-08-14-03-24
 
 #### 3. Contact the Cloud Platform team about the restore.
