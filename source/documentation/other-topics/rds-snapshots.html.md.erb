@@ -79,6 +79,11 @@ Before making changes to the RDS manifest, you need to:
 
 2. Provide the team with your `db-instance-identifier` so they can rename it via the AWS console.
     1. Navigate to RDS instance in the AWS Console
+    2. Click modify
+    3. Update "DB instance identifier" field
+    4. Click continue
+    5. Select "Apply Immediately"
+    6. Click "Modify DB Instance"
 
 
 #### 4. Update your current RDS manifest file (usually called `rds.tf`) in the [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments) repo to include `snapshot-identifier` from the `target-snapshot-identifier` used previously.
