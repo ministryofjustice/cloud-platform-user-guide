@@ -58,10 +58,16 @@ Next ask the CP Team to take copies of 'all' the System snapshots as these are d
 
 Guidance for the CP Team:
 Use the below AWS CLI command and ensure the target snapshot name contains the same date-stamp as the source snapshot to easily identify the snapshots:
+
+```
 aws rds copy-db-snapshot --source-db-snapshot-identifier <source-rds-snapshot-yyyy-mm-dd-hh-mm> --target-db-snapshot-identifier <target-rds-snapshot-yyyy-mm-dd-hh-mm>
+```
 
 example command:
+
+```
 aws rds copy-db-snapshot --source-db-snapshot-identifier rds:cloud-platform-16a74aa5ce79e853-2025-08-14-03-24 --target-db-snapshot-identifier rds-cloud-platform-16a74aa5ce79e853-copy-2025-08-14-03-24
+```
 
 #### 3. Contact the Cloud Platform team about the restore.
 
