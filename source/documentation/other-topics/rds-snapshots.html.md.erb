@@ -59,6 +59,8 @@ Next ask the CP Team to take copies of 'all' the System snapshots as these are d
 Guidance for the CP Team:
 Use the below AWS CLI command and ensure the target snapshot name contains the same date-stamp as the source snapshot to easily identify the snapshots:
 
+> Note: `--target-db-snapshot-identifier` cannot contain the ":" colon character.
+
 ```
 aws rds copy-db-snapshot --source-db-snapshot-identifier <source-rds-snapshot-YYYY-MM-DD-hh-mm> --target-db-snapshot-identifier <target-rds-snapshot-YYYY-MM-DD-hh-mm>
 ```
@@ -69,56 +71,58 @@ example command:
 aws rds copy-db-snapshot --source-db-snapshot-identifier rds:cloud-platform-16a74aa5ce79e853-2025-08-14-03-24 --target-db-snapshot-identifier rds-cloud-platform-16a74aa5ce79e853-copy-2025-08-14-03-24
 ```
 
-#### 3. Contact the Cloud Platform team about the restore.
+#### 3. Add `APPLY_PIPELINE_SKIP_THIS_NAMESPACE` file and contact the Cloud Platform team about the restore.
 
 Before making changes to the RDS manifest, you need to:
 
 1. Add an `APPLY_PIPELINE_SKIP_THIS_NAMESPACE` file at the root of your namespace.
 
 2. Provide the team with your `db-instance-identifier` so they can rename it via the AWS console.
+    1. Navigate to RDS instance in the AWS Console
 
-#### 4. Update your current RDS manifest file (usually called `rds.tf`) in the [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments) repo to include `snapshot-identifier`.
+
+#### 4. Update your current RDS manifest file (usually called `rds.tf`) in the [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments) repo to include `snapshot-identifier` from the `target-snapshot-identifier` used previously.
 
 ```
-snapshot_identifier = "rds:cloud-platform-XXXXX-2020-02-08-04-23"
+snapshot_identifier = "rds-cloud-platform-16a74aa5ce79e853-copy-2025-08-14-03-24"
 ```
 
 For example:
 
 ```
 module "example_team_rds" {
-    source               = "github.com/ministryofjustice/cloud-platform-terraform-rds-instance?ref=5.1"
-    cluster_name           = var.cluster_name
-    cluster_state_bucket   = var.cluster_state_bucket
-    team_name              = var.team_name
-    business-unit          = var.business-unit
-    application            = var.application
-    is-production          = var.is-production
-    db_engine_version      = "11.4"
-    environment-name       = var.environment-name
-    infrastructure-support = var.infrastructure-support
-    force_ssl              = "true"
-    rds_family             = "postgres11"
+   source               = "github.com/ministryofjustice/cloud-platform-terraform-rds-instance?ref=5.1"
+   cluster_name           = var.cluster_name
+   cluster_state_bucket   = var.cluster_state_bucket
+   team_name              = var.team_name
+   business-unit          = var.business-unit
+   application            = var.application
+   is-production          = var.is-production
+   db_engine_version      = "11.4"
+   environment-name       = var.environment-name
+   infrastructure-support = var.infrastructure-support
+   force_ssl              = "true"
+   rds_family             = "postgres11"
 
-    snapshot_identifier = "rds:cloud-platform-XXXXX-2020-02-08-04-23"
+   snapshot_identifier = "rds:cloud-platform-XXXXX-2020-02-08-04-23"
 
-    providers = {
-    # Can be either "aws.london" or "aws.ireland"
-    aws = aws.london
-    }
+   providers = {
+   # Can be either "aws.london" or "aws.ireland"
+   aws = aws.london
+   }
 }
 ```
 
-#### 5. Check the actual "AllocatedStorage" value described in your RDS instance using the command:
+#### 5. Check the "AllocatedStorage" value described in your RDS instance using the command:
 
 ```
 aws rds describe-db-instances --db-instance-identifier <your-rds-db-identifier>
 ```
 
-If that is different to what is set for your RDS, update your RDS manifest to include the actual `db_allocated_storage` by adding:
+If the `AllocatedStorage` value does not match `db_allocated_storage` in your terraform then you need to update it:
 
 ```
-db_allocated_storage = "<the actual value you got from the above cli command>"
+db_allocated_storage = "<the value you got from the above cli command>"
 ```
 
 > **Important:** **It is crucial to retain other original settings associated with the DB instance when restoring from the snapshot. Details such as `db-engine-version`, `db-engine`, `rds-family` must be the same as the original instance when the snapshot was taken. So don't make any other changes to this file except the above mentioned.**
