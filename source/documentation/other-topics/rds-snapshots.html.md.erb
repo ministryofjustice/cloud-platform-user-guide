@@ -7,6 +7,8 @@ layout: google-analytics
 
 # <%= current_page.data.title %>
 
+> Please reach out to [#ask-cloud-platform](https://mojdt.slack.com/archives/C57UPMZLY) to get an engineer to help with this process.
+
 RDS snapshots have multiple purposes: migrations, backups, etc. When RDS DB instances are created using the [Cloud Platform RDS terraform module](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance), an IAM user account is created for management purposes. This user can create, delete, copy, and restore RDS snapshots.
 
 Examples of managing RDS DB snapshots using the AWS CLI, via the [Cloud Platform Service Pod](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/cloud-platform-service-pod.html) can be found in the [README](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance#4-managing-rds-snapshots---backups-and-restores) within the [RDS terraform module](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance)
@@ -46,7 +48,7 @@ Note the database_username and database_password as this needs to be the checked
 
 #### 2. List the available snapshots using the AWS CLI:
 
-First of all, ensure you have a [Service Pod](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/cloud-platform-service-pod.html#cloud-platform-service-pod-for-aws-cli-access) running and configured for your target RDS instance, in order to run the AWS CLI commands.
+A Cloud Platform engineer will be able to run the following command:
 
 ```
 aws rds describe-db-snapshots --db-instance-identifier <db-instance-identifier>
