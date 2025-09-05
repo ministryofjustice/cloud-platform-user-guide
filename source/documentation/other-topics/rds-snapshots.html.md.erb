@@ -159,6 +159,8 @@ Error: deleting RDS DB Instance (cloud-platform-16a74aa5ce79e853-bkp-copy): Inva
 
 The solution is to ensure the RDS Status is 'Available' and then re-run the build in the environments-live pipeline (re-run with the same inputs). A Cloud Platform team member will be required to carry out this operation.
 
+>**Note:** Restoring an RDS instance typically takes over 30 minutes. The duration depends on the data size, as the process involves recreating the entire instance.
+
 #### 8. Tidy up the environment
 After the database has been successfully restored and verified, raise a PR to:
 
