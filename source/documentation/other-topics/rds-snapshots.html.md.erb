@@ -7,6 +7,8 @@ layout: google-analytics
 
 # <%= current_page.data.title %>
 
+> Please reach out to [#ask-cloud-platform](https://mojdt.slack.com/archives/C57UPMZLY) to get an engineer to help with this process.
+
 RDS snapshots have multiple purposes: migrations, backups, etc. When RDS DB instances are created using the [Cloud Platform RDS terraform module](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance), an IAM user account is created for management purposes. This user can create, delete, copy, and restore RDS snapshots.
 
 Examples of managing RDS DB snapshots using the AWS CLI, via the [Cloud Platform Service Pod](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/cloud-platform-service-pod.html) can be found in the [README](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance#4-managing-rds-snapshots---backups-and-restores) within the [RDS terraform module](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance)
@@ -46,7 +48,7 @@ Note the database_username and database_password as this needs to be the checked
 
 #### 2. List the available snapshots using the AWS CLI:
 
-First of all, ensure you have a [Service Pod](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/cloud-platform-service-pod.html#cloud-platform-service-pod-for-aws-cli-access) running and configured for your target RDS instance, in order to run the AWS CLI commands.
+A Cloud Platform engineer will be able to run the following command:
 
 ```
 aws rds describe-db-snapshots --db-instance-identifier <db-instance-identifier>
@@ -58,70 +60,95 @@ Next ask the CP Team to take copies of 'all' the System snapshots as these are d
 
 Guidance for the CP Team:
 Use the below AWS CLI command and ensure the target snapshot name contains the same date-stamp as the source snapshot to easily identify the snapshots:
-aws rds copy-db-snapshot --source-db-snapshot-identifier <source-rds-snapshot-yyyy-mm-dd-hh-mm> --target-db-snapshot-identifier <target-rds-snapshot-yyyy-mm-dd-hh-mm>
+
+> Note: `--target-db-snapshot-identifier` cannot contain the ":" colon character.
+
+> Note: Snapshots are not available straight away you need to confirm the snapshot is complete in the console.
+
+```
+aws rds copy-db-snapshot --source-db-snapshot-identifier <source-rds-snapshot-YYYY-MM-DD-hh-mm> --target-db-snapshot-identifier <target-rds-snapshot-YYYY-MM-DD-hh-mm>
+```
 
 example command:
-aws rds copy-db-snapshot --source-db-snapshot-identifier rds:cloud-platform-16a74aa5ce79e853-2025-08-14-03-24 --target-db-snapshot-identifier rds-cloud-platform-16a74aa5ce79e853-copy-2025-08-14-03-24
 
-#### 3. Contact the Cloud Platform team about the restore.
+```
+aws rds copy-db-snapshot --source-db-snapshot-identifier rds:cloud-platform-16a74aa5ce79e853-2025-08-14-03-24 --target-db-snapshot-identifier rds-cloud-platform-16a74aa5ce79e853-copy-2025-08-14-03-24
+```
+
+#### 3. Remove read replica
+
+> If you do not have a read replica please skip this step.
+
+If there is an RDS read replica for the DB instance that is being restored, then you must set `count = 0` or comment out the read replica code (and any Kubernetes secrets relating to the read replica). This will remove the read replica. This is required as Terraform will throw the following error as Terraform is unable to change the read replica target: `Error: cannot elect new source database for replication`
+
+Raise a PR to remove the read replica.
+
+When the read replica is re-created, it will be created with a new database identifier.
+
+#### 4. Add `APPLY_PIPELINE_SKIP_THIS_NAMESPACE` file and contact the Cloud Platform team about the restore.
 
 Before making changes to the RDS manifest, you need to:
 
 1. Add an `APPLY_PIPELINE_SKIP_THIS_NAMESPACE` file at the root of your namespace.
 
 2. Provide the team with your `db-instance-identifier` so they can rename it via the AWS console.
+    1. Navigate to RDS instance in the AWS Console
+    2. Click modify
+    3. Update "DB instance identifier" field
+    4. Click continue
+    5. Select "Apply Immediately"
+    6. Click "Modify DB Instance"
 
-#### 4. Update your current RDS manifest file (usually called `rds.tf`) in the [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments) repo to include `snapshot-identifier`.
+
+#### 5. Update your current RDS manifest file (usually called `rds.tf`) in the [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments) repo to include `snapshot-identifier` from the `target-snapshot-identifier` used previously.
+
+> Note: ensure the renamed instance is in an "Available" state before continuing.
 
 ```
-snapshot_identifier = "rds:cloud-platform-XXXXX-2020-02-08-04-23"
+snapshot_identifier = "rds-cloud-platform-16a74aa5ce79e853-copy-2025-08-14-03-24"
 ```
 
 For example:
 
 ```
 module "example_team_rds" {
-    source               = "github.com/ministryofjustice/cloud-platform-terraform-rds-instance?ref=5.1"
-    cluster_name           = var.cluster_name
-    cluster_state_bucket   = var.cluster_state_bucket
-    team_name              = var.team_name
-    business-unit          = var.business-unit
-    application            = var.application
-    is-production          = var.is-production
-    db_engine_version      = "11.4"
-    environment-name       = var.environment-name
-    infrastructure-support = var.infrastructure-support
-    force_ssl              = "true"
-    rds_family             = "postgres11"
+   source               = "github.com/ministryofjustice/cloud-platform-terraform-rds-instance?ref=5.1"
+   cluster_name           = var.cluster_name
+   cluster_state_bucket   = var.cluster_state_bucket
+   team_name              = var.team_name
+   business-unit          = var.business-unit
+   application            = var.application
+   is-production          = var.is-production
+   db_engine_version      = "11.4"
+   environment-name       = var.environment-name
+   infrastructure-support = var.infrastructure-support
+   force_ssl              = "true"
+   rds_family             = "postgres11"
 
-    snapshot_identifier = "rds:cloud-platform-XXXXX-2020-02-08-04-23"
+   snapshot_identifier = "rds:cloud-platform-XXXXX-2020-02-08-04-23"
 
-    providers = {
-    # Can be either "aws.london" or "aws.ireland"
-    aws = aws.london
-    }
+   providers = {
+   # Can be either "aws.london" or "aws.ireland"
+   aws = aws.london
+   }
 }
 ```
 
-#### 5. Check the actual "AllocatedStorage" value described in your RDS instance using the command:
+#### 6. Check the "AllocatedStorage" value described in your RDS instance using the command:
 
 ```
 aws rds describe-db-instances --db-instance-identifier <your-rds-db-identifier>
 ```
 
-If that is different to what is set for your RDS, update your RDS manifest to include the actual `db_allocated_storage` by adding:
+If the `AllocatedStorage` value does not match `db_allocated_storage` in your terraform then you need to update it:
 
 ```
-db_allocated_storage = "<the actual value you got from the above cli command>"
+db_allocated_storage = "<the value you got from the above cli command>"
 ```
 
 > **Important:** **It is crucial to retain other original settings associated with the DB instance when restoring from the snapshot. Details such as `db-engine-version`, `db-engine`, `rds-family` must be the same as the original instance when the snapshot was taken. So don't make any other changes to this file except the above mentioned.**
 
-> **Warning:** If there is an RDS read replica for the DB instance that is being restored, then you must set `count = 0` or comment out the read replica code (and any Kubernetes secrets relating to the read replica). This will remove the read replica. This is required as Terraform will throw the following error as Terraform is unable to change the read replica target: `Error: cannot elect new source database for replication`
-
-> When the read replica is re-created, it will be created with a new database identifier.
-
-#### 6. Raise a PR
+#### 7. Raise a PR
 After making the necessary changes to the manifest, raise a PR and contact the Cloud Platform team via the [#ask-cloud-platform](https://mojdt.slack.com/archives/C57UPMZLY) channel with the PR link.
 Once the new DB instance is restored and available, your application should be able to access the database with the same database credentials and endpoint as before.
 
@@ -132,7 +159,9 @@ Error: deleting RDS DB Instance (cloud-platform-16a74aa5ce79e853-bkp-copy): Inva
 
 The solution is to ensure the RDS Status is 'Available' and then re-run the build in the environments-live pipeline (re-run with the same inputs). A Cloud Platform team member will be required to carry out this operation.
 
-#### 7. Tidy up the environment
+>**Note:** Restoring an RDS instance typically takes over 30 minutes. The duration depends on the data size, as the process involves recreating the entire instance.
+
+#### 8. Tidy up the environment
 After the database has been successfully restored and verified, raise a PR to:
 
 - Remove the `APPLY_PIPELINE_SKIP_THIS_NAMESPACE` file.
@@ -140,7 +169,7 @@ After the database has been successfully restored and verified, raise a PR to:
 
 This ensures future Terraform applies do not attempt to recreate the instance or restore again from the snapshot.
 
-#### 8. Only required for Read Replicas - Recreate the DB read replica if it was removed as a part of step 3:
+#### 9. Only required for Read Replicas - Recreate the DB read replica if it was removed as a part of step 3:
 In Terraform, re-enable the DB read replica code by setting `count = 1` or uncommenting the code and any Kubernetes secrets that may also be created as a part of it.
 
 Create a PR that includes the changes for the Cloud Platform team and post the link into the [#ask-cloud-platform](https://mojdt.slack.com/archives/C57UPMZLY) channel.
@@ -149,7 +178,7 @@ Once the PR has been approved, Merge to Main and check that the Apply Pipeline c
 
 >**Note:** The read replica will have a new database identifier once it is created.
 
-#### 9. Important: Version Downgrades Cannot Be Done In-Place
+#### 10. Important: Version Downgrades Cannot Be Done In-Place
 
 AWS does not support downgrading a database to an earlier version on the same instance. For example, if a database has been upgraded from PostgreSQL 16.3 to 17, it cannot be downgraded back to 16.3 using the standard snapshot restoration process outlined above.
 
