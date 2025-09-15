@@ -1,5 +1,5 @@
 ---
-title: Internal LAA Ingress
+title: Internal LAA Ingress Controller
 last_reviewed_on: 2025-09-15
 review_in: 6 months
 layout: google-analytics
@@ -7,7 +7,46 @@ layout: google-analytics
 
 # <%= current_page.data.title %>
 
-Create an ingress resource with the correct class and domain
+Cloud Platform has deployed an [internal NGINX ingress controller class](https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/main/terraform/aws-accounts/cloud-platform-aws/vpc/eks/core/components/ingress.tf#L120-L147).
+
+This controller class utilises a dedicated Route53 domain for provisioning DNS records to resolve and route to Cloud Platform services internally.
+
+**Ingress class name:** `internal-laa`
+
+**Domain:** `*.internal-laa.cloud-platform.service.justice.gov.uk`
+
+In order to setup your service to use this ingress controller, carry out the following steps:
+
+**1. Create a [Certificate](https://cert-manager.io/docs/usage/certificate/) resource for your chosen hostname**
+
+> Please add the certificate by defining it in your namespace folder in the [environments repository](https://github.com/ministryofjustice/cloud-platform-environments). Doing so means it will be automatically restored in the event of any problems with our certificate/DNS systems.
+
+```
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: shiny-app-cert
+  namespace: [namespace]
+spec:
+  secretName: shiny-app-cert-secret
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+  dnsNames:
+  - my-shiny-app.internal-laa.cloud-platform.service.justice.gov.uk
+```
+
+
+Now wait until the certificate has been issued ( `READY = True` ) - this is normally completed within ~2 minutes
+
+```
+$ kubectl get cert
+
+NAME            READY 		SECRET		 		          AGE
+shiny-app-cert  True      shiny-app-cert-secret   113m
+```
+
+**2. Create an ingress resource with the correct class and domain**
 
 ```
 apiVersion: networking.k8s.io/v1
@@ -37,34 +76,24 @@ spec:
     secretName: shiny-app-cert-secret
 ```
 
-Create a certificate for your hostname
+Once the ingress is created, you can confirm the configuration is internal with:
 
 ```
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: shiny-app-cert
-  namespace: [namespace]
-spec:
-  secretName: shiny-app-cert-secret
-  issuerRef:
-    name: letsencrypt-production
-    kind: ClusterIssuer
-  dnsNames:
-  - my-shiny-app.internal-laa.cloud-platform.service.justice.gov.uk
+$ nslookup my-shiny-app.internal-laa.cloud-platform.service.justice.gov.uk
+..
+..
+Name:	my-shiny-app.internal-laa.cloud-platform.service.justice.gov.uk
+Address: 172.20.120.31
+Name:	my-shiny-app.internal-laa.cloud-platform.service.justice.gov.uk
+Address: 172.20.136.38
+Name:	my-shiny-app.internal-laa.cloud-platform.service.justice.gov.uk
+Address: 172.20.94.23
 ```
 
-Wait till the certificate has been issued ( Ready = True)
 
-```
-$ kubectl get cert
-NAME 			READY 		SECRET		 		AGE
-shiny-app-cert 	True 		shiny-app-cert-secret 	113m
-```
+**Internal ingress logs are available in the `kubernetes_ingress` index on OpenSearch** [here](https://app-logs.cloud-platform.service.justice.gov.uk/_dashboards/app/data-explorer/discover#?_a=(discover:(columns:!(_source),isDirty:!f,sort:!()),metadata:(indexPattern:'28e9fa86-ddf5-478d-a899-1a7064c7b745',view:discover))&_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-15m,to:now))&_q=(filters:!(),query:(language:kuery,query:'')))
 
-Logs available in the kubernetes_ingress index on OpenSearch at:
 
-https://app-logs.cloud-platform.service.justice.gov.uk/_dashboards/app/data-explorer/discover#?_a=(discover:(columns:!(_source),isDirty:!f,sort:!()),metadata:(indexPattern:'28e9fa86-ddf5-478d-a899-1a7064c7b745',view:discover))&_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-15m,to:now))&_q=(filters:!(),query:(language:kuery,query:''))
 
 
 
