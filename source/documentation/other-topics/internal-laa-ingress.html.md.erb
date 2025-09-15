@@ -1,0 +1,76 @@
+---
+title: Internal LAA Ingress
+last_reviewed_on: 2025-09-15
+review_in: 6 months
+layout: google-analytics
+---
+
+# <%= current_page.data.title %>
+
+Create an ingress resource with the correct class and domain
+
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+annotations:
+  external-dns.alpha.kubernetes.io/aws-weight: "100"
+  external-dns.alpha.kubernetes.io/set-identifier: my-ingress-[namespace]-dev-green
+  name: my-ingress
+  namespace: [namespace]
+spec:
+  ingressClassName: internal-laa
+  rules:
+    - host: my-shiny-app.internal-laa.cloud-platform.service.justice.gov.uk
+      http:
+        paths:
+        - backend:
+            service:
+              name: shiny-app-service
+              port:
+                number: 8080
+          path: /
+          pathType: ImplementationSpecific
+  tls:
+  - hosts:
+    - my-shiny-app.internal-laa.cloud-platform.service.justice.gov.uk
+    secretName: shiny-app-cert-secret
+```
+
+Create a certificate for your hostname
+
+```
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: shiny-app-cert
+  namespace: [namespace]
+spec:
+  secretName: shiny-app-cert-secret
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+  dnsNames:
+  - my-shiny-app.internal-laa.cloud-platform.service.justice.gov.uk
+```
+
+Wait till the certificate has been issued ( Ready = True)
+
+```
+$ kubectl get cert
+NAME 			READY 		SECRET		 		AGE
+shiny-app-cert 	True 		shiny-app-cert-secret 	113m
+```
+
+Logs available in the kubernetes_ingress index on OpenSearch at:
+
+https://app-logs.cloud-platform.service.justice.gov.uk/_dashboards/app/data-explorer/discover#?_a=(discover:(columns:!(_source),isDirty:!f,sort:!()),metadata:(indexPattern:'28e9fa86-ddf5-478d-a899-1a7064c7b745',view:discover))&_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-15m,to:now))&_q=(filters:!(),query:(language:kuery,query:''))
+
+
+
+
+
+
+
+
+
