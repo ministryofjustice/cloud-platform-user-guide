@@ -1,6 +1,6 @@
 ---
 title: Security Controls on the Cloud Platform
-last_reviewed_on: 2025-04-16
+last_reviewed_on: 2025-09-15
 review_in: 6 months
 layout: google-analytics
 ---
@@ -47,6 +47,12 @@ Cloud Platform recommends using [Amazon ECR] to store container images. Images a
 We also have [Trivy-Operator] running in the CP, which scans images for vulnerabilities and reports them to the [Cloud Platform Vulnerability Dashboard].
 
 At present, we don't take any action on the vulnerabilities reported, but this is something we plan to address in the future.
+
+### Proactive Security Monitoring
+
+Cloud Platform logs are pushed to the MoJ SOC (Security Operations Centre) via the Palo Alto Cortex XSIAM tool.  The SOC team monitor these logs for any suspicious activity and will alert the application team or Cloud Platform team if they identify any issues.
+
+A full list of logs which are sent to SOC can be found [here](https://runbooks.cloud-platform.service.justice.gov.uk/logs-to-soc-cortex-xsiam.html).
 
 [Trivy-Operator]: https://aquasecurity.github.io/trivy-operator/latest
 [Cloud Platform Vulnerability Dashboard]: https://grafana.live.cloud-platform.service.justice.gov.uk/d/trivy_starboard_operator123/trivy-operator-image-vulnerability?from=now-3h&to=now
