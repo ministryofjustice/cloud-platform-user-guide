@@ -1,6 +1,6 @@
 ---
 title: Upgrading a database version of Aurora DB cluster
-last_reviewed_on: 2025-01-27
+last_reviewed_on: 2025-09-15
 review_in: 12 months
 layout: google-analytics
 ---
@@ -24,32 +24,20 @@ AWS publishes an end-of-life schedule for major and minor versions of
 
 >Note: This will cause downtime. See [Things to note before upgrading your database](#things-to-note-before-upgrading-a-database-version).
 
-To upgrade your major Aurora DB Cluster version, complete these eight steps:
+When upgrading to a new major version of your Aurora DB Cluster, the steps depend on whether you are using a **custom parameter group** or not.
 
-1. Check if your current **and** new major database version supports the instance type you're currently using by reading
-[Supported DB instance classes](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.DBInstanceClass.html)
+### Case 1: Without a custom parameter group
 
-If your new major database version does not support your current instance type, update the instance type **first** before upgrading your major database version. 
+If your Aurora DB cluster uses the default parameter group, follow these steps:
+
+1. Check if your current **and** new major database version supports the instance type you're currently using by reading [Supported DB instance classes](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.DBInstanceClass.html).
+   
+    If your new major database version does not support your current instance type, update the instance type **first** before upgrading your major database version. 
 
 2. Raise and merge a PR to tell the [apply pipeline to skip your namespace](/documentation/other-topics/long-running-env-operations.html#long-running-environments-operations)
    This is applicable for either updating the instance type or the major version of your database.
 
-3. (Optional) If you have custom RDS instance group parameters, raise and merge a PR to set the default parameter group 
-   of the current major version of your database engine. For example, if you current DB engine 
-   is postgres14 set the `db_parameter_group_name` to `default.aurora-postgresql14`
-
-    ```hcl
-    module "rds_aurora" {
-      source = "github.com/ministryofjustice/cloud-platform-terraform-rds-aurora?ref=<version>"
-    
-      # Database configuration
-      engine         = "aurora-postgresql"
-      engine_version = "14.6"
-      db_parameter_group_name = "default.aurora-postgresql14"
-    ```
-   Raise and merge a PR that updates the default `db_parameter_group_name` above
-
-5. Raise and merge a PR that updates the `allow_major_version_upgrade`, `engine_version` attributes to your **new** major version:
+3. Raise and merge a PR that updates the `allow_major_version_upgrade`, `engine_version` attributes to your **new** major version:
 
     ```hcl
     module "rds_aurora" {
@@ -61,11 +49,66 @@ If your new major database version does not support your current instance type, 
       allow_major_version_upgrade  = true
     
     ```
-    If you have a custom parameter group, update the family to the new major version. 
-    For example, if your new major engine version is `15` then update the family to "aurora-postgresql15"
     
     As soon as this PR is merged, the major version upgrade will begin.
 
-8. Raise and merge a PR to remove the `APPLY_PIPELINE_SKIP_THIS_NAMESPACE` file added in step 2.
-   If you have a custom parameter group, add back the `db_parameter_group_name` to the custom parameter group name.
+4. Raise and merge a PR to remove the `APPLY_PIPELINE_SKIP_THIS_NAMESPACE` file added in step 2.
 
+### Case 2: With a custom parameter group
+
+If your Aurora DB cluster uses the custom parameter group, follow these steps:
+
+1. Check if your current **and** new major database version supports the instance type you're currently using by reading
+    [Supported DB instance classes](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.DBInstanceClass.html)
+
+    If your new major database version does not support your current instance type, update the instance type **first** before upgrading your major database version. 
+
+2. Raise and merge a PR to tell the [apply pipeline to skip your namespace](/documentation/other-topics/long-running-env-operations.html#long-running-environments-operations)
+   This is applicable for either updating the instance type or the major version of your database.
+
+3. Raise and merge a PR to switch temporarily to use the default parameter group for your current engine version.
+    
+    For example, if you current DB engine is `postgres14` set the `db_parameter_group_name` to `default.aurora-postgresql14`
+
+    ```hcl
+    module "rds_aurora" {
+      source = "github.com/ministryofjustice/cloud-platform-terraform-rds-aurora?ref=<version>"
+    
+      # Database configuration
+      engine         = "aurora-postgresql"
+      engine_version = "14.6"
+      db_parameter_group_name = "default.aurora-postgresql14"
+    ```
+
+4. Raise and merge a PR that updates the `allow_major_version_upgrade`, `engine_version` attributes to your **new** major version. You can remove the `db_parameter_group_name` in this step.
+
+    ```hcl
+    module "rds_aurora" {
+      source = "github.com/ministryofjustice/cloud-platform-terraform-rds-aurora?ref=<version>"
+    
+      # Database configuration
+      engine         = "aurora-postgresql"
+      engine_version = "15.5"
+      allow_major_version_upgrade  = true
+    ```
+
+    Update your custom parameter group to match the new engine version family in the same PR. 
+
+    For example, if your new major engine version is `15` then update the family to `aurora-postgresql15`.
+
+    ```
+      resource "aws_db_parameter_group" "rds_aurora_custom" {
+         family = "aurora-postgresql15"
+
+         parameter {
+            name  = "log_error_verbosity"
+            value = "TERSE"
+         }
+      }
+    ``` 
+
+    >Note:If you have lifecycle policy with `create_before_destroy = true`, you need to remove that in the same PR.
+
+    As soon as this PR is merged, the major version upgrade will begin.
+
+5. After the upgrade is complete, raise and merge a PR to add back the `db_parameter_group_name` to the custom parameter group name and remove the `APPLY_PIPELINE_SKIP_THIS_NAMESPACE` file added in step 2.
