@@ -41,8 +41,8 @@ Now wait until the certificate has been issued ( `READY = True` ) - this is norm
 ```
 $ kubectl get cert
 
-NAME            READY 		SECRET		 		          AGE
-shiny-app-cert  True      shiny-app-cert-secret   113m
+NAME              READY 	  SECRET		 		    AGE
+shiny-app-cert    True        shiny-app-cert-secret     113m
 ```
 
 **2. Create an ingress resource with the correct class and domain**
@@ -51,11 +51,11 @@ shiny-app-cert  True      shiny-app-cert-secret   113m
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-annotations:
-  external-dns.alpha.kubernetes.io/aws-weight: "100"
-  external-dns.alpha.kubernetes.io/set-identifier: my-ingress-[namespace]-dev-green
   name: my-ingress
   namespace: [namespace]
+  annotations:
+    external-dns.alpha.kubernetes.io/aws-weight: "100"
+    external-dns.alpha.kubernetes.io/set-identifier: my-ingress-[namespace]-green
 spec:
   ingressClassName: internal-laa
   rules:
@@ -70,9 +70,9 @@ spec:
           path: /
           pathType: ImplementationSpecific
   tls:
-  - hosts:
-    - my-shiny-app.internal-laa.cloud-platform.service.justice.gov.uk
-    secretName: shiny-app-cert-secret
+    - hosts:
+      - my-shiny-app.internal-laa.cloud-platform.service.justice.gov.uk
+      secretName: shiny-app-cert-secret
 ```
 
 Once the ingress is created, you can confirm the configuration is internal with:
