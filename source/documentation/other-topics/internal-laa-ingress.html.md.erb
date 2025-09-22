@@ -1,51 +1,51 @@
 ---
-title: Internal LAA Ingress Controller
-last_reviewed_on: 2025-09-15
+title: Internal Ingress Controllers
+last_reviewed_on: 2025-09-22
 review_in: 6 months
 layout: google-analytics
 ---
 
 # <%= current_page.data.title %>
 
-Cloud Platform has deployed an [internal NGINX ingress controller class](https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/main/terraform/aws-accounts/cloud-platform-aws/vpc/eks/core/components/ingress.tf#L120-L147).
+### What is this?
 
-This controller class utilises a dedicated Route53 domain for provisioning DNS records to resolve and route to Cloud Platform services internally.
+Cloud Platform now provides [internal NGINX ingress controller classes](https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/main/terraform/aws-accounts/cloud-platform-aws/vpc/eks/core/components/ingress.tf#L149-L179).
 
-**Ingress class name:** `internal-laa`
+These controller classes utilise dedicated Route53 domains for provisioning DNS records for resolving and routing to Cloud Platform services internally.
 
-**Domain:** `*.internal-laa.cloud-platform.service.justice.gov.uk`
+### Why might I want to use this?
 
-In order to setup your service to use this ingress controller, carry out the following steps:
+There are a number of reasons why you might want to use an internal ingress controller, for example:
 
-**1. Create a [Certificate](https://cert-manager.io/docs/usage/certificate/) resource for your chosen hostname**
+- You want to restrict access to your Cloud Platform hosted service to only users / services running on Transit Gateway routed networks (for example Modernisation Platform environments).
 
-> Please add the certificate by defining it in your namespace folder in the [environments repository](https://github.com/ministryofjustice/cloud-platform-environments). Doing so means it will be automatically restored in the event of any problems with our certificate/DNS systems.
+- You have a Cloud Platform hosted service that talks to another service on the cluster, and you have a requirement for both restricting access to the internet but want `https` to be handled in the same way external ingress does.
 
-```
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: shiny-app-cert
-  namespace: [namespace]
-spec:
-  secretName: shiny-app-cert-secret
-  issuerRef:
-    name: letsencrypt-production
-    kind: ClusterIssuer
-  dnsNames:
-  - my-shiny-app.internal-laa.cloud-platform.service.justice.gov.uk
-```
+- You currently use `NetworkPolicies` for internal cluster communication between namespaced services, but would like to have the rich logging that ingress controllers provide. 
 
-Now wait until the certificate has been issued ( `READY = True` ) - this is normally completed within ~2 minutes
+### How do I use this?
 
-```
-$ kubectl get cert
+We have two internal ingress controllers classes available:
 
-NAME              READY 	  SECRET		 		    AGE
-shiny-app-cert    True        shiny-app-cert-secret     113m
-```
+### non-production internal
 
-**2. Create an ingress resource with the correct class and domain**
+**class name:** `internal-non-prod`
+
+**domain:** `*.internal-non-prod.cloud-platform.service.justice.gov.uk`
+
+### production Internal
+
+**class name** `internal`
+
+**domain:** `*.internal.cloud-platform.service.justice.gov.uk`
+
+In order to setup your service to use this ingress controller, simply set your `ingressClassName` to the appropriate class name, and use the appropriate domain for your ingress rules.
+
+Certificate issuing and lifecycle management is handled handled automatically by the ingress controllers' default certificate issuer for each of the domains.  
+
+> **NOTE:** We kindly ask that you use the non-prod class for lower environments (dev, test, staging etc) and the production class for production environments only. This ensures that nginx config reload disruptions are kept to a minimum.
+
+### Example Ingress configuration
 
 ```
 apiVersion: networking.k8s.io/v1
@@ -57,9 +57,9 @@ metadata:
     external-dns.alpha.kubernetes.io/aws-weight: "100"
     external-dns.alpha.kubernetes.io/set-identifier: my-ingress-[namespace]-green
 spec:
-  ingressClassName: internal-laa
+  ingressClassName: internal
   rules:
-    - host: my-shiny-app.internal-laa.cloud-platform.service.justice.gov.uk
+    - host: my-shiny-app.internal.cloud-platform.service.justice.gov.uk
       http:
         paths:
         - backend:
@@ -69,24 +69,22 @@ spec:
                 number: 8080
           path: /
           pathType: ImplementationSpecific
-  tls:
-    - hosts:
-      - my-shiny-app.internal-laa.cloud-platform.service.justice.gov.uk
-      secretName: shiny-app-cert-secret
 ```
 
 Once the ingress is created, you can confirm the configuration is internal with:
 
 ```
-$ nslookup my-shiny-app.internal-laa.cloud-platform.service.justice.gov.uk
+$ nslookup my-shiny-app.internal.cloud-platform.service.justice.gov.uk
 ..
 ..
-Name:	my-shiny-app.internal-laa.cloud-platform.service.justice.gov.uk
+Name:	my-shiny-app.internal.cloud-platform.service.justice.gov.uk
 Address: 172.20.120.31
-Name:	my-shiny-app.internal-laa.cloud-platform.service.justice.gov.uk
+Name:	my-shiny-app.internal.cloud-platform.service.justice.gov.uk
 Address: 172.20.136.38
-Name:	my-shiny-app.internal-laa.cloud-platform.service.justice.gov.uk
+Name:	my-shiny-app.internal.cloud-platform.service.justice.gov.uk
 Address: 172.20.94.23
 ```
+
+This might seem interesting that you can lookup these addresses from your local machine. This is because the Route53 domains are public; however the ingress controller load balancers are deployed into private subnets, and these IPs are not reachable from outside of the VPC (AWS in fact themselves do the same for internal dns relying services like RDS).
 
 **Internal ingress logs are available in the `kubernetes_ingress` index on OpenSearch** [here](https://app-logs.cloud-platform.service.justice.gov.uk/_dashboards/app/data-explorer/discover#?_a=(discover:(columns:!(_source),isDirty:!f,sort:!()),metadata:(indexPattern:'28e9fa86-ddf5-478d-a899-1a7064c7b745',view:discover))&_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-15m,to:now))&_q=(filters:!(),query:(language:kuery,query:'')))
