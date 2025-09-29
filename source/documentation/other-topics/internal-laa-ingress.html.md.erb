@@ -87,4 +87,7 @@ Address: 172.20.94.23
 
 This might seem interesting that you can lookup these addresses from your local machine. This is because the Route53 domains are public; however the ingress controller load balancers are deployed into private subnets, and these IPs are not reachable from outside of the VPC (AWS in fact themselves do the same for internal dns relying services like RDS).
 
-**Internal ingress logs are available in the `kubernetes_ingress` index on OpenSearch** [here](https://app-logs.cloud-platform.service.justice.gov.uk/_dashboards/app/data-explorer/discover#?_a=(discover:(columns:!(_source),isDirty:!f,sort:!()),metadata:(indexPattern:'28e9fa86-ddf5-478d-a899-1a7064c7b745',view:discover))&_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-15m,to:now))&_q=(filters:!(),query:(language:kuery,query:'')))
+
+### Logging
+
+Internal ingress logs are available in the `kubernetes_ingress` index on OpenSearch [here](https://app-logs.cloud-platform.service.justice.gov.uk/_dashboards/app/data-explorer/discover#?_a=(discover:(columns:!(_source),isDirty:!f,sort:!()),metadata:(indexPattern:'28e9fa86-ddf5-478d-a899-1a7064c7b745',view:discover))&_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-15m,to:now))&_q=(filters:!(),query:(language:kuery,query:'')))
