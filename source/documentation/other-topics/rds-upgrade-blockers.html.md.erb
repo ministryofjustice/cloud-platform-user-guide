@@ -1,0 +1,296 @@
+---
+title: Troubleshooting RDS Upgrades with Logical Replication
+last_reviewed_on: 2025-10-30
+review_in: 6 months
+layout: google-analytics
+---
+
+# <%= current_page.data.title %>
+
+## Overview
+
+If your RDS PostgreSQL database has `rds.logical_replication` enabled, major version upgrades may fail silently during AWS precheck validation. This guide helps you identify and resolve two common blockers:
+
+- **Logical replication slots**
+- **pglogical nodes**
+
+### How do I know if this affects me?
+
+Your database is affected if it has the following Terraform configuration:
+
+```hcl
+db_parameter = [
+  {
+    name         = "rds.logical_replication"
+    value        = "1"
+    apply_method = "pending-reboot"
+  }
+]
+```
+
+Or with pglogical enabled:
+
+```hcl
+db_parameter = [
+  {
+    name         = "rds.logical_replication"
+    value        = "1"
+    apply_method = "pending-reboot"
+  },
+  {
+    name         = "shared_preload_libraries"
+    value        = "pglogical"
+    apply_method = "pending-reboot"
+  }
+]
+```
+
+> **Important:** Having this configuration does **not** mean you have blockers. The configuration enables the capability, but blockers only exist if logical replication slots or pglogical nodes have been explicitly created via SQL commands or applications.
+
+## Symptoms
+
+When attempting a major version upgrade, you'll see:
+
+- **Terraform build fails** in the pipeline with a parameter group deletion error:
+  ```
+  Error: deleting RDS DB Parameter Group: operation error RDS: DeleteDBParameterGroup, 
+  https response error StatusCode: 400, InvalidDBParameterGroupState: One or more 
+  database instances are still members of this parameter group, so the group cannot be deleted
+  ```
+- The database version does not change (remains on original version)
+
+If you see this error, reach out to `#ask-cloud-platform` and the team will check the precheck logs to identify whether the blocker is replication slots or pglogical nodes.
+
+## Prevention: Check Before Upgrading
+
+**Before raising a PR to upgrade your RDS database**, check for blockers:
+
+### Check for logical replication slots
+
+Connect to your database following the [RDS external access guide](rds-external-access.html) and run:
+
+```sql
+SELECT 
+    slot_name,
+    slot_type,
+    database,
+    active
+FROM pg_replication_slots
+WHERE slot_type = 'logical'
+ORDER BY slot_name;
+```
+
+If this returns any rows, you have replication slots that will block the upgrade → **Drop them before upgrading** (see [Scenario 1](#scenario-1-replication-slots) below).
+
+### Check for pglogical nodes
+
+If your database has `shared_preload_libraries = "pglogical"`, also check:
+
+```sql
+-- Check if pglogical extension exists
+SELECT * FROM pg_extension WHERE extname = 'pglogical';
+
+-- If extension exists, check for nodes
+SELECT node_id, node_name FROM pglogical.node;
+
+-- Check for subscriptions
+SELECT sub_name, sub_enabled FROM pglogical.subscription;
+```
+
+If `pglogical.node` returns any rows, you have pglogical nodes that will block the upgrade → **Drop them before upgrading** (see [Scenario 2](#scenario-2-pglogical-nodes) below).
+
+## What Happens When the Upgrade Fails
+
+If you didn't check beforehand and your upgrade fails:
+
+1. **The Cloud Platform team will check the precheck logs** to identify which blocker is present
+2. **You drop the blockers** following the instructions below
+3. **The Cloud Platform team will delete the orphaned parameter group and rerun the failed build** after you've confirmed the blockers have been deleted
+
+The precheck log will show one of two errors:
+
+#### Error A: Logical Replication Slots
+
+```
+The instance could not be upgraded because it has one or more logical 
+replication slots. Please drop all logical replication slots and try again.
+```
+
+→ **Go to [Scenario 1: Replication Slots](#scenario-1-replication-slots)**
+
+#### Error B: pglogical Nodes
+
+```
+The instance can't be upgraded while the database has pglogical nodes 
+created using pglogical extension. Drop all pglogical nodes and try again.
+```
+
+→ **Go to [Scenario 2: pglogical Nodes](#scenario-2-pglogical-nodes)**
+
+## Scenario 1: Replication Slots
+
+### Check for replication slots
+
+First, connect to your database. You'll need to use a [Cloud Platform Service Pod](cloud-platform-service-pod.html) or [access your RDS database externally](rds-external-access.html).
+
+Run this query:
+
+```sql
+SELECT 
+    slot_name,
+    slot_type,
+    database,
+    active,
+    pg_size_pretty(pg_wal_lsn_diff(pg_current_wal_lsn(), restart_lsn)) AS replication_lag
+FROM pg_replication_slots
+WHERE slot_type = 'logical'
+ORDER BY slot_name;
+```
+
+If this returns any rows, those are the slots blocking your upgrade.
+
+
+### Drop replication slots
+
+> **Warning:** Dropping replication slots will break any active logical replication. If your application depends on these slots (e.g., for CDC pipelines, Debezium, AWS DMS), coordinate with your team before proceeding.
+
+Drop each slot individually:
+
+```sql
+SELECT pg_drop_replication_slot('slot_name_here');
+```
+
+
+### Verify cleanup
+
+```sql
+SELECT * FROM pg_replication_slots WHERE slot_type = 'logical';
+-- Should return 0 rows
+```
+
+### Notify Cloud Platform team
+
+Once you've dropped all replication slots and verified they're gone:
+
+1. **Post in `#ask-cloud-platform`** channel with:
+   - Your database instance ID
+   - Confirmation that all logical replication slots have been dropped
+   - A request to delete the orphaned parameter group and rerun the failed build
+
+2. **The Cloud Platform team will:**
+   - Delete the `-upgrade` parameter group
+   - Rerun the failed pipeline build
+   
+3. **The upgrade will complete successfully**
+
+## Scenario 2: pglogical Nodes
+
+### Check for pglogical nodes
+
+Connect to your database and run:
+
+```sql
+-- Check if pglogical extension exists
+SELECT * FROM pg_extension WHERE extname = 'pglogical';
+
+-- List pglogical nodes
+SELECT node_id, node_name FROM pglogical.node;
+
+-- List pglogical subscriptions
+SELECT sub_name, sub_enabled FROM pglogical.subscription;
+```
+
+If `pglogical.node` returns any rows, those nodes are blocking your upgrade.
+
+### Drop pglogical nodes
+
+> **Warning:** This will break active pglogical replication. Coordinate with your team if these nodes are in use.
+
+#### Step 1: Drop subscriptions first (if any exist)
+
+```sql
+-- For each subscription:
+SELECT pglogical.drop_subscription('subscription_name_here');
+```
+
+#### Step 2: Drop nodes
+
+```sql
+-- For each node:
+SELECT pglogical.drop_node('node_name_here');
+```
+
+### Verify cleanup
+
+```sql
+SELECT * FROM pglogical.node;
+-- Should return 0 rows
+
+SELECT * FROM pglogical.subscription;
+-- Should return 0 rows
+```
+
+### Notify Cloud Platform team
+
+Once you've dropped all subscriptions and nodes, and verified they're gone:
+
+1. **Post in `#ask-cloud-platform`** channel with:
+   - Your database instance ID
+   - Confirmation that all pglogical nodes and subscriptions have been dropped
+   - A request to delete the orphaned parameter group and rerun the failed build
+
+2. **The Cloud Platform team will:**
+   - Delete the `-upgrade` parameter group
+   - Rerun the failed pipeline build
+   
+3. **The upgrade will complete successfully**
+
+## Common Issues
+
+### Issue: Terraform parameter group deletion error
+
+**Error message:**
+```
+Error: deleting RDS DB Parameter Group: One or more database instances 
+are still members of this parameter group, so the group cannot be deleted
+```
+
+**Cause:** A previous failed upgrade attempt created a `-upgrade` parameter group that must be cleaned up before retrying.
+
+**Solution:** The Cloud Platform team will delete this for you after you've dropped the replication slots or pglogical nodes. Post in `#ask-cloud-platform` once you've completed the cleanup steps.
+
+### Issue: Can't connect to database
+
+If you need to drop slots/nodes but can't connect to your database, follow the [RDS external access guide](rds-external-access.html) to connect via port-forwarding.
+
+### Issue: Active replication slots can't be dropped
+
+If a slot shows `active = true`, it's currently in use. You must:
+
+1. Stop the application/service using the slot
+2. Wait for `active` to become `false`
+3. Then drop the slot
+
+
+## When to reach out to Cloud Platform team
+
+Contact the Cloud Platform team on the `#ask-cloud-platform` channel:
+
+**After a failed upgrade:**
+- Your upgrade failed with the parameter group deletion error
+- You've dropped the replication slots or pglogical nodes
+- You need the Cloud Platform team to delete the orphaned parameter group and rerun the build
+
+## Prevention
+
+To avoid this issue in future upgrades:
+
+1. **Before raising an upgrade PR:** Check for logical replication slots and pglogical nodes
+2. **Clean up all slots/nodes:** Regularly audit and remove slots/nodes that are no longer needed or before planned upgrades
+
+## Reference
+
+- [AWS RDS PostgreSQL Major Version Upgrade Process](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.PostgreSQL.MajorVersion.Process.html) - See item #5 for logical replication restrictions
+- [PostgreSQL Logical Replication](https://www.postgresql.org/docs/current/logical-replication.html)
+- [pglogical Extension Documentation](https://github.com/2ndQuadrant/pglogical)
+- [Upgrading a database version or changing the instance type](/documentation/deploying-an-app/relational-databases/upgrade.html)
