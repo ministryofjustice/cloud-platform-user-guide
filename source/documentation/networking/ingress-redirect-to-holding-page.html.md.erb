@@ -1,71 +1,59 @@
 ---
 title: Redirect 403 traffic to a holding page
-last_reviewed_on: 2025-08-12
+last_reviewed_on: 2025-11-12
 review_in: 6 months
 layout: google-analytics
 ---
 
 # <%= current_page.data.title %>
 
-When using the MOJ Cloud Platform, you may want to restrict public access to your
-application by allowing only certain IP addresses to access it. This is often done
-using the `nginx.ingress.kubernetes.io/whitelist-source-range` annotation in your
-Ingress resource. However, this can lead to users outside the allowed IP ranges
-receiving a default **403 Forbidden** response from NGINX-Ingress, which may not
-be user-friendly.
+When you restrict access to your application using IP whitelisting (`nginx.ingress.kubernetes.io/whitelist-source-range`), users outside the allowed IP ranges receive a default **403 Forbidden** response. You can redirect these users to a custom holding page instead.
 
-Instead, you can redirect these users to a custom holding page that provides
-more information about the access restriction.
+### The solution
 
-It is the approach agreed in
-[ministryofjustice/cloud-platform#7213](https://github.com/ministryofjustice/cloud-platform/issues/7213).
-
----
-## Why the usual `temporal-redirect` annotation does **not** work
-
-`nginx.ingress.kubernetes.io/temporal-redirect` executes in NGINX’s *rewrite*
-phase.  However, the IP-whitelist check happens earlier, in the *access* phase.
-Once that check fails NGINX returns 403 immediately, and the rewrite phase never
-runs – so the redirect is never triggered.
-
----
-## The working solution – `server-snippet`
-
-Replace the temporal-redirect line with the following NGINX snippet in your
-Ingress resource:
+Add this server snippet to your Ingress resource:
 
 ```yaml
-  nginx.ingress.kubernetes.io/server-snippet: |
-    error_page 403 = @holding;
-    location @holding {
-      return 302 https://laa-holding-page-production.apps.live.cloud-platform.service.justice.gov.uk$request_uri;
-    }
-
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: myapp-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/whitelist-source-range: "1.2.3.4/32,5.6.7.8/32"
+    nginx.ingress.kubernetes.io/server-snippet: |
+      error_page 403 = @holding;
+      location @holding {
+        return 302 https://laa-holding-page-production.apps.live.cloud-platform.service.justice.gov.uk$request_uri;
+      }
+spec:
+  # ... rest of your ingress config
 ```
 
-### Multiple Ingresses with the same host
-If you have separate *public* and *private* Ingress resources that share the
-same `host`, NGINX-Ingress designates one of them as the **master** and uses *its*
-server-level annotations only.  To be safe, add the identical `server-snippet`
-(and whitelist) to **every** Ingress that owns that host.
+### Why this works
 
----
-## Step-by-step
+The standard `temporal-redirect` annotation doesn't work because:
+- IP whitelist checking happens in NGINX's *access* phase
+- Redirects happen in the *rewrite* phase (which comes later)
+- When access is denied, NGINX returns 403 immediately and never reaches the rewrite phase
 
-1.  Add these annotations for all Ingresses sharing the host and apply the change.
-3.  Wait for about 60 seconds for the controller to reload (check pod logs).
-4.  Test:
+The `server-snippet` approach uses NGINX's `error_page` directive to catch 403 errors and redirect them.
 
-    ```bash
-    # inside whitelist – expect 200 OK
-    curl -kI -H "Host: my-service.cloud-platform.service.justice.gov.uk" https://<ELB_HOSTNAME>
+### Multiple Ingresses
 
-    # outside whitelist – expect 302 → holding page
-    (disconnect VPN)
-    curl -kI -H "Host: my-service.cloud-platform.service.justice.gov.uk" https://<ELB_HOSTNAME>
-    ```
+If you have multiple Ingress resources sharing the same hostname, add the `server-snippet` to **all** of them. NGINX-Ingress picks one as the "master" but you can't predict which one.
 
-## Further reading
-* [Official annotation list](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#server-snippet)
-* [GitHub issue #7213 – background discussion](https://github.com/ministryofjustice/cloud-platform/issues/7213)
-* [NGINX Sample ingress redirect GitHub issue](https://github.com/kubernetes/ingress-nginx/issues/3139)
+### Testing
+
+```bash
+# Test from allowed IP (expect 200 OK)
+curl -I https://your-app.apps.live.cloud-platform.service.justice.gov.uk
+
+# Test from blocked IP (expect 302 redirect)
+# Disconnect VPN or use different network
+curl -I https://your-app.apps.live.cloud-platform.service.justice.gov.uk
+```
+
+### Reference
+
+- [NGINX Ingress server-snippet annotation](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#server-snippet)
+- [Original discussion](https://github.com/ministryofjustice/cloud-platform/issues/7213)
