@@ -1,6 +1,6 @@
 ---
 title: Troubleshooting guide
-last_reviewed_on: 2025-05-06
+last_reviewed_on: 2025-11-12
 review_in: 6 months
 layout: google-analytics
 ---
@@ -277,6 +277,27 @@ Possible causes include:
 * If they aren't, [re-authenticate] to the cluster **using an incognito/private browsing window**.
 
     Sometimes browser caching seems to cause problems with the authentication process, and using an incognito browser window usually resolves the problem.
+
+### Ingress & Service issues
+
+There is a wide range of configuration issues that may lead to issues with Kubernetes Ingresses or Services failing to route traffic correctly.
+
+#### Pods & Services
+
+A good place to start debugging is [port-forwarding](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/) your traffic serving pod to your local machine, and then using `curl` or a web browser to access it directly. Start at the pod level, and if thats all good then move up to the Service.
+
+One particular issue that can be easy to miss is ensuring that your Service is targeting the correct port on your pod, and that the labels on your Service match those on your intended backend Deployments.
+
+> **NOTE:** Ensure that your Service labels do not point to non-traffic serving Deployments, as this has been observed to cause ingress routing issues. See [here](https://overcast.blog/using-labels-and-selectors-in-kubernetes-7fb2b4802a7c) for a good explanation of how labels and selectors work in k8s.
+
+#### Ingresses
+
+Cloud Platform have Ingress configuration detection policies checks enabled which will catch common misconfigurations, and provide feedback at admission point (for example unsupported Ingress classes, missing required annotations or hostnames that are already elsewhere on the platform).
+
+If you're experencing modsec configuration issues, a great place to start is the the Justice Digital [modsecurity-community](https://moj.enterprise.slack.com/archives/C07RG27NZAP) channel.
+
+To view logs for all ingress classes supported by the Cloud Platform, you should always start at our OpenSearch [ingress index](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/logging-an-app/access-logs-os.html#accessing-ingress-logs). This is also a good starting point for modsec troubleshooting, further details on that [here](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/networking/modsecurity.html#logging)
+
 
 [application logging]: /documentation/logging-an-app/access-logs-os.html
 [visual guide]: https://learnk8s.io/troubleshooting-deployments
