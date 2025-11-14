@@ -39,3 +39,19 @@ The Ministry of Justice follows the UK government's [Government Security Classif
 The Cloud Platform can host services up to, but not including, **Secret** within the Government Security Classification system.
 
 If you need formal assurance that your service can be hosted on the Cloud Platform, you should [contact the MOJ's security team](https://security-guidance.service.justice.gov.uk/user-guide/#security-team-asking-for-help).
+
+## Shared Responsibility
+
+The responsibility for the Cloud Platform and services hosted on it, is shared between the Cloud Platform team and the service teams.
+
+In general the Cloud Platform team is responsible for the platform infrastructure, for example the Kubernetes cluster, networking, and provided tooling such as Terraform modules or infrastructure deployment pipelines.
+
+The service teams are responsible for the services they run on the platform, including application code, configuration, and resources created in the Environments repository.
+
+![Shared Responsibility Model](/images/shared-responsibility.png)
+
+## Data Responsibility
+
+Data held by the Cloud Platform about the services it hosts, eg service names, slack channels, infrastructure metadata, is the responsibility of the Cloud Platform team.
+
+Data held in databases or filesystems by services hosted on the Cloud Platform is the responsibility of the service teams.
