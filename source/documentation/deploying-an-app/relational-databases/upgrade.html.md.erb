@@ -1,6 +1,6 @@
 ---
 title: Upgrading a database version or changing the instance type
-last_reviewed_on: 2025-02-06
+last_reviewed_on: 2025-11-17
 review_in: 12 months
 layout: google-analytics
 ---
@@ -19,6 +19,8 @@ AWS publishes an end-of-life schedule for major and minor versions of [PostgreSQ
 >There is no rule of thumb to work out how long it will take, but tests show an empty database using a `db.t4g.micro` will take around 10 minutes.
 
 > It is not possible to go from a minor version e.g. `14.10` to major version `14`, this causes a version mismatch when trying to apply.
+
+> **Important for PostgreSQL databases with logical replication:** If your database has `rds.logical_replication` enabled, check the [RDS upgrade blockers troubleshooting guide](/documentation/other-topics/rds-upgrade-blockers.html) before upgrading to avoid upgrade failures caused by logical replication slots or pglogical nodes.
 
 ## Automatic minor engine version upgrades
 
