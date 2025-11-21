@@ -53,11 +53,14 @@ Before you begin, ensure you have the following:
             is-production = var.is_production
             owner = var.team_name
             namespace = var.namespace
+            service-area = var.service_area
             }
         }
         region = "eu-west-2"
     }
     ```
+
+    The service-area tag may not be included in your `variables.tf` file, you will need to add this manually. Please follow this guidance on naming conventions: [Service Area Tag Naming Conventions](https://cloud-optimisation-and-accountability.justice.gov.uk/documentation/finops-and-greenops-at-moj/standards/tagging.html#mandatory)
 
     If there are other tags already present, the script should add the mandatory tags without removing the existing ones. But please ensure they are preserved along with the new mandatory tags.
 
