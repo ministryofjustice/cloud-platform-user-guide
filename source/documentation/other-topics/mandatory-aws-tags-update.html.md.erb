@@ -9,7 +9,7 @@ layout: google-analytics
 
 ### Overview
 
-This guide explains how to update the mandatory tags for AWS provider in Cloud Platform namespace resources. This is essential for compliance and resource management of AWS resources.
+This guide explains how to update the mandatory tags for the Terraform AWS provider managed resources in your Cloud Platform environment. This is essential for compliance and resource management of AWS resources.
 
 ### Prerequisites
 
@@ -25,10 +25,10 @@ Before you begin, ensure you have the following:
     Use the following command to update the mandatory AWS tags for your namespace resources:
 
     ```bash
-    cloud-platform environment namespace-tags --namespaces namespace --repo-path /path/to/cloud-platform-environments
+    cloud-platform environment namespace-tags --namespaces namespace1,namespace2 --repo-path /path/to/cloud-platform-environments
     ```
 
-    Replace `namespace1` with the actual namespaces you want to update, and `/path/to/cloud-platform-environments` with the path to your Cloud Platform environments repository.
+    Replace `namespace1` with the actual namespace you want to update, and `/path/to/cloud-platform-environments` with the path to your Cloud Platform environments repository.
 
 2. **Verify the Update:**
 
@@ -38,7 +38,7 @@ Before you begin, ensure you have the following:
 
     ```bash
     provider "aws" {
-    region = "eu-west-2"
+        region = "eu-west-2"
     }
     ```
 
@@ -46,21 +46,21 @@ Before you begin, ensure you have the following:
 
     ```bash
     provider "aws" {
-    default_tags {
-        tags = {
-        business-unit = var.business_unit
-        application = var.application
-        is-production = var.is_production
-        owner = var.team_name
-        namespace = var.namespace
+        default_tags {
+            tags = {
+            business-unit = var.business_unit
+            application = var.application
+            is-production = var.is_production
+            owner = var.team_name
+            namespace = var.namespace
+            }
         }
-    }
-    region = "eu-west-2"
+        region = "eu-west-2"
     }
     ```
 
-    if there are other tags already present, the script should add the mandatory tags without removing the existing ones. But please ensure they are preserved along with the new mandatory tags.
+    If there are other tags already present, the script should add the mandatory tags without removing the existing ones. But please ensure they are preserved along with the new mandatory tags.
 
 3. **Commit and Push Changes:**
 
-    If the tags have been updated successfully, commit, push and create a pull request for the changes for review.
+    Once the tags have been updated successfully, commit, push and create a pull request for the changes for review.
