@@ -26,6 +26,7 @@ https://myservice.gov.uk/
 https://myapp.cloud-platform/metrics
 https://my-prototype-main.apps.live.cloud-platform.service.justice.gov.uk/
 https://github.com/ministryofjustice/example-repository.git
+https://your-app.apps.live.cloud-platform.service.justice.gov.uk/
 
 # AWS API Endpoints
 .*\.eks\.amazonaws\.com/apis/.*
