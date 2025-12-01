@@ -1,6 +1,6 @@
 ---
 title: Creating your own custom alerts
-last_reviewed_on: 2025-07-18
+last_reviewed_on: 2025-12-01
 review_in: 6 months
 layout: google-analytics
 ---
@@ -21,8 +21,8 @@ This guide assumes the following:
 ### Create a slack webhook, and amend Alertmanager
 
 1. Create a [slack webhook - Set up incoming webhooks](https://api.slack.com/messaging/webhooks) if you don't already have one for the channel you want to send the alerts.
-
-   * Follow the steps in "Set up incoming webhooks" (starting with "Create an app"  "From scratch")
+  - Follow the steps in "Set up incoming webhooks" (starting with "Create an app"  "From scratch")
+  - Webhook approval is not carried out by the Cloud Platform team. Post in the [#digital_it_forum](https://moj.enterprise.slack.com/archives/C0282GUGKL7) Slack channel once you have requested your webhook
 
 2. Create a [kubernetes secret](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/add-secrets-to-deployment.html#configuring-secrets-manually-using-kubenetes-secret) to store the slack webhook.
 
