@@ -1,0 +1,71 @@
+---
+title: Ephemeral Containers
+last_reviewed_on: 2026-02-12
+review_in: 6 months
+layout: google-analytics
+---
+
+# <%= current_page.data.title %>
+
+## Overview
+
+[Ephemeral containers](https://kubernetes.io/docs/concepts/workloads/pods/ephemeral-containers/) are a special type of container that can be temporarily added to a running pod for debugging purposes.
+
+This can be particularly useful when your application pods are utilising minimal image builds such as scratch or distroless, and may not ship a shell or other debugging tools. By using ephemeral containers, you can add a container with the necessary tools to inspect and debug your application without needing to restart the pod or modify the base image etc.
+
+### Caveats
+
+The same Cloud Platform namespaced pod security policies apply to ephemeral containers as regular containers, so ensure that your image is built following the guidelines outlined [here](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/container-repositories/requirements.html#requirements-for-deploying-a-container-image).
+
+Additionally, take note of the additional fundamental differences as described in the Kubernetes documentation [here](https://kubernetes.io/docs/concepts/workloads/pods/ephemeral-containers/#what-is-an-ephemeral-container).
+
+## Setting up your namespace
+
+By default, the [Cloud Platform namespace admin ClusterRole](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/reference/namespace-definition-files.html#01-rbac-yaml) does not include permissions to use ephemeral containers. In order to leverage these in your namespace, you will need to create a new Role and RoleBinding in your namespace in the [environments repository](https://github.com/ministryofjustice/cloud-platform-environments), and raising a PR with the team.
+
+## Role & RoleBinding spec
+
+In your namespace folder within the environments repository, create a new Kubernetes manifest file following the normal naming convention, for example `05-rbac-ephemeral-containers.yaml`, and add the following Role and RoleBinding specifications, updating the namespace and name fields as appropriate:
+
+```
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: ephemeral-container-access
+  namespace: <your-namespace>
+rules:
+- apiGroups: [""]
+  resources: ["pods/ephemeralcontainers"]
+  verbs: ["get", "patch", "update", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: ephemeral-container-access-binding
+  namespace: <your-namespace>
+subjects:
+  - kind: Group
+    name: "github:<team-name>"
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: ephemeral-container-access
+  apiGroup: rbac.authorization.k8s.io
+```
+
+Once merged, you will be able to begin using ephemeral containers in your namespace for debugging purposes. 
+
+### Example usage
+
+```
+kubectl debug -it <my-no-shell-pod> --image=1234abcd.dkr.ecr.eu-west-2.amazonaws.com/my-debug-image:tag --target=<my-no-shell-pod> -- bin/sh      # or whatever shell your debug image uses
+```
+
+To list any running ephemeral containers in your namespace you can do:
+
+```
+kubectl get pods -n <your-namespace> -o json | jq '.items[] | select(.spec.ephemeralContainers != null) | {name: .metadata.name, ephemeralContainers: .spec.ephemeralContainers}'
+```
+
+Further reading: [Kubernetes documentation on ephemeral containers](https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/#ephemeral-container)
