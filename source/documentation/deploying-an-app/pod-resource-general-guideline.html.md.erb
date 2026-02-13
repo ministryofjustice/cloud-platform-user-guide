@@ -1,6 +1,6 @@
 ---
 title: General Guidelines for Pod Requests and Limits
-last_reviewed_on: 2025-07-18
+last_reviewed_on: 2026-02-13
 review_in: 6 months
 layout: google-analytics
 ---
@@ -48,6 +48,25 @@ spec:
 - Avoid Overprovisioning: Setting requests and limits too high can lead to resource wastage.
 
 - Avoid Underprovisioning: Setting requests and limits too low can lead to resource starvation and instability.
+
+## Recommended Memory Request-to-Limit Ratio
+
+To help maintain overall platform stability and reduce the risk of memory overcommit on shared nodes, we strongly recommend keeping the ratio between memory limits and memory requests at or below 2x wherever possible. 
+
+Large gaps between requests and limits increase the likelihood that multiple pods will simultaneously consume more memory than a node can safely provide, which can lead to pods being killed, node instability, and service disruption.
+
+We understand that it can sometimes be difficult to accurately predict memory usage, especially for workloads with unpredictable patterns. In these cases, higher limits may be necessary. 
+
+However, we encourage teams to review and tune their requests and limits over time using real usage data, and to avoid setting significantly higher limits “just in case”.
+
+When the memory limit exceeds the recommended ratio, you will see a warning at deployment time to highlight the potential risk. For example:
+
+```
+Warning: [enforce-memory-request-limit-ratio] container "x" has a memory limit (2Gi) that exceeds 2x its request (512Mi). 
+The Cloud Platform recommends not exceeding a 2x memory request-to-limit ratio. This request was not blocked, but please adjust the values accordingly.
+```
+
+This warning does not block your workload from being deployed but it is intended to provide early feedback and help teams make informed decisions about resource configuration.
 
 ## Monitor Resource Usage
 
