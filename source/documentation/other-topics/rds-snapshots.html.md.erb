@@ -21,6 +21,11 @@ Examples of managing RDS DB snapshots using the AWS CLI, via the [Cloud Platform
 
 ## Restoring live services from an RDS DB snapshot
 
+The snapshot restore guidance is currently under review.
+
+Please contact the Cloud Platform team via the [#ask-cloud-platform](https://mojdt.slack.com/archives/C57UPMZLY) channel for the latest guidance on restoring from an RDS snapshot.
+
+<!--
 If you want to restore your production RDS DB instance from a previous snapshot, either because the database is corrupted or the whole database was deleted, here is the procedure:
 
 > **Note:** If your existing RDS instance has deletion protection enabled, you must first disable it before performing a restore.
@@ -216,3 +221,4 @@ To properly downgrade an RDS database to a previous version:
 After verifying the new downgraded database works properly, the old one can be deleted if needed.
 
 [Cloud Platform CLI]: ../getting-started/cloud-platform-cli.html
+-->
