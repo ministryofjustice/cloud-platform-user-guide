@@ -17,6 +17,8 @@ associated AWS resources, and helps to keep our hosting costs down.
 
 ## Preparation
 
+### Prepare ECR
+
 If you have any ECR resources in your namespace which still contain images,  Concourse 
 will fail when trying to delete the registry. You can either delete the images manually, 
 or prepare the ECR for deletion by doing the following:
@@ -25,6 +27,14 @@ or prepare the ECR for deletion by doing the following:
 argument in your ECR module code.
 - Raise a PR to apply this configuration change to your ECR resource.
 - Merge the PR, and proceed with the namespace deletion process.
+
+### Prepare pipelines
+
+If you have set up a CI/CD pipeline, which deploys into your namespace,
+then this should be deleted first, so that anything you delete later is not
+immediately recreated by your build pipeline.
+
+## Namespace deletion
 
 > IMPORTANT: It is **your responsibility as namespace/PR owner** to ensure that no other
 environments depend upon access to your ECR resources.
@@ -39,13 +49,12 @@ deleting the folder:
 
 ...and all its contents, from the [cloud-platform-environments][envrepo] repository.
 
+> IMPORTANT: **The PR must delete the folder, not rename it.** If the PR renames the folder
+or items in it, the destroy process will not work.
+
 Merging this [PR] will trigger the [destroy-deleted-namespaces Pipeline](/documentation/other-topics/concourse-pipelines.html),
 which will delete all of your non production (with namespace annotation "cloud-platform.justice.gov.uk/is-production = false") namespace's AWS resources, followed by the
 namespace itself. For production namespaces, the cloud-platform team will get an alert to manually delete the namespace.
-
-> NB: If you have set up a CI/CD pipeline, which deploys into your namespace,
-then this should be deleted first, so that anything you delete later is not
-immediately recreated by your build pipeline.
 
 [envrepo]: https://github.com/ministryofjustice/cloud-platform-environments
 [PR]: https://help.github.com/en/articles/about-pull-requests
