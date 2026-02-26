@@ -1,6 +1,6 @@
 ---
 title: Does my app need an ingress?
-last_reviewed_on: 2025-07-18
+last_reviewed_on: 2026-02-26
 review_in: 6 months
 layout: google-analytics
 ---
@@ -23,9 +23,50 @@ We split our production and non-production workloads for a 2 main reasons:
 1. We can roll out upgrades to the non-production ingress classes first and spot issues early before rolling out to production
 1. Production classes are more stable as they experience less [NGINX Reloads](https://kubernetes.github.io/ingress-nginx/how-it-works/#when-a-reload-is-required) because of their isolation from inherently unstable workloads
 
+**We highly encourage users to separate their ingress workloads between production and non-production environments** by using the appropriate ingress class (`default` or `modsec` for production, `default-non-prod` or `modsec-non-prod` for non-production).
+
 We have a detailed guide on ModSecurity and how to configure it [here](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/networking/modsecurity.html#modsecurity-web-application-firewall).
 
 > It is the responsibility of the application team to consider and select the appropriate ingress class for their service. However, Cloud Platform **strongly recommend** that all production services are setup with the `modsec` ingress class for additional security.
+
+Here is an example of an ingress resource:
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+  namespace: [namespace]
+  annotations:
+    external-dns.alpha.kubernetes.io/aws-weight: "100"
+    external-dns.alpha.kubernetes.io/set-identifier: my-ingress-[namespace]-green
+spec:
+  ingressClassName: default
+  rules:
+    - host: my-shiny-app.internal.cloud-platform.service.justice.gov.uk
+      http:
+        paths:
+        - backend:
+            service:
+              name: shiny-app-service
+              port:
+                number: 8080
+          path: /
+          pathType: ImplementationSpecific
+```
+
+### Changing or migrating the ingress class
+
+If you want to change or migrate the ingress class (for example, from a production class to a non-production class, or vice versa), you can update the `ingressClassName` field in your ingress resource:
+
+```yaml
+spec:
+  ingressClassName: default-non-prod  # change to the desired class
+```
+
+**Please note that changing the ingress class will result in some downtime** as the ingress resource is recreated.
+
+Some teams manage their ingress configuration through a Helm chart, in which case the `ingressClassName` value may be defined as a chart value rather than directly in the manifest. If that is the case, you may want to contact your SRE team for guidance on how to make the change safely.
 
 ### Internal cluster-bound services
 
