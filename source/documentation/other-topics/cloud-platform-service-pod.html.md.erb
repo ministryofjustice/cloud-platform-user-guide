@@ -1,6 +1,6 @@
 ---
 title: Cloud Platform service pod for AWS CLI access
-last_reviewed_on: 2025-03-05
+last_reviewed_on: 2026-03-02
 review_in: 6 months
 layout: google-analytics
 ---
@@ -41,6 +41,10 @@ Once you've done that, you can create and use the service pod by completing the 
     ```
 
     As soon as this PR is merged, a service pod will be created for you to use.
+
+> **Note:** There is a character limit of 63 for the [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) name of the service pod. By default this name is formed using a concatenation of the target irsa service account name and a unique identifier. On occasion this may lead to the character limit being exceeded. 
+
+> You can override the default name for the Deployment using the optional module input [`override_deployment_name`](https://github.com/ministryofjustice/cloud-platform-terraform-service-pod/blob/main/variables.tf#L20).
 
 2. Get your namespace pods
 
