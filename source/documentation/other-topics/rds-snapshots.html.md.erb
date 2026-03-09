@@ -22,6 +22,14 @@ Examples of managing RDS DB snapshots using the AWS CLI, via the [Cloud Platform
 
 ## Restoring live services from an RDS DB snapshot
 
+> **Note:** If your existing RDS instance has deletion protection enabled, you must first disable it before performing a restore.
+>
+> Raise a PR to temporarily set `deletion_protection = false` in your RDS module configuration.
+>
+> Once the restore is completed, raise another PR to re-enable `deletion_protection = true`.
+>
+> Attempting to restore the RDS instance while deletion protection is enabled will result in an error from AWS and Terraform.
+
 There are two restore scenarios:
 
 - **Scenario A:** Restore to the SAME database (replace existing)
