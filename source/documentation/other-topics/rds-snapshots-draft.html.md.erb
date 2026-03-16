@@ -1,0 +1,223 @@
+---
+title: RDS Snapshots
+last_reviewed_on: 2026-03-09
+review_in: 6 months
+layout: google-analytics
+---
+
+# <%= current_page.data.title %>
+
+>Note: This is a seprate draft of the RDS snapshots page. **Use only under the guidance of the Cloud Platform team.** Please see [RDS Snapshots](./rds-snapshots.html) for the original (but under review) page.
+
+RDS snapshots have multiple purposes: migrations, backups, etc. When RDS DB instances are created using the [Cloud Platform RDS terraform module](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance), an IAM user account is created for management purposes. This user can create, delete, copy, and restore RDS snapshots.
+
+Examples of managing RDS DB snapshots using the AWS CLI, via the [Cloud Platform Service Pod](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/cloud-platform-service-pod.html) can be found in the [README](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance#4-managing-rds-snapshots---backups-and-restores) within the [RDS terraform module](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance)
+
+## Considerations
+
+- The amount of manual snapshots per AWS account is limited, so it's important to cleanup old snapshots
+- Daily snapshots are provided "out of the box", and **do not count** towards the "Manual Snapshots" total
+- Managing snapshots is the teams' responsibility (as are snapshot restores), so teams are responsible for cleaning up unneeded manual snapshots in order to avoid hitting our AWS account limits
+- **Manual snapshots persist** even after the source database is deleted. Automated snapshots are deleted when the source DB is deleted
+- Manual snapshot creation takes approximately **2-3 minutes**
+- You cannot restore a snapshot taken from an older DB engine version to a newer DB engine version, or vice versa. The engine version of the snapshot must match the engine version of the target DB instance when restoring from a snapshot.
+
+## Restoring live services from an RDS DB snapshot
+
+> **Note:** If your existing RDS instance has deletion protection enabled, you must first disable it before performing a restore.
+>
+> Raise a PR to temporarily set `deletion_protection = false` in your RDS module configuration.
+>
+> Once the restore is completed, raise another PR to re-enable `deletion_protection = true`.
+>
+> Attempting to restore the RDS instance while deletion protection is enabled will result in an error from AWS and Terraform.
+
+There are two restore scenarios:
+
+- **Scenario A:** Restore to the SAME database (replace existing)
+- **Scenario B:** Restore to a NEW database (cross-DB restore)
+
+---
+
+### Scenario A: Restore to Same Database
+
+Use this when restoring a snapshot back to the original database instance.
+
+#### 1. Get current DB credentials
+
+```bash
+cloud-platform decode-secret -n <namespace> -s <rds-secret-name>
+```
+
+Note down: `rds_instance_endpoint`, `database_name`, `database_username`, `database_password`
+
+The `rds_name` is the first part of the endpoint (e.g., `cloud-platform-xxxxxxxx` from `cloud-platform-xxxxxxxx.xxxxx.eu-west-2.rds.amazonaws.com`).
+
+#### 2. List available snapshots
+
+```bash
+aws rds describe-db-snapshots \
+  --db-instance-identifier <rds_name> \
+  --query 'DBSnapshots[*].[DBSnapshotIdentifier,SnapshotCreateTime,Status]' \
+  --output table
+```
+
+#### 3. Create manual snapshot (if needed)
+
+```bash
+aws rds create-db-snapshot \
+  --db-instance-identifier <rds_name> \
+  --db-snapshot-identifier <snapshot-name>
+```
+
+#### 4. Rename existing DB via AWS Console
+
+Reach out to the Cloud Platform team if you don't have permissions to modify RDS instances, providing them with the `rds_name` and the new name to use (typically `<rds_name>-renamed`). And they will perform the following, as part of this step, on your behalf:
+
+1. Navigate to RDS instance in the AWS Console
+2. Click Modify
+3. Update "DB instance identifier" to `<rds_name>-renamed`
+4. Select "Apply Immediately" and confirm
+
+#### 5. Update Terraform
+
+Add `snapshot_identifier` to your RDS module:
+
+```hcl
+module "rds" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-rds-instance?ref=9.2.0"
+  # ... existing config ...
+  
+  snapshot_identifier = "<snapshot-name>"
+}
+```
+
+Raise PR and merge.
+
+#### 6. Verify data
+
+**Port-forward to the restored DB:**
+
+```bash
+kubectl -n <namespace> run port-forward-pod --image=ministryofjustice/port-forward \
+  --port=5432 \
+  --env="REMOTE_HOST=<db-endpoint>" \
+  --env="LOCAL_PORT=5432" \
+  --env="REMOTE_PORT=5432"
+```
+
+```bash
+kubectl -n <namespace> port-forward port-forward-pod 5432:5432
+```
+
+**Connect and verify:**
+
+```bash
+PGPASSWORD=<password> psql -h 127.0.0.1 -p 5432 \
+  -U <username> -d <dbname> \
+  -c "SELECT * FROM <table> LIMIT 5;"
+```
+
+#### 7. Tidy up
+
+- Remove `snapshot_identifier` from Terraform config (raise PR)
+- Delete the old renamed DB via AWS Console or raise a request with the Cloud Platform team
+- Delete port-forward pod: `kubectl -n <namespace> delete pod port-forward-pod`
+
+---
+
+### Scenario B: Restore to NEW Database (Cross-DB)
+
+Use this when restoring a snapshot to a completely different database instance.
+
+#### 1. Get SOURCE DB credentials
+
+You need the source DB credentials for verification later (hybrid credentials).
+
+```bash
+cloud-platform decode-secret -n <source-namespace> -s <source-rds-secret-name>
+```
+
+Note down: `database_name`, `database_username`: these will be needed to connect after restore.
+
+#### 2. Update Terraform
+
+Add both `rds_name` AND `snapshot_identifier`:
+
+```hcl
+module "rds" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-rds-instance?ref=9.2.0"
+  
+  rds_name            = "<new-db-name>"       # What you want the new DB instance to be called
+  snapshot_identifier = "<snapshot-name>"     # Snapshot to restore from
+  
+  db_engine_version = "<version>"    # Must match source DB version
+  rds_family        = "<family>"      # Must match source DB family
+  
+  # ... other required config ...
+}
+```
+
+Raise PR and merge.
+
+#### 3. Verify data using HYBRID credentials
+> **Critical:** Cross-DB restores require hybrid credentials:
+
+| Attribute | Source |
+|-----------|--------|
+| Username | From snapshot source DB |
+| Database name | From snapshot source DB |
+| Password | From K8s secret (belongs to the new DB) |
+
+**Port-forward to the new DB:**
+
+```bash
+kubectl -n <namespace> run port-forward-pod --image=ministryofjustice/port-forward \
+  --port=5432 \
+  --env="REMOTE_HOST=<new-db-endpoint>" \
+  --env="LOCAL_PORT=5432" \
+  --env="REMOTE_PORT=5432"
+```
+
+```bash
+kubectl -n <namespace> port-forward port-forward-pod 5432:5432
+```
+
+**Connect using hybrid credentials and verify:**
+
+```bash
+PGPASSWORD=<k8s-secret-password> psql -h 127.0.0.1 -p 5432 \
+  -U <source-username> -d <source-dbname> \
+  -c "SELECT * FROM <table> LIMIT 5;"
+```
+
+**Clean up:**
+
+```bash
+kubectl -n <namespace> delete pod port-forward-pod
+```
+
+#### 4. ⚠️ CRITICAL: Do NOT remove snapshot_identifier
+
+**WARNING:** In cross-DB restores, you must **NEVER** remove `snapshot_identifier` from the Terraform config.
+
+Removing it will:
+1. Destroy the restored database
+2. Create a new empty database
+3. All restored data will be lost
+
+**Leave `snapshot_identifier` in your config permanently.** It only affects initial creation, subsequent applies are no-ops.
+
+---
+
+### Version Downgrades
+
+AWS does not support in-place version downgrades. If you attempt to restore a snapshot to a DB with a mismatched engine version, you will see an error like:
+
+```
+Error: creating RDS DB Instance (restore from snapshot): InvalidParameterCombination: 
+The parameter group with DBParameterGroupFamily postgres17 can't be used for this instance. 
+Use a parameter group with DBParameterGroupFamily postgres15.
+```
+
+To restore from a snapshot taken on an older version, use **Scenario B** (cross-DB restore) ensuring `db_engine_version` and `rds_family` match the source DB.
