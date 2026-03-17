@@ -68,16 +68,7 @@ aws rds create-db-snapshot \
   --db-snapshot-identifier <snapshot-name>
 ```
 
-#### 4. Rename existing DB via AWS Console
-
-Reach out to the Cloud Platform team if you don't have permissions to modify RDS instances, providing them with the `rds_name` and the new name to use (typically `<rds_name>-renamed`). And they will perform the following, as part of this step, on your behalf:
-
-1. Navigate to RDS instance in the AWS Console
-2. Click Modify
-3. Update "DB instance identifier" to `<rds_name>-renamed`
-4. Select "Apply Immediately" and confirm
-
-#### 5. Update Terraform
+#### 4. Update Terraform
 
 Add `snapshot_identifier` to your RDS module:
 
@@ -92,7 +83,7 @@ module "rds" {
 
 Raise PR and merge.
 
-#### 6. Verify data
+#### 5. Verify data
 
 **Port-forward to the restored DB:**
 
@@ -116,10 +107,11 @@ PGPASSWORD=<password> psql -h 127.0.0.1 -p 5432 \
   -c "SELECT * FROM <table> LIMIT 5;"
 ```
 
-#### 7. Tidy up
+#### 6. Tidy up
+
+> IMPORTANT **Do not skip tidy up**, the snapshot_identifier must be removed from your RDS config for data safety and the port-forward pod must be deleted for security.
 
 - Remove `snapshot_identifier` from Terraform config (raise PR)
-- Delete the old renamed DB via AWS Console or raise a request with the Cloud Platform team
 - Delete port-forward pod: `kubectl -n <namespace> delete pod port-forward-pod`
 
 ---
