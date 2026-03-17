@@ -24,11 +24,8 @@ Examples of managing RDS DB snapshots using the AWS CLI, via the [Cloud Platform
 
 > **Note:** If your existing RDS instance has deletion protection enabled, you must first disable it before performing a restore.
 >
-> Raise a PR to temporarily set `deletion_protection = false` in your RDS module configuration.
->
-> Once the restore is completed, raise another PR to re-enable `deletion_protection = true`.
->
-> Attempting to restore the RDS instance while deletion protection is enabled will result in an error from AWS and Terraform.
+> **Important:** Database read-write operations are not availiable during the database restore step. This can take some time. Carry out testing on a representative test database to see how long your restore will take.
+
 
 There are two restore scenarios:
 
@@ -40,6 +37,10 @@ There are two restore scenarios:
 ### Scenario A: Restore to Same Database
 
 Use this when restoring a snapshot back to the original database instance.
+
+#### Preperation
+
+Raise a PR to temporarily set `deletion_protection = false` in your RDS module configuration. Attempting to restore the RDS instance while deletion protection is enabled will result in an error from AWS and Terraform.
 
 #### 1. Get current DB credentials
 
@@ -62,10 +63,12 @@ aws rds describe-db-snapshots \
 
 #### 3. Create manual snapshot (if needed)
 
+Create a snapshot, suggested format for the snapshot name is `rds-name-namespace-purpose-date`
+
 ```bash
 aws rds create-db-snapshot \
   --db-instance-identifier <rds_name> \
-  --db-snapshot-identifier <snapshot-name>
+  --db-snapshot-identifier <snapshot name>
 ```
 
 #### 4. Update Terraform
@@ -77,7 +80,7 @@ module "rds" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-rds-instance?ref=9.2.0"
   # ... existing config ...
   
-  snapshot_identifier = "<snapshot-name>"
+  snapshot_identifier = "<snapshot name>"
 }
 ```
 
@@ -86,6 +89,8 @@ Raise PR and merge.
 #### 5. Verify data
 
 **Port-forward to the restored DB:**
+
+Ensure there are no port-forward pods already running. If there are, they will need to be cleaned up. 
 
 ```bash
 kubectl -n <namespace> run port-forward-pod --image=ministryofjustice/port-forward \
@@ -113,6 +118,7 @@ PGPASSWORD=<password> psql -h 127.0.0.1 -p 5432 \
 
 - Remove `snapshot_identifier` from Terraform config (raise PR)
 - Delete port-forward pod: `kubectl -n <namespace> delete pod port-forward-pod`
+- Raise another PR to re-enable `deletion_protection = true`.
 
 ---
 
@@ -139,7 +145,7 @@ module "rds" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-rds-instance?ref=9.2.0"
   
   rds_name            = "<new-db-name>"       # What you want the new DB instance to be called
-  snapshot_identifier = "<snapshot-name>"     # Snapshot to restore from
+  snapshot_identifier = "<snapshot name>"     # Snapshot to restore from
   
   db_engine_version = "<version>"    # Must match source DB version
   rds_family        = "<family>"      # Must match source DB family
