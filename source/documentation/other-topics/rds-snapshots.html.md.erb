@@ -1,6 +1,6 @@
 ---
 title: RDS Snapshots
-last_reviewed_on: 2026-03-09
+last_reviewed_on: 2026-03-17
 review_in: 6 months
 layout: google-analytics
 ---
@@ -122,7 +122,12 @@ PGPASSWORD=<password> psql -h 127.0.0.1 -p 5432 \
 
 ---
 
+
 ### Scenario B: Restore to NEW Database (Cross-DB)
+
+> Scenario B is under review [#ask-cloud-platform](https://mojdt.slack.com/archives/C57UPMZLY) to get an engineer to help with this process.
+
+<!--
 
 Use this when restoring a snapshot to a completely different database instance.
 
@@ -205,6 +210,8 @@ Removing it will:
 **Leave `snapshot_identifier` in your config permanently.** It only affects initial creation, subsequent applies are no-ops.
 
 ---
+
+-->
 
 ### Version Downgrades
 
