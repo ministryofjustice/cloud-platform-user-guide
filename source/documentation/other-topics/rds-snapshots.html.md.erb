@@ -61,7 +61,9 @@ aws rds describe-db-snapshots \
   --output table
 ```
 
-#### 3. Create manual snapshot (if needed)
+#### 3. Create manual snapshot
+
+> **Important:** You should take a manual snapshot if you need to ensure the old data is protected. The restoration process will delete the current database and it's associated automatic backups!
 
 Create a snapshot, suggested format for the snapshot name is `rds-name-namespace-purpose-date`
 
