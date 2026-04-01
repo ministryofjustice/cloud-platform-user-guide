@@ -33,8 +33,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Approving PR
-        uses: hmarr/auto-approve-action@f0939ea97e9205ef24d872e76833fa908a770363 # v4.0.0
-
+        uses: actions/github-script@v7
         if: steps.approve_pr_check.outputs.review_pr == 'true'
         with:
-          github-token: "${{ secrets.GITHUB_TOKEN  }}"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.pulls.createReview({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              event: "APPROVE",
+              body: "Auto Approval"
+            })
