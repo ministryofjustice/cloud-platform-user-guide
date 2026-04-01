@@ -45,3 +45,5 @@ can be used in this repository to configure the Cloud Platform user guide.
 The [GOV.UK Tech Docs Template "Configure your documentation project"](https://github.com/ministryofjustice/template-documentation-site/blob/main/config/tech-docs.yml)
 offers a range of guidance regarding configuration options to help structure
 documentation and configure pages separately.
+
+<!-- End of README-->
