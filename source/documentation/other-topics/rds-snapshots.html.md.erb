@@ -134,7 +134,7 @@ Use this when restoring a snapshot to a completely different database instance.
 
 #### 1. Get SOURCE DB credentials
 
-You need the source DB credentials for verification later (hybrid credentials).
+You need the source DB credentials for verification later.
 
 ```bash
 cloud-platform decode-secret -n <source-namespace> -s <source-rds-secret-name>
@@ -194,7 +194,7 @@ kubectl -n <namespace> delete pod port-forward-pod
 
 #### 4. ⚠️ CRITICAL: Do NOT remove snapshot_identifier
 
-**WARNING:** If you are restoring across databases, you must **NEVER** remove `snapshot_identifier` from the Terraform config.
+**WARNING:** If you are restoring across databases, you must **NEVER** remove `snapshot_identifier` from the Terraform config. Please add a comment to your code warning future engineers that removing this parameter will destroy the database.
 
 Removing it will:
 1. Destroy the restored database
