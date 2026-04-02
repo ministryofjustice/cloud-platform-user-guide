@@ -129,7 +129,7 @@ PGPASSWORD=<password> psql -h 127.0.0.1 -p 5432 \
 
 > Scenario B is under review [#ask-cloud-platform](https://mojdt.slack.com/archives/C57UPMZLY) to get an engineer to help with this process.
 
-<!--
+
 
 Use this when restoring a snapshot to a completely different database instance.
 
@@ -202,7 +202,7 @@ kubectl -n <namespace> delete pod port-forward-pod
 
 #### 4. ⚠️ CRITICAL: Do NOT remove snapshot_identifier
 
-**WARNING:** In cross-DB restores, you must **NEVER** remove `snapshot_identifier` from the Terraform config.
+**WARNING:** If you are restoring across databases, you must **NEVER** remove `snapshot_identifier` from the Terraform config.
 
 Removing it will:
 1. Destroy the restored database
@@ -213,7 +213,6 @@ Removing it will:
 
 ---
 
--->
 
 ### Version Downgrades
 
