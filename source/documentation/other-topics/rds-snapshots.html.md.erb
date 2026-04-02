@@ -127,11 +127,10 @@ PGPASSWORD=<password> psql -h 127.0.0.1 -p 5432 \
 
 ### Scenario B: Restore to NEW Database (Cross-DB)
 
-> Scenario B is under review [#ask-cloud-platform](https://mojdt.slack.com/archives/C57UPMZLY) to get an engineer to help with this process.
-
-
 
 Use this when restoring a snapshot to a completely different database instance.
+
+> **Note**: These instructions are only relevant to databases being migrated within the same namespace.
 
 #### 1. Get SOURCE DB credentials
 
@@ -163,14 +162,7 @@ module "rds" {
 
 Raise PR and merge.
 
-#### 3. Verify data using HYBRID credentials
-> **Critical:** Cross-DB restores require hybrid credentials:
-
-| Attribute | Source |
-|-----------|--------|
-| Username | From snapshot source DB |
-| Database name | From snapshot source DB |
-| Password | From K8s secret (belongs to the new DB) |
+#### 3. Verify data
 
 **Port-forward to the new DB:**
 
@@ -186,11 +178,11 @@ kubectl -n <namespace> run port-forward-pod --image=ministryofjustice/port-forwa
 kubectl -n <namespace> port-forward port-forward-pod 5432:5432
 ```
 
-**Connect using hybrid credentials and verify:**
+**Connect and verify:**
 
 ```bash
 PGPASSWORD=<k8s-secret-password> psql -h 127.0.0.1 -p 5432 \
-  -U <source-username> -d <source-dbname> \
+  -U <username> -d <dbname> \
   -c "SELECT * FROM <table> LIMIT 5;"
 ```
 
