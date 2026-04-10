@@ -71,15 +71,7 @@ Alternatively, you can view this information in the AWS console by navigating to
 
 >**Note:** This will cause downtime. See [Things to note before upgrading your database](#things-to-note-before-upgrading-a-database-version-or-changing-the-instance-type).
 
-> **Note:** The `APPLY_PIPELINE_SKIP_THIS_NAMESPACE` mechanism is currently paused and under review. You can proceed with your changes without adding the skip file.
-
-To upgrade your minor database version:
-
-<!-- PAUSED: Skip file mechanism under review
-1. Raise and merge a PR to tell the [apply pipeline to skip your namespace](/documentation/other-topics/long-running-env-operations.html#long-running-environments-operations)
--->
-
-1. Raise and merge a PR that updates the following attribute for your database, which is typically in `resources/rds.tf` in your namespace:
+To upgrade your minor database version, raise and merge a PR that updates the following attribute for your database, which is typically in `resources/rds.tf` in your namespace:
 
     ```hcl
     module "rds" {
@@ -89,11 +81,7 @@ To upgrade your minor database version:
     }
     ```
 
-    As soon as this PR is merged, the upgrade will begin.
-
-<!-- PAUSED: Skip file mechanism under review
-2. Raise and merge a PR to remove the `APPLY_PIPELINE_SKIP_THIS_NAMESPACE` added in step 1
--->
+As soon as this PR is merged, the upgrade will begin.
 
 >**Note on read replicas**: If you have a read replica RDS instance associated with your primary instance, you will need to upgrade the minor version of the replica using the same steps as above in an initial PR, **before** proceeding with your primary instance upgrade.
 
@@ -131,10 +119,6 @@ To upgrade your major database version:
     If not, follow the [Changing your database instance type](/documentation/deploying-an-app/relational-databases/upgrade.html#changing-your-database-instance-type) guide first to change your instance class to one that is supported by your current and new major database version. You **must** change your instance type **before** attempting to upgrade, otherwise it will fail.
 
     If you are unsure which instance type to choose, the [Creating a relational database](/documentation/deploying-an-app/relational-databases/create.html#table-of-instance-types) guide can help you choose what instance type to use based on your **current** version.
-
-<!-- PAUSED: Skip file mechanism under review
-4. Raise and merge a PR to tell the [apply pipeline to skip your namespace](/documentation/other-topics/long-running-env-operations.html#long-running-environments-operations)
--->
 
 4. Raise and merge a PR that updates the `prepare_for_major_upgrade`, `db_engine`, `db_engine_version` and `rds_family` attributes to your **new** major version:
 
@@ -177,10 +161,6 @@ If you have a read replica of your database, you will also need to update the `d
 
 6. Optionally, as the major upgrade already has downtime, it might be worthwhile changing your database instance type to the latest generation supported by your **new** major version
 
-<!-- PAUSED: Skip file mechanism under review
-7. Raise and merge a PR to remove the `APPLY_PIPELINE_SKIP_THIS_NAMESPACE` file added in step 4
--->
-
 ### Upgrade paths
 
 You should refer to the major version upgrade paths for [PostgreSQL](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.PostgreSQL.html), [MariaDB](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.MariaDB.html), [Microsoft SQL Server](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/SQLServer.Concepts.General.VersionSupport.html), and [MySQL](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.MySQL.html) to understand your upgrade paths from your current database engine version.
@@ -189,13 +169,7 @@ You should refer to the major version upgrade paths for [PostgreSQL](https://doc
 
 >Note: This will cause downtime. See [Things to note before upgrading your database](#things-to-note-before-upgrading-a-database-version-or-changing-the-instance-type).
 
-To change your database instance type:
-
-<!-- PAUSED: Skip file mechanism under review
-1. Raise and merge a PR to tell the [apply pipeline to skip your namespace](/documentation/other-topics/long-running-env-operations.html#long-running-environments-operations)
--->
-
-1. Raise and merge a PR that updates the `db_instance_class` and `db_max_allocated_storage` attributes for your database, which are typically in `resources/rds.tf` in your namespace:
+To change your database instance type, raise and merge a PR that updates the `db_instance_class` and `db_max_allocated_storage` attributes for your database, which are typically in `resources/rds.tf` in your namespace:
 
     ```hcl
     module "rds" {
@@ -208,8 +182,4 @@ To change your database instance type:
 
     The [Creating a relational database](/documentation/deploying-an-app/relational-databases/create.html#choosing-an-appropriate-instance-type) guide can help you decide which `db_instance_class` and `db_max_allocated_storage` values to use.
 
-    As soon as this PR is merged, the instance type change will begin.
-
-<!-- PAUSED: Skip file mechanism under review
-2. Raise and merge a PR to remove the `APPLY_PIPELINE_SKIP_THIS_NAMESPACE` file added in step 1
--->
+As soon as this PR is merged, the instance type change will begin.
