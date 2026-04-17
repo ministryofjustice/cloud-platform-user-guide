@@ -1,6 +1,6 @@
 ---
 title: Troubleshooting RDS Upgrades with Logical Replication
-last_reviewed_on: 2025-10-30
+last_reviewed_on: 2026-04-16
 review_in: 6 months
 layout: google-analytics
 ---
@@ -13,6 +13,10 @@ If your RDS PostgreSQL database has `rds.logical_replication` enabled, major ver
 
 - **Logical replication slots**
 - **pglogical nodes**
+
+> **Warning: If you have recently completed a major version upgrade**, ensure you have completed [step 5 of the major version upgrade guide](/documentation/deploying-an-app/relational-databases/upgrade.html#upgrading-to-a-new-major-database-version) by setting `prepare_for_major_upgrade = false`. 
+>
+> While `prepare_for_major_upgrade = true`, your database uses the RDS default parameter group which does **not** include your custom `rds.logical_replication = 1` setting. Logical replication will fail until you complete step 5 and reboot your database to apply the custom parameter group.
 
 ### How do I know if this affects me?
 
@@ -277,6 +281,7 @@ If a slot shows `active = true`, it's currently in use. You must:
 Contact the Cloud Platform team on the `#ask-cloud-platform` channel:
 
 **After a failed upgrade:**
+
 - Your upgrade failed with the parameter group deletion error
 - You've dropped the replication slots or pglogical nodes
 - You need the Cloud Platform team to delete the orphaned parameter group and rerun the build
