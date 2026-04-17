@@ -18,6 +18,7 @@ Examples of managing RDS DB snapshots using the AWS CLI, via the [Cloud Platform
 - Managing snapshots is the teams' responsibility (as are snapshot restores), so teams are responsible for cleaning up unneeded manual snapshots in order to avoid hitting our AWS account limits
 - **Manual snapshots persist** even after the source database is deleted. Automated snapshots are deleted when the source DB is deleted
 - Manual snapshot creation takes approximately **2-3 minutes**
+- Before starting, check that you don't have [skip_final_snapshot](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance?tab=readme-ov-file#input_skip_final_snapshot) set to true, unless you are really happy to proceed without that backup.
 - You cannot restore a snapshot taken from an older DB engine version to a newer DB engine version, or vice versa. The engine version of the snapshot must match the engine version of the target DB instance when restoring from a snapshot.
 
 ## Restoring live services from an RDS DB snapshot
