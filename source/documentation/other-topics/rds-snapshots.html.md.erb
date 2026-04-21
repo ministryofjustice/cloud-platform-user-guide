@@ -257,23 +257,32 @@ Cannot delete protected DB Instance, please disable deletion protection and try 
 
 To proceed with deletion:
 
-#### 1. Disable deletion protection
+#### 1. Disable deletion protection via AWS CLI
 
-Raise a PR to set `deletion_protection = false` in your RDS module configuration:
+You cannot disable deletion protection through a Terraform PR alone. Because `snapshot_identifier` has been removed, Terraform will attempt to destroy and recreate the database rather than perform an in-place update, and the destroy will be blocked by deletion protection.
 
-```hcl
-module "rds" {
-  # ... existing config ...
-  deletion_protection = false
-}
+Instead, disable deletion protection directly using the AWS CLI from a [Cloud Platform Service Pod](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/cloud-platform-service-pod.html):
+
+```bash
+aws rds modify-db-instance \
+  --db-instance-identifier <rds_name> \
+  --no-deletion-protection
 ```
 
-Merge and wait for the apply to complete.
+Verify it has been disabled:
+
+```bash
+aws rds describe-db-instances \
+  --db-instance-identifier <rds_name> \
+  --query 'DBInstances[0].DeletionProtection'
+```
+
+This should return `false`.
 
 #### 2. Remove the database
 
-Raise a second PR to remove the RDS module (and its associated `kubernetes_secret` and `kubernetes_config_map` resources) from your Terraform config.
+Raise a PR to remove the RDS module (and its associated `kubernetes_secret` and `kubernetes_config_map` resources) from your Terraform config. Also remove the deletion_protection parameter in the same PR so your config is in-sync with state. 
 
 Merge and wait for the apply to complete. The database will now be successfully destroyed.
 
-> **Note:** This two-step process is intentional. It ensures that database deletion is always a deliberate action requiring two separate approvals.
+> **Note:** This two-step process is intentional. It ensures that database deletion is always a deliberate action.
