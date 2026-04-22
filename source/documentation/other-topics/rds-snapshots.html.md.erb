@@ -1,6 +1,6 @@
 ---
 title: RDS Snapshots
-last_reviewed_on: 2026-04-02
+last_reviewed_on: 2026-04-21
 review_in: 6 months
 layout: google-analytics
 ---
@@ -193,7 +193,31 @@ PGPASSWORD=<k8s-secret-password> psql -h 127.0.0.1 -p 5432 \
 kubectl -n <namespace> delete pod port-forward-pod
 ```
 
-#### 4. ⚠️ CRITICAL: Do NOT remove snapshot_identifier
+#### 4. Enable deletion protection
+
+After verifying the restored data, raise a PR to enable `deletion_protection` on the new database:
+
+```hcl
+module "rds" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-rds-instance?ref=9.2.0"
+
+  rds_name            = "<new-db-name>"
+  snapshot_identifier = "<snapshot name>"
+  deletion_protection = true
+
+  # ... other config ...
+}
+```
+
+This prevents accidental destruction of the database. If `snapshot_identifier` is ever removed from the config by mistake, Terraform will attempt to destroy and recreate the database, but AWS will block the deletion with:
+
+```
+Cannot delete protected DB Instance, please disable deletion protection and try again.
+```
+
+The database and its data will remain intact.
+
+#### 5. ⚠️ CRITICAL: Do NOT remove snapshot_identifier
 
 **WARNING:** If you are restoring across databases, you must **NEVER** remove `snapshot_identifier` from the Terraform config. Please add a comment to your code warning future engineers that removing this parameter will destroy the database.
 
@@ -203,6 +227,8 @@ Removing it will:
 3. All restored data will be lost
 
 **Leave `snapshot_identifier` in your config permanently.** It only affects initial creation, subsequent applies are no-ops.
+
+With `deletion_protection` enabled (step 4), any accidental removal of `snapshot_identifier` will be caught and blocked before data is lost.
 
 ---
 
@@ -218,3 +244,45 @@ Use a parameter group with DBParameterGroupFamily postgres15.
 ```
 
 To restore from a snapshot taken on an older version, use **Scenario B** (cross-DB restore) ensuring `db_engine_version` and `rds_family` match the source DB.
+
+---
+
+### Disabling Deletion Protection
+
+If you have a genuine need to delete a database that has `deletion_protection` enabled (e.g. decommissioning a service, removing a test database), you will need to disable it first. Attempting to delete a protected database will fail with:
+
+```
+Cannot delete protected DB Instance, please disable deletion protection and try again.
+```
+
+To proceed with deletion:
+
+#### 1. Disable deletion protection via AWS CLI
+
+You cannot disable deletion protection through a Terraform PR alone. Because `snapshot_identifier` has been removed, Terraform will attempt to destroy and recreate the database rather than perform an in-place update, and the destroy will be blocked by deletion protection.
+
+Instead, disable deletion protection directly using the AWS CLI from a [Cloud Platform Service Pod](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/cloud-platform-service-pod.html):
+
+```bash
+aws rds modify-db-instance \
+  --db-instance-identifier <rds_name> \
+  --no-deletion-protection
+```
+
+Verify it has been disabled:
+
+```bash
+aws rds describe-db-instances \
+  --db-instance-identifier <rds_name> \
+  --query 'DBInstances[0].DeletionProtection'
+```
+
+This should return `false`.
+
+#### 2. Remove the database
+
+Raise a PR to remove the RDS module (and its associated `kubernetes_secret` and `kubernetes_config_map` resources) from your Terraform config. Also remove the deletion_protection parameter in the same PR so your config is in-sync with state. 
+
+Merge and wait for the apply to complete. The database will now be successfully destroyed.
+
+> **Note:** This two-step process is intentional. It ensures that database deletion is always a deliberate action.
