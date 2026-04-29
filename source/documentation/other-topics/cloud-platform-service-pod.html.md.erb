@@ -9,7 +9,7 @@ layout: google-analytics
 
 The Cloud Platform team provide a "service pod" module to help users run maintenance tasks against namespace resources using the AWS CLI.
 
-You need to have complete step 1 (configuring IRSA) in [Accessing AWS APIs and resources from your namespace](/documentation/other-topics/accessing-aws-apis-and-resources-from-your-namespace.html#using-irsa-in-your-namespace) to use the service pod module.
+You need to have completed step 1 (configuring IRSA) in [Accessing AWS APIs and resources from your namespace](/documentation/other-topics/accessing-aws-apis-and-resources-from-your-namespace.html#using-irsa-in-your-namespace) to use the service pod module.
 
 
 
@@ -22,12 +22,12 @@ Once you've done that, you can create and use the service pod by completing the 
     module "irsa" {
       ...
       role_policy_arns = {
-      ...
-      # Here you must provide the policy arn(s) for the AWS resources you want to access via the service pod
-      s3  = module.s3.irsa_policy_arn
-      rds = module.rds.irsa_policy_arn
-    ...
-  }
+        ...
+        # Here you must provide the policy arn(s) for the AWS resources you want to access via the service pod
+        s3  = module.s3.irsa_policy_arn
+        rds = module.rds.irsa_policy_arn
+        ...
+      }
     }
 
     # set up the service pod
@@ -97,7 +97,7 @@ aws s3api get-object --bucket $bucketName --key $fileKey /tmp/$outputFile
 
 Some teams may want to terminate the service pod when it is not in use. To terminate the service pod you can either:
 
-1. Remove the service pod resource from code then raisng a PR. You will need to raise another PR in the future to reinstate the service pod
+1. Remove the service pod resource from code then raising a PR. You will need to raise another PR in the future to reinstate the service pod
 
     or
 
