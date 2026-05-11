@@ -135,20 +135,20 @@ Use this when restoring a snapshot to a completely different database instance.
 
 #### Prerequisites
 
-> **Important:** The `db_allocated_storage` for the target database must be **at least equal to** the source database's allocated storage. RDS does not allow you to restore a snapshot into an instance with less storage than the original. If you set a smaller value, the apply will fail with:
->
-> ```
-> InvalidParameterCombination: Invalid storage size for engine name postgres and storage type gp3: <size>
-> ```
->
-> Check the source database's allocated storage before configuring the target, either via the AWS CLI or the AWS Console:
->
-> ```bash
-> aws rds describe-db-instances \
->   --db-instance-identifier <source-rds-name> \
->   --query 'DBInstances[0].AllocatedStorage' \
->   --region eu-west-2
-> ```
+**Important:** The `db_allocated_storage` for the target database must be **at least equal to** the source database's allocated storage. RDS does not allow you to restore a snapshot into an instance with less storage than the original. If you set a smaller value, the apply will fail with:
+
+```
+InvalidParameterCombination: Invalid storage size for engine name postgres and storage type gp3: <size>
+```
+
+Check the source database's allocated storage before configuring the target, either via the AWS CLI or the AWS Console:
+
+```bash
+aws rds describe-db-instances \
+  --db-instance-identifier <source-rds-name> \
+  --query 'DBInstances[0].AllocatedStorage' \
+  --region eu-west-2
+```
 
 #### 1. Get SOURCE DB credentials
 
