@@ -160,12 +160,12 @@ cloud-platform decode-secret -n <source-namespace> -s <source-rds-secret-name>
 
 Note down: `database_name`, `database_username`: these will be needed to connect after restore.
 
-#### 2. Update Terraform
+#### 2. Add new RDS module
 
 Add the RDS, including both `rds_name` AND `snapshot_identifier`:
 
 ```hcl
-module "rds" {
+module "rds_new" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-rds-instance?ref=9.2.0"
   
   rds_name            = "<new-db-name>"       # What you want the new DB instance to be called
@@ -215,7 +215,7 @@ kubectl -n <namespace> delete pod port-forward-pod
 After verifying the restored data, raise a PR to enable `deletion_protection` on the new database:
 
 ```hcl
-module "rds" {
+module "rds_new" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-rds-instance?ref=9.2.0"
 
   rds_name            = "<new-db-name>"
