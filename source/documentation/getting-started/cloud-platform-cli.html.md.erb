@@ -18,6 +18,7 @@ It also simplifies some common tasks that are needed to interact with the Cloud 
 You can install the Cloud Platform CLI via [Homebrew](https://brew.sh):
 
 ```sh
+$ brew trust ministryofjustice/cloud-platform-tap
 $ brew install ministryofjustice/cloud-platform-tap/cloud-platform-cli
 ```
 
@@ -64,10 +65,19 @@ $ cloud-platform version
 If you installed the Cloud Platform CLI using [Homebrew](https://brew.sh), you can run:
 
 ```sh
-$ brew update && brew upgrade cloud-platform-cli
+$ brew update 
+$ brew upgrade cloud-platform-cli
 ```
 
 If you installed the Cloud Platform CLI using a different method, reinstall the CLI by following the [Manual installation](#manual-installation) instructions.
+
+As of Homebrew 6.0.0 you are now required to trust the Cloud Platform tap, you can do this by running:
+
+```sh
+$ brew trust ministryofjustice/cloud-platform-tap
+$ brew update
+$ brew upgrade cloud-platform-cli
+``` 
 
 ## Functions
 
