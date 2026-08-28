@@ -1,6 +1,6 @@
 ---
 title: Cloud Platform Disaster Recovery
-last_reviewed_on: 2025-03-05
+last_reviewed_on: 2026-08-28
 review_in: 6 months
 layout: google-analytics
 ---
@@ -32,8 +32,6 @@ The Cloud Platform Team is continually reviewing and identifying risks to our us
 * Redeployment of applications - The Cloud Platform doesn't manage tenant deployment pipelines. If there is a need to deploy a service as part of any restoration, you will be asked to do so by the Cloud Platform Team.
 * Only retain AWS RDS Snapshots for as long as they are required. Please clean-up any snapshots regularly.
 * Third-party managed services (e.g. Github, CircleCI, Sentry.io) - These 3rd party managed services will offer some form of back-up and recovery as part of their managed service, however these processes are out of the scope of recovery by the Cloud Platform. If you need more information, please contact #ask-operations-engineering.
-* Ensure your `slack-channel` annotation is kept up-to-date so that the Cloud Platform Team knows how best to contact your team.
-* Ensure you team is added to the #cloud-platform-update slack channel so that you can ensure you receive important messages from the Cloud Platform Team.
 
 ## Back-ups and restores
 
@@ -58,6 +56,18 @@ If you need to initiate the recovery of an AWS resource, please contact #ask-clo
 If there is a wider issue with the platform, we will notify all users via #cloud-platform-update channel in line with our [operational processes](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/reference/operational-processes.html#cloud-platform-update-slack-channel). You should check #cloud-platform-update for periodic status updates.
 
 If we identify a specific issue relating to a single service, we will contact the team via the `slack-channel` annotation detailed in your namespace.
+
+## Service Team Actions Before A Disaster
+
+Service teams should regularly review their DR position, including reviewing before and DR test
+
+* Ensure your `slack-channel` annotation is kept up-to-date so that the Cloud Platform Team knows how best to contact your team.
+* Ensure you team is added to the #cloud-platform-update slack channel so that you can ensure you receive important messages from the Cloud Platform Team.
+* Review stateful resources
+  * For **AWS-managed resources** check that you understand the SLAs, what is backed up and how to recover it
+  * For **non-AWS-managed resources** check with the service provider to ensure you understand what is backed up and how to recover it
+* Use infrastructure-as-code with version control. Don't create things manually as these will be lost in a disaster
+* Document and test their recovery procedures
 
 ## How do I access these services if we have a problem or if we have any questions?
 
