@@ -1,6 +1,6 @@
 ---
 title: Creating a Route 53 Hosted Zone
-last_reviewed_on: 2025-04-17
+last_reviewed_on: 2026-09-03
 review_in: 6 months
 layout: google-analytics
 ---
@@ -53,6 +53,8 @@ provider "aws" {
 This file declares the variables fields utilised in the route53.tf file below
 
 Fill in the variables below with your settings. Fill _namespace_ field below with your existing kubernetes namespace, all the _example_ fields below with desired values (all lowercase, and no spaces), and the _domain_ variable with your desired URL (pay special attention if your URL contains "justice" or not).
+
+> Note: Domain names must not contain personal names. For example, `john-smith.service.justice.gov.uk` is not allowed. Name the domain after your application, service or team instead.
 
 ```
 variable "namespace" {
