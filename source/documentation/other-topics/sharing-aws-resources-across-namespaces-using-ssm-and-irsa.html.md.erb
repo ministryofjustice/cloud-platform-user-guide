@@ -1,6 +1,6 @@
 ---
 title: Sharing AWS resources across namespaces using SSM and IRSA
-last_reviewed_on: 2025-08-05
+last_reviewed_on: 2026-09-04
 review_in: 6 months
 layout: google-analytics
 ---
@@ -9,7 +9,11 @@ layout: google-analytics
 
 This article explains how to access a resource in one Kubernetes namespace from another using IAM, IRSA and SSM:
 
-For example, `namespace-one` needs to read from an S3 bucket in `namespace-two`
+> Important! Ensure you are following [MoJ Data Guidance](See https://intranet.justice.gov.uk/guidance/knowledge-information/protecting-information/privacy-reform/) and are aware of [Cloud Platform Data Responsibility](/documentation/concepts/what-is-the-cloud-platform.html#data-responsibility)
+
+## How to provide access across namespaces
+
+In this example, `namespace-one` needs to read from an S3 bucket in `namespace-two`
 
 This can be done by hard-coding the resource. This guide explains how to avoid hard-coding the resource by using SSM to share the resource name and ARN.
   
