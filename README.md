@@ -1,5 +1,7 @@
 # Cloud Platform user guide
 
+[![Ministry of Justice Repository Compliance Badge](https://github-community.service.justice.gov.uk/repository-standards/api/cloud-platform-user-guide/badge)](https://github-community.service.justice.gov.uk/repository-standards/cloud-platform-user-guide)
+
 This repository holds the website and documentation for the [Cloud Platform
 user guide](https://user-guide.cloud-platform.service.justice.gov.uk/#cloud-platform-user-guide).
 
