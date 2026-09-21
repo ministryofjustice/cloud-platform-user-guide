@@ -24,7 +24,7 @@ This guide assumes the following:
   - Follow the steps in "Set up incoming webhooks" (starting with "Create an app"  "From scratch")
   - Webhook approval is not carried out by the Cloud Platform team. Post in the [#digital_it_forum](https://moj.enterprise.slack.com/archives/C0282GUGKL7) Slack channel once you have requested your webhook
 
-2. Create a [kubernetes secret](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/add-secrets-to-deployment.html#configuring-secrets-manually-using-kubenetes-secret) to store the slack webhook.
+2. Create a [kubernetes secret](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/deploying-an-app/add-secrets-to-deployment.html#configuring-secrets-manually-using-kubernetes-secret) to store the slack webhook.
 
 3. Create a [ticket to request a new alert route in Alertmanager](https://github.com/ministryofjustice/cloud-platform/issues/new?assignees=&labels=&template=cloud-platform-support-request.md). The Cloud Platform team will need the following information:
 
@@ -149,14 +149,14 @@ apiVersion: monitoring.coreos.com/v1
 If you're struggling for ideas on how and which alerts to setup, please see some examples [here](https://github.com/ministryofjustice/cloud-platform-terraform-monitoring/blob/main/resources/prometheusrule-alerts/application-alerts.yaml)
 
 ### Alerting on 403 errors
-When you want to alert on 403 errors, this cant be done on the namespace level, as the 403 errors are not exposed to the namespace.
+When you want to alert on 403 errors, this can't be done on the namespace level, as the 403 errors are not exposed to the namespace.
 These errors are exposed at the ingress level, you can query these errors by using the host, and the status code. An example of the promql query would be:
 
 ```yaml
 sum(rate(nginx_ingress_controller_requests{host=~"[your ingress host name]", status="403"}[1m]))
 ```
 
-this will alert on the rate of 403 errors on the ingress host name connect to the namespace you would like to monitor.
+this will alert on the rate of 403 errors on the ingress host name connected to the namespace you would like to monitor.
 
 
 ### Advisory Note 1: If Prometheus gets re-installed
