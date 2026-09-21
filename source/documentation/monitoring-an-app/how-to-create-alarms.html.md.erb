@@ -132,7 +132,7 @@ apiVersion: monitoring.coreos.com/v1
       - name: application-rules
       rules:
       - alert: SecretsManagerPutSecretValue
-        expr: secretsmanager_put_secret_value_sum{exported_job="secretsmanager", secret_id="arn:aws:secretsmanager:eu-west-2:754256621582:secret:<your-secret-arn>"} > 0
+        expr: aws_secretsmanager_put_secret_value_sum{secret_id="arn:aws:secretsmanager:eu-west-2:754256621582:secret:<your-secret-arn>"} > 0
         for: 1m
         labels:
           severity: info-cp-team
