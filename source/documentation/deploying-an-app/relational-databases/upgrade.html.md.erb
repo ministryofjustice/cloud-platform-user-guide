@@ -95,7 +95,7 @@ You should refer to the end-of-life schedule for major and minor versions for [P
 >
 >Note: If you need to upgrade major versions more than once, e.g. from Postgres 12 to 14, and then 14 to 16, you **must** turn off `prepare_for_major_upgrade` (step 6) after each upgrade and then turn it back on (step 5). Otherwise, any upgrade after the first will fail.
 >
->Note: If your database has a read replica, follow the read replica instructions in steps 5 and 6. The primary **and** the read replica both need `prepare_for_major_upgrade` set.
+>Note: If your database has a read replica, read [Upgrading a database with a read replica](#upgrading-a-database-with-a-read-replica) before you start.
 
 To upgrade your major database version:
 
@@ -143,7 +143,7 @@ To upgrade your major database version:
     }
     ```
 
-    If you have a read replica of your database, you must update it in the **same** PR. Set `prepare_for_major_upgrade` to `true` on the read replica as well, and update its `db_engine_version` and `rds_family` attributes to your **new** major version:
+    If you are upgrading your read replica together with the primary ([option 1](#upgrading-a-database-with-a-read-replica)), update it in the **same** PR, including `prepare_for_major_upgrade`:
 
     ```hcl
     module "read_replica" {
@@ -155,23 +155,11 @@ To upgrade your major database version:
     }
     ```
 
-    > **Note:** It is essential that you set `prepare_for_major_upgrade` to `true` on the primary **and** on any read replica. This temporarily sets each database's parameter group to the RDS default, and gives the new parameter group a different name from the current one. If you set it on the primary only, the apply fails on the read replica with a `DBParameterGroupAlreadyExists` error, because its new parameter group clashes with its existing one.
+    > **Note:** It is essential that you set `prepare_for_major_upgrade` to `true` on the primary **and** on any read replica. It temporarily moves each database to the RDS default parameter group, so that the apply does not fail on clashing parameter groups.
 
-    As soon as this PR is merged, the major version upgrade will begin.
+    As soon as this PR is merged, the major version upgrade will begin. If the apply fails, see [If a major version upgrade fails](#if-a-major-version-upgrade-fails).
 
-    **How read replicas are upgraded**
-
-    You cannot upgrade a read replica separately. When the primary is upgraded, AWS upgrades its read replicas in the same region as part of the same operation, and the primary is not available again until its read replicas have been upgraded. Terraform only changes the read replica after the primary has finished, so by then the read replica is already on the new version and Terraform only updates its parameter group. Read [how AWS handles read replicas during a major version upgrade](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.PostgreSQL.MajorVersion.Process.html) for more information.
-
-    If you do not want your read replica upgraded with the primary, remove the `read_replica` module (or set its `count` to `0`) in an earlier PR, upgrade the primary, then add the read replica back in a later PR. Your read replica is unavailable in the meantime, and the new read replica has a new identifier and endpoint, so you must update anything that connects to it.
-
-    **If the upgrade fails or gets stuck**
-
-    - If the apply fails on the read replica with `Major Version Upgrade not supported for Postgres Read Replica DB Instances`, the primary failed AWS's pre-upgrade checks and has stayed on its current version. This is usually caused by logical replication slots or pglogical nodes (see step 4). Terraform does not show the primary's failure, so this read replica error is the only sign of it.
-    - Do not cancel the apply pipeline build, or ask for its state lock to be removed, while the upgrade is in progress. If the build is stopped partway through, the parameter groups in AWS and in your Terraform state no longer match, and your later PRs for that namespace fail until the Cloud Platform team fixes them.
-    - If the build fails, or your database stays in the `upgrading` state for much longer than expected, ask in the [#ask-cloud-platform](https://mojdt.slack.com/archives/C57UPMZLY) Slack channel before you merge any other changes for that namespace.
-
-6. Once the major version upgrade has finished, raise and merge a PR that turns off the `prepare_for_major_upgrade` attribute that was turned on in step 5. If you have a read replica, turn it off on the read replica in the same PR:
+6. Once the major version upgrade has finished, raise and merge a PR that turns off the `prepare_for_major_upgrade` attribute that was turned on in step 5. If you upgraded a read replica with the primary (option 1), turn it off on the read replica in the same PR:
 
     ```hcl
     module "rds" {
@@ -188,6 +176,34 @@ To upgrade your major database version:
     ```
 
     This moves your databases back to their custom parameter groups. Parameters that need a restart, such as `rds.logical_replication` or `shared_preload_libraries`, only take effect after you reboot the primary and any read replica.
+
+7. Optionally, as the major upgrade already has downtime, it might be worthwhile changing your database instance type to the latest generation supported by your **new** major version
+
+### Upgrading a database with a read replica
+
+You cannot upgrade a read replica on its own. AWS upgrades in-region read replicas as part of the primary's upgrade ([AWS documentation](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.PostgreSQL.MajorVersion.Process.html)). Choose one of these options:
+
+**Option 1: Upgrade the primary and read replica together**
+
+Follow the steps above, and set `prepare_for_major_upgrade` on the read replica as well as the primary in steps 5 and 6. The read replica is upgraded with the primary, and Terraform then updates its parameter group.
+
+**Option 2: Remove the read replica, upgrade the primary, then recreate the read replica**
+
+1. Raise a PR that removes the `read_replica` module, or sets its `count` to `0`.
+2. Upgrade the primary by following the steps above.
+3. Raise a PR that adds the read replica back on the new version.
+
+Your read replica is unavailable until it is recreated, and the new read replica gets a new identifier and endpoint, so you must update anything that connects to it.
+
+### If a major version upgrade fails
+
+| Error | Cause | What to do |
+|---|---|---|
+| `DBParameterGroupAlreadyExists` on the read replica | `prepare_for_major_upgrade` was not set on the read replica | Ask in [#ask-cloud-platform](https://mojdt.slack.com/archives/C57UPMZLY). The Cloud Platform team needs to remove the clashing parameter group |
+| `Major Version Upgrade not supported for Postgres Read Replica DB Instances` | The primary failed AWS's pre-upgrade checks and stayed on its current version. This is usually caused by logical replication slots or pglogical nodes | Follow [Troubleshooting RDS upgrades with logical replication](/documentation/other-topics/rds-upgrade-blockers.html#symptoms) |
+| `InvalidDBParameterGroupState` when deleting a parameter group | The same as above, for a database without a read replica | Follow [Troubleshooting RDS upgrades with logical replication](/documentation/other-topics/rds-upgrade-blockers.html#symptoms) |
+
+Do not cancel the apply pipeline build, or ask for its state lock to be removed, while an upgrade is in progress. A stopped build leaves the parameter groups out of step with your Terraform state. If a build fails, or your database stays `upgrading` for much longer than expected, ask in [#ask-cloud-platform](https://mojdt.slack.com/archives/C57UPMZLY) before you merge any other changes for that namespace.
 
 ### Upgrade paths
 
