@@ -52,7 +52,7 @@ $ kubectl -n <namespace> get events
 You can get a shell inside a running container:
 
 ```
-$ kubectl -n <namespace> exec -it <pod> sh
+$ kubectl -n <namespace> exec -it <pod> -- sh
 ```
 
 For more information, click [here](https://kubernetes.io/docs/tasks/debug/debug-application/get-shell-running-container/)
