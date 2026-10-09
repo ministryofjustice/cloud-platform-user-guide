@@ -1,6 +1,6 @@
 ---
 title: Creating a message queuing service
-last_reviewed_on: 2025-01-27
+last_reviewed_on: 2026-10-07
 review_in: 12 months
 layout: google-analytics
 ---
@@ -8,3 +8,45 @@ layout: google-analytics
 # <%= current_page.data.title %>
 
 To create a message queuing service in the Cloud Platform, follow the [example guidance](https://github.com/ministryofjustice/cloud-platform-terraform-sqs/tree/main/examples) in the module.
+
+## Allowing an SNS topic to send messages to your queue
+
+If you subscribe your queue to an SNS topic, you must add a queue policy that allows the topic to send messages to the queue. Without it, the subscription is created but no messages are delivered.
+
+The policy must restrict access to your topic using an `aws:SourceArn` condition:
+
+```hcl
+data "aws_iam_policy_document" "sqs_queue_policy" {
+  statement {
+    effect    = "Allow"
+    actions   = ["sqs:SendMessage"]
+    resources = [module.sqs.sqs_arn]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+
+    condition {
+      test     = "ArnEquals"
+      variable = "aws:SourceArn"
+      values   = [module.sns_topic.topic_arn]
+    }
+  }
+}
+
+resource "aws_sqs_queue_policy" "sqs_queue_policy" {
+  queue_url = module.sqs.sqs_id
+  policy    = data.aws_iam_policy_document.sqs_queue_policy.json
+}
+```
+
+To allow more than one topic, add each topic ARN to `values`.
+
+> **Important:** Do not remove the `aws:SourceArn` condition. The `"*"` principal allows anyone to send messages to your queue; the condition is what limits this to your topic. A policy without the condition allows any AWS account to send messages to your queue.
+
+Do not use SNS topic ARNs as principals. They are not valid principals, and AWS rejects the policy when it is applied. `terraform plan` does not catch this error.
+
+You do not need to grant your application access to the queue in the queue policy. Attach the module's `irsa_policy_arn` output to your [IRSA](/documentation/other-topics/accessing-aws-apis-and-resources-from-your-namespace.html) role instead.
+
+For more information, see the module's [access policy guidance](https://github.com/ministryofjustice/cloud-platform-terraform-sqs#access-policy).
