@@ -1,6 +1,6 @@
 ---
 title: RDS Snapshots
-last_reviewed_on: 2026-04-21
+last_reviewed_on: 2026-10-16
 review_in: 6 months
 layout: google-analytics
 ---
@@ -32,6 +32,74 @@ There are two restore scenarios:
 
 - **Scenario A:** Restore to the SAME database (replace existing)
 - **Scenario B:** Restore to a NEW database (cross-DB restore)
+
+---
+
+### Before you start (both scenarios)
+
+Complete these checks before raising any PR. They apply to both Scenario A and Scenario B.
+
+#### Check the allocated storage
+
+The target database's `db_allocated_storage` must be at least equal to the allocated storage of the database the snapshot was taken from. RDS will not restore a snapshot into an instance with less storage than the source, and the apply fails with:
+
+```
+InvalidParameterCombination: Invalid storage size for engine name postgres and storage type gp3: <size>
+```
+
+Check the source database's allocated storage:
+
+```bash
+aws rds describe-db-instances \
+  --db-instance-identifier <source-rds-name> \
+  --query 'DBInstances[0].AllocatedStorage' \
+  --region eu-west-2
+```
+
+> **Warning:** You cannot use a snapshot restore to reduce storage. The figure that matters is the source instance's `AllocatedStorage`, not the size reported against the snapshot. Snapshot size reflects the data actually in use, not the volume provisioned. To shrink a database, dump the data logically and load it into a new, smaller instance, as described in [Migrating an RDS instance](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/aws-rds-migration.html).
+
+#### Use a manual snapshot
+
+Restore from a manual snapshot. Automated snapshots (those prefixed `rds:`) are tied to the lifecycle of the source instance and are deleted when it is deleted. Terraform destroys the existing instance before creating its replacement, so an automated snapshot can disappear part-way through a restore.
+
+To use the contents of an automated snapshot, copy it to a manual one first:
+
+```bash
+aws rds copy-db-snapshot \
+  --source-db-snapshot-identifier <automated-snapshot-id> \
+  --target-db-snapshot-identifier <new-manual-snapshot-name> \
+  --copy-tags \
+  --region eu-west-2
+```
+
+#### Confirm the snapshot belongs to the right database
+
+Check the snapshot's source instance, engine version and master username before using it. `db_engine_version` and `rds_family` in your config must match the snapshot.
+
+```bash
+aws rds describe-db-snapshots \
+  --db-snapshot-identifier <snapshot-name> \
+  --query 'DBSnapshots[0].[DBInstanceIdentifier,InstanceCreateTime,EngineVersion,AllocatedStorage,MasterUsername]' \
+  --output text
+```
+
+Restoring a snapshot that belongs to a different database carries that database's credentials and encryption key across with it. See [The restored database has the wrong username or password](#the-restored-database-has-the-wrong-username-or-password).
+
+#### Check for a final snapshot name clash
+
+When Terraform destroys a database it writes a final snapshot named `<rds_name>-finalsnapshot`. That name is fixed, so a snapshot left over from an earlier restore will block the apply. Check whether one already exists:
+
+```bash
+aws rds describe-db-snapshots \
+  --db-snapshot-identifier <rds_name>-finalsnapshot \
+  --region eu-west-2
+```
+
+If it does, see [`DBSnapshotAlreadyExists`](#dbsnapshotalreadyexists).
+
+#### Check for a read replica
+
+If the database has a read replica, it must be dealt with before restoring. See [Read replicas](#read-replicas).
 
 ---
 
@@ -117,11 +185,11 @@ PGPASSWORD=<password> psql -h 127.0.0.1 -p 5432 \
 
 #### 6. Tidy up
 
-> IMPORTANT **Do not skip tidy up**, the snapshot_identifier must be removed from your RDS config for data safety and the port-forward pod must be deleted for security.
+> **Important:** Removing `snapshot_identifier` forces Terraform to destroy and recreate the database. The replacement is built without a snapshot, so the new database will be empty and the data you have just restored will be lost. Do not raise this as a routine clean-up PR.
 
-- Remove `snapshot_identifier` from Terraform config (raise PR)
-- Delete port-forward pod: `kubectl -n <namespace> delete pod port-forward-pod`
-- Raise another PR to re-enable `deletion_protection = true`.
+- Delete the port-forward pod straight away: `kubectl -n <namespace> delete pod port-forward-pod`
+- Leave `snapshot_identifier` in place. While its value is unchanged it produces no plan diff and has no effect on your running database. If you want it removed, ask in [#ask-cloud-platform](https://mojdt.slack.com/archives/C57UPMZLY) so it can be cleared without rebuilding the instance.
+- Raise a PR to set `deletion_protection = true`. This is your safeguard against an accidental replacement: with it enabled AWS refuses the delete, so the pipeline fails instead of destroying the database.
 
 ---
 
@@ -135,20 +203,7 @@ Use this when restoring a snapshot to a completely different database instance.
 
 #### Prerequisites
 
-**Important:** The `db_allocated_storage` for the target database must be **at least equal to** the source database's allocated storage. RDS does not allow you to restore a snapshot into an instance with less storage than the original. If you set a smaller value, the apply will fail with:
-
-```
-InvalidParameterCombination: Invalid storage size for engine name postgres and storage type gp3: <size>
-```
-
-Check the source database's allocated storage before configuring the target, either via the AWS CLI or the AWS Console:
-
-```bash
-aws rds describe-db-instances \
-  --db-instance-identifier <source-rds-name> \
-  --query 'DBInstances[0].AllocatedStorage' \
-  --region eu-west-2
-```
+Complete the [checks that apply to both scenarios](#before-you-start-both-scenarios) first. The allocated storage check is the most common cause of a failed apply in this scenario, because the new database must be provisioned with at least as much storage as the one the snapshot came from.
 
 #### 1. Get SOURCE DB credentials
 
@@ -236,16 +291,17 @@ The database and its data will remain intact.
 
 #### 5. ⚠️ CRITICAL: Do NOT remove snapshot_identifier
 
-**WARNING:** If you are restoring across databases, you must **NEVER** remove `snapshot_identifier` from the Terraform config. Please add a comment to your code warning future engineers that removing this parameter will destroy the database.
+> **Warning:** If you are restoring across databases, never remove `snapshot_identifier` from the Terraform config. Add a comment above it warning future engineers that removing it will destroy the database.
 
 Removing it will:
+
 1. Destroy the restored database
-2. Create a new empty database
-3. All restored data will be lost
+2. Create a new empty database in its place
+3. Lose all of the restored data
 
-**Leave `snapshot_identifier` in your config permanently.** It only affects initial creation, subsequent applies are no-ops.
+Leave `snapshot_identifier` in your config permanently. While its value is unchanged it produces no plan diff and has no effect on the running database.
 
-With `deletion_protection` enabled (step 4), any accidental removal of `snapshot_identifier` will be caught and blocked before data is lost.
+With `deletion_protection` enabled (step 4), an accidental removal of `snapshot_identifier` is caught and blocked before data is lost.
 
 ---
 
@@ -303,3 +359,67 @@ Raise a PR to remove the RDS module (and its associated `kubernetes_secret` and 
 Merge and wait for the apply to complete. The database will now be successfully destroyed.
 
 > **Note:** This two-step process is intentional. It ensures that database deletion is always a deliberate action.
+
+---
+
+## Troubleshooting
+
+### DBSnapshotAlreadyExists
+
+```
+Error: deleting RDS DB Instance (<rds_name>): DBSnapshotAlreadyExists: Cannot create
+the snapshot because a snapshot with the identifier <rds_name>-finalsnapshot already exists.
+```
+
+Terraform destroys the existing instance before creating its replacement, and on the way out it writes a final snapshot named `<rds_name>-finalsnapshot`. That name is fixed, so a snapshot left over from an earlier restore blocks the apply.
+
+Confirm the data you need is held elsewhere, then delete the conflicting snapshot and re-run the build:
+
+```bash
+aws rds delete-db-snapshot \
+  --db-snapshot-identifier <rds_name>-finalsnapshot \
+  --region eu-west-2
+```
+
+> **Warning:** Check what that snapshot contains before deleting it. If your database has already been replaced once, `<rds_name>-finalsnapshot` may hold the only copy of the data from before that happened. Compare its `InstanceCreateTime` against the database you expect it to have come from, and copy it to a safely named manual snapshot if you are unsure.
+
+### Setting skip_final_snapshot does not avoid the clash
+
+Adding `skip_final_snapshot = true` in the same PR as `snapshot_identifier` will not prevent the error above.
+
+Changing `snapshot_identifier` forces Terraform to replace the instance, and the destroy half of a replacement uses the values already recorded in state, not the values in your new PR. `skip_final_snapshot = true` only takes effect once it has been applied and stored in state, which cannot happen in the same run.
+
+Delete the conflicting snapshot instead.
+
+### The restored database has the wrong username or password
+
+The master username and password are generated by the Terraform module and held in state, but a restored instance keeps the master username from the snapshot.
+
+If you restore from a snapshot belonging to a different database, such as another environment or namespace, the restored instance comes up with that database's credentials, which will not match what your application expects. Your pods will fail to connect even though the restore itself reported success.
+
+A snapshot from another database also carries that database's KMS encryption key, and the restored instance inherits it rather than using your own. If you genuinely need to restore across databases, set [`is_migration = true`](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance?tab=readme-ov-file#input_is_migration), which copies the snapshot under your own module's key first.
+
+Always check the snapshot's source instance before using it. See [Confirm the snapshot belongs to the right database](#confirm-the-snapshot-belongs-to-the-right-database).
+
+### Read replicas
+
+If the database has a read replica, Terraform fails with:
+
+```
+Error: cannot elect new source database for replication
+```
+
+When a source database is destroyed, AWS promotes its read replica to a standalone instance. A standalone instance cannot be turned back into a read replica, so Terraform has no way to reattach it to the restored database. Re-running the build will not clear this.
+
+The replica has to be destroyed and rebuilt, in two separate PRs:
+
+1. Set `count = 0` on the read replica module and on the `kubernetes_secret` resource for the replica. Both must change together, or the plan fails with `module.read_replica is empty tuple`. Merge and let it apply.
+2. Set both back to `count = 1`. This builds a fresh replica from the restored database.
+
+The rebuilt replica has a new database identifier and endpoint, so restart any pods that read from it.
+
+If you want the promoted replica's data kept, snapshot it before step 1. The module sets `skip_final_snapshot = true` and `db_backup_retention_period = 0` on replicas, so nothing is retained when one is deleted.
+
+### Permission denied copying a snapshot
+
+Copying an encrypted snapshot from the service pod may fail with an access denied error. Raise this in [#ask-cloud-platform](https://mojdt.slack.com/archives/C57UPMZLY) with the error message, and the Cloud Platform team can carry out the copy for you.
