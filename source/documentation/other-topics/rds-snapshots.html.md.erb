@@ -41,22 +41,27 @@ Complete these checks before raising any PR. They apply to both Scenario A and S
 
 #### Check the allocated storage
 
-The target database's `db_allocated_storage` must be at least equal to the allocated storage of the database the snapshot was taken from. RDS will not restore a snapshot into an instance with less storage than the source, and the apply fails with:
+Restoring fails if the target database has less storage than the database the snapshot came from. The apply ends with:
 
 ```
 InvalidParameterCombination: Invalid storage size for engine name postgres and storage type gp3: <size>
 ```
 
-Check the source database's allocated storage:
+Check the storage recorded against the snapshot you intend to use:
 
 ```bash
-aws rds describe-db-instances \
-  --db-instance-identifier <source-rds-name> \
-  --query 'DBInstances[0].AllocatedStorage' \
+aws rds describe-db-snapshots \
+  --db-snapshot-identifier <snapshot-name> \
+  --query 'DBSnapshots[0].[DBSnapshotIdentifier,AllocatedStorage,EngineVersion]' \
+  --output text \
   --region eu-west-2
 ```
 
-> **Warning:** You cannot use a snapshot restore to reduce storage. The figure that matters is the source instance's `AllocatedStorage`, not the size reported against the snapshot. Snapshot size reflects the data actually in use, not the volume provisioned. To shrink a database, dump the data logically and load it into a new, smaller instance, as described in [Migrating an RDS instance](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/aws-rds-migration.html).
+Compare that `AllocatedStorage` figure against the `db_allocated_storage` value in your RDS module. If you have not set it, the module default is 20GB. `db_allocated_storage` must be at least the snapshot's `AllocatedStorage`.
+
+If you need to raise it, AWS requires any increase in allocated storage to be at least 10% of the current value, so a smaller change is rejected. See [Increasing DB instance storage capacity](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.ModifyingExisting.html).
+
+> **Warning:** You cannot use a snapshot restore to reduce storage. The size shown against a snapshot in the AWS console reflects the data in use rather than the volume provisioned, so it is not the figure to size from. Use `AllocatedStorage` as above. To shrink a database, dump the data logically and load it into a new, smaller instance, as described in [Migrating an RDS instance](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/aws-rds-migration.html).
 
 #### Use a manual snapshot
 
@@ -409,7 +414,7 @@ If the database has a read replica, Terraform fails with:
 Error: cannot elect new source database for replication
 ```
 
-When a source database is destroyed, AWS promotes its read replica to a standalone instance. A standalone instance cannot be turned back into a read replica, so Terraform has no way to reattach it to the restored database. Re-running the build will not clear this.
+When a source database is destroyed, AWS promotes its read replica to a standalone instance, and a promoted instance can no longer be used as a replication target. Terraform therefore has no way to reattach it to the restored database, and re-running the build will not clear this. See [Considerations when deleting replicas](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html#USER_ReadRepl.Overview.deletion-considerations).
 
 The replica has to be destroyed and rebuilt, in two separate PRs:
 
