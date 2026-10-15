@@ -11,6 +11,21 @@ RDS snapshots have multiple purposes: migrations, backups, etc. When RDS DB inst
 
 Examples of managing RDS DB snapshots using the AWS CLI, via the [Cloud Platform Service Pod](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/cloud-platform-service-pod.html) can be found in the [README](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance#4-managing-rds-snapshots---backups-and-restores) within the [RDS terraform module](https://github.com/ministryofjustice/cloud-platform-terraform-rds-instance)
 
+<div class="govuk-warning-text">
+  <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+  <strong class="govuk-warning-text__text">
+    <span class="govuk-visually-hidden">Warning</span>
+    Do not restore a production database until you have rehearsed the same
+    restore in a non-production environment first, such as your development or
+    staging database. Restoring destroys and recreates the database rather than
+    updating it in place, so an incorrect snapshot, an undersized
+    db_allocated_storage value or a mismatched engine version will take the
+    database down, and not every mistake can be undone. Rehearse the full
+    process end to end, including the verification step, and only proceed in
+    production once it has succeeded in a non-production environment.
+  </strong>
+</div>
+
 ## Considerations
 
 - The amount of manual snapshots per AWS account is limited, so it's important to cleanup old snapshots
