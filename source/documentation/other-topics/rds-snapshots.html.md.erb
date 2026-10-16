@@ -82,7 +82,30 @@ If you need to raise it, AWS requires any increase in allocated storage to be at
 
 Restore from a manual snapshot. Automated snapshots (those prefixed `rds:`) are tied to the lifecycle of the source instance and are deleted when it is deleted. Terraform destroys the existing instance before creating its replacement, so an automated snapshot can disappear part-way through a restore.
 
-To use the contents of an automated snapshot, copy it to a manual one first:
+> **Important:** Before you start either scenario, take a manual snapshot of the database as it stands now. Restoring deletes the current database along with its automated backups, so without one there is no way back to the state the database is in today. Use the `create-db-snapshot` command below.
+
+List what already exists for the database. The `SnapshotType` column tells you whether each one is manual or automated:
+
+```bash
+aws rds describe-db-snapshots \
+  --db-instance-identifier <rds_name> \
+  --query 'DBSnapshots[*].[DBSnapshotIdentifier,SnapshotCreateTime,SnapshotType,Status]' \
+  --output table \
+  --region eu-west-2
+```
+
+You then need a manual snapshot to restore from. Depending on which point in time you need, either create a new one or copy an existing automated one.
+
+Create a manual snapshot to capture the database as it stands now. The suggested name format is `rds-name-namespace-purpose-date`:
+
+```bash
+aws rds create-db-snapshot \
+  --db-instance-identifier <rds_name> \
+  --db-snapshot-identifier <snapshot-name> \
+  --region eu-west-2
+```
+
+Copy an automated snapshot to a manual one where the point in time you need is only held in an automated snapshot:
 
 ```bash
 aws rds copy-db-snapshot \
@@ -141,28 +164,7 @@ Note down: `rds_instance_endpoint`, `database_name`, `database_username`, `datab
 
 The `rds_name` is the first part of the endpoint (e.g., `cloud-platform-xxxxxxxx` from `cloud-platform-xxxxxxxx.xxxxx.eu-west-2.rds.amazonaws.com`).
 
-#### 2. List available snapshots
-
-```bash
-aws rds describe-db-snapshots \
-  --db-instance-identifier <rds_name> \
-  --query 'DBSnapshots[*].[DBSnapshotIdentifier,SnapshotCreateTime,Status]' \
-  --output table
-```
-
-#### 3. Create manual snapshot
-
-> **Important:** You should take a manual snapshot if you need to ensure the old data is protected. The restoration process will delete the current database and it's associated automatic backups!
-
-Create a snapshot, suggested format for the snapshot name is `rds-name-namespace-purpose-date`
-
-```bash
-aws rds create-db-snapshot \
-  --db-instance-identifier <rds_name> \
-  --db-snapshot-identifier <snapshot name>
-```
-
-#### 4. Update Terraform
+#### 2. Update Terraform
 
 Add `snapshot_identifier` to your RDS module:
 
@@ -177,7 +179,7 @@ module "rds" {
 
 Raise PR and merge.
 
-#### 5. Verify data
+#### 3. Verify data
 
 **Port-forward to the restored DB:**
 
@@ -203,7 +205,7 @@ PGPASSWORD=<password> psql -h 127.0.0.1 -p 5432 \
   -c "SELECT * FROM <table> LIMIT 5;"
 ```
 
-#### 6. Tidy up
+#### 4. Tidy up
 
 > **Important:** Removing `snapshot_identifier` forces Terraform to destroy and recreate the database. The replacement is built without a snapshot, so the new database will be empty and the data you have just restored will be lost. Do not raise this as a routine clean-up PR.
 
