@@ -82,6 +82,8 @@ If you need to raise it, AWS requires any increase in allocated storage to be at
 
 Restore from a manual snapshot. Automated snapshots (those prefixed `rds:`) are tied to the lifecycle of the source instance and are deleted when it is deleted. Terraform destroys the existing instance before creating its replacement, so an automated snapshot can disappear part-way through a restore.
 
+> **Important:** Before you start either scenario, take a manual snapshot of the database as it stands now. Restoring deletes the current database along with its automated backups, so without one there is no way back to the state the database is in today. Use the `create-db-snapshot` command below.
+
 List what already exists for the database. The `SnapshotType` column tells you whether each one is manual or automated:
 
 ```bash
@@ -112,8 +114,6 @@ aws rds copy-db-snapshot \
   --copy-tags \
   --region eu-west-2
 ```
-
-> **Important:** Whichever of the two you are restoring from, take a manual snapshot of the current database before you start. Restoring deletes the current database along with its automated backups, so without one there is no way back to the state the database is in now.
 
 #### Confirm the snapshot belongs to the right database
 
