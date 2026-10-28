@@ -1,6 +1,6 @@
 ---
 title: Security testing and ITHC
-last_reviewed_on: 2025-03-05
+last_reviewed_on: 2026-10-28
 review_in: 6 months
 layout: google-analytics
 ---
@@ -19,11 +19,13 @@ So an ITHC for an app hosted on the Cloud Platform should be: a web application 
 
 We've written a guide based on one ITHC Scoping form, providing the division of responsibilities between Cloud Platform and Service Teams:
 
-* [ITHC scoping for service teams vs Cloud Platform](https://docs.google.com/spreadsheets/d/1MX9aS7uKaNA2v8M_LK3VL3Ebe8vvlU4Zk_giJmFBpF4/edit#gid=0)
+* [ITHC scoping for service teams vs Cloud Platform](https://justiceuk.sharepoint.com/:x:/r/sites/CloudPlatform/Shared%20Documents/Cloud%20Platform/Security/ITHC%20scoping%20for%20service%20teams%20vs%20Cloud%20Platform.xlsx?d=w0ba1b3dbea334a3383b7c87930b91dd2&csf=1&web=1&e=3iGwCB)
 
 This spreadsheet is a work in progress and we invite questions and suggestions to improve it.
 
 To help ITHC testers get familiar with using Cloud Platform you may wish to send them a copy of the [Guide for testers - CCQ ITHC](https://docs.google.com/document/d/1Ea1ArpxiZueoZMcym8ZPqPumU4QOPlwsgIeukqTwVtY/edit?usp=sharing).
+
+Please note that we do not provide access to security testers to the Cloud Platform AWS account or GitHub.  If you wish to give a security tester access you will need to add them to your GitHub team to give them AWS console readonly access to your namespace resources. All infrastructure is as code, and our GitHub repositories are public, so all infrastructure configuration can be reviewed without specific access needed.
 
 ## Notifiable testing
 
