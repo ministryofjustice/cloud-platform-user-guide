@@ -227,6 +227,16 @@ Use this when restoring a snapshot to a completely different database instance.
 
 Complete the [checks that apply to both scenarios](#before-you-start-both-scenarios) first. The allocated storage check is the most common cause of a failed apply in this scenario, because the new database must be provisioned with at least as much storage as the one the snapshot came from.
 
+You also need the **full ARN** of the snapshot you are restoring from, not just its name:
+
+```bash
+aws rds describe-db-snapshots \
+  --db-snapshot-identifier <snapshot name> \
+  --query 'DBSnapshots[0].DBSnapshotArn' \
+  --output text \
+  --region eu-west-2
+```
+
 #### 1. Get SOURCE DB credentials
 
 You need the source DB credentials for verification later.
@@ -239,14 +249,15 @@ Note down: `database_name`, `database_username`: these will be needed to connect
 
 #### 2. Add new RDS module
 
-Add the RDS, including both `rds_name` AND `snapshot_identifier`:
+Add the RDS, including `snapshot_identifier`, `is_migration` AND `db_name`:
 
 ```hcl
 module "rds_new" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-rds-instance?ref=9.2.0"
   
-  rds_name            = "<new-db-name>"       # What you want the new DB instance to be called
-  snapshot_identifier = "<snapshot name>"     # Snapshot to restore from
+  snapshot_identifier = "<snapshot ARN>"      # Full ARN of the snapshot to restore from, e.g. arn:aws:rds:eu-west-2:<account-id>:snapshot:<snapshot name>
+  is_migration        = true                  # Copy the snapshot and encrypt it with this module's KMS key
+  db_name             = null                  # Inherit the database name from the snapshot
   
   db_engine_version = "<version>"    # Must match source DB version
   rds_family        = "<family>"      # Must match source DB family
@@ -255,7 +266,36 @@ module "rds_new" {
 }
 ```
 
+Also add a new `kubernetes_secret` for the new database. The restored database keeps the same database name as the source, but it has a new endpoint and a new password, so your application needs a secret that outputs the new module's values. Give it a different name from the existing secret so that you don't overwrite the source database's credentials:
+
+```hcl
+resource "kubernetes_secret" "rds_new" {
+  metadata {
+    name      = "<new-rds-secret-name>"
+    namespace = var.namespace
+  }
+
+  data = {
+    rds_instance_endpoint = module.rds_new.rds_instance_endpoint
+    database_name         = module.rds_new.database_name
+    database_username     = module.rds_new.database_username
+    database_password     = module.rds_new.database_password
+    rds_instance_address  = module.rds_new.rds_instance_address
+  }
+}
+```
+
 Raise PR and merge.
+
+The first apply copies the snapshot before restoring from the copy, so it takes a few minutes longer than a plain restore.
+
+Why these settings are needed:
+
+- `is_migration = true`: the new module generates its own KMS key and master username, which differ from the snapshot's. Without this setting, Terraform sees the mismatch after the restore and plans to replace the database on every run. With it, the module copies the snapshot, re-encrypts the copy with its own KMS key, and restores from the copy.
+- `db_name = null`: a restored database keeps the database name from the snapshot, not the name the module generates. Setting `null` stops Terraform trying to replace the database to change it.
+- `snapshot_identifier` as a full ARN: AWS records the source of the snapshot copy as an ARN. If you give the short name, Terraform sees a difference on every plan and destroys and recreates the snapshot copy each time.
+
+If Terraform still plans replacements, see [Terraform keeps replacing the restored database or the snapshot copy](#terraform-keeps-replacing-the-restored-database-or-the-snapshot-copy).
 
 #### 3. Verify data
 
@@ -276,7 +316,7 @@ kubectl -n <namespace> port-forward port-forward-pod 5432:5432
 **Connect and verify:**
 
 ```bash
-PGPASSWORD=<k8s-secret-password> psql -h 127.0.0.1 -p 5432 \
+PGPASSWORD=<new-secret-password> psql -h 127.0.0.1 -p 5432 \
   -U <username> -d <dbname> \
   -c "SELECT * FROM <table> LIMIT 5;"
 ```
@@ -295,8 +335,9 @@ After verifying the restored data, raise a PR to enable `deletion_protection` on
 module "rds_new" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-rds-instance?ref=9.2.0"
 
-  rds_name            = "<new-db-name>"
-  snapshot_identifier = "<snapshot name>"
+  snapshot_identifier = "<snapshot ARN>"
+  is_migration        = true
+  db_name             = null
   deletion_protection = true
 
   # ... other config ...
@@ -324,6 +365,8 @@ Removing it will:
 Leave `snapshot_identifier` in your config permanently. While its value is unchanged it produces no plan diff and has no effect on the running database.
 
 With `deletion_protection` enabled (step 4), an accidental removal of `snapshot_identifier` is caught and blocked before data is lost.
+
+Keep `is_migration` and `db_name` in your config as well. Removing `is_migration` changes the snapshot the instance restores from, which Terraform treats as a reason to replace the database.
 
 ---
 
@@ -412,6 +455,17 @@ Adding `skip_final_snapshot = true` in the same PR as `snapshot_identifier` will
 Changing `snapshot_identifier` forces Terraform to replace the instance, and the destroy half of a replacement uses the values already recorded in state, not the values in your new PR. `skip_final_snapshot = true` only takes effect once it has been applied and stored in state, which cannot happen in the same run.
 
 Delete the conflicting snapshot instead.
+
+### Terraform keeps replacing the restored database or the snapshot copy
+
+This applies to [Scenario B](#scenario-b-restore-to-new-database-cross-db). If every plan after the restore wants to replace something, check which resource is marked `# forces replacement`:
+
+| Plan shows | Cause | Fix |
+|---|---|---|
+| `aws_db_instance.rds`: `db_name`, `username` or `kms_key_id` forces replacement | The restored database keeps the snapshot's values, which differ from those the module generates | Set `is_migration = true` and `db_name = null` |
+| `aws_db_snapshot_copy.rds_migration_snapshot[0]`: `source_db_snapshot_identifier` forces replacement, changing from an ARN to a short name | `snapshot_identifier` is a short name but AWS stores the ARN | Set `snapshot_identifier` to the full snapshot ARN |
+
+Adding `is_migration = true` to an instance that was already restored replaces it one more time, because its existing KMS key cannot be changed in place. Take a manual snapshot first if you need the data on it.
 
 ### The restored database has the wrong username or password
 
