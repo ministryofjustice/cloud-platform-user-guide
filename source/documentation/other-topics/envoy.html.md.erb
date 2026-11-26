@@ -397,56 +397,114 @@ platform-managed Coraza ConfigMap: it is managed centrally.
 
 ## Migrate from NGINX Ingress
 
-An `HTTPRoute` is a new resource, not a change to `ingressClassName`. NGINX
-annotations do not automatically become Gateway API configuration.
+You can move traffic gradually from NGINX to Envoy using Route 53 weighted
+records. The Ingress and HTTPRoute use the same hostname and Service, but
+different DNS set identifiers.
 
-1. **Inventory the existing Ingress.** Record its hostnames, paths, Service
-   ports, TLS certificate, DNS records and Ingress class. Review annotations
-   for redirects, rewrites, authentication, IP filtering, timeouts, body
-   limits and ModSecurity rules. Find and test an equivalent configuration
-   for each feature before switching traffic; do not assume there is a
-   one-to-one mapping.
-2. **Choose the right Gateway.** Confirm production versus non-production,
-   public versus internal access, certificate coverage, WAF configuration and
-   any network policies. A custom domain may need a different certificate and
-   DNS arrangement.
-3. **Test in non-production.** Create an HTTPRoute to the same Service, using
-   a separate test hostname initially. Verify route status, TLS, paths,
-   application behaviour, authentication and Coraza rules. Test both normal
-   traffic and expected WAF blocks.
-4. **Plan the production DNS cutover with Cloud Platform.** ExternalDNS for
-   Ingress and ExternalDNS for HTTPRoute can be separate controllers with
-   different ownership records. Creating an HTTPRoute for an existing hostname
-   may cause DNS reconciliation immediately; do not assume it is a
-   non-disruptive preview. Confirm record type, ownership, identifiers and
-   weights before creating the production-hostname route. Where supported,
-   Route 53 weighted records with distinct set identifiers can split traffic
-   between the two load balancers; this is not automatic. DNS caching means
-   weight changes and rollback are not instantaneous.
-5. **Validate the production hostname through Envoy before directing users to
-   it.** Coordinate creation of the production HTTPRoute and DNS records with
-   Cloud Platform. Once the route is accepted, you can test the Gateway load
-   balancer without relying on DNS cutover, while preserving the hostname for
-   TLS and routing:
+First, test with a separate non-production hostname. Check the selected
+Gateway, certificate, backend NetworkPolicy and Coraza behaviour. 
 
-   ```sh
-   curl -v --connect-to my-app.example.com:443:<envoy-load-balancer-dns>:443 \
-     https://my-app.example.com/
-   ```
+### Example: start with NGINX at 100 and Envoy at 0
 
-   Use the Gateway's load balancer DNS name, not the existing Ingress address.
-   Verify the certificate, routes, authentication and WAF behaviour. Do not
-   use `-k` to hide certificate errors.
-6. **Shift traffic gradually where possible and monitor it.** Check DNS,
-   application errors, latency and WAF blocks. Keep the existing Ingress and
-   its configuration available during the rollback window. Agree in advance
-   how to restore the Ingress DNS record or weights if problems occur.
-7. **Clean up after validation.** Once traffic has moved, DNS caches have
-   expired and rollback is no longer needed, remove the old Ingress through
-   your normal deployment process. Confirm the remaining DNS records are
-   owned and managed as intended.
+The following examples use the public `default` Gateway. Replace the
+namespace, hostname, Service and Service port with your values. 
 
-See the [ModSecurity guide](/documentation/networking/modsecurity.html) for
-the existing NGINX behaviour and the [Cloud Platform support
-guide](/documentation/other-topics/cloud-platform-support.html) if you need
-help with migration.
+Configure the existing Ingress with weight `100`:
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-app
+  namespace: my-namespace
+  annotations:
+    external-dns.alpha.kubernetes.io/set-identifier: my-app-my-namespace-green
+    external-dns.alpha.kubernetes.io/aws-weight: "100"
+spec:
+  ingressClassName: default
+  rules:
+    - host: my-app.apps.live.cloud-platform.service.justice.gov.uk
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: my-app-service
+                port:
+                  number: 80
+```
+
+Once the Ingress weighted record is confirmed in Route 53, add the HTTPRoute
+with weight `0`:
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: my-app
+  namespace: my-namespace
+  annotations:
+    external-dns.kubernetes.io/set-identifier: my-app-my-namespace-envoy
+    external-dns.kubernetes.io/aws-weight: "0"
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: ListenerSet
+      name: default-listenerset
+      namespace: envoy-gateway-system
+      sectionName: https
+  hostnames:
+    - my-app.apps.live.cloud-platform.service.justice.gov.uk
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: my-app-service
+          port: 80
+```
+
+The annotation prefixes are intentionally different: use
+`external-dns.alpha.kubernetes.io` for Ingress and
+`external-dns.kubernetes.io` for HTTPRoute. Preserve any other settings needed
+by your existing Ingress; these examples do not reproduce application-specific
+configuration.
+
+Confirm both weighted records point to the intended load balancers and that
+the HTTPRoute has `Accepted=True` and `ResolvedRefs=True`. Test the Envoy
+load balancer directly, preserving the hostname for TLS and routing:
+
+```sh
+curl -v --connect-to my-app.apps.live.cloud-platform.service.justice.gov.uk:443:<envoy-load-balancer-dns>:443 \
+  https://my-app.apps.live.cloud-platform.service.justice.gov.uk/
+```
+
+Use the Envoy load balancer DNS name and do not use `-k` to bypass certificate
+checks. Verify application behaviour, authentication and WAF rules before
+sending traffic to Envoy.
+
+### Shift traffic and monitor
+
+Update the two weight annotations through your normal deployment process:
+
+| Stage | Ingress weight | HTTPRoute weight |
+| --- | ---: | ---: |
+| Initial | 100 | 0 |
+| Split | 50 | 50 |
+| Complete | 0 | 100 |
+
+Wait for ExternalDNS to reconcile and verify the actual Route 53 records after
+each update before proceeding. Weights control the relative share of DNS
+answers, not an exact percentage of requests. DNS caching and existing
+connections mean changes and rollback are not immediate. A zero-weight record
+is not an absolute traffic block: Route 53 may return it if other records are
+unhealthy or all weights are zero. Do not set both records to zero.
+
+Monitor application errors and WAF blocks. If needed, restore the Ingress
+weight to `100`, confirm it has reconciled, then set the HTTPRoute weight to
+`0` and verify both records.
+Keep the Ingress until the migration is validated and the rollback window has
+ended. Remove it through your normal deployment process and confirm the
+remaining DNS records are managed as intended.
