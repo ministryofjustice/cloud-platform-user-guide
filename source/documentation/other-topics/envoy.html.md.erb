@@ -1,0 +1,452 @@
+---
+title: Using Envoy Gateway on Cloud Platform
+last_reviewed_on: 2026-11-23 (temp)
+review_in: 6 months
+layout: google-analytics
+---
+
+# <%= current_page.data.title %>
+
+Envoy Gateway uses the [Kubernetes Gateway API](https://gateway-api.sigs.k8s.io/)
+to route HTTP and HTTPS requests to your application. Cloud Platform manages
+the Gateway, its load balancer and its default TLS certificate. Your team
+creates an `HTTPRoute` in your application's namespace to connect a hostname
+and path to a Kubernetes Service.
+
+This guide covers shared Gateways with Coraza enabled.
+
+The platform's `default` Gateway has an HTTP listener on port 80 and its
+`default-listenerset` has an HTTPS listener on port 443.
+
+## Choose a shared ListenerSet
+
+For a platform domain covered by a shared Gateway certificate, set
+`parentRefs` on your HTTPRoute to the ListenerSet for the Gateway you need.
+Cloud Platform manages these ListenerSets; you do not need to create your own.
+The following are available on the `live` cluster:
+
+| Gateway | ListenerSet | Access |
+| --- | --- | --- |
+| `default` | `default-listenerset` | Public |
+| `default-non-prod` | `default-non-prod-listenerset` | Public, non-production |
+| `internal` | `internal-listenerset` | Internal |
+| `internal-non-prod` | `internal-non-prod-listenerset` | Internal, non-production |
+
+Use the ListenerSet name in `parentRefs.name`, with
+`namespace: envoy-gateway-system`, `kind: ListenerSet` and
+`sectionName: https`. Check that the selected Gateway is available in your
+cluster and that its certificate covers your hostname.
+
+## Route HTTPS traffic to your application
+
+Create an `HTTPRoute` in your namespace. Replace the
+namespace, hostname, Service name and Service **port** with your own values.
+The port is the Service's `spec.ports[].port`, not necessarily the container's
+port. The hostname must be covered by the Gateway certificate. This example
+uses the public `default-listenerset`; select the appropriate shared
+ListenerSet from the table above for your application.
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: my-app
+  namespace: my-namespace
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: ListenerSet
+      name: default-listenerset
+      namespace: envoy-gateway-system
+      sectionName: https
+  hostnames:
+    - my-app.example.com
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: my-app-service
+          port: 8080
+```
+
+Save this as `httproute.yaml`, apply it using your normal deployment process,
+and check its status:
+
+```sh
+kubectl apply -f httproute.yaml
+kubectl describe httproute my-app -n my-namespace
+kubectl get gateway default -n envoy-gateway-system -o yaml
+```
+
+Check the route's parent status for `Accepted=True` and `ResolvedRefs=True`.
+Also check that the Gateway is programmed and has an address. The Service must
+have ready endpoints:
+
+```sh
+kubectl get endpointslice -n my-namespace \
+  -l kubernetes.io/service-name=my-app-service
+```
+
+For eligible platform-managed domains, ExternalDNS can create DNS records
+from HTTPRoutes. This depends on the controller, domain filters and DNS zone
+configuration; an accepted route does not by itself guarantee DNS is ready.
+For a new hostname, confirm the record points to the intended Gateway and test
+`https://my-app.example.com/`. Check the certificate in your browser or with
+`curl -v`. Do not publish a route using an existing production hostname until
+you have planned the DNS cutover described below.
+
+## Use an internal Gateway
+
+Use the `internal` Gateway for internal applications and
+`internal-non-prod` for internal non-production applications. These Gateways
+use private network load balancers, like the corresponding internal NGINX
+Ingress classes. Clients need network connectivity to the load balancer,
+such as through an approved connected network, and any relevant security
+rules must allow the traffic. An internal load balancer does not provide
+application authentication.
+
+On `live`, the shared certificates cover
+`*.internal.cloud-platform.service.justice.gov.uk` for `internal` and
+`*.internal-non-prod.cloud-platform.service.justice.gov.uk` for
+`internal-non-prod`. A wildcard covers one DNS label, for example
+`my-app.internal.cloud-platform.service.justice.gov.uk`, not
+`api.my-app.internal.cloud-platform.service.justice.gov.uk`.
+
+Create an HTTPRoute in your application namespace. For example, the following
+uses the internal non-production ListenerSet:
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: my-app-internal
+  namespace: my-namespace
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: ListenerSet
+      name: internal-non-prod-listenerset
+      namespace: envoy-gateway-system
+      sectionName: https
+  hostnames:
+    - my-app.internal-non-prod.cloud-platform.service.justice.gov.uk
+  rules:
+    - backendRefs:
+        - name: my-app-service
+          port: 8080
+```
+
+Replace the namespace, hostname, Service and Service port with your own
+values. For the `internal` Gateway, use `internal-listenerset` and an
+appropriate internal hostname instead. Check the HTTPRoute is accepted and
+has resolved references as described above; your application's NetworkPolicy
+must also allow traffic from the selected Envoy proxy to the backend.
+
+ExternalDNS can publish eligible hostnames in the platform's internal zones,
+but DNS publication is subject to its filters and does not guarantee network
+access. For example, the current exclusion for test-cluster domains also
+matches some application hostnames beginning with `cp-` or `yy-`. Confirm DNS
+and test HTTPS from an authorised network. Coordinate with Cloud Platform
+before using an existing Ingress hostname to avoid DNS conflicts.
+
+## Use a custom domain
+
+For a hostname not covered by the platform certificate, use your own
+certificate and `ListenerSet`, then attach an `HTTPRoute` to that listener.
+This follows the same pattern as the Container Platform, but uses an explicit
+cert-manager `Certificate`.
+
+Follow the [custom domain guide](custom-domain-cert.html#setup) to set up and
+delegate a DNS zone and create a `Certificate` in your application namespace.
+Confirm the certificate is ready before configuring the listener. The current
+Let's Encrypt issuer uses DNS-01 validation and needs access to a suitable
+Route 53 zone for the challenge record.
+
+Save the following resources in your namespace folder in the
+[environments repository](https://github.com/ministryofjustice/cloud-platform-environments/).
+Replace the namespace, hostname, Certificate Secret name, Service name and
+Service port with your own values:
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: ListenerSet
+metadata:
+  name: my-app-https
+  namespace: <my-namespace>
+spec:
+  parentRef:
+    group: gateway.networking.k8s.io
+    kind: Gateway
+    name: default
+    namespace: envoy-gateway-system
+  listeners:
+    - name: https
+      hostname: <hostname>
+      protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - group: ""
+            kind: Secret
+            name: <my-cert-secret>
+      allowedRoutes:
+        namespaces:
+          from: Same
+        kinds:
+          - group: gateway.networking.k8s.io
+            kind: HTTPRoute
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: my-app
+  namespace: <my-namespace>
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: ListenerSet
+      name: my-app-https
+      sectionName: https
+  hostnames:
+    - <hostname>
+  rules:
+    - backendRefs:
+        - name: <my-svc>
+          port: 80
+```
+
+The Secret must be in the same namespace as the `ListenerSet`, and
+`<my-cert-secret>` must match the `Certificate`'s `secretName`. Use the
+Service's port, not necessarily its container port. This example serves HTTPS
+only; it does not configure an HTTP-to-HTTPS redirect.
+
+Check that the listener is accepted and programmed, its references are
+resolved, and the route is accepted with resolved references:
+
+```sh
+kubectl describe certificate <my-cert> -n <my-namespace>
+kubectl describe listenerset my-app-https -n <my-namespace>
+kubectl describe httproute my-app -n <my-namespace>
+```
+
+The listener can report `OverlappingTLSConfig` because the platform's default
+HTTPS listener accepts all hostnames. The tested custom listener was accepted
+and served its own certificate despite this condition; check its status and
+contact the platform team if you have concerns.
+
+ExternalDNS v2 can publish the `HTTPRoute` hostname when it is permitted to
+manage the DNS zone. Confirm the record points to the intended Envoy load
+balancer and verify HTTPS with the custom hostname. If another provider manages
+the zone, coordinate the traffic DNS record with its owner.
+
+**Do not create a route or change DNS for an existing production hostname
+without a migration plan.** Ingress and HTTPRoute records may be managed by
+different ExternalDNS controllers and must be coordinated to avoid conflicts
+or interrupted traffic. Contact `#ask-cloud-platform` before migrating.
+
+## Coraza web application firewall
+
+Coraza is a web application firewall (WAF) that inspects HTTP traffic using
+the [OWASP Core Rule Set](https://coreruleset.org/). The Cloud Platform Gateway
+module enables Coraza by default and configures `SecRuleEngine On` with the
+Core Rule Set and platform-managed rules. This is different from the opt-in
+ModSecurity annotations on NGINX Ingress. A WAF does not replace application
+authentication, validation or other security controls.
+
+An individual Gateway can be configured without Coraza. Confirm that the
+Gateway you use has the policy enabled and that your route is protected before
+relying on it. The team managing the Gateway can check:
+
+```sh
+kubectl get envoyextensionpolicy -n envoy-gateway-system
+kubectl describe envoyextensionpolicy default-coraza-waf -n envoy-gateway-system
+```
+
+### Coraza modes
+
+Coraza has three rule engine modes:
+
+| Mode | Behaviour |
+| --- | --- |
+| `On` | Inspects requests and blocks those that trigger a blocking rule. This is the default for a Gateway with Coraza enabled. |
+| `DetectionOnly` | Inspects requests and logs rule matches but does not block them. Use this to investigate false positives or test rules. |
+| `Off` | Disables Coraza rule processing for the policy. Requests are not protected by its WAF rules. |
+
+An application team can override the Gateway policy for an individual
+HTTPRoute by creating an `EnvoyExtensionPolicy` in the same namespace as the
+route, subject to permissions and any platform policies. A route-level policy
+**replaces** the Gateway policy for that route; it does not merge with it.
+Contact Cloud Platform before reducing protection, and test changes in
+non-production.
+
+#### Use detection-only mode
+
+For example, to inspect traffic to the `my-app` HTTPRoute without blocking it,
+create the following policy in the route's namespace:
+
+```yaml
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyExtensionPolicy
+metadata:
+  name: my-app-coraza-detection
+  namespace: my-namespace
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: my-app
+  dynamicModule:
+    - name: composer
+      filterName: coraza-waf
+      config:
+        directives:
+          - Include @coraza.conf
+          - SecRuleEngine DetectionOnly
+          - Include @crs-setup.conf
+          - Include @owasp_crs/*.conf
+          - Include /etc/coraza/cp/coraza-cp.conf
+```
+
+Replace `my-namespace` and `my-app`, then apply the policy and check that it
+is accepted:
+
+```sh
+kubectl apply -f my-app-coraza-detection.yaml
+kubectl describe envoyextensionpolicy my-app-coraza-detection -n my-namespace
+```
+
+The policy must include the complete current platform baseline, because it
+replaces the Gateway policy. Confirm the baseline with Cloud Platform and
+maintain it when the platform configuration changes. Only one
+`EnvoyExtensionPolicy` can target a given route; update an existing policy
+instead of creating a second one.
+
+Test a normal request and a safe request that would trigger a WAF rule.
+In detection-only mode the WAF should not block the request; ask Cloud
+Platform to check the proxy logs for the rule match. Other components may
+still reject a request. To restore blocking, change the existing policy to
+`SecRuleEngine On` and apply it, or remove the route policy to inherit the
+Gateway policy again. Confirm the resulting policy and test it before relying
+on protection.
+
+### Add rules for a route
+
+To customise rules, create an `EnvoyExtensionPolicy` in the **same namespace**
+as the `HTTPRoute`. This requires permission to create the policy and a
+Gateway with the Coraza dynamic module configured. Check with Cloud Platform
+before applying custom rules, and test in non-production first.
+
+**A route-level policy takes precedence over the Gateway policy; it is not
+just an addition to it.** Include the complete current baseline configuration
+as well as your custom rules, or you could unintentionally remove WAF
+protection. The baseline below reflects the platform Gateway module; confirm
+it is still current with Cloud Platform and maintain it when the platform
+configuration changes. Only one `EnvoyExtensionPolicy` can target a given
+route.
+
+For example, the following adds a rule that blocks requests whose path starts
+with `/example-blocked-path`. Use your own rule ID and condition, and ensure
+the ID does not collide with another rule:
+
+```yaml
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyExtensionPolicy
+metadata:
+  name: my-app-coraza
+  namespace: my-namespace
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: my-app
+  dynamicModule:
+    - name: composer
+      filterName: coraza-waf
+      config:
+        directives:
+          - Include @coraza.conf
+          - SecRuleEngine On
+          - Include @crs-setup.conf
+          - Include @owasp_crs/*.conf
+          - Include /etc/coraza/cp/coraza-cp.conf
+          - >-
+            SecRule REQUEST_URI "@beginsWith /example-blocked-path"
+            "id:1001000,phase:1,deny,status:403,log,msg:'Example blocked path'"
+```
+
+Apply the policy using your deployment process and check its status:
+
+```sh
+kubectl apply -f my-app-coraza.yaml
+kubectl describe envoyextensionpolicy my-app-coraza -n my-namespace
+```
+
+Check that it is accepted, then test both a normal request and a request to
+the example blocked path. The latter should return HTTP 403. A 403 alone does
+not prove which component blocked the request; check the available WAF logs
+with Cloud Platform if needed. Avoid including real credentials or sensitive
+request data in test requests or support messages.
+
+For false positives, share the affected hostname, time, request ID if
+available, and rule ID with Cloud Platform. Prefer a narrowly scoped exception
+over disabling the WAF or an entire rule set. Do not edit the
+platform-managed Coraza ConfigMap: it is managed centrally.
+
+## Migrate from NGINX Ingress
+
+An `HTTPRoute` is a new resource, not a change to `ingressClassName`. NGINX
+annotations do not automatically become Gateway API configuration.
+
+1. **Inventory the existing Ingress.** Record its hostnames, paths, Service
+   ports, TLS certificate, DNS records and Ingress class. Review annotations
+   for redirects, rewrites, authentication, IP filtering, timeouts, body
+   limits and ModSecurity rules. Find and test an equivalent configuration
+   for each feature before switching traffic; do not assume there is a
+   one-to-one mapping.
+2. **Choose the right Gateway.** Confirm production versus non-production,
+   public versus internal access, certificate coverage, WAF configuration and
+   any network policies. A custom domain may need a different certificate and
+   DNS arrangement.
+3. **Test in non-production.** Create an HTTPRoute to the same Service, using
+   a separate test hostname initially. Verify route status, TLS, paths,
+   application behaviour, authentication and Coraza rules. Test both normal
+   traffic and expected WAF blocks.
+4. **Plan the production DNS cutover with Cloud Platform.** ExternalDNS for
+   Ingress and ExternalDNS for HTTPRoute can be separate controllers with
+   different ownership records. Creating an HTTPRoute for an existing hostname
+   may cause DNS reconciliation immediately; do not assume it is a
+   non-disruptive preview. Confirm record type, ownership, identifiers and
+   weights before creating the production-hostname route. Where supported,
+   Route 53 weighted records with distinct set identifiers can split traffic
+   between the two load balancers; this is not automatic. DNS caching means
+   weight changes and rollback are not instantaneous.
+5. **Validate the production hostname through Envoy before directing users to
+   it.** Coordinate creation of the production HTTPRoute and DNS records with
+   Cloud Platform. Once the route is accepted, you can test the Gateway load
+   balancer without relying on DNS cutover, while preserving the hostname for
+   TLS and routing:
+
+   ```sh
+   curl -v --connect-to my-app.example.com:443:<envoy-load-balancer-dns>:443 \
+     https://my-app.example.com/
+   ```
+
+   Use the Gateway's load balancer DNS name, not the existing Ingress address.
+   Verify the certificate, routes, authentication and WAF behaviour. Do not
+   use `-k` to hide certificate errors.
+6. **Shift traffic gradually where possible and monitor it.** Check DNS,
+   application errors, latency and WAF blocks. Keep the existing Ingress and
+   its configuration available during the rollback window. Agree in advance
+   how to restore the Ingress DNS record or weights if problems occur.
+7. **Clean up after validation.** Once traffic has moved, DNS caches have
+   expired and rollback is no longer needed, remove the old Ingress through
+   your normal deployment process. Confirm the remaining DNS records are
+   owned and managed as intended.
+
+See the [ModSecurity guide](/documentation/networking/modsecurity.html) for
+the existing NGINX behaviour and the [Cloud Platform support
+guide](/documentation/other-topics/cloud-platform-support.html) if you need
+help with migration.
